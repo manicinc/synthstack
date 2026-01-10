@@ -1,0 +1,84 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+.quasar/
+.vite/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.lite
+.env.pro
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Test coverage
+coverage/
+
+# Temp files
+*.tmp
+*.temp
+.cache/
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# Docker
+*.tar
+
+# Local app/runtime artifacts (do not commit)
+.super-cloud/
+apps/web/test-results/
+apps/web/playwright-report/
+apps/web/output/
+apps/web/public/models/
+apps/web/public/onnx-wasm/
+apps/web/pnpm-lock.yaml
+test-docs/
+test-reports/
+tests/**/playwright-report/
+tests/**/test-results/
+
+# Test output screenshots
+output/
+
+# AI assistant data (do not commit)
+.claude/
+.cursor/
+
+# Database files (do not commit)
+*.db
+*.sqlite
+*.sqlite3
+**/db_data/
+**/data/*.sqlite
+**/data/*.db
+
+# Backups (do not commit)
+backups/
+*.sql.gz
+*.sql.zip
+
+# Mobile build artifacts
+**/android/app/build/
+**/ios/App/Pods/
+Podfile.lock
+Manifest.lock

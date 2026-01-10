@@ -1,0 +1,55 @@
+{
+  "name": "synthstack",
+  "version": "1.0.0",
+  "description": "SynthStack Community Edition - Open Source SaaS Boilerplate",
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "Manic Inc. <team@manic.agency>",
+  "homepage": "https://synthstack.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/manicinc/synthstack"
+  },
+  "bugs": "https://github.com/manicinc/synthstack/issues",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "cp .env.community .env && pnpm -r --parallel dev",
+    "dev:web": "pnpm --filter @synthstack/web dev",
+    "dev:api": "pnpm --filter @synthstack/api-gateway dev",
+    "build": "pnpm -r build",
+    "build:web": "pnpm --filter @synthstack/web build",
+    "build:api": "pnpm --filter @synthstack/api-gateway build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "ENABLE_COPILOT=false ENABLE_REFERRALS=false ENABLE_WORKFLOWS=false pnpm --filter @synthstack/web test",
+    "test:web": "pnpm --filter @synthstack/web test",
+    "test:api": "pnpm --filter @synthstack/api-gateway test",
+    "test:coverage": "pnpm --filter @synthstack/web test:coverage",
+    "test:e2e": "pnpm --filter @synthstack/web test:e2e",
+    "test:e2e:ui": "pnpm --filter @synthstack/web test:e2e:ui",
+    "test:all": "pnpm test && pnpm test:e2e",
+    "test:features": "pnpm -r test -- __tests__/features",
+    "test:count": "node scripts/count-tests.js",
+    "test:count:update": "node scripts/count-tests.js --update",
+    "docker:up": "docker compose -f docker-compose.community.yml up -d",
+    "docker:down": "docker compose -f docker-compose.community.yml down",
+    "docker:logs": "docker compose -f docker-compose.community.yml logs -f",
+    "docker:build": "docker compose -f docker-compose.community.yml build",
+    "db:migrate": "pnpm --filter @synthstack/api-gateway db:migrate",
+    "db:seed": "pnpm --filter @synthstack/api-gateway db:seed",
+    "clean": "pnpm -r clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@9.1.0",
+  "dependencies": {
+    "argon2": "^0.44.0",
+    "electron": "28.3.3"
+  }
+}
