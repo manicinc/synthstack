@@ -1,0 +1,76 @@
+name: Scrape Catalog (printers/filaments)
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # weekly Monday 06:00 UTC
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Install JS deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-3.11-${{ hashFiles('scripts/*.py') }}
+          restore-keys: |
+            pip-${{ runner.os }}-3.11-
+
+      - name: Install Python deps (scrapers)
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4 lxml tqdm
+
+      - name: Run printer scraper
+        run: |
+          python scripts/scrape-printers.py \
+            --json packages/api-gateway/data/printers.json \
+            --api-json packages/api-gateway/data/printers.json \
+            --sqlite packages/api-gateway/data/printers.sqlite \
+            --sql scripts/seed-printers.sql
+
+      - name: Build filaments sqlite
+        run: |
+          python scripts/build-filaments-sqlite.py \
+            --json packages/api-gateway/data/filaments.json \
+            --sqlite packages/api-gateway/data/filaments.sqlite
+
+      - name: List artifacts
+        run: ls -lh packages/api-gateway/data
+
+      - name: Upload scraped artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: scraped-catalog
+          path: |
+            packages/api-gateway/data/printers.json
+            packages/api-gateway/data/printers.sqlite
+            packages/api-gateway/data/filaments.json
+            packages/api-gateway/data/filaments.sqlite
+            scripts/seed-printers.sql
+
+
+
