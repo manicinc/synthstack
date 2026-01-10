@@ -291,6 +291,63 @@ CREATE TABLE IF NOT EXISTS organization_members (
 );
 
 -- ============================================
+-- BYOK: API PROVIDERS
+-- ============================================
+CREATE TABLE IF NOT EXISTS api_providers (
+  id VARCHAR(50) PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  description TEXT,
+  validation_endpoint TEXT,
+  validation_method VARCHAR(10) DEFAULT 'GET',
+  docs_url TEXT,
+  key_format_hint TEXT,
+  is_enabled BOOLEAN DEFAULT true,
+  sort_order INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================
+-- BYOK: USER API KEYS
+-- ============================================
+CREATE TABLE IF NOT EXISTS user_api_keys (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+  provider VARCHAR(50) NOT NULL,
+  provider_name VARCHAR(100),
+  encrypted_key TEXT NOT NULL,
+  key_hint VARCHAR(8),
+  is_active BOOLEAN DEFAULT true,
+  is_valid BOOLEAN DEFAULT true,
+  last_error TEXT,
+  total_requests INTEGER DEFAULT 0,
+  total_tokens INTEGER DEFAULT 0,
+  last_used_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, provider)
+);
+
+-- ============================================
+-- BYOK: API KEY USAGE
+-- ============================================
+CREATE TABLE IF NOT EXISTS api_key_usage (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  api_key_id UUID NOT NULL REFERENCES user_api_keys(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+  provider VARCHAR(50) NOT NULL,
+  model VARCHAR(100),
+  endpoint VARCHAR(200),
+  prompt_tokens INTEGER,
+  completion_tokens INTEGER,
+  total_tokens INTEGER,
+  estimated_cost_cents INTEGER,
+  success BOOLEAN DEFAULT true,
+  error_message TEXT,
+  response_time_ms INTEGER,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================
 -- INDEXES
 -- ============================================
 CREATE INDEX IF NOT EXISTS idx_app_users_email ON app_users(email);
@@ -303,3 +360,25 @@ CREATE INDEX IF NOT EXISTS idx_ml_requests_user ON ml_service_requests(user_id);
 CREATE INDEX IF NOT EXISTS idx_org_members_user ON organization_members(user_id);
 CREATE INDEX IF NOT EXISTS idx_org_members_org ON organization_members(organization_id);
 CREATE INDEX IF NOT EXISTS idx_nodered_logs_org ON nodered_execution_logs(organization_id);
+CREATE INDEX IF NOT EXISTS idx_user_api_keys_user ON user_api_keys(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_api_keys_provider ON user_api_keys(provider);
+CREATE INDEX IF NOT EXISTS idx_api_key_usage_key ON api_key_usage(api_key_id);
+CREATE INDEX IF NOT EXISTS idx_api_key_usage_user ON api_key_usage(user_id);
+
+-- ============================================
+-- SEED DATA: API PROVIDERS
+-- ============================================
+INSERT INTO api_providers (id, name, description, docs_url, key_format_hint, sort_order)
+VALUES
+  ('openai', 'OpenAI', 'GPT-4, GPT-3.5, DALL-E, Whisper', 'https://platform.openai.com/api-keys', 'sk-...', 1),
+  ('anthropic', 'Anthropic', 'Claude 3.5 Sonnet, Claude 3 Opus, Claude 3 Haiku', 'https://console.anthropic.com/settings/keys', 'sk-ant-...', 2)
+ON CONFLICT (id) DO NOTHING;
+
+-- ============================================
+-- SEED DATA: BYOK FEATURE FLAGS
+-- ============================================
+INSERT INTO feature_flags (name, enabled) VALUES
+  ('byok_enabled', true),
+  ('byok_uses_internal_credits', false),
+  ('byok_only_mode', false)
+ON CONFLICT (name) DO NOTHING;

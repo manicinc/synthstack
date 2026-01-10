@@ -149,8 +149,77 @@ export async function setupTestDatabase(): Promise<void> {
         role VARCHAR(50) DEFAULT 'member',
         created_at TIMESTAMP DEFAULT NOW()
       );
+
+      -- BYOK (Bring Your Own Keys) Tables
+      CREATE TABLE IF NOT EXISTS api_providers (
+        id VARCHAR(50) PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        description TEXT,
+        validation_endpoint TEXT,
+        validation_method VARCHAR(10) DEFAULT 'GET',
+        docs_url TEXT,
+        key_format_hint TEXT,
+        is_enabled BOOLEAN DEFAULT true,
+        sort_order INTEGER DEFAULT 0,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+
+      CREATE TABLE IF NOT EXISTS user_api_keys (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+        provider VARCHAR(50) NOT NULL,
+        provider_name VARCHAR(100),
+        encrypted_key TEXT NOT NULL,
+        key_hint VARCHAR(8),
+        is_active BOOLEAN DEFAULT true,
+        is_valid BOOLEAN DEFAULT true,
+        last_error TEXT,
+        total_requests INTEGER DEFAULT 0,
+        total_tokens INTEGER DEFAULT 0,
+        last_used_at TIMESTAMP WITH TIME ZONE,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        UNIQUE(user_id, provider)
+      );
+
+      CREATE TABLE IF NOT EXISTS api_key_usage (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        api_key_id UUID NOT NULL REFERENCES user_api_keys(id) ON DELETE CASCADE,
+        user_id UUID NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+        provider VARCHAR(50) NOT NULL,
+        model VARCHAR(100),
+        endpoint VARCHAR(200),
+        prompt_tokens INTEGER,
+        completion_tokens INTEGER,
+        total_tokens INTEGER,
+        estimated_cost_cents INTEGER,
+        success BOOLEAN DEFAULT true,
+        error_message TEXT,
+        response_time_ms INTEGER,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+
+      -- Seed API providers
+      INSERT INTO api_providers (id, name, description, docs_url, key_format_hint, sort_order)
+      VALUES
+        ('openai', 'OpenAI', 'GPT-4, GPT-3.5, DALL-E, Whisper', 'https://platform.openai.com/api-keys', 'sk-...', 1),
+        ('anthropic', 'Anthropic', 'Claude 3.5 Sonnet, Claude 3 Opus, Claude 3 Haiku', 'https://console.anthropic.com/settings/keys', 'sk-ant-...', 2)
+      ON CONFLICT (id) DO NOTHING;
+
+      -- Seed BYOK feature flags
+      INSERT INTO feature_flags (name, enabled) VALUES
+        ('byok_enabled', true),
+        ('byok_uses_internal_credits', false),
+        ('byok_only_mode', false)
+      ON CONFLICT (name) DO NOTHING;
+
+      -- Create indexes for BYOK tables
+      CREATE INDEX IF NOT EXISTS idx_user_api_keys_user ON user_api_keys(user_id);
+      CREATE INDEX IF NOT EXISTS idx_user_api_keys_provider ON user_api_keys(provider);
+      CREATE INDEX IF NOT EXISTS idx_api_key_usage_key ON api_key_usage(api_key_id);
+      CREATE INDEX IF NOT EXISTS idx_api_key_usage_user ON api_key_usage(user_id);
     `);
-    console.log('✅ Additional test tables created');
+    console.log('✅ Additional test tables created (including BYOK)');
 
   } catch (error) {
     console.error('❌ Failed to setup test database:', error);

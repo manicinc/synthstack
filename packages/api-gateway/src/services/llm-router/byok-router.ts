@@ -95,15 +95,15 @@ export class ByokAwareLLMRouter {
   /**
    * Get system-level feature flag (not user-specific)
    */
-  private async getSystemFlag(key: string): Promise<boolean> {
+  private async getSystemFlag(name: string): Promise<boolean> {
     try {
-      const result = await pool.query<{ is_enabled: boolean }>(
-        `SELECT is_enabled FROM feature_flags WHERE key = $1`,
-        [key]
+      const result = await pool.query<{ enabled: boolean }>(
+        `SELECT enabled FROM feature_flags WHERE name = $1`,
+        [name]
       );
-      return result.rows.length > 0 ? result.rows[0].is_enabled : false;
+      return result.rows.length > 0 ? result.rows[0].enabled : false;
     } catch (err) {
-      logger.error(`Failed to get system flag ${key}`, err);
+      logger.error(`Failed to get system flag ${name}`, err);
       return false;
     }
   }

@@ -5,6 +5,7 @@
  */
 
 import { Pool, PoolClient } from 'pg';
+import { createHash, randomUUID } from 'crypto';
 import { TEST_USERS, TestUser } from '../__tests__/fixtures/users';
 import { TEST_REFERRAL_SEASON, TEST_REFERRAL_TIERS, TEST_REFERRAL_CODE, TEST_DISCOUNT_CODE } from '../__tests__/fixtures/referrals';
 
@@ -25,6 +26,23 @@ export function getTestPool(): Pool {
     });
   }
   return testPool;
+}
+
+/**
+ * Generate a deterministic UUID from a string
+ * Used for test users with string IDs to convert to valid UUIDs
+ */
+function generateTestUUID(str: string): string {
+  // Generate deterministic UUID from string using MD5 hash
+  const hash = createHash('md5').update(str).digest();
+
+  // Set version (4) and variant (10) bits
+  hash[6] = (hash[6] & 0x0f) | 0x40; // Version 4
+  hash[8] = (hash[8] & 0x3f) | 0x80; // Variant 10
+
+  // Format as UUID string (8-4-4-4-12 hex digits)
+  const hex = hash.toString('hex');
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`;
 }
 
 /**
@@ -256,7 +274,12 @@ export async function resetTestDatabase(): Promise<void> {
 export async function createTestUser(user: Partial<TestUser> & { email: string }): Promise<TestUser> {
   const pool = getTestPool();
 
-  const id = user.id || crypto.randomUUID();
+  // Generate a deterministic UUID from the string ID if it's not already a UUID
+  const id = user.id
+    ? (user.id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
+        ? user.id
+        : generateTestUUID(user.id))
+    : randomUUID();
   const displayName = user.displayName || user.email.split('@')[0];
   const subscriptionTier = user.subscriptionTier || 'free';
   const creditsRemaining = user.creditsRemaining ?? 100;
@@ -490,11 +513,14 @@ export async function addByokKey(
   const { encrypt } = await import('../services/encryption');
 
   const {
-    id = `key-${provider}-${Date.now()}`,
+    id: rawId = `key-${provider}-${Date.now()}`,
     isActive = true,
     isValid = true,
     lastError = null,
   } = options;
+
+  // Generate a proper UUID from the id string
+  const id = generateTestUUID(rawId);
 
   // Encrypt the API key
   const encryptedKey = encrypt(apiKey);
@@ -632,20 +658,18 @@ export async function getByokFeatureFlags(): Promise<{
  * Get latest BYOK usage log for a user
  */
 export async function getLatestApiKeyUsage(userId: string): Promise<any | null> {
-  // TODO: api_key_usage table doesn't exist in test schema yet
-  return null;
-  // const pool = getTestPool();
-  // const result = await pool.query(
-  //   `
-  //   SELECT *
-  //   FROM api_key_usage
-  //   WHERE user_id = $1
-  //   ORDER BY created_at DESC
-  //   LIMIT 1
-  //   `,
-  //   [userId]
-  // );
-  // return result.rows[0] || null;
+  const pool = getTestPool();
+  const result = await pool.query(
+    `
+    SELECT *
+    FROM api_key_usage
+    WHERE user_id = $1
+    ORDER BY created_at DESC
+    LIMIT 1
+    `,
+    [userId]
+  );
+  return result.rows[0] || null;
 }
 
 /**
@@ -655,19 +679,17 @@ export async function getApiKeyUsageByPeriod(
   userId: string,
   days: number = 30
 ): Promise<any[]> {
-  // TODO: api_key_usage table doesn't exist in test schema yet
-  return [];
-  // const pool = getTestPool();
-  // const result = await pool.query(
-  //   `
-  //   SELECT *
-  //   FROM api_key_usage
-  //   WHERE user_id = $1 AND created_at >= NOW() - INTERVAL '${days} days'
-  //   ORDER BY created_at DESC
-  //   `,
-  //   [userId]
-  // );
-  // return result.rows;
+  const pool = getTestPool();
+  const result = await pool.query(
+    `
+    SELECT *
+    FROM api_key_usage
+    WHERE user_id = $1 AND created_at >= NOW() - INTERVAL '1 day' * $2
+    ORDER BY created_at DESC
+    `,
+    [userId, days]
+  );
+  return result.rows;
 }
 
 /**
@@ -765,10 +787,9 @@ export async function resetByokFeatureFlags(): Promise<void> {
  * Cleanup BYOK test data
  */
 export async function cleanupByokTestData(): Promise<void> {
-  // TODO: Add BYOK tables to test schema (user_api_keys, api_key_usage)
-  // These tables don't exist in test-schema.sql yet
-  // const pool = getTestPool();
-  // await pool.query('DELETE FROM api_key_usage WHERE user_id LIKE \'user-%\'');
-  // await pool.query('DELETE FROM user_api_keys WHERE user_id LIKE \'user-%\'');
+  const pool = getTestPool();
+  // Delete usage first due to foreign key constraint
+  await pool.query("DELETE FROM api_key_usage WHERE user_id::text LIKE 'user-%'");
+  await pool.query("DELETE FROM user_api_keys WHERE user_id::text LIKE 'user-%'");
   await resetByokFeatureFlags();
 }
