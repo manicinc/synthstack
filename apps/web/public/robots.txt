@@ -1,0 +1,76 @@
+# robots.txt for Printverse
+# https://synthstack.app
+
+# Allow all search engines
+User-agent: *
+Allow: /
+
+# Allow critical pages
+Allow: /features
+Allow: /pricing
+Allow: /about
+Allow: /contact
+Allow: /blog
+Allow: /blog/*
+Allow: /printers
+Allow: /printers/*
+Allow: /filaments
+Allow: /filaments/*
+Allow: /profiles
+Allow: /profiles/*
+
+# Disallow private/authenticated areas
+Disallow: /app/
+Disallow: /api/
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /callback
+Disallow: /logout
+Disallow: /settings/
+Disallow: /_nuxt/
+Disallow: /*.json$
+
+# Disallow search/filter URLs to avoid duplicate content
+Disallow: /*?*sort=
+Disallow: /*?*filter=
+Disallow: /*?*page=
+Disallow: /*?*search=
+
+# Sitemap location
+Sitemap: https://synthstack.app/sitemap.xml
+
+# Crawl delay for polite crawling
+Crawl-delay: 1
+
+# Specific bot rules
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Block AI training bots (optional - remove if you want AI training)
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+
+
+
+

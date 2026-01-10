@@ -1,0 +1,479 @@
+/**
+ * Landing Page Animations
+ * Shared keyframes, utilities, and animation mixins for the landing page
+ * DAG visualizations, workflow components, and interactive elements
+ */
+
+// ============================================
+// KEYFRAME ANIMATIONS
+// ============================================
+
+// Gradient shift for text and backgrounds
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+// Pulse animations for nodes and elements
+@keyframes node-pulse {
+  0%, 100% { 
+    transform: scale(1); 
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+  }
+  50% { 
+    transform: scale(1.05); 
+    box-shadow: 0 0 20px 5px rgba(99, 102, 241, 0.2);
+  }
+}
+
+@keyframes node-pulse-subtle {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+
+// Glow pulse for orbs and highlights
+@keyframes glow-pulse {
+  0%, 100% { 
+    opacity: 0.5; 
+    transform: scale(1);
+    filter: blur(60px);
+  }
+  50% { 
+    opacity: 0.8; 
+    transform: scale(1.2);
+    filter: blur(80px);
+  }
+}
+
+// Floating animation for labels and elements
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes float-subtle {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  25% { transform: translateY(-5px) translateX(2px); }
+  50% { transform: translateY(-8px) translateX(0); }
+  75% { transform: translateY(-5px) translateX(-2px); }
+}
+
+// Particle animations
+@keyframes particle-float {
+  0%, 100% { 
+    transform: translateY(0) scale(1); 
+    opacity: 0.6; 
+  }
+  50% { 
+    transform: translateY(-30px) scale(1.5); 
+    opacity: 1; 
+  }
+}
+
+@keyframes particle-flow {
+  0% { 
+    opacity: 0; 
+    transform: translateX(0) translateY(0);
+  }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { 
+    opacity: 0; 
+    transform: translateX(var(--flow-x, 100px)) translateY(var(--flow-y, 0));
+  }
+}
+
+// Dash flow for animated lines/edges
+@keyframes dash-flow {
+  0% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -100; }
+}
+
+@keyframes dash-flow-reverse {
+  0% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 100; }
+}
+
+// Fade animations
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes fade-in-down {
+  from { 
+    opacity: 0; 
+    transform: translateY(-20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes fade-in-scale {
+  from { 
+    opacity: 0; 
+    transform: scale(0.9); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+// Slide animations
+@keyframes slide-in-left {
+  from { 
+    opacity: 0; 
+    transform: translateX(-30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes slide-in-right {
+  from { 
+    opacity: 0; 
+    transform: translateX(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+// Rotate animations for 3D elements
+@keyframes rotate-slow {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(360deg); }
+}
+
+@keyframes rotate-3d {
+  from { transform: rotateX(0deg) rotateY(0deg); }
+  to { transform: rotateX(360deg) rotateY(360deg); }
+}
+
+// Shimmer effect for loading states and highlights
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+// Icon pulse for feature cards
+@keyframes icon-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+// Connection line animation
+@keyframes connection-pulse {
+  0%, 100% { 
+    stroke-opacity: 0.3;
+    stroke-width: 1;
+  }
+  50% { 
+    stroke-opacity: 0.8;
+    stroke-width: 2;
+  }
+}
+
+// Data packet animation along edges
+@keyframes data-packet {
+  0% { 
+    offset-distance: 0%; 
+    opacity: 0;
+  }
+  5% { opacity: 1; }
+  95% { opacity: 1; }
+  100% { 
+    offset-distance: 100%; 
+    opacity: 0;
+  }
+}
+
+// Typing cursor blink
+@keyframes cursor-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+// Progress bar fill
+@keyframes progress-fill {
+  from { width: 0%; }
+  to { width: var(--progress, 100%); }
+}
+
+// Ripple effect
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+// ============================================
+// ANIMATION MIXINS
+// ============================================
+
+@mixin animate($name, $duration: 1s, $timing: ease, $delay: 0s, $iteration: 1, $direction: normal, $fill: forwards) {
+  animation: $name $duration $timing $delay $iteration $direction $fill;
+}
+
+@mixin stagger-delay($base-delay: 0s, $increment: 0.1s) {
+  @for $i from 1 through 20 {
+    &:nth-child(#{$i}) {
+      animation-delay: calc(#{$base-delay} + #{$increment} * #{$i - 1});
+    }
+  }
+}
+
+@mixin hover-lift($distance: -8px, $shadow-color: rgba(99, 102, 241, 0.3)) {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+  &:hover {
+    transform: translateY($distance);
+    box-shadow: 0 15px 40px $shadow-color;
+  }
+}
+
+@mixin glow-on-hover($color: #6366f1, $intensity: 0.4) {
+  transition: box-shadow 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 0 30px rgba($color, $intensity);
+  }
+}
+
+// ============================================
+// UTILITY CLASSES
+// ============================================
+
+// Animation utilities
+.animate-fade-in {
+  animation: fade-in 0.6s ease forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease forwards;
+}
+
+.animate-fade-in-down {
+  animation: fade-in-down 0.6s ease forwards;
+}
+
+.animate-fade-in-scale {
+  animation: fade-in-scale 0.5s ease forwards;
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.6s ease forwards;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.6s ease forwards;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-float-subtle {
+  animation: float-subtle 4s ease-in-out infinite;
+}
+
+.animate-pulse {
+  animation: node-pulse 2s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow-pulse 4s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+// Stagger animation delays
+.stagger-children > * {
+  @include stagger-delay(0s, 0.1s);
+}
+
+.stagger-children-fast > * {
+  @include stagger-delay(0s, 0.05s);
+}
+
+.stagger-children-slow > * {
+  @include stagger-delay(0s, 0.15s);
+}
+
+// Delay utilities
+@for $i from 1 through 10 {
+  .delay-#{$i * 100} {
+    animation-delay: #{$i * 0.1}s;
+  }
+}
+
+// Duration utilities
+.duration-fast { animation-duration: 0.3s; }
+.duration-normal { animation-duration: 0.6s; }
+.duration-slow { animation-duration: 1s; }
+.duration-slower { animation-duration: 2s; }
+
+// Timing function utilities
+.ease-out { animation-timing-function: ease-out; }
+.ease-in-out { animation-timing-function: ease-in-out; }
+.ease-spring { animation-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+
+// ============================================
+// GLASSMORPHISM UTILITIES
+// ============================================
+
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-subtle {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+// ============================================
+// GRADIENT UTILITIES
+// ============================================
+
+.gradient-text-primary {
+  background: linear-gradient(135deg, #6366f1 0%, #00d4aa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-secondary {
+  background: linear-gradient(135deg, #0d9488 0%, #00d4aa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-animated {
+  background: linear-gradient(
+    90deg,
+    #6366f1 0%,
+    #00d4aa 25%,
+    #f59e0b 50%,
+    #00d4aa 75%,
+    #6366f1 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 4s ease infinite;
+}
+
+.gradient-bg-primary {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(0, 212, 170, 0.1) 100%);
+}
+
+.gradient-bg-glow {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(99, 102, 241, 0.15) 0%,
+    transparent 70%
+  );
+}
+
+// ============================================
+// INTERACTIVE STATES
+// ============================================
+
+.interactive-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  &:active {
+    transform: translateY(-4px) scale(1.01);
+  }
+}
+
+.interactive-node {
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.15);
+    filter: brightness(1.2);
+  }
+}
+
+// ============================================
+// RESPONSIVE ANIMATION ADJUSTMENTS
+// ============================================
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+// Reduce animation complexity on mobile for performance
+@media (max-width: 768px) {
+  .animate-float,
+  .animate-float-subtle {
+    animation: none;
+  }
+  
+  .particle,
+  .data-particle {
+    display: none;
+  }
+}
+
+

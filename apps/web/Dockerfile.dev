@@ -1,0 +1,33 @@
+# SynthStack Web Frontend - Vue 3 + Quasar (Development)
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Copy package files first for better caching
+COPY package.json pnpm-lock.yaml* ./
+
+# Create startup script that installs deps if node_modules is empty (due to volume mount)
+RUN echo '#!/bin/sh' > /docker-entrypoint.sh && \
+    echo 'if [ ! -d "/app/node_modules/@quasar" ]; then' >> /docker-entrypoint.sh && \
+    echo '  echo "Installing dependencies..."' >> /docker-entrypoint.sh && \
+    echo '  pnpm install --shamefully-hoist' >> /docker-entrypoint.sh && \
+    echo 'fi' >> /docker-entrypoint.sh && \
+    echo 'exec "$@"' >> /docker-entrypoint.sh && \
+    chmod +x /docker-entrypoint.sh
+
+# Pre-install dependencies in image for faster subsequent runs
+RUN pnpm install --shamefully-hoist
+
+# Copy source code (volumes will override in dev)
+COPY . .
+
+# Expose ports (Quasar dev server)
+EXPOSE 3050
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
+# Start development server
+CMD ["pnpm", "dev"]

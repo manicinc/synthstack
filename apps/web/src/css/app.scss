@@ -1,0 +1,1957 @@
+/**
+ * Printverse Global Styles
+ * Maker Workshop Aesthetic - Retro-Futuristic Design
+ */
+
+// ============================================
+// CSS Custom Properties (Design Tokens)
+// ============================================
+
+:root {
+  // Color System - Dark Mode (Default)
+  --color-bg-primary: #0D0D0D;
+  --color-bg-secondary: #1A1A1A;
+  --color-bg-tertiary: #262626;
+  --color-bg-elevated: #333333;
+
+  --color-surface-light: #F5F3EF;
+  --color-surface-medium: #E8E6E1;
+  --color-surface-dark: #D4D2CD;
+
+  // Map theme variables to app variables for dark mode
+  // NOTE: theme.scss will define --text-primary etc, we just reference them here
+  --color-text-primary: var(--text-primary, #F5F3EF);
+  --color-text-secondary: var(--text-secondary, #A3A3A3);
+  --color-text-muted: var(--text-tertiary, #737373);
+  --color-text-inverse: #0D0D0D;
+
+  // Accent Colors
+  --color-primary: #FF6B35;
+  --color-primary-hover: #FF8555;
+  --color-primary-active: #E55A2B;
+  --color-primary-muted: rgba(255, 107, 53, 0.15);
+
+  --color-secondary: #2D9CDB;
+  --color-secondary-hover: #4DB0E8;
+  --color-secondary-active: #2588C2;
+  --color-secondary-muted: rgba(45, 156, 219, 0.15);
+
+  --color-tertiary: #B87333;
+  --color-tertiary-hover: #D4894A;
+  --color-tertiary-active: #9E632C;
+
+  // Semantic Colors
+  --color-success: #2ECC71;
+  --color-success-bg: rgba(46, 204, 113, 0.15);
+  --color-warning: #F1C40F;
+  --color-warning-bg: rgba(241, 196, 15, 0.15);
+  --color-error: #E74C3C;
+  --color-error-bg: rgba(231, 76, 60, 0.15);
+  --color-info: #2D9CDB;
+  --color-info-bg: rgba(45, 156, 219, 0.15);
+
+  // Typography
+  --font-display: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
+
+  // Type Scale
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  --text-6xl: 4rem;
+
+  // Spacing
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  // Border Radius
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  // Shadows
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.4);
+  --shadow-glow-primary: 0 0 20px rgba(255, 107, 53, 0.3);
+
+  // Transitions
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+}
+
+// Border color variable
+:root {
+  --color-border: rgba(255, 255, 255, 0.1);
+}
+
+// Light mode overrides - Quasar uses .body--light
+// NOTE: These are defined BEFORE theme.scss import so theme can override
+.body--light,
+:root:not(.dark) {
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #fafafa;
+  --color-bg-tertiary: #f4f4f5;
+  --color-bg-elevated: #e4e4e7;
+
+  --color-text-inverse: #ffffff;
+  --color-border: rgba(0, 0, 0, 0.12);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.15);
+}
+
+// Map --color-text-* to theme.scss variables AFTER theme import
+// This section moved to after @import './theme.scss' below
+
+// ============================================
+// Base Styles
+// ============================================
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: auto !important;
+  min-height: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  margin: 0;
+  padding: 0;
+  height: auto !important;
+  min-height: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+// CRITICAL: Fix Quasar layouts blocking scroll
+.q-layout,
+.q-page-container,
+.q-page,
+.q-drawer-container {
+  height: auto !important;
+  min-height: auto !important;
+  overflow: visible !important;
+}
+
+// ============================================
+// Typography
+// ============================================
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+h1 { font-size: var(--text-5xl); }
+h2 { font-size: var(--text-4xl); }
+h3 { font-size: var(--text-3xl); }
+h4 { font-size: var(--text-2xl); }
+h5 { font-size: var(--text-xl); }
+h6 { font-size: var(--text-lg); }
+
+p {
+  margin: 0 0 var(--space-4);
+  color: var(--color-text-secondary);
+}
+
+a {
+  color: var(--color-secondary);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-default);
+
+  &:hover {
+    color: var(--color-secondary-hover);
+  }
+}
+
+code, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+code {
+  background: var(--color-bg-tertiary);
+  padding: 0.125em 0.375em;
+  border-radius: var(--radius-sm);
+}
+
+pre {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-bg-elevated);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  overflow-x: auto;
+
+  code {
+    background: none;
+    padding: 0;
+  }
+}
+
+// ============================================
+// Layout Utilities
+// ============================================
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+.container-narrow {
+  max-width: 768px;
+}
+
+.container-wide {
+  max-width: 1440px;
+}
+
+.section {
+  padding: var(--space-16) 0;
+}
+
+.section-sm {
+  padding: var(--space-10) 0;
+}
+
+.section-lg {
+  padding: var(--space-24) 0;
+}
+
+// ============================================
+// Grid Pattern Background
+// ============================================
+
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(255, 107, 53, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 107, 53, 0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.bg-grid-dense {
+  background-image:
+    linear-gradient(rgba(255, 107, 53, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 107, 53, 0.05) 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
+// Layer Lines Pattern (3D printing aesthetic)
+.bg-layers {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 107, 53, 0.03) 2px,
+    rgba(255, 107, 53, 0.03) 4px
+  );
+}
+
+// ============================================
+// Component Styles
+// ============================================
+
+// Cards
+.card {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  transition: all var(--duration-normal) var(--ease-default);
+
+  &:hover {
+    border-color: var(--color-bg-elevated);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+}
+
+.card-elevated {
+  box-shadow: var(--shadow-md);
+}
+
+// Buttons
+.btn {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-md);
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  transition: all var(--duration-fast) var(--ease-default);
+  text-decoration: none;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+
+  &:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-glow-primary);
+  }
+
+  &:active:not(:disabled) {
+    background: var(--color-primary-active);
+    border-color: var(--color-primary-active);
+    transform: translateY(0);
+  }
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-text-primary);
+  border-color: var(--color-bg-elevated);
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border-color: transparent;
+
+  &:hover:not(:disabled) {
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+  }
+}
+
+.btn-lg {
+  padding: var(--space-4) var(--space-8);
+  font-size: var(--text-md);
+}
+
+.btn-sm {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-xs);
+}
+
+// Inputs
+.input {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  background: var(--color-bg-tertiary);
+  border: 2px solid var(--color-bg-elevated);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text-primary);
+  width: 100%;
+  transition: all var(--duration-fast) var(--ease-default);
+
+  &::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-muted);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Badges
+.badge {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.badge-primary {
+  background: var(--color-primary-muted);
+  color: var(--color-primary);
+}
+
+.badge-success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.badge-warning {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.badge-error {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+// ============================================
+// Animations
+// ============================================
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--duration-normal) var(--ease-default);
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp var(--duration-normal) var(--ease-default);
+}
+
+.animate-scale-in {
+  animation: scaleIn var(--duration-normal) var(--ease-default);
+}
+
+.animate-pulse {
+  animation: pulse 2s var(--ease-default) infinite;
+}
+
+// ============================================
+// Quasar Overrides
+// ============================================
+
+.q-card {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-bg-elevated);
+  border-radius: var(--radius-lg);
+}
+
+.q-btn {
+  font-family: var(--font-display);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  text-transform: none;
+}
+
+.q-input {
+  .q-field__control {
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-md);
+  }
+}
+
+.q-toolbar {
+  background: var(--color-bg-secondary);
+}
+
+.q-drawer {
+  background: var(--color-bg-secondary);
+}
+
+// ============================================
+// Responsive Utilities
+// ============================================
+
+@media (max-width: 768px) {
+  :root {
+    --text-5xl: 2.25rem;
+    --text-4xl: 1.875rem;
+    --text-3xl: 1.5rem;
+  }
+
+  .container {
+    padding: 0 var(--space-4);
+  }
+
+  .section {
+    padding: var(--space-10) 0;
+  }
+
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .hide-desktop {
+    display: none !important;
+  }
+}
+
+// ============================================
+// Mobile UI/UX Optimizations
+// ============================================
+
+// Touch-friendly tap targets (44px minimum)
+@media (max-width: 1024px) {
+  .q-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .q-item {
+    min-height: 48px;
+  }
+
+  // Better touch scrolling
+  .q-scrollarea {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  // Prevent text selection on touch
+  .no-select-touch {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  // Safe area insets for notched devices
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+// Pull to refresh indicator styling
+.pull-to-refresh {
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: transform 0.2s ease;
+}
+
+// Bottom navigation for mobile
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-bg-secondary);
+  border-top: 1px solid var(--color-bg-elevated);
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 1000;
+}
+
+// Swipe gestures hint
+.swipe-hint {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 40px;
+    background: linear-gradient(to left, var(--color-bg-secondary), transparent);
+    pointer-events: none;
+  }
+}
+
+// ============================================
+// Skeleton Loading States
+// ============================================
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-tertiary) 25%,
+    var(--color-bg-elevated) 50%,
+    var(--color-bg-tertiary) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton-text {
+  @extend .skeleton;
+  height: 1em;
+  margin-bottom: 0.5em;
+  
+  &.skeleton-title {
+    height: 1.5em;
+    width: 60%;
+  }
+  
+  &.skeleton-short {
+    width: 40%;
+  }
+}
+
+.skeleton-avatar {
+  @extend .skeleton;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.skeleton-image {
+  @extend .skeleton;
+  width: 100%;
+  aspect-ratio: 16/9;
+}
+
+.skeleton-card {
+  @extend .skeleton;
+  height: 200px;
+  border-radius: var(--radius-lg);
+}
+
+// ============================================
+// Focus & Accessibility Improvements
+// ============================================
+
+// Visible focus rings
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+// Skip link for keyboard navigation
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: var(--color-primary);
+  color: white;
+  padding: var(--space-2) var(--space-4);
+  z-index: 9999;
+  transition: top 0.2s;
+
+  &:focus {
+    top: 0;
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  :root {
+    --color-bg-primary: #000000;
+    --color-bg-secondary: #111111;
+    --color-text-primary: #ffffff;
+    --color-primary: #ff8844;
+  }
+}
+
+// Import additional styles
+@import './theme.scss';
+@import './animations.scss';
+@import './responsive.scss';
+@import './dashboard-components.scss';
+
+// Map app color variables to theme variables (must come AFTER theme.scss)
+:root,
+.body--dark {
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-tertiary);
+  // Map background variables (optional but ensures consistency)
+  --color-bg-primary: var(--bg-base);
+  --color-bg-secondary: var(--bg-subtle);
+  --color-bg-tertiary: var(--bg-muted);
+}
+
+.body--light {
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-tertiary);
+  // Map background variables for light mode
+  --color-bg-primary: var(--bg-base);
+  --color-bg-secondary: var(--bg-subtle);
+  --color-bg-tertiary: var(--bg-muted);
+}
+
+// Import highlight.js theme for code syntax highlighting
+// @import 'highlight.js/styles/github-dark.css'; // Temporarily disabled
+
+// ============================================
+// Landing Page Light Mode Overrides (Global)
+// These need to be global to override scoped styles
+// Using body.body--light for maximum specificity
+// ============================================
+
+body.body--light {
+  // ===========================================
+  // FORCE LIGHT MODE COLORS
+  // ===========================================
+  
+  // Force body to use light mode colors
+  color: var(--text-primary) !important;
+  background-color: var(--bg-base) !important;
+
+  // ===========================================
+  // GLOBAL FIX: Reset -webkit-text-fill-color for all text
+  // WebKit browsers inherit transparent text-fill-color which makes text invisible
+  // ===========================================
+
+  // NUCLEAR OPTION: Force all text to be visible in light mode
+  // This overrides any -webkit-text-fill-color: transparent from gradient effects
+  // EXCEPT for elements that intentionally have dark backgrounds with light text
+  *:not(.cookie-banner *):not(.cookie-modal *):not(.demo-status-bar *):not(.q-notification *) {
+    -webkit-text-fill-color: inherit !important;
+  }
+
+  // Reset base text colors using theme variables
+  // These are defined in theme.scss as #18181b for light mode
+  color: var(--text-primary) !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+
+  // ===========================================
+  // DARK COMPONENTS IN LIGHT MODE
+  // These components intentionally keep dark backgrounds with light text
+  // ===========================================
+
+  // Cookie consent banner - keep light text on dark background
+  .cookie-banner {
+    color: #e2e8f0 !important;
+    -webkit-text-fill-color: #e2e8f0 !important;
+
+    * {
+      -webkit-text-fill-color: currentColor !important;
+    }
+
+    p {
+      color: #e2e8f0 !important;
+      -webkit-text-fill-color: #e2e8f0 !important;
+    }
+
+    .link-btn, a {
+      color: #14b8a6 !important;
+      -webkit-text-fill-color: #14b8a6 !important;
+    }
+
+    .btn-reject {
+      color: #94a3b8 !important;
+      -webkit-text-fill-color: #94a3b8 !important;
+    }
+
+    .btn-accept {
+      color: #ffffff !important;
+      -webkit-text-fill-color: #ffffff !important;
+    }
+  }
+
+  // Cookie modal - keep light text on dark background
+  .cookie-modal, .cookie-modal-overlay {
+    * {
+      -webkit-text-fill-color: currentColor !important;
+    }
+
+    h2, h4 {
+      color: #f8fafc !important;
+      -webkit-text-fill-color: #f8fafc !important;
+    }
+
+    p {
+      color: #94a3b8 !important;
+      -webkit-text-fill-color: #94a3b8 !important;
+    }
+  }
+
+  // Demo status bar - keep light text on dark background
+  .demo-status-bar {
+    * {
+      -webkit-text-fill-color: currentColor !important;
+    }
+
+    .demo-badge {
+      color: #fbbf24 !important;
+      -webkit-text-fill-color: #fbbf24 !important;
+    }
+
+    .status-item {
+      color: rgba(255, 255, 255, 0.9) !important;
+      -webkit-text-fill-color: rgba(255, 255, 255, 0.9) !important;
+
+      .label {
+        color: rgba(255, 255, 255, 0.6) !important;
+        -webkit-text-fill-color: rgba(255, 255, 255, 0.6) !important;
+      }
+    }
+
+    // Close button - ensure it's visible
+    .close-btn,
+    .q-btn[aria-label*="close"] {
+      color: rgba(255, 255, 255, 0.9) !important;
+      
+      .q-icon {
+        color: rgba(255, 255, 255, 0.9) !important;
+      }
+    }
+
+    // All buttons should have white text
+    .q-btn {
+      .q-btn__content {
+        color: currentColor !important;
+        -webkit-text-fill-color: currentColor !important;
+      }
+    }
+  }
+
+  // Quasar notifications - keep proper colors
+  .q-notification {
+    * {
+      -webkit-text-fill-color: currentColor !important;
+    }
+  }
+
+  // All headings
+  h1, h2, h3, h4, h5, h6 {
+    color: #18181b !important;
+    -webkit-text-fill-color: #18181b !important;
+  }
+
+  // All paragraphs and text
+  p, span, li, td, th, label, a {
+    -webkit-text-fill-color: inherit !important;
+  }
+
+  // Secondary text elements
+  .text-secondary,
+  [class*="secondary"] p,
+  [class*="desc"],
+  [class*="subtitle"] {
+    color: #3f3f46 !important;
+    -webkit-text-fill-color: #3f3f46 !important;
+  }
+
+  // Landing page specific sections
+  .landing-page {
+    // Section headers
+    .section-header {
+      h2 {
+        color: #18181b !important;
+        -webkit-text-fill-color: #18181b !important;
+      }
+      p {
+        color: #3f3f46 !important;
+        -webkit-text-fill-color: #3f3f46 !important;
+      }
+    }
+
+    // Section badges
+    .section-badge {
+      color: #0d9488 !important;
+      -webkit-text-fill-color: #0d9488 !important;
+      background: rgba(13, 148, 136, 0.1) !important;
+    }
+
+    // Feature cards
+    .feature-card {
+      background: #ffffff !important;
+      border-color: rgba(0, 0, 0, 0.1) !important;
+
+      h3 {
+        color: #18181b !important;
+        -webkit-text-fill-color: #18181b !important;
+      }
+      p {
+        color: #3f3f46 !important;
+        -webkit-text-fill-color: #3f3f46 !important;
+      }
+    }
+
+    // Tags
+    .tag {
+      color: #52525b !important;
+      -webkit-text-fill-color: #52525b !important;
+      background: #f4f4f5 !important;
+    }
+
+    // Pricing cards
+    .pricing-card {
+      background: #ffffff !important;
+      border-color: rgba(0, 0, 0, 0.1) !important;
+
+      h3 {
+        color: #18181b !important;
+        -webkit-text-fill-color: #18181b !important;
+      }
+
+      .price {
+        color: #18181b !important;
+        -webkit-text-fill-color: #18181b !important;
+
+        .period {
+          color: #71717a !important;
+          -webkit-text-fill-color: #71717a !important;
+        }
+      }
+
+      .pricing-desc {
+        color: #3f3f46 !important;
+        -webkit-text-fill-color: #3f3f46 !important;
+      }
+
+      &.featured {
+        border-color: #0d9488 !important;
+      }
+    }
+
+    // Features list
+    .features-list li {
+      color: #3f3f46 !important;
+      -webkit-text-fill-color: #3f3f46 !important;
+
+      &.disabled {
+        color: #a1a1aa !important;
+        -webkit-text-fill-color: #a1a1aa !important;
+      }
+    }
+
+    // FAQ section
+    .faq-section {
+      background: #fafafa !important;
+    }
+
+    .faq-item {
+      background: #ffffff !important;
+      border-color: rgba(0, 0, 0, 0.1) !important;
+
+      h3 {
+        color: #18181b !important;
+        -webkit-text-fill-color: #18181b !important;
+      }
+      p {
+        color: #3f3f46 !important;
+        -webkit-text-fill-color: #3f3f46 !important;
+      }
+    }
+
+    // CTA section
+    .cta-section {
+      h2 {
+        color: #18181b !important;
+        -webkit-text-fill-color: #18181b !important;
+      }
+      p {
+        color: #3f3f46 !important;
+        -webkit-text-fill-color: #3f3f46 !important;
+      }
+    }
+
+    // Tech section
+    .tech-section {
+      border-color: rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .tech-label {
+      color: #52525b !important;
+      -webkit-text-fill-color: #52525b !important;
+    }
+
+    .tech-list li {
+      color: #18181b !important;
+      -webkit-text-fill-color: #18181b !important;
+    }
+
+    // More features banner
+    .more-features {
+      background: #fafafa !important;
+      border-color: rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .more-feature {
+      color: #18181b !important;
+      -webkit-text-fill-color: #18181b !important;
+    }
+
+    // Open source section
+    .opensource-card {
+      background: #fafafa !important;
+
+      h2 {
+        color: #18181b !important;
+        -webkit-text-fill-color: #18181b !important;
+      }
+    }
+
+    .opensource-description {
+      color: #3f3f46 !important;
+      -webkit-text-fill-color: #3f3f46 !important;
+
+      strong {
+        color: #18181b !important;
+        -webkit-text-fill-color: #18181b !important;
+      }
+    }
+
+    .feature-pill {
+      background: #ffffff !important;
+      border-color: rgba(0, 0, 0, 0.1) !important;
+      color: #18181b !important;
+      -webkit-text-fill-color: #18181b !important;
+    }
+  }
+
+  // Referral showcase
+  .referral-showcase {
+    .section-header h2 {
+      color: #18181b !important;
+      -webkit-text-fill-color: #18181b !important;
+    }
+    .section-header p {
+      color: #3f3f46 !important;
+      -webkit-text-fill-color: #3f3f46 !important;
+    }
+  }
+
+  // AI Cofounder showcase - keep dark theme for contrast
+  .ai-showcase {
+    // This section intentionally keeps its dark theme
+  }
+
+  // ===========================================
+  // App Pages - Project Detail, Copilot Hub, etc.
+  // ===========================================
+
+  // Quasar tabs in light mode
+  .q-tabs {
+    background: #f4f4f5 !important;
+
+    .q-tab {
+      color: #3f3f46 !important;
+      -webkit-text-fill-color: #3f3f46 !important;
+
+      .q-tab__icon {
+        color: #3f3f46 !important;
+      }
+
+      .q-tab__label {
+        color: #3f3f46 !important;
+        -webkit-text-fill-color: #3f3f46 !important;
+      }
+
+      &.q-tab--active {
+        color: var(--q-primary) !important;
+        -webkit-text-fill-color: var(--q-primary) !important;
+
+        .q-tab__icon,
+        .q-tab__label {
+          color: var(--q-primary) !important;
+          -webkit-text-fill-color: var(--q-primary) !important;
+        }
+      }
+    }
+  }
+
+  // Quasar badges - ensure text is visible
+  .q-badge {
+    -webkit-text-fill-color: currentColor !important;
+  }
+
+  // Project detail page
+  .project-detail-page {
+    .project-header {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(0, 212, 170, 0.08)) !important;
+
+      h1 {
+        color: #18181b !important;
+        -webkit-text-fill-color: #18181b !important;
+      }
+
+      p {
+        color: #3f3f46 !important;
+        -webkit-text-fill-color: #3f3f46 !important;
+      }
+    }
+
+    .stat-card {
+      background: #ffffff !important;
+      border-color: rgba(0, 0, 0, 0.1) !important;
+
+      .text-caption {
+        color: #71717a !important;
+        -webkit-text-fill-color: #71717a !important;
+      }
+    }
+
+    // Todo items
+    .todo-item {
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.03) !important;
+      }
+
+      .q-item__label {
+        color: #18181b !important;
+        -webkit-text-fill-color: #18181b !important;
+
+        &.text-strike {
+          color: #a1a1aa !important;
+          -webkit-text-fill-color: #a1a1aa !important;
+        }
+      }
+
+      .q-item__label--caption {
+        color: #71717a !important;
+        -webkit-text-fill-color: #71717a !important;
+      }
+    }
+
+    // Copilot chat
+    .copilot-card {
+      background: #ffffff !important;
+      border-color: rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .chat-message.assistant .message-content {
+      background: #f4f4f5 !important;
+      color: #18181b !important;
+      -webkit-text-fill-color: #18181b !important;
+    }
+  }
+
+  // Quasar pages
+  .q-page {
+    background: var(--bg-base) !important;
+    color: var(--text-primary) !important;
+  }
+
+  // Quasar cards
+  .q-card {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+
+    .text-h6, .text-h5, .text-h4, .text-h3, .text-h2, .text-h1 {
+      color: #18181b !important;
+      -webkit-text-fill-color: #18181b !important;
+    }
+
+    .text-caption, .text-grey-6, .text-grey-7 {
+      color: #71717a !important;
+      -webkit-text-fill-color: #71717a !important;
+    }
+
+    // Ensure primary colored text stays primary
+    .text-primary {
+      color: var(--q-primary) !important;
+      -webkit-text-fill-color: var(--q-primary) !important;
+    }
+  }
+
+  // Quasar list items
+  .q-item {
+    .q-item__label {
+      color: #18181b !important;
+      -webkit-text-fill-color: #18181b !important;
+    }
+
+    .q-item__label--caption {
+      color: #71717a !important;
+      -webkit-text-fill-color: #71717a !important;
+    }
+  }
+
+  // Quasar inputs
+  .q-field {
+    .q-field__control {
+      background: #ffffff !important;
+    }
+
+    .q-field__native,
+    .q-field__input {
+      color: #18181b !important;
+      -webkit-text-fill-color: #18181b !important;
+    }
+
+    .q-field__label {
+      color: #71717a !important;
+    }
+  }
+
+  // Quasar dialogs
+  .q-dialog .q-card {
+    background: #ffffff !important;
+
+    .text-h6 {
+      color: #18181b !important;
+      -webkit-text-fill-color: #18181b !important;
+    }
+  }
+
+  // Button toggle
+  .q-btn-toggle {
+    .q-btn {
+      color: #3f3f46 !important;
+      -webkit-text-fill-color: #3f3f46 !important;
+
+      &.q-btn--active {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+      }
+    }
+  }
+
+  // Timeline
+  .q-timeline {
+    .q-timeline__title {
+      color: #18181b !important;
+      -webkit-text-fill-color: #18181b !important;
+    }
+
+    .q-timeline__subtitle {
+      color: #71717a !important;
+      -webkit-text-fill-color: #71717a !important;
+    }
+  }
+
+  // Tab panels
+  .q-tab-panels {
+    background: transparent !important;
+
+    h5 {
+      color: #18181b !important;
+      -webkit-text-fill-color: #18181b !important;
+    }
+
+    .text-grey-6 {
+      color: #71717a !important;
+      -webkit-text-fill-color: #71717a !important;
+    }
+  }
+
+  // Site Header - Navigation
+  .site-header {
+    background: #ffffff !important;
+    border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+
+    .logo {
+      color: #18181b !important;
+      -webkit-text-fill-color: #18181b !important;
+
+      span {
+        color: #18181b !important;
+        -webkit-text-fill-color: #18181b !important;
+      }
+    }
+
+    .nav-links {
+      a {
+        color: #3f3f46 !important;
+        -webkit-text-fill-color: #3f3f46 !important;
+
+        &:hover,
+        &.router-link-active {
+          color: #0d9488 !important;
+          -webkit-text-fill-color: #0d9488 !important;
+        }
+      }
+    }
+
+    .about-toggle {
+      color: #3f3f46 !important;
+      -webkit-text-fill-color: #3f3f46 !important;
+    }
+
+    .about-menu {
+      background: #ffffff !important;
+      border-color: rgba(0, 0, 0, 0.1) !important;
+
+      a {
+        color: #18181b !important;
+        -webkit-text-fill-color: #18181b !important;
+
+        &:hover {
+          background: #f4f4f5 !important;
+        }
+      }
+    }
+
+    // Admin button - has gradient background, needs white text
+    .admin-btn {
+      color: #ffffff !important;
+      -webkit-text-fill-color: #ffffff !important;
+    }
+
+    .sign-in-btn {
+      color: #18181b !important;
+      -webkit-text-fill-color: #18181b !important;
+
+      .q-btn__content {
+        color: #18181b !important;
+        -webkit-text-fill-color: #18181b !important;
+      }
+    }
+
+    .theme-toggle-btn {
+      border-color: rgba(0, 0, 0, 0.1) !important;
+      background: #f4f4f5 !important;
+
+      &:hover {
+        background: #e4e4e7 !important;
+      }
+    }
+
+    .hamburger-btn {
+      border-color: rgba(0, 0, 0, 0.1) !important;
+      background: #f4f4f5 !important;
+
+      span {
+        background: #18181b !important;
+      }
+    }
+  }
+
+  // Fix all Quasar button text
+  .q-btn {
+    -webkit-text-fill-color: currentColor !important;
+
+    .q-btn__content {
+      -webkit-text-fill-color: inherit !important;
+    }
+
+    // Primary/colored buttons should have white text
+    &.bg-primary,
+    &.bg-secondary,
+    &.bg-accent,
+    &.bg-positive,
+    &.bg-negative,
+    &.bg-info,
+    &.bg-warning {
+      color: white !important;
+      -webkit-text-fill-color: white !important;
+
+      .q-btn__content,
+      .q-icon {
+        color: white !important;
+        -webkit-text-fill-color: white !important;
+      }
+    }
+
+    // Flat/text buttons should have dark text
+    &.q-btn--flat:not(.bg-primary):not(.bg-secondary) {
+      color: #18181b !important;
+      -webkit-text-fill-color: #18181b !important;
+
+      .q-btn__content,
+      .q-icon {
+        color: #18181b !important;
+        -webkit-text-fill-color: #18181b !important;
+      }
+    }
+  }
+
+  // Fix navigation links
+  .q-toolbar a,
+  .q-toolbar .q-btn {
+    -webkit-text-fill-color: currentColor !important;
+  }
+
+  // Hero subtitle
+  .hero-subtitle {
+    color: #3f3f46 !important;
+    -webkit-text-fill-color: #3f3f46 !important;
+  }
+
+  // Hero Section Text - must override scoped styles
+  // Need to explicitly set -webkit-text-fill-color to fix invisible text
+  .hero-title .title-line-1 .word > span:not(.gradient-word),
+  .landing-page .hero-title .title-line-1 .word > span:not(.gradient-word) {
+    color: #18181b !important;
+    -webkit-text-fill-color: #18181b !important;
+  }
+
+  .hero-title .title-line-1 .word .gradient-word,
+  .landing-page .hero-title .title-line-1 .word .gradient-word {
+    background: #18181b !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+  }
+
+  .hero-title .title-line-1.colorized .word .gradient-word,
+  .landing-page .hero-title .title-line-1.colorized .word .gradient-word {
+    background: linear-gradient(90deg, #0d9488 0%, #00d4aa 25%, #2d9cdb 50%, #14b8a6 75%, #0d9488 100%) !important;
+    background-size: 200% auto !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+  }
+
+  .hero-title .title-line-2 strong,
+  .landing-page .hero-title .title-line-2 strong {
+    color: #3f3f46 !important;
+    -webkit-text-fill-color: #3f3f46 !important;
+  }
+
+  .hero-title .title-line-2.colorized strong,
+  .landing-page .hero-title .title-line-2.colorized strong {
+    background: linear-gradient(135deg, #0d9488 0%, #00d4aa 100%) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+  }
+
+  .hero-subtitle,
+  .landing-page .hero-subtitle {
+    color: #3f3f46 !important;
+  }
+
+  // Tech Section
+  .tech-label {
+    color: #3f3f46 !important;
+  }
+
+  .tech-list li {
+    color: #18181b !important;
+  }
+
+  // Section Headers (global)
+  .section-header h2 {
+    color: #18181b !important;
+  }
+
+  .section-header p {
+    color: #3f3f46 !important;
+  }
+
+  .section-badge {
+    background: rgba(99, 102, 241, 0.12) !important;
+    color: #4338ca !important;
+  }
+
+  // Feature Cards (global)
+  .feature-card {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .feature-card h3 {
+    color: #18181b !important;
+  }
+
+  .feature-card p {
+    color: #3f3f46 !important;
+  }
+
+  .tag {
+    background: #f4f4f5 !important;
+    color: #3f3f46 !important;
+  }
+
+  .more-features {
+    background: #fafafa !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .more-feature {
+    color: #18181b !important;
+  }
+
+  // Open Source Section
+  .opensource-card {
+    background: #fafafa !important;
+  }
+
+  .opensource-card h2 {
+    color: #18181b !important;
+  }
+
+  .opensource-description {
+    color: #3f3f46 !important;
+  }
+
+  .opensource-description strong {
+    color: #18181b !important;
+  }
+
+  .opensource-note {
+    color: #3f3f46 !important;
+  }
+
+  .opensource-badge {
+    color: #059669 !important;
+  }
+
+  .feature-pill {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    color: #18181b !important;
+  }
+
+  // Pricing Section
+  .pricing-card {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .pricing-card h3 {
+    color: #18181b !important;
+  }
+
+  .pricing-card.featured {
+    border-color: var(--q-primary) !important;
+  }
+
+  .pricing-desc {
+    color: #3f3f46 !important;
+  }
+
+  .price .amount {
+    color: #18181b !important;
+  }
+
+  .price .period {
+    color: #3f3f46 !important;
+  }
+
+  .features-list li {
+    color: #18181b !important;
+  }
+
+  .features-list li.disabled {
+    color: #52525b !important;
+  }
+
+  // FAQ Section
+  .faq-section {
+    background: #fafafa !important;
+  }
+
+  .faq-item {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .faq-item h3 {
+    color: #18181b !important;
+  }
+
+  .faq-item p {
+    color: #3f3f46 !important;
+  }
+
+  // CTA Section
+  .cta-content h2 {
+    color: #18181b !important;
+  }
+
+  .cta-content p {
+    color: #3f3f46 !important;
+  }
+
+  .cta-note {
+    color: #3f3f46 !important;
+  }
+
+  // Admin Section
+  .admin-docs-btn {
+    background: rgba(0, 0, 0, 0.05) !important;
+    color: #18181b !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  // Demo button
+  .demo-btn {
+    color: #18181b !important;
+  }
+
+  // Features Grid section badge fix
+  .features-section .section-badge {
+    color: #1e6bb8 !important;
+    background: rgba(45, 156, 219, 0.12) !important;
+  }
+
+  // Referral Showcase Component
+  .section-description,
+  .highlight {
+    color: #3f3f46 !important;
+  }
+
+  .step h4 {
+    color: #18181b !important;
+  }
+
+  .step p {
+    color: #3f3f46 !important;
+  }
+
+  .admin-card {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .admin-card h4 {
+    color: #18181b !important;
+  }
+
+  .admin-card p {
+    color: #3f3f46 !important;
+  }
+
+  .tier-card-large {
+    background: #ffffff !important;
+  }
+
+  .tier-name {
+    color: #18181b !important;
+  }
+
+  .tier-requirement {
+    color: #3f3f46 !important;
+  }
+
+  .summary-box {
+    background: #fafafa !important;
+  }
+
+  .summary-box p {
+    color: #3f3f46 !important;
+  }
+
+  // AI Cofounders Showcase Component
+  .ai-showcase {
+    background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 50%, #ffffff 100%) !important;
+  }
+
+  .showcase-header h2 {
+    color: #1e293b !important;
+  }
+
+  .showcase-subtitle {
+    color: #475569 !important;
+  }
+
+  .premium-badge {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(0, 212, 170, 0.12) 100%) !important;
+    color: #f59e0b !important;
+    border-color: rgba(245, 158, 11, 0.25) !important;
+  }
+
+  .agent-tab {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+  }
+
+  .agent-tab:hover {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  .agent-tab.active {
+    background: rgba(13, 148, 136, 0.1) !important;
+  }
+
+  .tab-name {
+    color: #1e293b !important;
+  }
+
+  .tab-role {
+    color: #64748b !important;
+  }
+
+  .preview-window {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .window-header {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+  }
+
+  .window-title {
+    color: #475569 !important;
+  }
+
+  .agent-details h3 {
+    color: #1e293b !important;
+  }
+
+  .agent-details p {
+    color: #475569 !important;
+  }
+
+  .agent-role-badge {
+    color: #0d9488 !important;
+    background: rgba(13, 148, 136, 0.12) !important;
+  }
+
+  .capability-chip {
+    color: #374151 !important;
+  }
+
+  .message-bubble p {
+    color: #1e293b !important;
+  }
+
+  .message-bubble .message-label {
+    color: #64748b !important;
+  }
+
+  .chat-message.user-message .message-bubble {
+    background: rgba(24, 24, 27, 0.9) !important;
+  }
+
+  .chat-message.agent-message .message-bubble {
+    background: #f8fafc !important;
+  }
+
+  .features-banner {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+  }
+
+  .feature-icon {
+    background: #f1f5f9 !important;
+  }
+
+  .feature-text strong {
+    color: #1e293b !important;
+  }
+
+  .feature-text span {
+    color: #475569 !important;
+  }
+
+  .demo-card {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.06) 0%, rgba(0, 212, 170, 0.04) 100%) !important;
+    border-color: rgba(99, 102, 241, 0.2) !important;
+  }
+
+  .demo-content h3 {
+    color: #1e293b !important;
+  }
+
+  .demo-content > p {
+    color: #475569 !important;
+  }
+
+  .demo-badge {
+    background: rgba(13, 148, 136, 0.12) !important;
+    color: #0d9488 !important;
+  }
+
+  .credential .label {
+    color: #64748b !important;
+  }
+
+  .credential code {
+    background: #f1f5f9 !important;
+    color: #0d9488 !important;
+  }
+
+  .mini-label {
+    color: #475569 !important;
+  }
+
+  .price-tag {
+    color: #475569 !important;
+  }
+}
+
+
+// ============================================
+// Electron macOS - Traffic Light Area
+// ============================================
+
+// Add padding for macOS traffic lights when in Electron
+.platform-electron.is-desktop {
+  // macOS specific - add space for traffic lights
+  &.body--darwin,
+  body[data-platform="darwin"] & {
+    .q-header,
+    .site-header {
+      padding-top: 38px !important;
+    }
+  }
+}
+
+// Alternative: detect via CSS env if available
+@supports (padding-top: env(titlebar-area-height)) {
+  .platform-electron .q-header,
+  .platform-electron .site-header {
+    padding-top: env(titlebar-area-height, 38px);
+  }
+}
+
+// Fallback for Electron on macOS - apply via body class
+body.electron-mac {
+  .q-header,
+  .site-header,
+  .q-layout__section--marginal {
+    padding-top: 38px;
+  }
+
+  // Make header draggable for window movement
+  .site-header {
+    -webkit-app-region: drag;
+
+    // Buttons should not be draggable
+    button, a, input, .q-btn {
+      -webkit-app-region: no-drag;
+    }
+  }
+}
+
+// ============================================
+// Demo Credits Modal - Translucent Overlay
+// ============================================
+
+.translucent-modal {
+  // Blurred backdrop
+  .q-dialog__backdrop {
+    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.3) !important;
+    transition: backdrop-filter 0.3s ease;
+  }
+
+  // Translucent card with glassmorphism effect
+  .q-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  }
+}
+
+// Dark mode adjustments
+body.body--dark {
+  .translucent-modal {
+    .q-dialog__backdrop {
+      background: rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .q-card {
+      background: rgba(30, 30, 30, 0.95);
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+  }
+}
+
+// Demo credits specific modal styling
+.demo-credits-modal {
+  .q-card {
+    max-width: 450px;
+    border-radius: var(--radius-lg, 12px);
+
+    .q-card__section {
+      padding: 24px;
+    }
+
+    // Title styling
+    .q-dialog__title {
+      font-size: var(--text-2xl, 1.5rem);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    // Message styling
+    .q-dialog__message {
+      font-size: var(--text-md, 1rem);
+      line-height: 1.6;
+      color: var(--color-text-secondary);
+    }
+
+    // Button styling
+    .q-btn {
+      min-width: 120px;
+      padding: 10px 20px;
+      border-radius: var(--radius-md, 8px);
+      font-weight: 500;
+    }
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "name": "@synthstack/desktop",
+  "version": "0.1.0",
+  "description": "SynthStack Desktop Application",
+  "author": "SynthStack Team",
+  "private": true,
+  "main": "electron-main.js",
+  "dependencies": {
+    "electron-store": "^8.1.0",
+    "electron-updater": "^6.1.7"
+  },
+  "devDependencies": {
+    "@electron/notarize": "^2.2.0",
+    "@types/node": "^20.10.0",
+    "electron": "^28.3.3",
+    "electron-builder": "^24.9.1",
+    "typescript": "^5.3.3"
+  },
+  "build": {
+    "appId": "app.synthstack.desktop",
+    "productName": "SynthStack",
+    "copyright": "Copyright © 2024 SynthStack",
+    "directories": {
+      "output": "../../dist/electron"
+    },
+    "files": [
+      "electron-main.js",
+      "electron-preload.js",
+      "icons/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "../../dist/spa",
+        "to": "app",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "icon": "icons/icon.icns",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "darkModeSupport": true,
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "entitlements.mac.plist",
+      "entitlementsInherit": "entitlements.mac.plist",
+      "notarize": false
+    },
+    "dmg": {
+      "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "win": {
+      "icon": "icons/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "publisherName": "SynthStack"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false,
+      "artifactName": "${productName}-${version}-Setup.${ext}",
+      "shortcutName": "SynthStack"
+    },
+    "linux": {
+      "icon": "icons",
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "rpm",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "category": "Development",
+      "desktop": {
+        "StartupNotify": "true",
+        "Categories": "Development;Utility;"
+      }
+    },
+    "appImage": {
+      "artifactName": "${productName}-${version}-${os}-${arch}.${ext}"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "synthstack",
+      "repo": "synthstack",
+      "releaseType": "release"
+    }
+  }
+}

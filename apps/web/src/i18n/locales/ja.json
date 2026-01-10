@@ -1,0 +1,703 @@
+{
+  "app": {
+    "name": "SynthStack",
+    "tagline": "AIネイティブ フルスタック SaaS ボイラープレート"
+  },
+  "nav": {
+    "home": "ホーム",
+    "features": "機能",
+    "pricing": "料金",
+    "dashboard": "ダッシュボード",
+    "generate": "生成",
+    "printers": "プリンター",
+    "filaments": "フィラメント",
+    "profiles": "プロファイル",
+    "myProfiles": "マイプロファイル",
+    "history": "履歴",
+    "account": "アカウント",
+    "subscription": "サブスクリプション",
+    "login": "ログイン",
+    "signup": "新規登録",
+    "logout": "ログアウト"
+  },
+  "landing": {
+    "hero": {
+      "title": "毎回完璧なプリント",
+      "subtitle": "STLをアップロード。AI最適化設定を取得。どんなスライサーにもエクスポート。",
+      "cta": "アーリーバードアクセス - $149",
+      "secondaryCta": "GitHubで見る",
+      "promoWithStats": "ライフタイムライセンス {max} 件限定 • 残り {remaining} 件 • {discount} お得",
+      "promoDefault": "ライフタイムライセンス 150 件限定 • $100 お得（通常 $249）"
+    },
+    "tech": {
+      "label": "モダンで実績のあるテクノロジーで構築"
+    },
+    "admin": {
+      "badge": "組み込み管理画面",
+      "title": "完全な管理ダッシュボード",
+      "subtitle": "Directus搭載のフル機能CMSと管理コントロールセンター"
+    },
+    "opensource": {
+      "badge": "永久無料",
+      "title": "コミュニティエディション",
+      "description": "SynthStackの完全なコアは無料でオープンソースです。テーマ、決済（StripeまたはLemonSqueezy）、サブスクリプション、ブログ、コンテンツとデータベース管理用CMSを備えた本番対応SaaSアプリを構築できます。",
+      "features": {
+        "themes": "テーマ & ダークモード",
+        "payments": "Stripe / LemonSqueezy",
+        "subscriptions": "サブスクリプション",
+        "blog": "ブログシステム",
+        "cms": "Directus CMS",
+        "email": "メールテンプレート",
+        "crossPlatform": "クロスプラットフォーム",
+        "license": "MITライセンス"
+      },
+      "github": {
+        "label": "GitHubでスターを付ける"
+      },
+      "note": "AI Co-Foundersは、6つの専門AIエージェントでSynthStackをパワーアップするプレミアムアドオンです。"
+    },
+    "pricing": {
+      "title": "シンプルで透明な料金",
+      "subtitle": "オープンソースコア、プレミアムAIエージェント",
+      "community": {
+        "name": "コミュニティ",
+        "price": "無料",
+        "period": "永久",
+        "description": "オープンソース SaaS ボイラープレート",
+        "features": {
+          "source": "完全なソースコード（MIT）",
+          "cms": "Directus CMS統合",
+          "billing": "Stripe/LemonSqueezy課金",
+          "blog": "ブログ & ニュースレター",
+          "crossPlatform": "クロスプラットフォームビルド",
+          "noAgents": "AI Co-Foundersエージェント",
+          "noGithub": "GitHub統合",
+          "noSuggestions": "プロアクティブな提案"
+        },
+        "cta": "始める"
+      },
+      "pro": {
+        "badge": "最も人気",
+        "name": "Pro",
+        "price": "$297",
+        "period": "ライフタイム",
+        "description": "完全なAI Co-Founders体験",
+        "features": {
+          "everything": "コミュニティのすべて",
+          "agents": "6つのAIエージェント全て",
+          "github": "GitHub PR自動化",
+          "suggestions": "プロアクティブな提案",
+          "rag": "RAGナレッジベース",
+          "templates": "すべてのプロンプトテンプレート",
+          "support": "優先サポート",
+          "updates": "ライフタイムアップデート"
+        },
+        "cta": "今すぐ購入"
+      },
+      "enterprise": {
+        "name": "エンタープライズ",
+        "price": "カスタム",
+        "period": "お問い合わせ",
+        "description": "チームとエージェンシー向け",
+        "features": {
+          "everything": "Proのすべて",
+          "training": "カスタムエージェントトレーニング",
+          "whiteLabel": "ホワイトラベルブランディング",
+          "support": "専用サポート",
+          "sla": "SLA保証",
+          "onPremise": "オンプレミスデプロイ",
+          "integrations": "カスタム統合",
+          "teamTraining": "チームトレーニング"
+        },
+        "cta": "営業に連絡"
+      }
+    },
+    "faq": {
+      "title": "よくある質問",
+      "subtitle": "SynthStackについて知っておくべきすべて",
+      "items": {
+        "free": {
+          "question": "SynthStackは本当に無料ですか？",
+          "answer": "はい！コミュニティエディションはMITライセンスの下で100%無料でオープンソースです。個人プロジェクト、スタートアップ、商用アプリに使用できます。AI Co-Foundersはオプションのプレミアムアドオンです。"
+        },
+        "included": {
+          "question": "オープンソース版には何が含まれていますか？",
+          "answer": "本番SaaSに必要なすべて：Vue 3 + Quasar UI、Fastify API、Directus CMS、Supabase認証、Stripe課金、ブログ、ニュースレター、アナリティクス、テーマ、クロスプラットフォームビルド。"
+        },
+        "referral": {
+          "question": "紹介プログラムはどのように機能しますか？",
+          "answer": "ユニークなリンクを共有し、友達が登録して購入するとリワードを獲得。段階的なリワードをアンロック：割引コード、クレジット、無料月間、Eliteティアで最大50%の永久割引。"
+        },
+        "aiDifference": {
+          "question": "AI Co-Foundersの違いは何ですか？",
+          "answer": "RAGコンテキストを持つ専門エージェントです（ドキュメント、コード、CMSを理解しています）。PRやブログ投稿の作成など実際のアクションを実行します。すべてのアクションは最初に承認が必要です。"
+        },
+        "customAgents": {
+          "question": "カスタムAIエージェントを作成できますか？",
+          "answer": "もちろん！Directus CMSで直接独自の専門エージェントを作成できます - コーディング不要。カスタムプロンプト、パーソナリティ、アイコン、機能を定義。新しいエージェントはアプリに即座に表示されます。"
+        },
+        "apiKeys": {
+          "question": "自分のAI APIキーを使用できますか？",
+          "answer": "はい！SynthStackは独自のキーでOpenAIとAnthropic APIをサポートしています。コストを管理し、使用状況を完全に把握できます。ベンダーロックインはありません。"
+        },
+        "subscription": {
+          "question": "サブスクリプションオプションはありますか？",
+          "answer": "ライフタイム（$297一回払い）と月額サブスクリプションプランの両方を提供しています。テストモードでは$0の料金ですべてを試すことができます。エンタープライズチームはカスタム価格についてお問い合わせください。"
+        }
+      }
+    },
+    "cta": {
+      "title": "次のプロジェクトを構築する準備はできましたか？",
+      "subtitle": "AIスーパーパワーを備えたフルスタックSaaSボイラープレート。10倍速くリリース。",
+      "primary": "無料で始める",
+      "secondary": "Proにアップグレード",
+      "note": "無料オープンソースコア · Pro: $297 ライフタイム · 紹介リワード利用可能"
+    },
+    "features": {
+      "title": "なぜSynthStack？",
+      "subtitle": "AI搭載開発でより速くリリース。",
+      "stlAnalysis": {
+        "title": "スマートSTL分析",
+        "description": "AIがモデルの形状を検査し、オーバーハング、薄い壁、最適なプリント方向を検出します。"
+      },
+      "aiSettings": {
+        "title": "AI生成設定",
+        "description": "お使いのプリンター、フィラメント、モデル特性に基づいた最適化パラメーターを取得できます。"
+      },
+      "multiSlicer": {
+        "title": "どこへでもエクスポート",
+        "description": "OrcaSlicer、PrusaSlicer、Curaなど用の即使用可能なプロファイルをダウンロード。"
+      },
+      "community": {
+        "title": "コミュニティ検証済み",
+        "description": "プロファイルを共有し、成功率を確認し、効果的な方法を基に構築。"
+      }
+    },
+    "howItWorks": {
+      "title": "使い方",
+      "step1": {
+        "title": "STLをアップロード",
+        "description": "3Dモデルをドラッグ＆ドロップして即座に分析"
+      },
+      "step2": {
+        "title": "セットアップを選択",
+        "description": "データベースからプリンターとフィラメントを選択"
+      },
+      "step3": {
+        "title": "設定を生成",
+        "description": "AIがお使いのプリント用に最適化されたパラメーターを作成"
+      },
+      "step4": {
+        "title": "エクスポート＆プリント",
+        "description": "スライサー用にダウンロードしてプリント開始"
+      }
+    },
+    "stats": {
+      "profiles": "生成されたプロファイル",
+      "printers": "対応プリンター",
+      "successRate": "成功率"
+    },
+    "featuresGrid": {
+      "badge": "必要なものすべて",
+      "title": "フルスタック SaaS 機能",
+      "subtitle": "すぐに使える本番対応コンポーネント。より速く構築、より早くリリース。",
+      "moreFeatures": {
+        "crossPlatform": "クロスプラットフォーム（Web、iOS、Android、デスクトップ）",
+        "typescript": "TypeScript + Vue 3 + Fastify",
+        "docker": "Docker 対応デプロイメント",
+        "docs": "完全なドキュメント"
+      },
+      "items": {
+        "workflows": {
+          "title": "ビジュアルワークフロー",
+          "description": "ドラッグ＆ドロップで自動化を構築。LangGraph 駆動の DAG が AI エージェント、Webhook、インテグレーションをリアルタイムで実行。"
+        },
+        "aiAgents": {
+          "title": "AI 共同創業者",
+          "description": "数分で専門 AI エージェントを作成。管理パネルでプロンプト、パーソナリティ、機能を編集 - コード不要。"
+        },
+        "webSearch": {
+          "title": "ライブ Web リサーチ",
+          "description": "エージェントがリアルタイムで Web を検索。最新の価格、ニュース、競合データを取得 - 古いトレーニングデータではなく。"
+        },
+        "orchestration": {
+          "title": "マルチエージェント オーケストレーション",
+          "description": "エージェント同士がタスクを委任。開発者がリサーチャーにコンテキストを問い、マーケターが SEO にキーワードを問う。"
+        },
+        "auth": {
+          "title": "柔軟な認証",
+          "description": "Supabase（マネージド）またはローカル PostgreSQL（セルフホスト）から選択。どちらも OAuth、JWT、RBAC をサポート。"
+        },
+        "selfHosted": {
+          "title": "セルフホスト認証オプション",
+          "description": "ローカル PostgreSQL Auth で外部依存なしで動作。Argon2id ハッシュ、セッション管理、完全なデータ主権。"
+        },
+        "stripe": {
+          "title": "Stripe 課金",
+          "description": "サブスクリプションと一回払い。カスタマーポータル、請求書、Webhook、テストモード内蔵。"
+        },
+        "directus": {
+          "title": "Directus CMS",
+          "description": "ビジュアル編集、リアルタイムコラボレーション、バージョニング、ライブプレビュー内蔵の完全な管理パネル。"
+        },
+        "visualEditing": {
+          "title": "ビジュアル インプレース編集",
+          "description": "ウェブサイト上で直接コンテンツを編集。管理パネルとプレビューを切り替える必要なし - コンテキストで変更を確認。"
+        },
+        "collaboration": {
+          "title": "リアルタイムコラボレーション",
+          "description": "スマートフィールドロックでシームレスに協力。誰が何を編集しているかを確認、コンフリクトフリーのコラボレーション。"
+        },
+        "versioning": {
+          "title": "コンテンツバージョニング",
+          "description": "自動バージョニングですべての変更を追跡。ワンクリックで以前のバージョンを復元。"
+        },
+        "analytics": {
+          "title": "アナリティクスダッシュボード",
+          "description": "ユーザーエンゲージメント、ページビュー、カスタムイベントを追跡。内蔵チャートと CSV エクスポート。"
+        },
+        "newsletter": {
+          "title": "ニュースレター＆メール",
+          "description": "購読者管理、テンプレートビルダー、キャンペーントラッキング。Resend または SMTP 連携。"
+        },
+        "blog": {
+          "title": "ブログプラットフォーム",
+          "description": "カテゴリ、タグ、SEO メタデータ、Directus の Markdown エディタを備えた完全なブログ。"
+        },
+        "seoAudit": {
+          "title": "SEO 監査＆最適化",
+          "description": "AI 駆動の SEO 監査、キーワードリサーチ、コンテンツスコアリング、最適化提案。自動パフォーマンストラッキング用 Lighthouse CI 統合。"
+        },
+        "theming": {
+          "title": "プレミアムテーマシステム",
+          "description": "30 以上のライト/ダークの組み合わせを持つ 10 個の内蔵プリセット。完全なカスタマイズ用の 60 以上の CSS 変数。データベース永続化によるリアルタイム切り替え。"
+        },
+        "referral": {
+          "title": "紹介システム",
+          "description": "季節キャンペーン、段階的報酬、割引コード、リーダーボード。完全にカスタマイズ可能。"
+        },
+        "integrations": {
+          "title": "15 以上の統合",
+          "description": "Slack、Discord、GitHub、Notion、Google Sheets、Twilio、Jira などに接続。BYOK 対応。"
+        },
+        "knowledgeBase": {
+          "title": "RAG ナレッジベース",
+          "description": "Drive、Notion、URL からドキュメントを取り込み。ベクトル埋め込みが AI エージェントのコンテキストを強化。"
+        }
+      }
+    },
+    "threeD": {
+      "badge": "高度なビジュアライゼーション",
+      "title": "3D での複雑なワークフロー",
+      "subtitle": "インタラクティブな 3D グラフエンジンで複雑なマルチステップワークフローを視覚化"
+    },
+    "theming": {
+      "badge": "ウェブで最も美しい Quasar UX",
+      "subtitle": "完全なテーマ＆カスタマイズシステム"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "おかえりなさい",
+      "subtitle": "アカウントにログイン",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "submit": "ログイン",
+      "forgotPassword": "パスワードをお忘れですか？",
+      "noAccount": "アカウントをお持ちでないですか？",
+      "signUp": "新規登録"
+    },
+    "register": {
+      "title": "アカウント作成",
+      "subtitle": "プリントの最適化を始めましょう",
+      "name": "表示名",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "confirmPassword": "パスワード確認",
+      "submit": "アカウント作成",
+      "hasAccount": "すでにアカウントをお持ちですか？",
+      "signIn": "ログイン"
+    },
+    "forgotPassword": {
+      "title": "パスワードリセット",
+      "subtitle": "リセットリンクを受け取るメールアドレスを入力してください",
+      "email": "メールアドレス",
+      "submit": "リンクを送信",
+      "backToLogin": "ログインに戻る"
+    },
+    "social": {
+      "or": "または以下で続行",
+      "google": "Google",
+      "github": "GitHub"
+    }
+  },
+  "dashboard": {
+    "welcome": "おかえりなさい",
+    "credits": {
+      "title": "クレジット",
+      "remaining": "残り {count}",
+      "usedToday": "今日使用 {count}",
+      "unlimited": "無制限"
+    },
+    "quickActions": {
+      "title": "クイックアクション",
+      "newGeneration": "新規生成",
+      "browsePrinters": "プリンターを閲覧",
+      "viewProfiles": "プロファイルを表示"
+    },
+    "recentGenerations": {
+      "title": "最近の生成",
+      "empty": "まだ生成がありません。STLのアップロードから始めましょう！"
+    }
+  },
+  "generate": {
+    "title": "プリント設定を生成",
+    "upload": {
+      "title": "STLアップロード",
+      "dragDrop": "STLファイルをここにドラッグ＆ドロップ",
+      "or": "または",
+      "browse": "ファイルを選択",
+      "maxSize": "最大ファイルサイズ：50MB"
+    },
+    "analysis": {
+      "title": "モデル分析",
+      "dimensions": "寸法",
+      "volume": "体積",
+      "faces": "面数",
+      "overhangs": "オーバーハング",
+      "thinWalls": "薄い壁",
+      "difficulty": "プリント難易度"
+    },
+    "settings": {
+      "title": "設定",
+      "printer": "プリンターを選択",
+      "filament": "フィラメントを選択",
+      "quality": "品質プリセット",
+      "priorities": "優先度",
+      "speed": "速度",
+      "strength": "強度",
+      "material": "材料使用量"
+    },
+    "result": {
+      "title": "生成された設定",
+      "confidence": "信頼度",
+      "export": "エクスポート",
+      "save": "プロファイルを保存",
+      "regenerate": "再生成"
+    }
+  },
+  "pricing": {
+    "title": "シンプルで透明な料金",
+    "subtitle": "無料で始めて。必要に応じてアップグレード。",
+    "monthly": "月額",
+    "annually": "年額",
+    "savePercent": "{percent}%お得",
+    "loading": "料金を読み込み中...",
+    "error": "料金の読み込みに失敗しました",
+    "cta": "始める"
+  },
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラーが発生しました",
+    "retry": "再試行",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "view": "表示",
+    "download": "ダウンロード",
+    "share": "共有",
+    "copy": "コピー",
+    "copied": "コピーしました！",
+    "search": "検索",
+    "filter": "フィルター",
+    "sort": "並び替え",
+    "all": "すべて",
+    "none": "なし"
+  },
+  "errors": {
+    "notFound": "ページが見つかりません",
+    "unauthorized": "続行するにはログインしてください",
+    "forbidden": "アクセス権限がありません",
+    "serverError": "サーバーエラー。後でもう一度お試しください。"
+  },
+  "language": {
+    "select": "言語を選択",
+    "current": "現在の言語"
+  },
+  "referral": {
+    "page": {
+      "title": "紹介プログラム",
+      "subtitle": "SynthStackを共有して報酬を獲得しましょう",
+      "loading": "紹介ダッシュボードを読み込み中...",
+      "signInRequired": "ログインが必要です",
+      "signInDescription": "紹介ダッシュボードにアクセスして報酬を獲得するにはログインしてください。",
+      "signIn": "ログイン",
+      "viewTutorial": "チュートリアルを見る",
+      "newHere": "紹介プログラムは初めてですか？",
+      "takeTour": "SynthStackを共有して報酬を獲得する方法を学びましょう。",
+      "startTutorial": "チュートリアルを開始"
+    },
+    "dashboard": {
+      "howItWorks": {
+        "title": "仕組み",
+        "step1": {
+          "title": "リンクを共有",
+          "description": "あなた専用の紹介リンクをコピーして友達と共有"
+        },
+        "step2": {
+          "title": "友達が登録",
+          "description": "あなたのリンクでアカウントを作成"
+        },
+        "step3": {
+          "title": "報酬を獲得",
+          "description": "購入時に報酬を獲得"
+        },
+        "step4": {
+          "title": "受け取りと利用",
+          "description": "割引、クレジットなどを交換"
+        }
+      },
+      "stats": {
+        "clicks": "総クリック数",
+        "referrals": "成功した紹介",
+        "pending": "保留中",
+        "rewards": "獲得した報酬"
+      }
+    },
+    "onboarding": {
+      "back": "戻る",
+      "next": "次へ",
+      "getStarted": "始める",
+      "welcome": {
+        "title": "紹介プログラムへようこそ！",
+        "description": "SynthStackを友達と共有して素晴らしい報酬を獲得しましょう。",
+        "benefit1": "割引コードを獲得",
+        "benefit2": "ボーナスクレジットを取得",
+        "benefit3": "プレミアム機能をアンロック"
+      },
+      "code": {
+        "title": "あなた専用の紹介コード",
+        "description": "これはあなた個人のコードです。友達が使用すると、紹介としてクレジットされます。",
+        "yourCode": "あなたのコード",
+        "yourLink": "あなたの紹介リンク",
+        "loading": "コードを生成中..."
+      },
+      "share": {
+        "title": "リンクを共有",
+        "description": "共有すればするほど、より多く獲得できます。",
+        "copyLink": "リンクをコピー",
+        "copyLinkDesc": "リンクをコピーしてどこにでも貼り付け",
+        "social": "ソーシャルメディア",
+        "socialDesc": "TwitterやLinkedInで直接共有",
+        "email": "メール",
+        "emailDesc": "パーソナライズされた招待を送信"
+      },
+      "track": {
+        "title": "進捗を追跡",
+        "description": "リアルタイムで紹介を監視しましょう。",
+        "clicks": "リンククリックを追跡",
+        "signups": "登録者を確認",
+        "conversions": "コンバージョンを監視",
+        "rewards": "報酬をアンロック",
+        "tierPreview": "ティアバッジをアンロック"
+      },
+      "rewards": {
+        "title": "報酬を受け取る",
+        "description": "マイルストーンを達成すると、より価値のある報酬がアンロックされます。",
+        "discounts": "割引コード",
+        "discountsDesc": "購入時の割引率",
+        "credits": "ボーナスクレジット",
+        "creditsDesc": "AI機能に使用",
+        "freeMonths": "無料月",
+        "freeMonthsDesc": "サブスクリプションクレジット",
+        "upgrades": "ティアアップグレード",
+        "upgradesDesc": "プレミアムアクセスをアンロック",
+        "ready": "獲得を始める準備ができました！"
+      }
+    },
+    "tooltips": {
+      "clicks": {
+        "title": "総クリック数",
+        "description": "紹介リンクがクリックされた回数。"
+      },
+      "referrals": {
+        "title": "成功した紹介",
+        "description": "あなたのリンクで登録しメールを確認したユーザー。"
+      },
+      "pending": {
+        "title": "保留中の紹介",
+        "description": "クリックしたがまだ登録を完了していないユーザー。"
+      },
+      "rewards": {
+        "title": "獲得した報酬",
+        "description": "紹介によってアンロックされた報酬の合計。"
+      },
+      "tier": {
+        "title": "現在のティア",
+        "description": "紹介ティアによってアンロックできる報酬が決まります。"
+      },
+      "code": {
+        "title": "紹介コード",
+        "description": "紹介を追跡するあなた専用のコード。"
+      },
+      "leaderboard": {
+        "title": "リーダーボード",
+        "description": "他の紹介者と比較したランキングを確認。"
+      },
+      "discountCode": {
+        "title": "割引コード",
+        "description": "チェックアウト時に使用できる割引コード。"
+      },
+      "credits": {
+        "title": "クレジット",
+        "description": "AI生成やワークフローに使用するプラットフォーム通貨。"
+      },
+      "conversion": {
+        "title": "コンバージョン",
+        "description": "紹介されたユーザーが最初の購入を行った時。"
+      }
+    },
+    "faq": {
+      "title": "よくある質問",
+      "moreHelp": "まだ質問がありますか？",
+      "contactSupport": "サポートに連絡",
+      "viewDocs": "ドキュメントを見る",
+      "questions": {
+        "howItWorks": {
+          "q": "紹介プログラムはどのように機能しますか？",
+          "a": "あなた専用の紹介リンクを友達と共有してください。登録して購入すると、ティアに基づいて報酬を獲得できます。"
+        },
+        "getCode": {
+          "q": "紹介コードはどうやって取得しますか？",
+          "a": "紹介コードはダッシュボードを訪問すると自動的に生成されます。"
+        },
+        "whenCredit": {
+          "q": "紹介のクレジットはいつ付与されますか？",
+          "a": "誰かがあなたのリンクで登録し、<strong>かつ</strong>メールアドレスを確認するとクレジットが付与されます。"
+        },
+        "rewardTypes": {
+          "q": "どのような種類の報酬を獲得できますか？",
+          "a": "報酬には以下が含まれます：<ul><li><strong>割引コード</strong></li><li><strong>クレジット</strong></li><li><strong>無料月</strong></li><li><strong>ティアアップグレード</strong></li></ul>"
+        },
+        "claimRewards": {
+          "q": "報酬はどうやって受け取りますか？",
+          "a": "報酬ティアをアンロックすると、報酬セクションに表示されます。<strong>受け取る</strong>をクリックしてください。"
+        },
+        "expiration": {
+          "q": "報酬やコードは期限切れになりますか？",
+          "a": "クレジットは期限切れになりません。割引コードには有効期限がある場合があります。"
+        },
+        "selfReferral": {
+          "q": "自分自身を紹介できますか？",
+          "a": "いいえ、自己紹介は許可されていません。"
+        },
+        "trackProgress": {
+          "q": "紹介の進捗をどうやって追跡しますか？",
+          "a": "ダッシュボードにリアルタイムの統計が表示されます。"
+        },
+        "discountCodes": {
+          "q": "割引コードはどのように機能しますか？",
+          "a": "割引コードはチェックアウト時に適用されます。"
+        },
+        "creditsVsDiscounts": {
+          "q": "クレジットと割引の違いは何ですか？",
+          "a": "<strong>クレジット</strong>はプラットフォーム通貨です。<strong>割引コード</strong>は購入価格を下げます。"
+        }
+      }
+    }
+  },
+  "workflows": {
+    "page": {
+      "title": "ワークフロー",
+      "subtitle": "ビジュアルワークフローでビジネスを自動化",
+      "tutorial": "チュートリアル",
+      "newWorkflow": "新規ワークフロー",
+      "openEditor": "エディタを開く",
+      "browseTemplates": "テンプレートを見る",
+      "viewAll": "すべて表示"
+    },
+    "onboarding": {
+      "step": "ステップ {current}/{total}",
+      "skip": "チュートリアルをスキップ",
+      "back": "戻る",
+      "next": "次へ",
+      "openEditor": "エディタを開く",
+      "completeMessage": "ワークフロー作成の準備ができました！",
+      "welcome": {
+        "title": "ワークフローへようこそ！",
+        "description": "コード不要でパワフルな自動化をビジュアルに作成。",
+        "aiAgents": "AIエージェント",
+        "aiAgentsDesc": "AI共同創業者で分析と生成",
+        "triggers": "スマートトリガー",
+        "triggersDesc": "スケジュール、Webhook、イベント駆動自動化",
+        "integrations": "4000+統合",
+        "integrationsDesc": "Slack、Google、Stripeなどと接続"
+      },
+      "nodes": {
+        "title": "ノードを理解する",
+        "description": "ワークフローはワイヤーで接続されたノードで構築されます。",
+        "input": "入力ノード",
+        "inputDesc": "フローを開始 - トリガー、Webhook、スケジュール",
+        "process": "処理ノード",
+        "processDesc": "データを変換 - 関数、AIエージェント、ロジック",
+        "output": "出力ノード",
+        "outputDesc": "結果を送信 - Slack、メール、データベース"
+      },
+      "firstFlow": {
+        "title": "最初のフロー",
+        "description": "ワークフロー作成は簡単。ドラッグ、接続、デプロイ！",
+        "step1": "パレットからノードをドラッグ",
+        "step1Desc": "左サイドバーでノードを見つける",
+        "step2": "ワイヤーでノードを接続",
+        "step2Desc": "出力ポートから入力ポートへドラッグ",
+        "step3": "各ノードを設定",
+        "step3Desc": "ノードをダブルクリックでプロパティ",
+        "step4": "デプロイをクリック",
+        "step4Desc": "デプロイボタンで保存と有効化",
+        "tip": "ヒント: テンプレートから始めよう！"
+      },
+      "integrations": {
+        "title": "統合を接続",
+        "description": "ツールと接続するとワークフローが強力になります。",
+        "configure": "統合を設定",
+        "note": "統合は後で設定から追加できます"
+      }
+    },
+    "templates": {
+      "title": "ワークフローテンプレート",
+      "search": "テンプレートを検索...",
+      "category": "カテゴリ",
+      "difficulty": "難易度",
+      "allCategories": "すべてのカテゴリ",
+      "allLevels": "すべてのレベル",
+      "beginner": "初級",
+      "intermediate": "中級",
+      "advanced": "上級",
+      "featured": "おすすめ",
+      "installs": "インストール数",
+      "nodes": "ノード数",
+      "preview": "プレビュー",
+      "install": "インストール",
+      "noResults": "テンプレートが見つかりません",
+      "noResultsDesc": "別のフィルターをお試しください",
+      "clearFilters": "フィルターをクリア",
+      "installSuccess": "テンプレート「{name}」を正常にインストールしました！",
+      "installError": "インストールに失敗しました"
+    },
+    "quickActions": {
+      "title": "クイックアクション",
+      "help": "ヘルプ",
+      "fromTemplate": "テンプレートから",
+      "fromTemplateDesc": "既成のワークフローで開始",
+      "createBlank": "空で作成",
+      "createBlankDesc": "ゼロから始める",
+      "openEditor": "エディタを開く",
+      "openEditorDesc": "ビジュアルビルダーを起動",
+      "viewDocs": "ドキュメントを見る",
+      "viewDocsDesc": "ドキュメントを読む",
+      "popularTemplates": "人気テンプレート",
+      "viewAll": "すべて表示"
+    }
+  }
+}

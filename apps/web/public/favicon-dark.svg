@@ -1,0 +1,37 @@
+<svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- SynthStack Favicon (Light background variant) - Stacked layers forming 'S' -->
+
+  <!-- Background -->
+  <rect width="32" height="32" rx="6" fill="#FFFFFF"/>
+
+  <!-- Gradient definitions -->
+  <defs>
+    <linearGradient id="grad-top-light" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#4F46E5"/>
+    </linearGradient>
+    <linearGradient id="grad-mid-light" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#14B8A6"/>
+      <stop offset="100%" stop-color="#0D9488"/>
+    </linearGradient>
+    <linearGradient id="grad-bot-light" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#4F46E5"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Top layer (extends right) -->
+  <rect x="5" y="5" width="22" height="4" rx="2" fill="url(#grad-top-light)"/>
+
+  <!-- Left connector -->
+  <rect x="5" y="5" width="4" height="11" rx="2" fill="url(#grad-top-light)"/>
+
+  <!-- Middle layer -->
+  <rect x="5" y="14" width="22" height="4" rx="2" fill="url(#grad-mid-light)"/>
+
+  <!-- Right connector -->
+  <rect x="23" y="14" width="4" height="11" rx="2" fill="url(#grad-bot-light)"/>
+
+  <!-- Bottom layer (extends left) -->
+  <rect x="5" y="23" width="22" height="4" rx="2" fill="url(#grad-bot-light)"/>
+</svg>

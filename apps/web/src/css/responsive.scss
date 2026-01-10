@@ -1,0 +1,614 @@
+/**
+ * Printverse Responsive System
+ * Mobile-first responsive utilities and components
+ */
+
+// ============================================
+// Breakpoints
+// ============================================
+
+$breakpoints: (
+  'xs': 0,
+  'sm': 600px,
+  'md': 1024px,
+  'lg': 1440px,
+  'xl': 1920px
+);
+
+// Breakpoint mixins
+@mixin xs {
+  @media (max-width: 599px) { @content; }
+}
+
+@mixin sm {
+  @media (min-width: 600px) { @content; }
+}
+
+@mixin sm-only {
+  @media (min-width: 600px) and (max-width: 1023px) { @content; }
+}
+
+@mixin md {
+  @media (min-width: 1024px) { @content; }
+}
+
+@mixin md-only {
+  @media (min-width: 1024px) and (max-width: 1439px) { @content; }
+}
+
+@mixin lg {
+  @media (min-width: 1440px) { @content; }
+}
+
+@mixin lg-only {
+  @media (min-width: 1440px) and (max-width: 1919px) { @content; }
+}
+
+@mixin xl {
+  @media (min-width: 1920px) { @content; }
+}
+
+// Touch device detection
+@mixin touch {
+  @media (hover: none) and (pointer: coarse) { @content; }
+}
+
+@mixin no-touch {
+  @media (hover: hover) and (pointer: fine) { @content; }
+}
+
+// Orientation
+@mixin portrait {
+  @media (orientation: portrait) { @content; }
+}
+
+@mixin landscape {
+  @media (orientation: landscape) { @content; }
+}
+
+// ============================================
+// Container System
+// ============================================
+
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding, 16px);
+  padding-right: var(--container-padding, 16px);
+  
+  @include sm {
+    --container-padding: 24px;
+    max-width: 100%;
+  }
+  
+  @include md {
+    --container-padding: 32px;
+    max-width: 960px;
+  }
+  
+  @include lg {
+    --container-padding: 48px;
+    max-width: 1200px;
+  }
+  
+  @include xl {
+    max-width: 1400px;
+  }
+}
+
+.container-fluid {
+  width: 100%;
+  padding-left: var(--container-padding, 16px);
+  padding-right: var(--container-padding, 16px);
+  
+  @include md {
+    --container-padding: 32px;
+  }
+  
+  @include lg {
+    --container-padding: 48px;
+  }
+}
+
+.container-narrow {
+  @extend .container;
+  
+  @include md {
+    max-width: 720px;
+  }
+  
+  @include lg {
+    max-width: 800px;
+  }
+}
+
+.container-wide {
+  @extend .container;
+  
+  @include lg {
+    max-width: 1400px;
+  }
+  
+  @include xl {
+    max-width: 1600px;
+  }
+}
+
+// ============================================
+// Responsive Grid
+// ============================================
+
+.grid {
+  display: grid;
+  gap: var(--grid-gap, 16px);
+  
+  @include sm {
+    --grid-gap: 20px;
+  }
+  
+  @include md {
+    --grid-gap: 24px;
+  }
+}
+
+// Auto-fit grid
+.grid-auto {
+  @extend .grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--grid-min, 280px), 1fr));
+}
+
+.grid-auto-sm {
+  @extend .grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.grid-auto-lg {
+  @extend .grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+// Fixed column grids
+.grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-cols-5 { grid-template-columns: repeat(5, 1fr); }
+.grid-cols-6 { grid-template-columns: repeat(6, 1fr); }
+
+// Responsive column modifiers
+@include xs {
+  .xs\:grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+  .xs\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@include sm {
+  .sm\:grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+  .sm\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .sm\:grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .sm\:grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+}
+
+@include md {
+  .md\:grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+  .md\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .md\:grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .md\:grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .md\:grid-cols-5 { grid-template-columns: repeat(5, 1fr); }
+  .md\:grid-cols-6 { grid-template-columns: repeat(6, 1fr); }
+}
+
+@include lg {
+  .lg\:grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+  .lg\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .lg\:grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .lg\:grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .lg\:grid-cols-5 { grid-template-columns: repeat(5, 1fr); }
+  .lg\:grid-cols-6 { grid-template-columns: repeat(6, 1fr); }
+}
+
+// ============================================
+// Responsive Flexbox
+// ============================================
+
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-row { flex-direction: row; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-nowrap { flex-wrap: nowrap; }
+.flex-1 { flex: 1 1 0%; }
+.flex-auto { flex: 1 1 auto; }
+.flex-none { flex: none; }
+
+.items-start { align-items: flex-start; }
+.items-center { align-items: center; }
+.items-end { align-items: flex-end; }
+.items-stretch { align-items: stretch; }
+
+.justify-start { justify-content: flex-start; }
+.justify-center { justify-content: center; }
+.justify-end { justify-content: flex-end; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+.justify-evenly { justify-content: space-evenly; }
+
+// Responsive flex direction
+@include xs {
+  .xs\:flex-col { flex-direction: column; }
+  .xs\:flex-row { flex-direction: row; }
+}
+
+@include sm {
+  .sm\:flex-col { flex-direction: column; }
+  .sm\:flex-row { flex-direction: row; }
+}
+
+@include md {
+  .md\:flex-col { flex-direction: column; }
+  .md\:flex-row { flex-direction: row; }
+}
+
+// ============================================
+// Responsive Spacing
+// ============================================
+
+$spacing-scale: (
+  '0': 0,
+  '1': 4px,
+  '2': 8px,
+  '3': 12px,
+  '4': 16px,
+  '5': 20px,
+  '6': 24px,
+  '8': 32px,
+  '10': 40px,
+  '12': 48px,
+  '16': 64px,
+  '20': 80px,
+  '24': 96px
+);
+
+@each $key, $value in $spacing-scale {
+  .gap-#{$key} { gap: $value; }
+  .p-#{$key} { padding: $value; }
+  .px-#{$key} { padding-left: $value; padding-right: $value; }
+  .py-#{$key} { padding-top: $value; padding-bottom: $value; }
+  .pt-#{$key} { padding-top: $value; }
+  .pb-#{$key} { padding-bottom: $value; }
+  .pl-#{$key} { padding-left: $value; }
+  .pr-#{$key} { padding-right: $value; }
+  .m-#{$key} { margin: $value; }
+  .mx-#{$key} { margin-left: $value; margin-right: $value; }
+  .my-#{$key} { margin-top: $value; margin-bottom: $value; }
+  .mt-#{$key} { margin-top: $value; }
+  .mb-#{$key} { margin-bottom: $value; }
+  .ml-#{$key} { margin-left: $value; }
+  .mr-#{$key} { margin-right: $value; }
+}
+
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+// ============================================
+// Responsive Typography
+// ============================================
+
+// Fluid typography scale
+.text-display {
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.text-hero {
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.text-title {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  line-height: 1.2;
+}
+
+.text-subtitle {
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  line-height: 1.3;
+}
+
+.text-body {
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
+  line-height: 1.6;
+}
+
+.text-small {
+  font-size: clamp(0.75rem, 1.2vw, 0.875rem);
+  line-height: 1.5;
+}
+
+.text-caption {
+  font-size: clamp(0.625rem, 1vw, 0.75rem);
+  line-height: 1.4;
+}
+
+// ============================================
+// Responsive Visibility
+// ============================================
+
+.hidden { display: none !important; }
+.block { display: block !important; }
+.inline { display: inline !important; }
+.inline-block { display: inline-block !important; }
+
+// Hide on specific breakpoints
+@include xs {
+  .xs\:hidden { display: none !important; }
+  .xs\:block { display: block !important; }
+}
+
+@include sm {
+  .sm\:hidden { display: none !important; }
+  .sm\:block { display: block !important; }
+  .hide-below-sm { display: block !important; }
+}
+
+@include md {
+  .md\:hidden { display: none !important; }
+  .md\:block { display: block !important; }
+  .hide-below-md { display: block !important; }
+}
+
+@include lg {
+  .lg\:hidden { display: none !important; }
+  .lg\:block { display: block !important; }
+  .hide-below-lg { display: block !important; }
+}
+
+// Show only on specific breakpoints
+.hide-on-mobile {
+  @include xs { display: none !important; }
+}
+
+.hide-on-tablet {
+  @include sm-only { display: none !important; }
+}
+
+.hide-on-desktop {
+  @include md { display: none !important; }
+}
+
+.show-on-mobile {
+  display: none !important;
+  @include xs { display: block !important; }
+}
+
+.show-on-tablet {
+  display: none !important;
+  @include sm-only { display: block !important; }
+}
+
+.show-on-desktop {
+  display: none !important;
+  @include md { display: block !important; }
+}
+
+// ============================================
+// Touch-Friendly Styles
+// ============================================
+
+@include touch {
+  // Larger touch targets
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 12px;
+  }
+  
+  // Remove hover effects on touch
+  .no-touch-hover:hover {
+    background: inherit !important;
+    transform: none !important;
+  }
+  
+  // Better tap highlight
+  a, button, [role="button"] {
+    -webkit-tap-highlight-color: var(--accent-primary-subtle);
+  }
+}
+
+// ============================================
+// Mobile Navigation
+// ============================================
+
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--surface-1);
+  border-top: 1px solid var(--border-default);
+  padding-bottom: env(safe-area-inset-bottom);
+  
+  @include md {
+    display: none;
+  }
+}
+
+.mobile-nav-items {
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0;
+}
+
+.mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  font-size: 10px;
+  transition: color 0.2s;
+  
+  &.active,
+  &:active {
+    color: var(--accent-primary);
+  }
+  
+  .q-icon {
+    font-size: 24px;
+  }
+}
+
+// ============================================
+// Mobile-Optimized Components
+// ============================================
+
+// Full-width cards on mobile
+.card-mobile-full {
+  @include xs {
+    margin-left: -16px;
+    margin-right: -16px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+}
+
+// Horizontal scroll on mobile
+.scroll-x-mobile {
+  @include xs {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+    margin: 0 -16px;
+    padding: 0 16px;
+    
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    
+    > * {
+      scroll-snap-align: start;
+      flex-shrink: 0;
+    }
+  }
+}
+
+// Stack buttons on mobile
+.btn-stack-mobile {
+  @include xs {
+    flex-direction: column;
+    
+    > .q-btn,
+    > button {
+      width: 100%;
+    }
+  }
+}
+
+// ============================================
+// Safe Area Insets
+// ============================================
+
+.safe-top { padding-top: env(safe-area-inset-top); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+.safe-left { padding-left: env(safe-area-inset-left); }
+.safe-right { padding-right: env(safe-area-inset-right); }
+.safe-x { 
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+.safe-y {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.safe-all {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+// ============================================
+// Responsive Images
+// ============================================
+
+.img-responsive {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.img-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.img-contain {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+// Aspect ratio containers
+.aspect-square { aspect-ratio: 1 / 1; }
+.aspect-video { aspect-ratio: 16 / 9; }
+.aspect-portrait { aspect-ratio: 3 / 4; }
+.aspect-wide { aspect-ratio: 21 / 9; }
+
+// ============================================
+// Responsive Tables
+// ============================================
+
+.table-responsive {
+  @include xs {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    
+    table {
+      min-width: 600px;
+    }
+  }
+}
+
+// Card-style table on mobile
+.table-cards-mobile {
+  @include xs {
+    thead {
+      display: none;
+    }
+    
+    tr {
+      display: block;
+      margin-bottom: 16px;
+      padding: 16px;
+      background: var(--surface-1);
+      border-radius: 8px;
+      border: 1px solid var(--border-default);
+    }
+    
+    td {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      &::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+    }
+  }
+}
+
+
+
+
