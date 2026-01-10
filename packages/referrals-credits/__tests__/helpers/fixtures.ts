@@ -1,0 +1,302 @@
+/**
+ * Test fixtures for referrals-credits tests
+ */
+
+import type { ReferralSeason, ReferralTier, ReferralCode, Referral, ReferralStats, ReferralReward } from '../../src/types/referral.js';
+import type { DiscountCode } from '../../src/types/discount.js';
+
+export const fixtures = {
+  // Default season
+  defaultSeason: {
+    id: 'season-1',
+    name: 'Launch Season',
+    slug: 'launch-2024',
+    description: 'Launch season referral program',
+    start_date: '2024-01-01T00:00:00Z',
+    end_date: null,
+    is_active: true,
+    is_default: true,
+    config: {
+      allow_self_referral: false,
+      require_conversion: true,
+      conversion_window_days: 30,
+      min_purchase_for_conversion: 10,
+      max_referrals_per_user: null,
+      referral_code_prefix: 'SYNTH',
+    },
+    created_at: '2024-01-01T00:00:00Z',
+  } as ReferralSeason,
+
+  // Tiers
+  tiers: {
+    bronze: {
+      id: 'tier-bronze',
+      season_id: 'season-1',
+      name: 'Bronze',
+      description: 'Bronze tier - 3 referrals',
+      referrals_required: 3,
+      reward_type: 'discount_code',
+      reward_value: { percent: 10, expires_days: 30, code_prefix: 'BRONZE' },
+      badge_icon: 'bronze-medal',
+      badge_color: '#CD7F32',
+      is_stackable: false,
+      is_active: true,
+      sort_order: 1,
+    } as ReferralTier,
+    silver: {
+      id: 'tier-silver',
+      season_id: 'season-1',
+      name: 'Silver',
+      description: 'Silver tier - 10 referrals',
+      referrals_required: 10,
+      reward_type: 'discount_code',
+      reward_value: { percent: 15, expires_days: 60, code_prefix: 'SILVER' },
+      badge_icon: 'silver-medal',
+      badge_color: '#C0C0C0',
+      is_stackable: false,
+      is_active: true,
+      sort_order: 2,
+    } as ReferralTier,
+    gold: {
+      id: 'tier-gold',
+      season_id: 'season-1',
+      name: 'Gold',
+      description: 'Gold tier - 25 referrals',
+      referrals_required: 25,
+      reward_type: 'discount_code',
+      reward_value: { percent: 25, expires_days: 90, code_prefix: 'GOLD' },
+      badge_icon: 'gold-medal',
+      badge_color: '#FFD700',
+      is_stackable: false,
+      is_active: true,
+      sort_order: 3,
+    } as ReferralTier,
+  },
+
+  // Users
+  users: {
+    referrer: {
+      id: 'user-referrer-1',
+      email: 'referrer@test.com',
+    },
+    referred: {
+      id: 'user-referred-1',
+      email: 'referred@test.com',
+    },
+    admin: {
+      id: 'user-admin-1',
+      email: 'admin@test.com',
+    },
+  },
+
+  // Referral codes
+  referralCodes: {
+    active: {
+      id: 'code-1',
+      user_id: 'user-referrer-1',
+      code: 'SYNTHAB12CD34',
+      season_id: 'season-1',
+      custom_code: null,
+      clicks: 5,
+      last_click_at: '2024-06-15T10:00:00Z',
+      is_active: true,
+      created_at: '2024-01-15T00:00:00Z',
+      expires_at: null,
+    } as ReferralCode,
+    inactive: {
+      id: 'code-2',
+      user_id: 'user-referrer-1',
+      code: 'SYNTHEF56GH78',
+      season_id: 'season-1',
+      custom_code: null,
+      clicks: 0,
+      is_active: false,
+      created_at: '2024-01-01T00:00:00Z',
+      expires_at: '2024-02-01T00:00:00Z',
+    } as ReferralCode,
+  },
+
+  // Referrals
+  referrals: {
+    clicked: {
+      id: 'referral-1',
+      referrer_id: 'user-referrer-1',
+      referred_user_id: null,
+      referred_email: null,
+      referral_code_id: 'code-1',
+      season_id: 'season-1',
+      status: 'clicked',
+      click_date: '2024-06-15T10:00:00Z',
+      signup_date: null,
+      conversion_date: null,
+      ip_address: '192.168.1.1',
+      user_agent: 'Mozilla/5.0',
+    } as Referral,
+    signedUp: {
+      id: 'referral-2',
+      referrer_id: 'user-referrer-1',
+      referred_user_id: 'user-referred-1',
+      referred_email: 'referred@test.com',
+      referral_code_id: 'code-1',
+      season_id: 'season-1',
+      status: 'signed_up',
+      click_date: '2024-06-10T10:00:00Z',
+      signup_date: '2024-06-10T12:00:00Z',
+      conversion_date: null,
+    } as Referral,
+    converted: {
+      id: 'referral-3',
+      referrer_id: 'user-referrer-1',
+      referred_user_id: 'user-referred-2',
+      referred_email: 'converted@test.com',
+      referral_code_id: 'code-1',
+      season_id: 'season-1',
+      status: 'converted',
+      click_date: '2024-06-01T10:00:00Z',
+      signup_date: '2024-06-01T12:00:00Z',
+      conversion_date: '2024-06-05T10:00:00Z',
+      conversion_type: 'subscription',
+      conversion_value: 99.00,
+    } as Referral,
+  },
+
+  // Stats
+  stats: {
+    default: {
+      id: 'stats-1',
+      user_id: 'user-referrer-1',
+      season_id: 'season-1',
+      total_clicks: 5,
+      total_referrals: 3,
+      successful_referrals: 2,
+      pending_referrals: 1,
+      expired_referrals: 0,
+      total_conversions: 2,
+      total_conversion_value: 198.00,
+      total_rewards_earned: 0,
+      total_rewards_claimed: 0,
+      current_tier_id: null,
+      next_tier_id: 'tier-bronze',
+      referrals_to_next_tier: 1,
+    } as ReferralStats,
+  },
+
+  // Discount codes
+  discountCodes: {
+    valid: {
+      id: 'discount-1',
+      code: 'SAVE20',
+      name: '20% Off',
+      description: 'Get 20% off your purchase',
+      type: 'percent',
+      value: 20,
+      applies_to: 'all',
+      source: 'admin',
+      max_uses: 100,
+      max_uses_per_user: 1,
+      current_uses: 5,
+      min_purchase: null,
+      max_discount: null,
+      is_active: true,
+      is_public: true,
+      expires_at: '2030-12-31T23:59:59Z',
+      created_at: '2024-01-01T00:00:00Z',
+    } as DiscountCode,
+    expired: {
+      id: 'discount-2',
+      code: 'EXPIRED10',
+      name: 'Expired Discount',
+      type: 'percent',
+      value: 10,
+      applies_to: 'all',
+      max_uses: 100,
+      max_uses_per_user: 1,
+      current_uses: 0,
+      is_active: true,
+      expires_at: '2023-01-01T00:00:00Z',
+      created_at: '2022-01-01T00:00:00Z',
+    } as DiscountCode,
+    maxedOut: {
+      id: 'discount-3',
+      code: 'MAXED',
+      name: 'Maxed Out Discount',
+      type: 'percent',
+      value: 15,
+      applies_to: 'all',
+      max_uses: 10,
+      max_uses_per_user: 1,
+      current_uses: 10,
+      is_active: true,
+      expires_at: '2030-12-31T23:59:59Z',
+      created_at: '2024-01-01T00:00:00Z',
+    } as DiscountCode,
+    subscriptionOnly: {
+      id: 'discount-4',
+      code: 'SUBONLY',
+      name: 'Subscription Only',
+      type: 'percent',
+      value: 25,
+      applies_to: 'subscription',
+      max_uses: null,
+      max_uses_per_user: 1,
+      current_uses: 0,
+      is_active: true,
+      expires_at: null,
+      created_at: '2024-01-01T00:00:00Z',
+    } as DiscountCode,
+    minPurchase: {
+      id: 'discount-5',
+      code: 'MIN50',
+      name: 'Min Purchase $50',
+      type: 'percent',
+      value: 10,
+      applies_to: 'all',
+      max_uses: null,
+      max_uses_per_user: 1,
+      current_uses: 0,
+      min_purchase: 50,
+      is_active: true,
+      expires_at: null,
+      created_at: '2024-01-01T00:00:00Z',
+    } as DiscountCode,
+  },
+
+  // Rewards
+  rewards: {
+    unlocked: {
+      id: 'reward-1',
+      user_id: 'user-referrer-1',
+      tier_id: 'tier-bronze',
+      season_id: 'season-1',
+      reward_type: 'discount_code',
+      reward_data: { percent: 10, expires_days: 30 },
+      discount_code_id: 'discount-1',
+      is_unlocked: true,
+      is_claimed: false,
+      claimed_at: null,
+      expires_at: null,
+      created_at: '2024-06-15T00:00:00Z',
+    } as ReferralReward,
+    claimed: {
+      id: 'reward-2',
+      user_id: 'user-referrer-1',
+      tier_id: 'tier-silver',
+      season_id: 'season-1',
+      reward_type: 'discount_code',
+      reward_data: { percent: 15, expires_days: 60 },
+      discount_code_id: 'discount-2',
+      is_unlocked: true,
+      is_claimed: true,
+      claimed_at: '2024-06-20T10:00:00Z',
+      expires_at: null,
+      created_at: '2024-06-10T00:00:00Z',
+    } as ReferralReward,
+  },
+};
+
+/**
+ * Create a fixture with custom overrides
+ */
+export function createFixture<T>(base: T, overrides: Partial<T> = {}): T {
+  return { ...base, ...overrides };
+}
