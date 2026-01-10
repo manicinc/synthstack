@@ -1,0 +1,66 @@
+{
+  "name": "@synthstack/agentic-ai",
+  "version": "0.1.0",
+  "description": "SynthStack Agentic AI - LangGraph-based agent system with orchestration, memory, and workflows",
+  "license": "SEE LICENSE IN ../../LICENSE",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsup",
+    "start": "node dist/index.js",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist node_modules",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui"
+  },
+  "dependencies": {
+    "@langchain/anthropic": "^0.3.14",
+    "@langchain/core": "^0.3.27",
+    "@langchain/langgraph": "^0.2.38",
+    "@langchain/langgraph-checkpoint-postgres": "^1.0.0",
+    "@langchain/openai": "^0.3.17",
+    "pg": "^8.12.0",
+    "uuid": "^13.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/pg": "^8.16.0",
+    "@types/uuid": "^11.0.0",
+    "eslint": "^8.56.0",
+    "fastify": "^4.26.0",
+    "tsup": "^8.0.1",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vitest": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@anthropic-ai/sdk": "^0.71.0",
+    "openai": "^6.10.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": [
+    "ai",
+    "agents",
+    "langgraph",
+    "langchain",
+    "llm",
+    "orchestration",
+    "memory",
+    "workflows",
+    "rag"
+  ]
+}
