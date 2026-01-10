@@ -1,0 +1,164 @@
+# Printverse Local Development Docker Compose
+# Usage: docker compose -f docker-compose.dev.yml up -d
+
+version: '3.8'
+
+services:
+  # =========================================
+  # PostgreSQL Database
+  # =========================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: synthstack-postgres
+    restart: unless-stopped
+    ports:
+      - "5450:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: printverse
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./services/directus/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d printverse"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # =========================================
+  # Redis Cache
+  # =========================================
+  redis:
+    image: redis:7-alpine
+    container_name: synthstack-redis
+    restart: unless-stopped
+    ports:
+      - "6390:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # =========================================
+  # API Gateway (for local development)
+  # =========================================
+  api:
+    image: node:20-alpine
+    container_name: synthstack-api
+    restart: unless-stopped
+    working_dir: /app
+    ports:
+      - "3030:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/printverse
+      REDIS_URL: redis://redis:6379
+      DIRECTUS_URL: http://directus:8055
+      JWT_SECRET: dev-jwt-secret-change-in-production
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./packages/api-gateway:/app
+      - api-node-modules:/app/node_modules
+    command: sh -c "npm install -g pnpm && pnpm install && pnpm dev"
+    healthcheck:
+      # Use Node (already in image) for a fast health probe without installing curl/wget
+      test:
+        - CMD
+        - node
+        - -e
+        - "require('http').get('http://127.0.0.1:3000/health', r => { if (r.statusCode === 200) process.exit(0); process.exit(1); }).on('error', () => process.exit(1));"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  # =========================================
+  # ML Service (Python/FastAPI)
+  # =========================================
+  ml-service:
+    build:
+      context: ./packages/ml-service
+      dockerfile: Dockerfile
+    container_name: synthstack-ml
+    restart: unless-stopped
+    ports:
+      - "8030:8000"
+    environment:
+      ENVIRONMENT: development
+      REDIS_URL: redis://redis:6379
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/printverse
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    depends_on:
+      - redis
+    volumes:
+      - ./packages/ml-service/app:/app/app
+      - ml-cache:/app/cache
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request, sys; sys.exit(0) if urllib.request.urlopen('http://127.0.0.1:8000/health').getcode()==200 else sys.exit(1)"
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # =========================================
+  # Directus CMS (optional, for content management)
+  # =========================================
+  directus:
+    image: directus/directus:10
+    container_name: synthstack-directus
+    restart: unless-stopped
+    ports:
+      - "8056:8055"
+    environment:
+      KEY: dev-directus-key
+      SECRET: dev-directus-secret
+      DB_CLIENT: pg
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: printverse
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      ADMIN_EMAIL: admin@synthstack.app
+      ADMIN_PASSWORD: admin123
+      PUBLIC_URL: http://localhost:8055
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # =========================================
+  # Mailhog (for email testing)
+  # =========================================
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: synthstack-mailhog
+    ports:
+      - "1030:1025"  # SMTP
+      - "8035:8025"  # Web UI
+
+networks:
+  default:
+    name: synthstack-dev
+
+volumes:
+  postgres-data:
+  redis-data:
+  ml-cache:
+  api-node-modules:
+

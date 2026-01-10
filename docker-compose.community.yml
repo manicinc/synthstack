@@ -1,0 +1,277 @@
+# SynthStack Community Edition - Docker Compose
+# Free & Open Source Core Platform
+#
+# This is the Community Edition without AI features (Qdrant, ML Service).
+# AI Co-Founders, GitHub integration, and proactive suggestions require Premium.
+#
+# Usage:
+#   docker-compose -f docker-compose.community.yml up -d
+#
+# For Premium Edition features, use the main docker-compose.yml
+
+services:
+  # ============================================
+  # PostgreSQL Database
+  # ============================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: synthstack-postgres
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-synthstack}
+      POSTGRES_USER: ${DB_USER:-synthstack}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-synthstack_dev_2024}
+    ports:
+      - "5499:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./services/directus/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-synthstack} -d ${DB_DATABASE:-synthstack}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - synthstack
+
+  # ============================================
+  # Redis Cache
+  # ============================================
+  redis:
+    image: redis:7-alpine
+    container_name: synthstack-redis
+    command: redis-server --appendonly yes
+    ports:
+      - "6399:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - synthstack
+
+  # ============================================
+  # Directus CMS
+  # ============================================
+  directus:
+    build:
+      context: ./services/directus
+      dockerfile: Dockerfile
+    container_name: synthstack-directus
+    ports:
+      - "8099:8055"
+    env_file:
+      - .env
+    environment:
+      # Security Keys
+      KEY: ${DIRECTUS_KEY:-synthstack-key-change-in-production}
+      SECRET: ${DIRECTUS_SECRET:-synthstack-secret-change-in-production}
+
+      # Database
+      DB_CLIENT: pg
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-synthstack}
+      DB_USER: ${DB_USER:-synthstack}
+      DB_PASSWORD: ${DB_PASSWORD:-synthstack_dev_2024}
+
+      # Cache
+      CACHE_ENABLED: "true"
+      CACHE_STORE: redis
+      REDIS: redis://redis:6379
+
+      # Admin
+      ADMIN_EMAIL: ${DIRECTUS_ADMIN_EMAIL:-admin@synthstack.app}
+      ADMIN_PASSWORD: ${DIRECTUS_ADMIN_PASSWORD:-SynthStack2024!}
+      ADMIN_TOKEN: ${DIRECTUS_ADMIN_TOKEN:-synthstack-static-admin-token-2024}
+
+      # CORS
+      PUBLIC_URL: ${DIRECTUS_PUBLIC_URL:-http://localhost:8056}
+      CORS_ENABLED: "true"
+      CORS_ORIGIN: "http://localhost:3000,http://localhost:3003,http://localhost:5174"
+
+      # Storage
+      STORAGE_LOCATIONS: local
+      STORAGE_LOCAL_ROOT: ./uploads
+
+      # Logging
+      LOG_LEVEL: info
+      LOG_STYLE: pretty
+
+      # Extensions
+      EXTENSIONS_AUTO_RELOAD: "true"
+
+      # Community Edition Flag
+      SYNTHSTACK_EDITION: community
+    volumes:
+      - directus_uploads:/directus/uploads
+      - ./services/directus/extensions:/directus/extensions
+      - ./services/directus/snapshots:/directus/snapshots
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://0.0.0.0:8055/server/ping || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+    networks:
+      - synthstack
+
+  # ============================================
+  # API Gateway (Fastify + Node.js)
+  # Community Edition - No AI features
+  # ============================================
+  api-gateway:
+    build:
+      context: ./packages/api-gateway
+      dockerfile: Dockerfile
+    container_name: synthstack-api-gateway
+    ports:
+      - "3003:3003"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: development
+      PORT: 3003
+      HOST: 0.0.0.0
+
+      # Community Edition Flag
+      SYNTHSTACK_EDITION: community
+
+      # Database
+      DATABASE_URL: postgresql://${DB_USER:-synthstack}:${DB_PASSWORD:-synthstack_dev_2024}@postgres:5432/${DB_DATABASE:-synthstack}
+
+      # Directus
+      DIRECTUS_URL: http://directus:8055
+      DIRECTUS_TOKEN: ${DIRECTUS_ADMIN_TOKEN:-synthstack-static-admin-token-2024}
+
+      # Supabase
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+
+      # Redis
+      REDIS_URL: redis://redis:6379
+
+      # CORS
+      CORS_ORIGIN: "http://localhost:3000,http://localhost:5174,http://localhost:8099"
+
+      # Stripe (optional for community)
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+
+      # AI - Disabled in Community Edition
+      # These are not used but prevent errors if configured
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+
+      # Vector DB - Disabled in Community Edition
+      QDRANT_URL: ""
+
+      # ML Service - Disabled in Community Edition
+      ML_SERVICE_URL: ""
+    volumes:
+      - ./packages/api-gateway:/app
+      - /app/node_modules
+    depends_on:
+      directus:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - synthstack
+
+  # ============================================
+  # Web Frontend (Vue 3 + Quasar) - Development
+  # ============================================
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile.dev
+    container_name: synthstack-web
+    ports:
+      - "3050:3050"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: development
+      HOST: 0.0.0.0
+      PORT: 3050
+
+      # Community Edition Flag
+      VITE_SYNTHSTACK_EDITION: community
+
+      # API URLs
+      VITE_API_URL: http://localhost:3003
+      VITE_DIRECTUS_URL: http://localhost:8056
+
+      # Supabase
+      VITE_SUPABASE_URL: ${SUPABASE_URL}
+      VITE_SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+
+      # App Config
+      VITE_APP_NAME: "SynthStack Community"
+      VITE_APP_URL: http://localhost:3000
+
+      # Stripe (optional for community)
+      VITE_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+    volumes:
+      - ./apps/web:/app
+      - web_node_modules:/app/node_modules
+    depends_on:
+      - api-gateway
+    restart: unless-stopped
+    networks:
+      - synthstack
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  directus_uploads:
+    driver: local
+  web_node_modules:
+    driver: local
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  synthstack:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
+
+# ============================================
+# Notes for Community Edition
+# ============================================
+#
+# This Community Edition excludes:
+# - Qdrant vector database (for AI RAG)
+# - ML Service (Python AI backend)
+# - AI Co-Founders agents
+# - AI Suggestions system
+# - GitHub integration
+#
+# To upgrade to Premium Edition:
+# 1. Purchase a lifetime license at synthstack.app/pricing
+# 2. Switch to docker-compose.yml (main file)
+# 3. Set SYNTHSTACK_EDITION=premium in your .env
+# 4. Restart containers: docker-compose up -d
