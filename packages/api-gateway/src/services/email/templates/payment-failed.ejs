@@ -1,0 +1,32 @@
+<h1>Payment Update Required ⚠️</h1>
+
+<p>We had trouble processing your recent payment for your <%= planName %> subscription.</p>
+
+<div style="background: #f8d7da; border-left: 4px solid #dc3545; padding: 16px; margin: 24px 0;">
+  <p style="margin: 0; color: #721c24;"><strong>Action Required:</strong> Please update your payment method to avoid service interruption.</p>
+</div>
+
+<h2>What Happens Next?</h2>
+<p>We'll retry the payment in a few days. To avoid any interruption to your service:</p>
+
+<ol style="line-height: 2;">
+  <li>Click the button below to update your payment method</li>
+  <li>Verify your card details are correct</li>
+  <li>Confirm the payment</li>
+</ol>
+
+<div style="text-align: center; margin: 32px 0;">
+  <a href="<%= updatePaymentUrl %>" class="btn">Update Payment Method</a>
+</div>
+
+<p><strong>Need Help?</strong></p>
+<p>If you're experiencing issues or have questions, <a href="<%= supportUrl %>">contact our support team</a>. We're here to help!</p>
+
+<p class="text-muted" style="margin-top: 32px;">
+  <strong>Subscription Details:</strong><br>
+  Plan: <%= planName %><br>
+  Amount Due: $<%= amountDue %><br>
+  Retry Date: <%= retryDate %>
+</p>
+
+<p style="margin-top: 24px;"><strong>The SynthStack Team</strong></p>

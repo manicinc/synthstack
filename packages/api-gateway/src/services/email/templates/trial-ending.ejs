@@ -1,0 +1,31 @@
+<h1>Your Trial Ends in <%= daysLeft %> Days ⏰</h1>
+
+<p>Just a friendly reminder that your SynthStack trial period is coming to an end soon.</p>
+
+<div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 16px; margin: 24px 0;">
+  <p style="margin: 0;"><strong>Trial Ends:</strong> <%= trialEndDate %></p>
+  <p style="margin: 8px 0 0;"><strong>Days Remaining:</strong> <%= daysLeft %></p>
+</div>
+
+<h2>Don't Lose Access to These Features:</h2>
+<ul style="line-height: 2;">
+  <li>✅ <%= creditsPerDay %> AI generations per day</li>
+  <li>✅ Advanced STL analysis</li>
+  <li>✅ Slicer profile exports</li>
+  <li>✅ Community profile creation</li>
+  <li>✅ Priority support</li>
+</ul>
+
+<p style="margin: 24px 0;">You've generated <strong><%= generationsUsed %> profiles</strong> during your trial. Keep the momentum going!</p>
+
+<div style="text-align: center; margin: 32px 0;">
+  <a href="<%= upgradeUrl %>" class="btn">Upgrade Now - Save 20%</a>
+</div>
+
+<p class="text-center text-muted">
+  Use code <strong style="color: #FF6B35;">TRIAL20</strong> for 20% off your first month
+</p>
+
+<p style="margin-top: 32px;">Questions about plans? <a href="<%= pricingUrl %>">Compare all plans</a> or <a href="<%= contactUrl %>">contact us</a>.</p>
+
+<p><strong>The SynthStack Team</strong></p>

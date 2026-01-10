@@ -1,0 +1,38 @@
+<h1>Credits Running Low 📊</h1>
+
+<p>Hi <%= userName %>,</p>
+
+<p>This is a friendly heads-up that you're running low on generation credits.</p>
+
+<div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 16px; margin: 24px 0;">
+  <p style="margin: 0;"><strong>Credits Remaining:</strong> <%= creditsLeft %> of <%= dailyLimit %></p>
+  <p style="margin: 8px 0 0;"><strong>Resets:</strong> <%= resetTime %></p>
+</div>
+
+<h2>Get More Credits</h2>
+
+<p><strong>Option 1: Wait for Reset</strong><br>
+Your credits automatically reset daily at midnight UTC.</p>
+
+<p><strong>Option 2: Purchase Credits</strong><br>
+Buy a one-time credit pack starting at $4.99 for 10 credits.</p>
+
+<p><strong>Option 3: Upgrade Your Plan</strong><br>
+Get more daily credits with a higher tier plan.</p>
+
+<div style="display: table; width: 100%; margin: 24px 0;">
+  <div style="display: table-cell; padding: 12px; text-align: center;">
+    <a href="<%= purchaseUrl %>" class="btn" style="background: #28a745;">Buy Credits</a>
+  </div>
+  <div style="display: table-cell; padding: 12px; text-align: center;">
+    <a href="<%= upgradeUrl %>" class="btn">Upgrade Plan</a>
+  </div>
+</div>
+
+<p class="text-muted" style="margin-top: 32px;">
+  Current Plan: <%= currentPlan %><br>
+  Daily Limit: <%= dailyLimit %> credits<br>
+  Lifetime Used: <%= lifetimeUsed %> credits
+</p>
+
+<p><strong>The SynthStack Team</strong></p>

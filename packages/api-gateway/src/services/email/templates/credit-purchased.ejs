@@ -1,0 +1,41 @@
+<h1>Credits Added to Your Account! 🎉</h1>
+
+<p>Hi <%= userName %>,</p>
+
+<p>We've successfully processed your credit purchase. The credits have been added to your account and are ready to use!</p>
+
+<div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 24px; border-radius: 8px; text-align: center; margin: 24px 0;">
+  <p style="font-size: 18px; margin: 0;">Credits Added</p>
+  <p style="font-size: 48px; font-weight: 700; margin: 8px 0;"><%= credits %></p>
+  <p style="font-size: 14px; margin: 0; opacity: 0.9;">New Balance: <%= newBalance %> credits</p>
+</div>
+
+<h2>Receipt Details:</h2>
+<table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+  <tr style="border-bottom: 1px solid #e0e0e0;">
+    <td style="padding: 12px 0;"><strong>Package:</strong></td>
+    <td style="padding: 12px 0; text-align: right;"><%= packageName %></td>
+  </tr>
+  <tr style="border-bottom: 1px solid #e0e0e0;">
+    <td style="padding: 12px 0;"><strong>Credits:</strong></td>
+    <td style="padding: 12px 0; text-align: right;"><%= credits %></td>
+  </tr>
+  <tr style="border-bottom: 1px solid #e0e0e0;">
+    <td style="padding: 12px 0;"><strong>Amount:</strong></td>
+    <td style="padding: 12px 0; text-align: right;">$<%= amount %></td>
+  </tr>
+  <tr style="border-bottom: 1px solid #e0e0e0;">
+    <td style="padding: 12px 0;"><strong>Transaction ID:</strong></td>
+    <td style="padding: 12px 0; text-align: right; font-family: monospace;"><%= transactionId %></td>
+  </tr>
+</table>
+
+<div style="text-align: center; margin: 32px 0;">
+  <a href="<%= dashboardUrl %>" class="btn">Start Creating</a>
+</div>
+
+<p class="text-muted">
+  Need more credits? <a href="<%= purchaseUrl %>">Purchase another pack</a> or <a href="<%= upgradeUrl %>">upgrade your plan</a> for unlimited daily credits.
+</p>
+
+<p><strong>The SynthStack Team</strong></p>

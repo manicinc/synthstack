@@ -1,0 +1,38 @@
+<h1>Content Moderation Notice ⚠️</h1>
+
+<p>Hi <%= userName %>,</p>
+
+<p>We're reaching out regarding recent activity on your Printverse account.</p>
+
+<div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 16px; margin: 24px 0;">
+  <p style="margin: 0;"><strong>Action Taken:</strong> <%= action %></p>
+  <p style="margin: 8px 0 0;"><strong>Reason:</strong> <%= reason %></p>
+</div>
+
+<h2>What Happened?</h2>
+<p><%= details %></p>
+
+<% if (warningCount > 0) { %>
+<p style="background: #f8d7da; padding: 16px; border-radius: 8px;">
+  <strong>⚠️ Warning <%= warningCount %> of 3</strong><br>
+  Additional violations may result in account suspension.
+</p>
+<% } %>
+
+<h2>Our Community Guidelines</h2>
+<p>To maintain a positive environment, we ask all users to:</p>
+<ul>
+  <li>Share helpful, constructive content</li>
+  <li>Respect copyright and intellectual property</li>
+  <li>Be kind and professional in comments</li>
+  <li>Report inappropriate content</li>
+</ul>
+
+<div style="text-align: center; margin: 32px 0;">
+  <a href="<%= guidelinesUrl %>" class="btn">Read Full Guidelines</a>
+</div>
+
+<p><strong>Have Questions?</strong></p>
+<p>If you believe this action was taken in error or have questions, please <a href="<%= appealUrl %>">contact our moderation team</a>.</p>
+
+<p><strong>The Printverse Moderation Team</strong></p>

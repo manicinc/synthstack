@@ -1,0 +1,54 @@
+<h1>Your Profile is Ready! ✨</h1>
+
+<p>Hi <%= userName %>,</p>
+
+<p>Great news! We've generated optimal slicer settings for your print.</p>
+
+<div style="background: linear-gradient(135deg, #FF6B35 0%, #F97316 100%); color: white; padding: 24px; border-radius: 8px; margin: 24px 0;">
+  <h2 style="margin: 0; color: white;"><%= profileName %></h2>
+  <p style="margin: 8px 0 0; opacity: 0.9;">
+    <%= printerName %> • <%= filamentName %> • <%= quality %> Quality
+  </p>
+</div>
+
+<h2>Profile Details:</h2>
+<table style="width: 100%; border-collapse: collapse;">
+  <tr style="border-bottom: 1px solid #e0e0e0;">
+    <td style="padding: 12px 0;"><strong>Printer:</strong></td>
+    <td style="padding: 12px 0;"><%= printerName %></td>
+  </tr>
+  <tr style="border-bottom: 1px solid #e0e0e0;">
+    <td style="padding: 12px 0;"><strong>Filament:</strong></td>
+    <td style="padding: 12px 0;"><%= filamentName %></td>
+  </tr>
+  <tr style="border-bottom: 1px solid #e0e0e0;">
+    <td style="padding: 12px 0;"><strong>Slicer:</strong></td>
+    <td style="padding: 12px 0;"><%= slicer %></td>
+  </tr>
+  <tr style="border-bottom: 1px solid #e0e0e0;">
+    <td style="padding: 12px 0;"><strong>Quality:</strong></td>
+    <td style="padding: 12px 0;"><%= quality %></td>
+  </tr>
+  <tr>
+    <td style="padding: 12px 0;"><strong>Est. Print Time:</strong></td>
+    <td style="padding: 12px 0;"><%= estimatedTime %></td>
+  </tr>
+</table>
+
+<div style="text-align: center; margin: 32px 0;">
+  <a href="<%= downloadUrl %>" class="btn">Download Profile</a>
+</div>
+
+<p><strong>What's Next?</strong></p>
+<ol>
+  <li>Download the profile using the button above</li>
+  <li>Import it into your slicer</li>
+  <li>Slice your model</li>
+  <li>Start printing! 🎨</li>
+</ol>
+
+<p class="text-muted" style="margin-top: 24px;">
+  Credits Used: 1 • Credits Remaining: <%= creditsRemaining %>
+</p>
+
+<p><strong>The SynthStack Team</strong></p>

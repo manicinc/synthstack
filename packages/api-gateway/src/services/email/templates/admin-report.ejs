@@ -1,0 +1,41 @@
+<h1>New Moderation Report 🚨</h1>
+
+<p>A new content report has been submitted and requires review.</p>
+
+<div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 24px 0;">
+  <h2 style="margin-top: 0;">Report Details</h2>
+  <table style="width: 100%;">
+    <tr>
+      <td style="padding: 8px 0;"><strong>Type:</strong></td>
+      <td style="padding: 8px 0;"><%= reportType %></td>
+    </tr>
+    <tr>
+      <td style="padding: 8px 0;"><strong>Reporter:</strong></td>
+      <td style="padding: 8px 0;"><%= reporterEmail %></td>
+    </tr>
+    <tr>
+      <td style="padding: 8px 0;"><strong>Category:</strong></td>
+      <td style="padding: 8px 0;"><%= category %></td>
+    </tr>
+    <tr>
+      <td style="padding: 8px 0;"><strong>Submitted:</strong></td>
+      <td style="padding: 8px 0;"><%= submittedAt %></td>
+    </tr>
+  </table>
+</div>
+
+<h3>Report Details:</h3>
+<div style="background: #fff; border: 1px solid #dee2e6; padding: 16px; border-radius: 8px; font-family: monospace; white-space: pre-wrap;">
+<%= details %>
+</div>
+
+<div style="text-align: center; margin: 32px 0;">
+  <a href="<%= reviewUrl %>" class="btn">Review in Admin Panel</a>
+</div>
+
+<p class="text-muted">
+  <strong>Reported Content ID:</strong> <%= contentId %><br>
+  <strong>Priority:</strong> <%= priority %>
+</p>
+
+<p><strong>Printverse Admin System</strong></p>
