@@ -1,0 +1,129 @@
+<svg width="1200" height="600" viewBox="0 0 1200 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Background gradient -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F172A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E293B;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Purple accent gradient -->
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366F1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="600" fill="url(#bg)"/>
+
+  <!-- All content centered in safe zone -->
+  <g transform="translate(600, 300)">
+
+    <!-- Logo and title - left top -->
+    <g transform="translate(-500, -220)">
+      <!-- Stylized S Logo -->
+      <g transform="scale(2.5)">
+        <!-- Top curve of S -->
+        <rect x="4" y="0" width="16" height="4" rx="2" fill="#6366F1"/>
+        <rect x="0" y="0" width="8" height="4" rx="2" fill="#6366F1"/>
+        <rect x="0" y="4" width="4" height="6" rx="2" fill="#6366F1"/>
+
+        <!-- Middle section -->
+        <rect x="4" y="7" width="16" height="4" rx="2" fill="#2DD4BF"/>
+
+        <!-- Bottom curve of S -->
+        <rect x="16" y="11" width="4" height="6" rx="2" fill="#6366F1"/>
+        <rect x="12" y="14" width="8" height="4" rx="2" fill="#6366F1"/>
+        <rect x="0" y="14" width="16" height="4" rx="2" fill="#6366F1"/>
+      </g>
+
+      <text x="0" y="80" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="42" font-weight="900" fill="white">
+        SynthStack
+      </text>
+
+      <text x="0" y="110" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="16" font-weight="500" fill="#94A3B8">
+        Maker Plan
+      </text>
+    </g>
+
+    <!-- Features grid - left side -->
+    <g transform="translate(-500, -60)">
+      <!-- Row 1 -->
+      <g>
+        <circle cx="14" cy="14" r="14" fill="rgba(99,102,241,0.15)"/>
+        <circle cx="14" cy="14" r="7" fill="none" stroke="url(#accent)" stroke-width="2"/>
+        <text x="14" y="18" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="10" font-weight="900" fill="#6366F1" text-anchor="middle">
+          30
+        </text>
+        <text x="38" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="13" fill="#CBD5E1" font-weight="500">
+          30 AI Credits/Day
+        </text>
+      </g>
+
+      <g transform="translate(220, 0)">
+        <circle cx="14" cy="14" r="14" fill="rgba(139,92,246,0.15)"/>
+        <rect x="8" y="10" width="12" height="8" rx="1.5" fill="url(#accent)" opacity="0.8"/>
+        <text x="38" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="13" fill="#CBD5E1" font-weight="500">
+          Advanced Analysis
+        </text>
+      </g>
+
+      <!-- Row 2 -->
+      <g transform="translate(0, 42)">
+        <circle cx="14" cy="14" r="14" fill="rgba(45,212,191,0.15)"/>
+        <circle cx="11.5" cy="12.5" r="1.3" fill="url(#accent)"/>
+        <circle cx="16.5" cy="12.5" r="1.3" fill="url(#accent)"/>
+        <path d="M 10 16 Q 14 18 18 16" stroke="url(#accent)" stroke-width="1.6" fill="none"/>
+        <text x="38" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="13" fill="#CBD5E1" font-weight="500">
+          Community Profiles
+        </text>
+      </g>
+
+      <g transform="translate(220, 42)">
+        <circle cx="14" cy="14" r="14" fill="rgba(236,72,153,0.15)"/>
+        <path d="M 10 14 L 13 17 L 18 10" stroke="url(#accent)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="38" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="13" fill="#CBD5E1" font-weight="500">
+          Email Support
+        </text>
+      </g>
+    </g>
+
+    <!-- Pricing section - right side -->
+    <g transform="translate(180, -160)">
+      <!-- Starter plan badge -->
+      <text x="0" y="0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="10" font-weight="700" fill="url(#accent)" text-anchor="start" letter-spacing="1.2">
+        STARTER PLAN
+      </text>
+
+      <!-- Main price -->
+      <text x="0" y="70" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="72" font-weight="900" fill="white" text-anchor="start">
+        $12.99
+      </text>
+
+      <!-- Per month -->
+      <text x="230" y="70" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="24" fill="#64748B" text-anchor="start">
+        /mo
+      </text>
+
+      <!-- Annual pricing note -->
+      <text x="0" y="95" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="11" font-weight="500" fill="#94A3B8" text-anchor="start">
+        $9.74/mo billed annually
+      </text>
+
+      <!-- Benefits -->
+      <text x="0" y="130" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="13" font-weight="600" fill="#94A3B8" text-anchor="start">
+        ✓ 30 AI Credits Daily
+      </text>
+      <text x="0" y="152" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="13" font-weight="600" fill="#94A3B8" text-anchor="start">
+        ✓ Advanced Features
+      </text>
+      <text x="0" y="174" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="13" font-weight="600" fill="#94A3B8" text-anchor="start">
+        ✓ Email Support
+      </text>
+
+      <!-- CTA -->
+      <text x="0" y="210" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="16" font-weight="700" fill="url(#accent)" text-anchor="start">
+        Get Started →
+      </text>
+    </g>
+  </g>
+</svg>

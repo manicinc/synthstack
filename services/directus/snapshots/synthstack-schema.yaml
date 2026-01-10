@@ -1,0 +1,162 @@
+version: 1
+directus: 11.3.5
+vendor: postgres
+collections:
+  - collection: blog_posts
+    meta:
+      collection: blog_posts
+      icon: article
+      note: Blog articles and content
+      hidden: false
+      singleton: false
+      color: "#6366F1"
+      accountability: all
+      collapse: open
+    schema:
+      name: blog_posts
+
+  - collection: blog_categories
+    meta:
+      collection: blog_categories
+      icon: category
+      note: Blog post categories
+      hidden: false
+      singleton: false
+      color: "#00D4AA"
+      accountability: all
+      collapse: open
+    schema:
+      name: blog_categories
+
+  - collection: blog_authors
+    meta:
+      collection: blog_authors
+      icon: person
+      note: Blog post authors
+      hidden: false
+      singleton: false
+      color: "#8B5CF6"
+      accountability: all
+      collapse: open
+    schema:
+      name: blog_authors
+
+  - collection: newsletter_signups
+    meta:
+      collection: newsletter_signups
+      icon: mail
+      note: Newsletter subscribers
+      hidden: false
+      singleton: false
+      color: "#F59E0B"
+      accountability: all
+      collapse: open
+    schema:
+      name: newsletter_signups
+
+  - collection: contact_submissions
+    meta:
+      collection: contact_submissions
+      icon: contact_mail
+      note: Contact form submissions
+      hidden: false
+      singleton: false
+      color: "#EF4444"
+      accountability: all
+      collapse: open
+    schema:
+      name: contact_submissions
+
+  - collection: faq_items
+    meta:
+      collection: faq_items
+      icon: help
+      note: FAQ questions and answers
+      hidden: false
+      singleton: false
+      color: "#8B5CF6"
+      accountability: all
+      collapse: open
+    schema:
+      name: faq_items
+
+  - collection: email_templates
+    meta:
+      collection: email_templates
+      icon: email
+      note: Email templates
+      hidden: false
+      singleton: false
+      color: "#EC4899"
+      accountability: all
+      collapse: open
+    schema:
+      name: email_templates
+
+  - collection: subscription_plans
+    meta:
+      collection: subscription_plans
+      icon: payments
+      note: Subscription pricing plans
+      hidden: false
+      singleton: false
+      color: "#10B981"
+      accountability: all
+      collapse: open
+    schema:
+      name: subscription_plans
+
+  - collection: analytics_reports
+    meta:
+      collection: analytics_reports
+      icon: insights
+      note: Analytics reports
+      hidden: false
+      singleton: false
+      color: "#3B82F6"
+      accountability: all
+      collapse: open
+    schema:
+      name: analytics_reports
+
+  - collection: copilot_indexed_documents
+    meta:
+      collection: copilot_indexed_documents
+      icon: psychology
+      note: AI Copilot indexed documents for RAG
+      hidden: false
+      singleton: false
+      color: "#6366F1"
+      accountability: all
+      collapse: open
+    schema:
+      name: copilot_indexed_documents
+
+  - collection: printers
+    meta:
+      collection: printers
+      icon: print
+      note: 3D Printers catalog
+      hidden: true
+      singleton: false
+      color: "#9CA3AF"
+      accountability: all
+      collapse: open
+    schema:
+      name: printers
+
+  - collection: filaments
+    meta:
+      collection: filaments
+      icon: layers
+      note: 3D Printing filaments
+      hidden: true
+      singleton: false
+      color: "#9CA3AF"
+      accountability: all
+      collapse: open
+    schema:
+      name: filaments
+
+fields: []
+relations: []

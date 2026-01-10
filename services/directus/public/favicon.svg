@@ -1,0 +1,23 @@
+<svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" rx="6" fill="#0D0D0D"/>
+  <defs>
+    <linearGradient id="fav-top" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#818CF8"/>
+    </linearGradient>
+    <linearGradient id="fav-mid" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00D4AA"/>
+      <stop offset="100%" stop-color="#34D399"/>
+    </linearGradient>
+    <linearGradient id="fav-bot" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+  </defs>
+  <!-- S shaped stack icon -->
+  <rect x="5" y="5" width="22" height="4" rx="2" fill="url(#fav-top)"/>
+  <rect x="5" y="5" width="4" height="11" rx="2" fill="url(#fav-top)"/>
+  <rect x="5" y="14" width="22" height="4" rx="2" fill="url(#fav-mid)"/>
+  <rect x="23" y="14" width="4" height="11" rx="2" fill="url(#fav-bot)"/>
+  <rect x="5" y="23" width="22" height="4" rx="2" fill="url(#fav-bot)"/>
+</svg>

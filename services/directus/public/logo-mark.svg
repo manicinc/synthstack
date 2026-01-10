@@ -1,0 +1,22 @@
+<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="mark-top" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#818CF8"/>
+    </linearGradient>
+    <linearGradient id="mark-mid" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00D4AA"/>
+      <stop offset="100%" stop-color="#34D399"/>
+    </linearGradient>
+    <linearGradient id="mark-bot" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+  </defs>
+  <!-- S shaped stack icon - no background for transparency -->
+  <rect x="4" y="4" width="32" height="6" rx="3" fill="url(#mark-top)"/>
+  <rect x="4" y="4" width="6" height="16" rx="3" fill="url(#mark-top)"/>
+  <rect x="4" y="17" width="32" height="6" rx="3" fill="url(#mark-mid)"/>
+  <rect x="30" y="17" width="6" height="16" rx="3" fill="url(#mark-bot)"/>
+  <rect x="4" y="30" width="32" height="6" rx="3" fill="url(#mark-bot)"/>
+</svg>
