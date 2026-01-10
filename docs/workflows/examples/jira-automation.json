@@ -1,0 +1,214 @@
+{
+  "id": "jira-automation-flow",
+  "label": "Jira Automation",
+  "info": "Automate Jira issue management and sync with projects",
+  "nodes": [
+    {
+      "id": "webhook-bug",
+      "type": "http in",
+      "z": "jira-automation-flow",
+      "name": "Bug Report Form",
+      "url": "/api/bugs/report",
+      "method": "post",
+      "x": 150,
+      "y": 100,
+      "wires": [["validate-bug"]]
+    },
+    {
+      "id": "trigger-task",
+      "type": "synthstack-trigger",
+      "z": "jira-automation-flow",
+      "name": "Task Completed",
+      "triggerType": "directus_event",
+      "collection": "tasks",
+      "event": "items.update",
+      "x": 150,
+      "y": 220,
+      "wires": [["check-status"]]
+    },
+    {
+      "id": "jira-webhook",
+      "type": "http in",
+      "z": "jira-automation-flow",
+      "name": "Jira Webhook",
+      "url": "/webhooks/jira",
+      "method": "post",
+      "x": 150,
+      "y": 340,
+      "wires": [["parse-jira"]]
+    },
+    {
+      "id": "validate-bug",
+      "type": "function",
+      "z": "jira-automation-flow",
+      "name": "Validate Bug Report",
+      "func": "const bug = msg.payload;\n\nif (!bug.title || !bug.description) {\n  msg.statusCode = 400;\n  msg.payload = { error: 'Title and description are required' };\n  return [null, msg];\n}\n\nmsg.jiraIssue = {\n  fields: {\n    project: { key: env.get('JIRA_PROJECT_KEY') || 'BUG' },\n    summary: bug.title,\n    description: {\n      type: 'doc',\n      version: 1,\n      content: [\n        {\n          type: 'paragraph',\n          content: [{ type: 'text', text: bug.description }]\n        },\n        {\n          type: 'paragraph',\n          content: [\n            { type: 'text', text: '\\n\\nReported by: ' },\n            { type: 'text', text: bug.reporter_email || 'Anonymous' }\n          ]\n        }\n      ]\n    },\n    issuetype: { name: 'Bug' },\n    priority: { name: bug.priority || 'Medium' },\n    labels: bug.labels || ['user-reported']\n  }\n};\n\nreturn [msg, null];",
+      "outputs": 2,
+      "x": 370,
+      "y": 100,
+      "wires": [["create-jira"], ["http-error"]]
+    },
+    {
+      "id": "check-status",
+      "type": "switch",
+      "z": "jira-automation-flow",
+      "name": "Is Completed?",
+      "property": "payload.status",
+      "propertyType": "msg",
+      "rules": [
+        { "t": "eq", "v": "completed", "vt": "str" },
+        { "t": "else" }
+      ],
+      "x": 370,
+      "y": 220,
+      "wires": [["get-jira-id"], []]
+    },
+    {
+      "id": "get-jira-id",
+      "type": "function",
+      "z": "jira-automation-flow",
+      "name": "Get Jira Issue ID",
+      "func": "const task = msg.payload;\n\nif (!task.jira_issue_id) {\n  node.status({ fill: 'grey', shape: 'ring', text: 'No Jira link' });\n  return null;\n}\n\nmsg.issueId = task.jira_issue_id;\nmsg.transition = {\n  transition: { id: '31' } // 'Done' transition ID\n};\n\nreturn msg;",
+      "outputs": 1,
+      "x": 560,
+      "y": 220,
+      "wires": [["transition-jira"]]
+    },
+    {
+      "id": "parse-jira",
+      "type": "function",
+      "z": "jira-automation-flow",
+      "name": "Parse Jira Event",
+      "func": "const event = msg.payload;\nconst webhookEvent = event.webhookEvent;\nconst issue = event.issue;\n\nif (!issue) {\n  return null;\n}\n\nmsg.jiraEvent = {\n  eventType: webhookEvent,\n  issueKey: issue.key,\n  issueId: issue.id,\n  summary: issue.fields.summary,\n  status: issue.fields.status.name,\n  assignee: issue.fields.assignee?.displayName,\n  priority: issue.fields.priority?.name\n};\n\nreturn msg;",
+      "outputs": 1,
+      "x": 370,
+      "y": 340,
+      "wires": [["route-jira-event"]]
+    },
+    {
+      "id": "route-jira-event",
+      "type": "switch",
+      "z": "jira-automation-flow",
+      "name": "Event Type",
+      "property": "jiraEvent.eventType",
+      "propertyType": "msg",
+      "rules": [
+        { "t": "eq", "v": "jira:issue_created", "vt": "str" },
+        { "t": "eq", "v": "jira:issue_updated", "vt": "str" },
+        { "t": "cont", "v": "comment", "vt": "str" }
+      ],
+      "x": 560,
+      "y": 340,
+      "wires": [["sync-to-tasks"], ["update-task"], ["notify-comment"]]
+    },
+    {
+      "id": "create-jira",
+      "type": "synthstack-jira",
+      "z": "jira-automation-flow",
+      "name": "Create Jira Issue",
+      "operation": "createIssue",
+      "x": 580,
+      "y": 100,
+      "wires": [["save-jira-link"]]
+    },
+    {
+      "id": "save-jira-link",
+      "type": "function",
+      "z": "jira-automation-flow",
+      "name": "Prepare Response",
+      "func": "const jiraResponse = msg.payload;\n\nmsg.directusData = {\n  jira_issue_id: jiraResponse.id,\n  jira_issue_key: jiraResponse.key,\n  status: 'open',\n  created_at: new Date().toISOString()\n};\n\nmsg.httpResponse = {\n  success: true,\n  issueKey: jiraResponse.key,\n  issueUrl: `${env.get('JIRA_BASE_URL')}/browse/${jiraResponse.key}`\n};\n\nreturn msg;",
+      "outputs": 1,
+      "x": 780,
+      "y": 100,
+      "wires": [["save-bug-record", "http-success"]]
+    },
+    {
+      "id": "save-bug-record",
+      "type": "synthstack-directus",
+      "z": "jira-automation-flow",
+      "name": "Save Bug Record",
+      "operation": "create",
+      "collection": "bug_reports",
+      "x": 1000,
+      "y": 80,
+      "wires": [[]]
+    },
+    {
+      "id": "transition-jira",
+      "type": "synthstack-jira",
+      "z": "jira-automation-flow",
+      "name": "Close Jira Issue",
+      "operation": "transitionIssue",
+      "x": 760,
+      "y": 220,
+      "wires": [["log-transition"]]
+    },
+    {
+      "id": "sync-to-tasks",
+      "type": "synthstack-directus",
+      "z": "jira-automation-flow",
+      "name": "Create Task",
+      "operation": "create",
+      "collection": "tasks",
+      "x": 760,
+      "y": 300,
+      "wires": [[]]
+    },
+    {
+      "id": "update-task",
+      "type": "synthstack-directus",
+      "z": "jira-automation-flow",
+      "name": "Update Task",
+      "operation": "update",
+      "collection": "tasks",
+      "x": 760,
+      "y": 340,
+      "wires": [[]]
+    },
+    {
+      "id": "notify-comment",
+      "type": "synthstack-slack",
+      "z": "jira-automation-flow",
+      "name": "Notify Comment",
+      "operation": "postMessage",
+      "channel": "#dev-updates",
+      "x": 760,
+      "y": 380,
+      "wires": [[]]
+    },
+    {
+      "id": "log-transition",
+      "type": "debug",
+      "z": "jira-automation-flow",
+      "name": "Log Transition",
+      "active": true,
+      "console": false,
+      "complete": "true",
+      "x": 960,
+      "y": 220,
+      "wires": []
+    },
+    {
+      "id": "http-success",
+      "type": "http response",
+      "z": "jira-automation-flow",
+      "name": "201 Created",
+      "statusCode": "201",
+      "x": 980,
+      "y": 120,
+      "wires": []
+    },
+    {
+      "id": "http-error",
+      "type": "http response",
+      "z": "jira-automation-flow",
+      "name": "400 Error",
+      "statusCode": "400",
+      "x": 560,
+      "y": 160,
+      "wires": []
+    }
+  ]
+}
+
+
