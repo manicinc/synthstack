@@ -783,34 +783,29 @@ body.body--light {
   background-color: var(--bg-base) !important;
 
   // ===========================================
-  // GLOBAL FIX: Reset -webkit-text-fill-color for all text
-  // WebKit browsers inherit transparent text-fill-color which makes text invisible
+  // GLOBAL TEXT COLOR RESET
+  // Ensure ALL text defaults to theme colors by setting -webkit-text-fill-color
+  // to currentColor. This prevents inheritance from dark mode styles.
   // ===========================================
-
-  // NUCLEAR OPTION: Force all text to be visible in light mode
-  // This overrides any -webkit-text-fill-color: transparent from gradient effects
-  // EXCEPT for elements that intentionally have dark backgrounds with light text
-  *:not(.cookie-banner *):not(.cookie-modal *):not(.demo-status-bar *):not(.q-notification *) {
-    -webkit-text-fill-color: inherit !important;
+  * {
+    -webkit-text-fill-color: currentColor;
   }
-
-  // Reset base text colors using theme variables
-  // These are defined in theme.scss as #18181b for light mode
-  color: var(--text-primary) !important;
-  -webkit-text-fill-color: var(--text-primary) !important;
 
   // ===========================================
   // DARK COMPONENTS IN LIGHT MODE
   // These components intentionally keep dark backgrounds with light text
+  // Uses direct child selectors to prevent style leakage
   // ===========================================
 
-  // Cookie consent banner - keep light text on dark background
+  // Cookie consent banner - ISOLATED dark component
   .cookie-banner {
     color: #e2e8f0 !important;
     -webkit-text-fill-color: #e2e8f0 !important;
 
-    * {
-      -webkit-text-fill-color: currentColor !important;
+    // Direct descendants inherit the light text color
+    > *, 
+    > * > * {
+      -webkit-text-fill-color: inherit !important;
     }
 
     p {
@@ -834,10 +829,12 @@ body.body--light {
     }
   }
 
-  // Cookie modal - keep light text on dark background
+  // Cookie modal - ISOLATED dark component
   .cookie-modal, .cookie-modal-overlay {
-    * {
-      -webkit-text-fill-color: currentColor !important;
+    // Direct descendants inherit
+    > *,
+    > * > * {
+      -webkit-text-fill-color: inherit !important;
     }
 
     h2, h4 {
@@ -851,10 +848,12 @@ body.body--light {
     }
   }
 
-  // Demo status bar - keep light text on dark background
+  // Demo status bar - ISOLATED dark component
   .demo-status-bar {
-    * {
-      -webkit-text-fill-color: currentColor !important;
+    // Direct descendants inherit
+    > *,
+    > * > * {
+      -webkit-text-fill-color: inherit !important;
     }
 
     .demo-badge {
@@ -893,20 +892,27 @@ body.body--light {
 
   // Quasar notifications - keep proper colors
   .q-notification {
-    * {
-      -webkit-text-fill-color: currentColor !important;
+    > *,
+    > * > * {
+      -webkit-text-fill-color: inherit !important;
     }
   }
 
-  // All headings
+  // Typography - use theme variables with explicit text-fill-color
   h1, h2, h3, h4, h5, h6 {
-    color: #18181b !important;
-    -webkit-text-fill-color: #18181b !important;
+    color: var(--text-primary);
+    -webkit-text-fill-color: var(--text-primary);
   }
 
-  // All paragraphs and text
-  p, span, li, td, th, label, a {
-    -webkit-text-fill-color: inherit !important;
+  p {
+    color: var(--text-secondary);
+    -webkit-text-fill-color: var(--text-secondary);
+  }
+
+  // Ensure inline text elements inherit properly
+  span, li, td, th, label, a {
+    color: inherit;
+    -webkit-text-fill-color: currentColor;
   }
 
   // Secondary text elements

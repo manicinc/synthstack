@@ -7,7 +7,6 @@
 import { Pool, PoolClient } from 'pg';
 import { createHash, randomUUID } from 'crypto';
 import { TEST_USERS, TestUser } from '../__tests__/fixtures/users';
-import { TEST_REFERRAL_SEASON, TEST_REFERRAL_TIERS, TEST_REFERRAL_CODE, TEST_DISCOUNT_CODE } from '../__tests__/fixtures/referrals';
 
 const TEST_DATABASE_URL = process.env.DATABASE_URL || 'postgresql://test_user:test_pass@localhost:5451/synthstack_test';
 
@@ -257,7 +256,6 @@ export async function seedReferralTestData(): Promise<void> {
 export async function seedAllTestData(): Promise<void> {
   await seedTestUsers();
   await seedTestOrganization();
-  await seedReferralTestData();
 }
 
 /**
