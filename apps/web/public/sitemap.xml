@@ -4,39 +4,102 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://synthstack.app/</loc>
-    <lastmod>2026-01-10</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://synthstack.app/og-image.png</image:loc>
+      <image:title>SynthStack - AI-Powered Development Platform</image:title>
+      <image:caption>Build faster with AI Cofounders</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://synthstack.app/features</loc>
-    <lastmod>2026-01-10</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://synthstack.app/images/features-hero.png</image:loc>
+      <image:title>SynthStack Features</image:title>
+      <image:caption>AI Copilot, Workflows, Client Portal and more</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://synthstack.app/pricing</loc>
-    <lastmod>2026-01-10</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://synthstack.app/images/pricing-comparison.png</image:loc>
+      <image:title>SynthStack Pricing Plans</image:title>
+      <image:caption>Free, Maker, Pro, and Agency tiers</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://synthstack.app/about</loc>
-    <lastmod>2026-01-10</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://synthstack.app/contact</loc>
-    <lastmod>2026-01-10</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://synthstack.app/blog</loc>
-    <lastmod>2026-01-10</lastmod>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://synthstack.app/docs</loc>
+    <lastmod>2026-01-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://synthstack.app/docs/getting-started</loc>
+    <lastmod>2026-01-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://synthstack.app/docs/api-reference</loc>
+    <lastmod>2026-01-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://synthstack.app/docs/ai-copilot</loc>
+    <lastmod>2026-01-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://synthstack.app/docs/workflows</loc>
+    <lastmod>2026-01-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://synthstack.app/docs/client-portal</loc>
+    <lastmod>2026-01-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://synthstack.app/docs/byok</loc>
+    <lastmod>2026-01-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://synthstack.app/docs/self-hosting</loc>
+    <lastmod>2026-01-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://synthstack.app/privacy</loc>
@@ -51,243 +114,180 @@
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://synthstack.app/printers</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/filaments</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/profiles</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/guides</loc>
-    <lastmod>2026-01-10</lastmod>
+    <loc>https://synthstack.app/ai-copilot</loc>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://synthstack.app/images/ai-copilot-demo.png</image:loc>
+      <image:title>AI Copilot Chat Interface</image:title>
+      <image:caption>Chat with AI agents to accelerate development</image:caption>
+    </image:image>
   </url>
   <url>
-    <loc>https://synthstack.app/guides/3d-printing-beginners</loc>
-    <lastmod>2026-01-10</lastmod>
+    <loc>https://synthstack.app/ai-cofounders</loc>
+    <lastmod>2026-01-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://synthstack.app/images/ai-cofounders.png</image:loc>
+      <image:title>AI Cofounder Agents</image:title>
+      <image:caption>CEO, CTO, Designer, Developer, and more</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://synthstack.app/workflows</loc>
+    <lastmod>2026-01-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://synthstack.app/images/workflow-builder.png</image:loc>
+      <image:title>Visual Workflow Builder</image:title>
+      <image:caption>Node-RED powered automation workflows</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://synthstack.app/client-portal</loc>
+    <lastmod>2026-01-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://synthstack.app/use-cases/agencies</loc>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://synthstack.app/guides/pla-vs-petg-vs-abs</loc>
-    <lastmod>2026-01-10</lastmod>
+    <loc>https://synthstack.app/use-cases/startups</loc>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://synthstack.app/guides/best-slicer-settings</loc>
-    <lastmod>2026-01-10</lastmod>
+    <loc>https://synthstack.app/use-cases/developers</loc>
+    <lastmod>2026-01-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://synthstack.app/guides/how-to-calibrate-printer</loc>
-    <lastmod>2026-01-10</lastmod>
+    <loc>https://synthstack.app/integrations</loc>
+    <lastmod>2026-01-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://synthstack.app/integrations/openai</loc>
+    <lastmod>2026-01-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://synthstack.app/integrations/anthropic</loc>
+    <lastmod>2026-01-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://synthstack.app/integrations/stripe</loc>
+    <lastmod>2026-01-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://synthstack.app/integrations/supabase</loc>
+    <lastmod>2026-01-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://synthstack.app/changelog</loc>
+    <lastmod>2026-01-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://synthstack.app/faq</loc>
+    <lastmod>2026-01-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://synthstack.app/blog/introducing-synthstack</loc>
+    <lastmod>2024-12-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://synthstack.app/images/blog/introducing-synthstack.png</image:loc>
+      <image:title>Introducing SynthStack</image:title>
+      <image:caption>The AI-powered platform for modern development teams</image:caption>
+    </image:image>
   </url>
   <url>
-    <loc>https://synthstack.app/guides/troubleshooting-common-issues</loc>
-    <lastmod>2026-01-10</lastmod>
+    <loc>https://synthstack.app/blog/ai-copilot-best-practices</loc>
+    <lastmod>2024-12-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://synthstack.app/images/blog/ai-copilot-tips.png</image:loc>
+      <image:title>AI Copilot Best Practices</image:title>
+      <image:caption>Get the most out of your AI assistant</image:caption>
+    </image:image>
   </url>
   <url>
-    <loc>https://synthstack.app/slicers/cura</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/slicers/prusaslicer</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/slicers/orcaslicer</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/slicers/bambu-studio</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/slicers/simplify3d</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/printers/brand/prusa</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://synthstack.app/blog/building-workflows-with-node-red</loc>
+    <lastmod>2024-12-20</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://synthstack.app/images/blog/node-red-workflows.png</image:loc>
+      <image:title>Building Workflows with Node-RED</image:title>
+      <image:caption>Visual automation for your business processes</image:caption>
+    </image:image>
   </url>
   <url>
-    <loc>https://synthstack.app/printers/brand/bambulab</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://synthstack.app/blog/byok-bring-your-own-keys</loc>
+    <lastmod>2025-01-05</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://synthstack.app/images/blog/byok-guide.png</image:loc>
+      <image:title>BYOK - Bring Your Own Keys</image:title>
+      <image:caption>Use your own API keys for unlimited AI usage</image:caption>
+    </image:image>
   </url>
   <url>
-    <loc>https://synthstack.app/printers/brand/creality</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://synthstack.app/blog/client-portal-for-agencies</loc>
+    <lastmod>2025-01-08</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://synthstack.app/images/blog/client-portal.png</image:loc>
+      <image:title>Client Portal for Agencies</image:title>
+      <image:caption>White-label client collaboration made easy</image:caption>
+    </image:image>
   </url>
   <url>
-    <loc>https://synthstack.app/printers/brand/voron</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://synthstack.app/blog/self-hosting-synthstack</loc>
+    <lastmod>2025-01-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://synthstack.app/images/blog/self-hosting.png</image:loc>
+      <image:title>Self-Hosting SynthStack</image:title>
+      <image:caption>Deploy on your own infrastructure</image:caption>
+    </image:image>
   </url>
   <url>
-    <loc>https://synthstack.app/printers/brand/elegoo</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/filaments/type/pla</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/filaments/type/petg</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/filaments/type/abs</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/filaments/type/tpu</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/filaments/type/nylon</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/filaments/type/asa</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/printers/prusa-mk4</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://synthstack.app/blog/referral-program-launch</loc>
+    <lastmod>2025-01-10</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://synthstack.app/printers/bambu-lab-x1-carbon</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/printers/creality-ender-3-v3</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/printers/voron-2-4</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/printers/elegoo-neptune-4</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/printers/anycubic-kobra-3</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/printers/qidi-x-max-3</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/printers/flashforge-adventurer-5m</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/filaments/polymaker-polylite-pla</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/filaments/hatchbox-pla</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/filaments/overture-petg</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/filaments/esun-pla-pro</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/filaments/prusament-petg</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/filaments/bambu-lab-pla-basic</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://synthstack.app/filaments/sunlu-pla-plus</loc>
-    <lastmod>2026-01-10</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://synthstack.app/blog/2024-year-in-review</loc>
+    <lastmod>2024-12-31</lastmod>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
 </urlset>
