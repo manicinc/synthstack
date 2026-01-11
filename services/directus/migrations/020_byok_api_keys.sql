@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS user_api_keys (
 
   -- Encrypted key storage
   encrypted_key TEXT NOT NULL,    -- AES-256 encrypted API key
-  key_hint VARCHAR(8),            -- Last 4 chars for display (e.g., '...abc1')
+  key_hint VARCHAR(20),           -- Key hint for display (e.g., 'sk-...cdef')
 
   -- Status
   is_active BOOLEAN DEFAULT true,
