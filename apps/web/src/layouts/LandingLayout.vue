@@ -8,9 +8,7 @@
     <ElectronTitleBar />
     <SiteHeader />
     <q-page-container>
-      <!-- Render LandingPage directly at root path, use router-view for other paths -->
-      <LandingPage v-if="isHomePage" />
-      <router-view v-else />
+      <router-view />
     </q-page-container>
     <SiteFooter />
     <CookieConsent />
@@ -20,18 +18,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
 import CookieConsent from '@/components/gdpr/CookieConsent.vue'
 import SiteHeader from '@/components/layout/SiteHeader.vue'
 import SiteFooter from '@/components/layout/SiteFooter.vue'
 import ScrollToTop from '@/components/ui/ScrollToTop.vue'
 import ElectronTitleBar from '@/components/layout/ElectronTitleBar.vue'
-import LandingPage from '@/pages/LandingPage.vue'
-
-const route = useRoute()
-
-// Check if at home page (root path)
-const isHomePage = computed(() => route.path === '/' || route.path === '')
 
 // Check if running in Electron on macOS
 const isElectronMac = computed(() => {
