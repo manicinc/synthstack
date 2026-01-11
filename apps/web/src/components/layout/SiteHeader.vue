@@ -388,7 +388,8 @@ const themeStore = useThemeStore()
 const featureStore = useFeatureStore()
 const $q = useQuasar()
 const { name, mark, social, links, demo } = useBranding()
-const adminUrl = demo.adminUrl
+// demo is a computed ref, so access its value
+const adminUrl = computed(() => demo.value.adminUrl)
 const mobileMenu = ref(false)
 const aboutOpen = ref(false)
 

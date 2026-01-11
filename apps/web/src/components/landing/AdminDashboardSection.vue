@@ -168,7 +168,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useBranding } from '@/composables/useBranding'
 import AdminSidebar from './admin/AdminSidebar.vue'
@@ -182,7 +182,8 @@ import AdminLLMCostsTab from './admin/AdminLLMCostsTab.vue'
 const { t } = useI18n()
 const { demo } = useBranding()
 
-const adminUrl = demo.adminUrl
+// demo is a computed ref, so access its value
+const adminUrl = computed(() => demo.value.adminUrl)
 
 const activeAdminTab = ref('dashboard')
 const activeSidebarItem = ref('dashboard')

@@ -39,6 +39,19 @@ export function useBranding() {
   /** Check if dark mode is active */
   const isDark = computed(() => themeStore.isDark)
 
+  /** Demo config with dynamic adminUrl that detects localhost */
+  const demo = computed(() => {
+    const isLocalhost = typeof window !== 'undefined' &&
+      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+
+    return {
+      ...branding.demo,
+      // Use local Directus URL when running on localhost
+      adminUrl: import.meta.env.VITE_ADMIN_URL ||
+        (isLocalhost ? 'http://localhost:8056' : 'https://admin.synthstack.app')
+    }
+  })
+
   return {
     // Static config
     ...branding,
@@ -48,6 +61,9 @@ export function useBranding() {
     mark,
     favicon,
     isDark,
+
+    // Override demo with dynamic adminUrl
+    demo,
 
     // Raw config access
     config: branding as BrandingConfig,

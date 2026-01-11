@@ -1,5 +1,5 @@
 <template>
-  <div
+  <q-page
     class="landing-page"
     data-testid="landing-page"
   >
@@ -52,16 +52,15 @@
       <!-- Footer -->
       <FooterSection />
     </main>
-  </div>
+  </q-page>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { useQuasar } from 'quasar'
-import { useThemeStore } from '@/stores/theme'
 import { usePages, type Page } from '@/composables/usePages'
 import { useSeo } from '@/composables/useSeo'
-import { devLog, devWarn, devError, logError } from '@/utils/devLogger'
+import { logError } from '@/utils/devLogger'
 import { analyticsEvents, adConversions } from '@/boot/analytics'
 
 // Landing section components
@@ -97,7 +96,7 @@ const promoStats = ref<{
   discount: string;
 } | null>(null)
 
-const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3030'
+const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3003'
 const promoCode = import.meta.env.VITE_STRIPE_LIFETIME_PROMO_CODE || 'EARLYSYNTH'
 
 async function fetchPromoStats() {
