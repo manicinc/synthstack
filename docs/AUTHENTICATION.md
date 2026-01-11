@@ -117,6 +117,27 @@ Copy the output (e.g., `x3H7k9mP2vR5wQ8sL1nC4bF6tY0jU9iA3gD5hK7mN2q=`)
 JWT_SECRET=x3H7k9mP2vR5wQ8sL1nC4bF6tY0jU9iA3gD5hK7mN2q=
 DATABASE_URL=postgresql://user:password@localhost:5432/synthstack
 
+# Email Configuration (for password reset & verification emails)
+# Option A: Resend API (recommended)
+EMAIL_PROVIDER=resend
+RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Option B: SMTP (alternative)
+# EMAIL_PROVIDER=smtp
+# SMTP_HOST=smtp.example.com
+# SMTP_PORT=587
+# SMTP_USER=your-smtp-user
+# SMTP_PASS=your-smtp-password
+# EMAIL_FROM=noreply@yourdomain.com
+
+# OAuth Providers (optional)
+GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+DISCORD_CLIENT_ID=your-discord-client-id
+DISCORD_CLIENT_SECRET=your-discord-client-secret
+
 # Optional: Remove Supabase vars if not using
 # SUPABASE_URL=...
 # SUPABASE_ANON_KEY=...
@@ -154,26 +175,35 @@ SET
 
 ### 5. (Optional) Configure OAuth Providers
 
-To enable social login with local auth, you'll need to set up OAuth apps and configure credentials:
+Local auth now has **full OAuth support** for Google, GitHub, Discord, and Apple. OAuth credentials are configured via environment variables (see step 2).
+
+Enable OAuth providers in the database:
 
 ```sql
 UPDATE auth_provider_config
 SET
   oauth_google_enabled = true,
-  oauth_google_client_id = 'your-google-client-id.apps.googleusercontent.com',
   oauth_github_enabled = true,
-  oauth_github_client_id = 'your-github-client-id';
+  oauth_discord_enabled = true;
 ```
 
-**Note:** OAuth client secrets should be stored in environment variables (not database):
-```bash
-OAUTH_GOOGLE_CLIENT_SECRET=your-secret
-OAUTH_GITHUB_CLIENT_SECRET=your-secret
+See [OAuth Setup](#oauth-setup) for detailed instructions on creating OAuth apps.
+
+### 6. (Optional) Require Email Verification
+
+To require users to verify their email before signing in:
+
+```sql
+UPDATE auth_provider_config
+SET require_email_verification = true;
 ```
 
-See [OAuth Setup](#oauth-setup) for detailed instructions.
+When enabled:
+- New users receive a verification email on signup
+- Sign-in fails with `EMAIL_NOT_VERIFIED` error until verified
+- Users can request a new verification email
 
-**Done!** Your app now uses local PostgreSQL authentication.
+**Done!** Your app now uses local PostgreSQL authentication with full feature parity.
 
 ---
 
@@ -917,18 +947,19 @@ curl https://api.synthstack.app/api/v1/auth/me \
 
 | Aspect | Supabase Auth | Local PostgreSQL Auth |
 |--------|---------------|----------------------|
-| **Setup Complexity** | ⭐⭐⭐⭐⭐ Easy (5 min) | ⭐⭐⭐ Moderate (15 min) |
+| **Setup Complexity** | ⭐⭐⭐⭐⭐ Easy (5 min) | ⭐⭐⭐⭐ Easy (10 min) |
 | **External Dependencies** | Yes (Supabase service) | None |
-| **OAuth Providers** | Built-in (Google, GitHub, Discord, Apple) | Manual setup required |
+| **OAuth Providers** | Built-in (Google, GitHub, Discord, Apple) | Built-in (Google, GitHub, Discord, Apple) |
 | **Cost** | $0-25/month (free: 50k users, 2GB DB) | $0 (included in server) |
 | **Data Sovereignty** | Hosted by Supabase | Full control |
 | **Scalability** | Auto-scaling | Manual (database scaling) |
-| **Email Templates** | Built-in, customizable | Custom implementation |
+| **Email Templates** | Built-in, customizable | Built-in (password reset, verification, welcome) |
 | **Admin Dashboard** | Supabase UI | Custom/SQL queries |
 | **MFA Support** | Built-in | Prepared (not implemented) |
-| **Audit Logs** | Built-in | Custom implementation |
-| **Password Hashing** | bcrypt | Argon2id (stronger) |
-| **Session Management** | Supabase manages | Full control |
+| **Audit Logs** | Built-in | Built-in (auth_events table) |
+| **Password Hashing** | bcrypt | Argon2id (stronger, recommended) |
+| **Session Management** | Supabase manages | Full control + refresh token rotation |
+| **Account Lockout** | No | Yes (configurable, default 5 attempts) |
 | **Migration Effort** | None (default) | Update config + env vars |
 | **Lock-in Risk** | Vendor lock-in | No lock-in |
 
@@ -944,11 +975,13 @@ curl https://api.synthstack.app/api/v1/auth/me \
 ### When to Use Local PostgreSQL
 
 ✅ **Self-hosted requirement** - Must run on your infrastructure
-✅ **No external dependencies** - Can't rely on third-party services
+✅ **No external dependencies** - Zero external API calls for auth
 ✅ **Full data control** - Data sovereignty requirements
 ✅ **Cost optimization** - High user count (>50k users)
 ✅ **Custom auth logic** - Need full control over auth flow
-✅ **No vendor lock-in** - Want to own the entire stack
+✅ **No vendor lock-in** - Own the entire auth stack
+✅ **Stronger security** - Argon2id hashing + account lockout
+✅ **Full feature parity** - OAuth, email verification, password reset
 
 ---
 

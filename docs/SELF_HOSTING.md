@@ -179,10 +179,11 @@ SynthStack supports multiple authentication providers. Choose one based on your 
 
 ### Option 2: Local PostgreSQL Auth (Self-Hosted)
 
-**Pros:** No external dependencies, full data control, cost-effective
-**Cons:** Manual OAuth setup, no built-in admin UI
+**Pros:** No external dependencies, full data control, built-in OAuth, cost-effective
+**Cons:** No built-in admin UI (use database queries)
 
 **Setup:**
+
 1. Generate JWT secret (256-bit):
    ```bash
    openssl rand -base64 32
@@ -194,9 +195,12 @@ SynthStack supports multiple authentication providers. Choose one based on your 
    JWT_SECRET=your-generated-secret-here
    DATABASE_URL=postgresql://user:pass@localhost/synthstack
 
-   # Remove Supabase variables (optional)
-   # SUPABASE_URL=...
-   # SUPABASE_ANON_KEY=...
+   # Email configuration (required for password reset, verification)
+   EMAIL_PROVIDER=resend
+   RESEND_API_KEY=re_xxx
+   EMAIL_FROM_ADDRESS=noreply@yourdomain.com
+   EMAIL_FROM_NAME=SynthStack
+   FRONTEND_URL=https://yourdomain.com
    ```
 
 3. Migration 070_local_auth.sql auto-applies on first run
@@ -207,17 +211,29 @@ SynthStack supports multiple authentication providers. Choose one based on your 
    SET
      active_provider = 'local',
      local_enabled = true,
-     supabase_enabled = false;
+     supabase_enabled = false,
+     require_email_verification = true;  -- Recommended for production
    ```
 
-5. (Optional) Configure OAuth providers:
-   ```sql
-   UPDATE auth_provider_config
-   SET
-     local_oauth_google_client_id = 'your-google-client-id',
-     local_oauth_google_client_secret = 'your-google-secret',
-     local_oauth_github_client_id = 'your-github-client-id',
-     local_oauth_github_client_secret = 'your-github-secret';
+5. (Optional) Configure OAuth providers via environment variables:
+   ```bash
+   # Google OAuth
+   GOOGLE_CLIENT_ID=your-google-client-id
+   GOOGLE_CLIENT_SECRET=your-google-secret
+
+   # GitHub OAuth
+   GITHUB_CLIENT_ID=your-github-client-id
+   GITHUB_CLIENT_SECRET=your-github-secret
+
+   # Discord OAuth
+   DISCORD_CLIENT_ID=your-discord-client-id
+   DISCORD_CLIENT_SECRET=your-discord-secret
+
+   # Apple Sign In (requires additional setup)
+   APPLE_CLIENT_ID=your-apple-client-id
+   APPLE_TEAM_ID=your-apple-team-id
+   APPLE_KEY_ID=your-apple-key-id
+   APPLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n..."
    ```
 
 See [Authentication Documentation](./AUTHENTICATION.md) for detailed OAuth setup.
