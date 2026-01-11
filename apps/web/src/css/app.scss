@@ -774,13 +774,20 @@ pre {
 // ============================================
 
 body.body--light {
-  // ===========================================
-  // FORCE LIGHT MODE COLORS
-  // ===========================================
-  
-  // Force body to use light mode colors
-  color: var(--text-primary) !important;
+  // Force color-scheme for native form controls
+  color-scheme: light;
+
+  // Use theme variables - the theme store sets these via JavaScript
   background-color: var(--bg-base) !important;
+  color: var(--text-primary) !important;
+  // DO NOT set -webkit-text-fill-color on body - it breaks inheritance
+  
+  // CRITICAL: Ensure body is always visible in light mode
+  // Something (possibly an animation or transition) was setting these to problematic values
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  clip-path: none !important;
 
   // ===========================================
   // GLOBAL TEXT COLOR RESET

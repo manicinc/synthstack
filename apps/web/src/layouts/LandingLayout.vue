@@ -35,6 +35,7 @@ const isElectronMac = computed(() => {
 <style lang="scss">
 .landing-layout {
   min-height: 100vh;
+  background: var(--bg-base);
 
   &.has-electron-titlebar {
     padding-top: 38px;
@@ -61,10 +62,12 @@ html, body {
 .q-page-container {
   height: auto !important;
   min-height: auto !important;
+  background: var(--bg-base);
 }
 
 .q-page {
   height: auto !important;
   min-height: auto !important;
+  background: var(--bg-base);
 }
 </style>

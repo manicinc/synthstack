@@ -3,10 +3,11 @@
     ref="textRef"
     class="autonomous-text"
     :class="{
-      'is-visible': isVisible,
-      'is-revealed': isRevealed,
+      'is-visible': isVisible || !themeStore.isDark,
+      'is-revealed': isRevealed || !themeStore.isDark,
       'is-glowing': isGlowing,
-      'reduced-motion': prefersReducedMotion
+      'reduced-motion': prefersReducedMotion,
+      'light-mode-force': !themeStore.isDark
     }"
     :style="{ '--delay': `${delay}ms` }"
   >
@@ -42,7 +43,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
+import { useThemeStore } from '@/stores/theme'
+
+const themeStore = useThemeStore()
 
 interface Props {
   delay?: number
@@ -53,9 +57,10 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const textRef = ref<HTMLElement | null>(null)
-const isVisible = ref(false)
-const isRevealed = ref(false)
-const isGlowing = ref(false)
+// Start visible immediately to ensure text is shown
+const isVisible = ref(true)
+const isRevealed = ref(true)
+const isGlowing = ref(true)
 
 // Check for reduced motion preference
 const prefersReducedMotion = ref(false)
@@ -90,6 +95,36 @@ function startAnimation() {
   timeouts.push(t3)
 }
 
+// Force visibility in light mode via JavaScript
+const forceLightModeVisibility = () => {
+  if (themeStore.isDark || !textRef.value) return
+  
+  console.log('[AutonomousText] Forcing light mode visibility')
+  
+  const el = textRef.value
+  const textContent = el.querySelector('.text-content') as HTMLElement
+  const textGlow = el.querySelector('.text-glow') as HTMLElement
+  
+  if (textContent) {
+    textContent.style.setProperty('opacity', '1', 'important')
+    textContent.style.setProperty('clip-path', 'inset(0 0% 0 0)', 'important')
+    textContent.style.setProperty('visibility', 'visible', 'important')
+    textContent.style.setProperty('-webkit-text-fill-color', 'transparent', 'important')
+  }
+  
+  if (textGlow) {
+    textGlow.style.setProperty('opacity', '0.4', 'important')
+    textGlow.style.setProperty('-webkit-text-fill-color', 'transparent', 'important')
+  }
+}
+
+// Watch for theme changes
+watch(() => themeStore.isDark, (isDark) => {
+  if (!isDark) {
+    forceLightModeVisibility()
+  }
+}, { immediate: true })
+
 onMounted(() => {
   // Check reduced motion preference
   if (typeof window !== 'undefined') {
@@ -104,6 +139,11 @@ onMounted(() => {
 
     // Start animation
     startAnimation()
+    
+    // Force light mode visibility
+    if (!themeStore.isDark) {
+      forceLightModeVisibility()
+    }
 
     onUnmounted(() => {
       mediaQuery.removeEventListener('change', handler)
@@ -162,22 +202,14 @@ onMounted(() => {
 
 // Main text content with clip-path reveal
 .text-content {
-  // Hidden initially via clip-path (reveals left to right)
-  clip-path: inset(0 100% 0 0);
-  opacity: 0;
+  // Default: visible
+  clip-path: inset(0 0% 0 0);
+  opacity: 1;
 
   // Smooth reveal transition
   transition:
     clip-path 0.6s cubic-bezier(0.4, 0, 0.2, 1),
     opacity 0.2s ease;
-
-  .is-visible & {
-    opacity: 1;
-  }
-
-  .is-revealed & {
-    clip-path: inset(0 0% 0 0);
-  }
 
   // Subtle gradient animation when glowing
   .is-glowing & {
@@ -188,13 +220,35 @@ onMounted(() => {
 // Glow layer (blurred duplicate)
 .text-glow {
   filter: blur(8px);
-  opacity: 0;
+  opacity: 0.3; // Slight glow in light mode
   transition: opacity 0.4s ease;
 
   .is-glowing & {
     opacity: 0.6;
     animation: glow-pulse 3s ease-in-out infinite;
   }
+}
+
+// DARK MODE ANIMATION: Use global selectors with matching specificity
+:global(.body--dark) .text-content {
+  clip-path: inset(0 100% 0 0);
+  opacity: 0;
+}
+
+:global(.body--dark) .is-visible .text-content {
+  opacity: 1;
+}
+
+:global(.body--dark) .is-revealed .text-content {
+  clip-path: inset(0 0% 0 0);
+}
+
+:global(.body--dark) .text-glow {
+  opacity: 0;
+}
+
+:global(.body--dark) .is-glowing .text-glow {
+  opacity: 0.6;
 }
 
 // Shimmer sweep effect
@@ -276,18 +330,37 @@ onMounted(() => {
   }
 }
 
-// Dark/light mode adjustments (nested inside .autonomous-text)
-.autonomous-text {
-  .body--light & {
-    --gradient-1: #4f46e5;  // Darker indigo
-    --gradient-2: #059669;  // Darker teal
-    --gradient-3: #7c3aed;  // Darker purple
+// LIGHT MODE: Force visibility using :global() for body selector
+:global(.body--light) .autonomous-text {
+  --gradient-1: #4f46e5;  // Darker indigo
+  --gradient-2: #059669;  // Darker teal
+  --gradient-3: #7c3aed;  // Darker purple
+}
 
-    .text-glow {
-      &.is-glowing {
-        opacity: 0.4;
-      }
-    }
+:global(.body--light) .autonomous-text .text-content {
+  opacity: 1 !important;
+  clip-path: inset(0 0% 0 0) !important;
+  visibility: visible !important;
+}
+
+:global(.body--light) .autonomous-text .text-layer {
+  -webkit-text-fill-color: transparent !important;
+}
+
+:global(.body--light) .autonomous-text .text-glow {
+  opacity: 0.4 !important;
+}
+
+// Force visibility when light-mode-force class is applied via Vue
+.autonomous-text.light-mode-force {
+  .text-content {
+    opacity: 1 !important;
+    clip-path: inset(0 0% 0 0) !important;
+    visibility: visible !important;
+  }
+  
+  .text-glow {
+    opacity: 0.4 !important;
   }
 }
 </style>
