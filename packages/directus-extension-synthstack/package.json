@@ -1,7 +1,7 @@
 {
   "name": "@synthstack/directus-extension",
   "version": "1.0.0",
-  "description": "SynthStack extension bundle for Directus - Dashboard, Workflows, AI Agents, and integrations",
+  "description": "SynthStack extension bundle for Directus - Dashboard, Workflows, and integrations (Community Edition)",
   "type": "module",
   "keywords": [
     "directus",
@@ -44,11 +44,6 @@
         "type": "module",
         "name": "synthstack-workflows",
         "source": "src/modules/workflows/index.ts"
-      },
-      {
-        "type": "panel",
-        "name": "synthstack-ai-agents",
-        "source": "src/modules/ai-agents/index.ts"
       },
       {
         "type": "hook",
