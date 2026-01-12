@@ -270,7 +270,7 @@ function forceLightModeVisibility() {
     
     const strong = titleLine2.querySelector('strong')
     if (strong && !titleLine2.classList.contains('colorized')) {
-      ;(strong as HTMLElement).style.setProperty('color', '#3f3f46', 'important')
+      (strong as HTMLElement).style.setProperty('color', '#3f3f46', 'important')
       ;(strong as HTMLElement).style.setProperty('-webkit-text-fill-color', '#3f3f46', 'important')
       ;(strong as HTMLElement).style.setProperty('background', 'none', 'important')
     }
@@ -298,7 +298,7 @@ function forceLightModeVisibility() {
   // Force hero section background to use CSS variable
   const heroSection = document.querySelector('.hero-section')
   if (heroSection) {
-    ;(heroSection as HTMLElement).style.setProperty('background', 'var(--bg-base)', 'important')
+    (heroSection as HTMLElement).style.setProperty('background', 'var(--bg-base)', 'important')
   }
 }
 
@@ -339,7 +339,7 @@ function clearLightModeStyles() {
     
     const strong = titleLine2.querySelector('strong')
     if (strong) {
-      ;(strong as HTMLElement).style.removeProperty('color')
+      (strong as HTMLElement).style.removeProperty('color')
       ;(strong as HTMLElement).style.removeProperty('-webkit-text-fill-color')
       ;(strong as HTMLElement).style.removeProperty('background')
     }
@@ -367,7 +367,7 @@ function clearLightModeStyles() {
   // Remove inline styles from hero section
   const heroSection = document.querySelector('.hero-section')
   if (heroSection) {
-    ;(heroSection as HTMLElement).style.removeProperty('background')
+    (heroSection as HTMLElement).style.removeProperty('background')
   }
 }
 
