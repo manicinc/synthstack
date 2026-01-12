@@ -12,6 +12,7 @@
     </q-page-container>
     <SiteFooter />
     <CookieConsent />
+    <NewsletterPopup :delay="15000" :show-floating-trigger="true" />
     <ScrollToTop />
   </q-layout>
 </template>
@@ -19,6 +20,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import CookieConsent from '@/components/gdpr/CookieConsent.vue'
+import NewsletterPopup from '@/components/gdpr/NewsletterPopup.vue'
 import SiteHeader from '@/components/layout/SiteHeader.vue'
 import SiteFooter from '@/components/layout/SiteFooter.vue'
 import ScrollToTop from '@/components/ui/ScrollToTop.vue'
