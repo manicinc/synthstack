@@ -1,6 +1,6 @@
 # SynthStack
 
-![Tests](https://img.shields.io/badge/tests-1100%2B-brightgreen) ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue) ![Vue](https://img.shields.io/badge/Vue-3.x-42b883)
+![Tests](https://img.shields.io/badge/tests-920%2B-brightgreen) ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue) ![Vue](https://img.shields.io/badge/Vue-3.x-42b883)
 
 **Your Agency in a Box**
 
@@ -332,21 +332,21 @@ QDRANT_URL=https://qdrant.example.com:6333
 ```
 synthstack/
 ├── apps/
-│   └── web/                    # Vue 3 + Quasar frontend (iOS, Android, PWA, Desktop)
+│   └── web/                      # Vue 3 + Quasar frontend (iOS, Android, PWA, Desktop)
 ├── packages/
-│   ├── api-gateway/            # Fastify API Gateway (core backend)
-│   ├── types/                  # Shared TypeScript types
-│   ├── referrals-credits/      # Referral system & credit management
-│   ├── ts-ml-service/          # NestJS ML service (TypeScript-only option)
-│   ├── ml-service/             # FastAPI ML service (Python, optional)
-│   └── django-ml-service/      # Django ML service (Python, optional)
+│   ├── api-gateway/              # Fastify API Gateway (core backend)
+│   ├── types/                    # Shared TypeScript types
+│   ├── ts-ml-service/            # NestJS ML service (TypeScript-only)
+│   └── directus-extension-synthstack/  # Directus extensions
 ├── services/
-│   └── directus/               # Directus CMS config
+│   └── directus/                 # Directus CMS config (101 migrations)
 ├── tests/
-│   └── admin/                  # Admin/API tests
-├── docker-compose.yml          # Development environment
-└── turbo.json                  # Turborepo config
+│   └── admin/                    # Admin/API tests
+├── docker-compose.community.yml  # Community Docker environment
+└── turbo.json                    # Turborepo config
 ```
+
+> 💡 **Pro Edition** includes additional packages: `referrals-credits`, `agentic-ai`, `ml-service`, `django-ml-service`, `node-red-contrib-synthstack`, and `nodered-data`.
 
 ## 🏃 Quick Start
 
@@ -497,14 +497,15 @@ To rebrand: update this file and replace logo files in `apps/web/public/logo/`.
 
 ## 🧪 Tests & Lint
 
-![Tests](https://img.shields.io/badge/tests-839%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-920%2B-brightgreen)
 
 | Package | Passing | Skipped | Total |
 |---------|---------|---------|-------|
-| API Gateway | 551 | 49 | 600 |
-| Web App | 238 | 0 | 238 |
-| Node-RED | 50 | 0 | 50 |
-| **Total** | **839** | **49** | **888** |
+| API Gateway | 785 | 70 | 877 |
+| Web App | 138 | 0 | 139 |
+| **Total** | **~923** | **70** | **1016** |
+
+> **Note:** Community Edition has ~600 fewer tests than Pro because it excludes Pro-only features (Copilot, Referrals, Workflows, Node-RED, AI Agents). Pro Edition has ~1500+ tests.
 
 ```bash
 # Run all tests
