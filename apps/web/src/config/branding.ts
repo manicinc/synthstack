@@ -2,12 +2,27 @@
  * SynthStack Branding Configuration
  *
  * Centralized configuration for all branding assets and settings.
- * Update these values to customize your SaaS branding.
+ * Values are loaded from config.json with environment variable overrides.
+ *
+ * To rebrand for your own SaaS:
+ * 1. Edit config.json in the project root
+ * 2. Optionally override with environment variables (VITE_*)
+ * 3. Replace logo files in /public/logo/
+ * 4. Replace favicon files in /public/
+ *
+ * See docs/REBRANDING_GUIDE.md for complete instructions.
  *
  * @example
  * import { branding } from '@/config/branding'
- * console.log(branding.name) // 'SynthStack'
+ * console.log(branding.name) // 'SynthStack' or your custom name
  */
+
+// Import centralized config (loaded at build time via Vite)
+import configJson from '../../../../config.json'
+
+// ============================================
+// Types
+// ============================================
 
 export interface BrandingConfig {
   /** Company/Product name */
@@ -117,98 +132,135 @@ export interface BrandingConfig {
     securityUrl: string
     gdprUrl: string
   }
+
+  /** Application domain */
+  domain: string
+
+  /** Feature flags */
+  features: {
+    copilot: boolean
+    referrals: boolean
+    analytics: boolean
+    i18n: boolean
+  }
 }
+
+// ============================================
+// Config Loading with Environment Overrides
+// ============================================
 
 /**
- * Default SynthStack branding configuration
+ * Branding configuration loaded from config.json with env overrides.
  *
- * To customize for your own SaaS:
- * 1. Update the values below
- * 2. Replace logo files in /public/logo/
- * 3. Replace favicon files in /public/
+ * Priority: Environment variables > config.json defaults
+ *
+ * Environment variables available:
+ * - VITE_APP_NAME: App name
+ * - VITE_APP_TAGLINE: Tagline
+ * - VITE_SUPPORT_EMAIL: Support email
+ * - VITE_CONTACT_EMAIL: Contact/sales email
+ * - VITE_API_URL: API URL (for apiDocs)
+ * - VITE_ADMIN_URL: Admin URL (for demo.adminUrl)
+ * - VITE_ENABLE_COPILOT: Enable AI Copilot
+ * - VITE_ENABLE_REFERRALS: Enable referral system
  */
 export const branding: BrandingConfig = {
-  // Core Identity
-  name: 'SynthStack',
-  tagline: 'Your AI Co-Founders',
-  description:
-    'Not just a chatbot. A team of 6 specialized AI agents that know your business, access your data, and take action.',
-  fullDescription:
-    'Meet your AI co-founders: 6 specialized agents (Researcher, Marketer, Developer, SEO Writer, Designer, General Assistant) with deep system integration, automatic RAG, proactive suggestions, and actionable capabilities like GitHub PRs, blog posts, and marketing content.',
+  // Core Identity - env overrides config.json
+  name: import.meta.env.VITE_APP_NAME || configJson.app.name,
+  tagline: import.meta.env.VITE_APP_TAGLINE || configJson.app.tagline,
+  description: import.meta.env.VITE_APP_DESCRIPTION || configJson.app.description,
+  fullDescription: configJson.app.fullDescription,
+  domain: import.meta.env.VITE_APP_DOMAIN || configJson.app.domain,
 
-  // Contact (from environment variables)
-  supportEmail: import.meta.env.VITE_SUPPORT_EMAIL || 'team@manic.agency',
-  salesEmail: import.meta.env.VITE_CONTACT_EMAIL || 'team@manic.agency',
-  contactEmail: import.meta.env.VITE_CONTACT_EMAIL || 'team@manic.agency',
+  // Contact - env overrides config.json
+  supportEmail: import.meta.env.VITE_SUPPORT_EMAIL || configJson.contact.support,
+  salesEmail: import.meta.env.VITE_SALES_EMAIL || configJson.contact.sales,
+  contactEmail: import.meta.env.VITE_CONTACT_EMAIL || configJson.contact.general,
 
-  // Logo Assets
+  // Logo Assets - from config.json
   logo: {
-    light: '/logo/synthstack-logo.svg',
-    dark: '/logo/synthstack-logo-dark.svg',
-    mark: '/logo/synthstack-mark.svg',
-    markDark: '/logo/synthstack-mark-dark.svg',
+    light: configJson.branding.logo.light,
+    dark: configJson.branding.logo.dark,
+    mark: configJson.branding.logo.mark,
+    markDark: configJson.branding.logo.markDark,
   },
 
-  // Favicon Assets
+  // Favicon Assets - from config.json
   favicon: {
-    default: '/favicon.svg',
-    dark: '/favicon-dark.svg',
-    apple: '/icons/icon-192x192.png',
+    default: configJson.branding.favicon.default,
+    dark: configJson.branding.favicon.dark,
+    apple: configJson.branding.favicon.apple,
   },
 
-  // Social Media
+  // Social Media - from config.json with nulls filtered
   social: {
-    github: 'https://github.com/synthstack/synthstack',
-    twitter: 'https://twitter.com/synthstack',
-    discord: 'https://discord.gg/synthstack',
+    github: configJson.social.github || undefined,
+    twitter: configJson.social.twitter || undefined,
+    discord: configJson.social.discord || undefined,
+    linkedin: configJson.social.linkedin || undefined,
+    youtube: configJson.social.youtube || undefined,
   },
 
-  // External Links
+  // External Links - from config.json
   links: {
-    docs: '/docs',
-    changelog: '/changelog',
-    roadmap: '/roadmap',
-    apiDocs: `${import.meta.env.VITE_API_URL || 'https://api.synthstack.app'}/docs`,
+    docs: configJson.links.docs,
+    changelog: configJson.links.changelog || undefined,
+    roadmap: configJson.links.roadmap || undefined,
+    status: configJson.links.status || undefined,
+    apiDocs: `${import.meta.env.VITE_API_URL || `https://api.${configJson.app.domain}`}/docs`,
   },
 
-  // Demo Access (Guest Mode)
+  // Demo Access - from config.json with env overrides
   demo: {
-    adminUrl: import.meta.env.VITE_ADMIN_URL || 'https://admin.synthstack.app',
-    email: 'team@manic.agency',
-    password: 'DemoUser2024!',
-    apiDocsUrl: `${import.meta.env.VITE_API_URL || 'https://api.synthstack.app'}/docs`,
+    adminUrl: import.meta.env.VITE_ADMIN_URL || `https://admin.${configJson.app.domain}`,
+    email: configJson.demo.email,
+    password: configJson.demo.password,
+    apiDocsUrl: `${import.meta.env.VITE_API_URL || `https://api.${configJson.app.domain}`}/docs`,
   },
 
-  // Brand Colors
+  // Brand Colors - from config.json
   colors: {
-    primary: '#6366F1', // Indigo
-    accent: '#00D4AA', // Teal
-    theme: '#6366F1',
-    background: '#0D0D0D',
+    primary: configJson.branding.colors.primary,
+    accent: configJson.branding.colors.accent,
+    theme: configJson.branding.colors.theme,
+    background: configJson.branding.colors.background,
   },
 
-  // Open Graph
+  // Open Graph - from config.json
   og: {
-    image: '/og-image.svg',
-    type: 'website',
-    siteName: 'SynthStack',
+    image: configJson.branding.og.image,
+    type: configJson.branding.og.type,
+    siteName: configJson.app.name,
   },
 
-  // Company
+  // Company - from config.json
   company: {
-    name: 'SynthStack',
-    founded: '2024',
+    name: configJson.company.name,
+    founded: configJson.company.founded || undefined,
+    location: configJson.company.location || undefined,
   },
 
-  // Legal
+  // Legal - from config.json
   legal: {
-    privacyUrl: '/privacy',
-    termsUrl: '/terms',
-    cookiesUrl: '/cookies',
-    securityUrl: '/security',
-    gdprUrl: '/gdpr',
+    privacyUrl: configJson.legal.privacy,
+    termsUrl: configJson.legal.terms,
+    cookiesUrl: configJson.legal.cookies,
+    securityUrl: configJson.legal.security,
+    gdprUrl: configJson.legal.gdpr,
+  },
+
+  // Feature flags - env overrides config.json
+  features: {
+    copilot: import.meta.env.VITE_ENABLE_COPILOT === 'true' || configJson.features.copilot,
+    referrals: import.meta.env.VITE_ENABLE_REFERRALS === 'true' || configJson.features.referrals,
+    analytics: import.meta.env.VITE_ENABLE_ANALYTICS !== 'false' && configJson.features.analytics,
+    i18n: import.meta.env.VITE_I18N_ENABLED !== 'false' && configJson.features.i18n,
   },
 }
+
+// ============================================
+// Helper Functions
+// ============================================
 
 /**
  * Get logo based on current theme
@@ -229,6 +281,22 @@ export function getThemedMark(isDark: boolean): string {
  */
 export function getThemedFavicon(isDark: boolean): string {
   return isDark ? branding.favicon.dark : branding.favicon.default
+}
+
+/**
+ * Get full URL for a subdomain
+ */
+export function getSubdomainUrl(subdomain: string): string {
+  const protocol = import.meta.env.DEV ? 'http' : 'https'
+  const domain = branding.domain
+  return `${protocol}://${subdomain}.${domain}`
+}
+
+/**
+ * Check if a feature is enabled
+ */
+export function isFeatureEnabled(feature: keyof BrandingConfig['features']): boolean {
+  return branding.features[feature]
 }
 
 export default branding
