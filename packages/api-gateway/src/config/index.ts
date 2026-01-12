@@ -37,8 +37,7 @@ const envSchema = z.object({
   LLM_CHEAP_MODEL: z.string().default('gpt-4o-mini'),
   LLM_PREMIUM_MODEL: z.string().default('claude-3-opus-20240229'),
   DATABASE_URL: z.string().default('postgres://postgres:postgres@localhost:5450/synthstack'),
-  QDRANT_URL: z.string().default('http://localhost:6333'),
-  QDRANT_API_KEY: z.string().optional(),
+  // QDRANT removed - Community Edition
   COPILOT_ENABLED: z.string().default('true'),
   COPILOT_MODEL: z.string().default('gpt-4o'),
   COPILOT_FALLBACK_MODEL: z.string().default('claude-3-5-sonnet-20241022'),
@@ -131,10 +130,7 @@ export const config = {
     premiumModel: env.LLM_PREMIUM_MODEL,
   },
   databaseUrl: env.DATABASE_URL,
-  qdrant: {
-    url: env.QDRANT_URL,
-    apiKey: env.QDRANT_API_KEY,
-  },
+  // Qdrant disabled in Community Edition - upgrade to Pro for vector search
   copilot: {
     enabled: env.COPILOT_ENABLED === 'true',
     model: env.COPILOT_MODEL,

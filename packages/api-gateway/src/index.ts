@@ -29,11 +29,7 @@ import {
 // ML Credits Middleware
 import { mlCreditsPreRequestHook, mlCreditsPostRequestHook } from './middleware/ml-credits.js';
 
-// Qdrant Vector Database
-import { initializePortalContextCollection, checkQdrantHealth } from './services/qdrant/collections.js';
-
-// Background Jobs
-import { startPortalContextIndexingJob } from './jobs/indexPortalContext.js';
+// Background Jobs (Community Edition - no Qdrant/vector search)
 import { startLLMCostAggregationJobs } from './jobs/llmCostAggregation.js';
 
 let server: FastifyInstance;
@@ -72,29 +68,12 @@ async function start() {
     server.addHook('onResponse', mlCreditsPostRequestHook);
     server.log.info('💳 ML credits middleware enabled');
 
-    // Initialize Qdrant vector database
-    server.log.info('🔍 Initializing Qdrant vector database...');
-    try {
-      const qdrantHealthy = await checkQdrantHealth();
-      if (qdrantHealthy) {
-        await initializePortalContextCollection();
-        server.log.info('✅ Qdrant initialized successfully');
+    // Start LLM cost aggregation jobs
+    startLLMCostAggregationJobs(server);
+    server.log.info('✅ LLM cost aggregation jobs scheduled');
 
-        // Start background indexing job
-        startPortalContextIndexingJob(server);
-        server.log.info('✅ Portal context indexing job scheduled');
-
-        // Start LLM cost aggregation jobs
-        startLLMCostAggregationJobs(server);
-        server.log.info('✅ LLM cost aggregation jobs scheduled');
-      } else {
-        server.log.warn('⚠️  Qdrant health check failed - vector search will be unavailable');
-        server.log.warn('⚠️  Portal copilot will fall back to keyword matching');
-      }
-    } catch (qdrantError) {
-      server.log.error({ error: qdrantError }, '❌ Failed to initialize Qdrant');
-      server.log.warn('⚠️  Portal copilot will fall back to keyword matching');
-    }
+    // Community Edition: Qdrant/vector search disabled
+    // Upgrade to Pro for AI-powered semantic search
 
     // Start listening
     await server.listen({ port: config.port, host: config.host });

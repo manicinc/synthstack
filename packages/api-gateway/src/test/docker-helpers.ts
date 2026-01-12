@@ -15,7 +15,7 @@ const SERVICE_HEALTH_CHECKS = {
   postgres: 'http://localhost:5451', // Will fail gracefully, we check via pg
   redis: 'http://localhost:6391', // Will fail gracefully, we check via redis-cli
   'ml-service': 'http://localhost:8031/health',
-  qdrant: 'http://localhost:6334/health',
+  // Qdrant disabled in Community Edition
 };
 
 /**
