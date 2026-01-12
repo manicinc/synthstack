@@ -1,5 +1,11 @@
 # SynthStack Docker Compose - Development Environment
 # AI-Native SaaS Boilerplate
+#
+# Container names and network can be customized via environment variables:
+#   CONTAINER_PREFIX=myapp docker compose up -d
+#
+# All container names will be prefixed with your custom name.
+# See docs/REBRANDING_GUIDE.md for complete instructions.
 
 services:
   # ============================================
@@ -7,7 +13,7 @@ services:
   # ============================================
   postgres:
     image: pgvector/pgvector:pg15
-    container_name: synthstack-postgres
+    container_name: ${CONTAINER_PREFIX:-synthstack}-postgres
     env_file:
       - .env
     environment:
@@ -20,7 +26,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       # Note: App migrations run after Directus creates its schema (via directus-migrate service)
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-synthstack} -d ${DB_DATABASE:-synthstack}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-synthstack} -d ${DB_DATABASE:-synthstack}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -33,14 +39,14 @@ services:
   # ============================================
   redis:
     image: redis:7-alpine
-    container_name: synthstack-redis
+    container_name: ${CONTAINER_PREFIX:-synthstack}-redis
     command: redis-server --appendonly yes
     ports:
       - "6399:6379"
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -53,21 +59,17 @@ services:
   # ============================================
   qdrant:
     image: qdrant/qdrant:v1.7.4
-    container_name: synthstack-qdrant
+    container_name: ${CONTAINER_PREFIX:-synthstack}-qdrant
     ports:
-      - "6333:6333"  # HTTP API
-      - "6334:6334"  # gRPC API
+      - "6333:6333" # HTTP API
+      - "6334:6334" # gRPC API
     volumes:
       - qdrant_data:/qdrant/storage
     environment:
       QDRANT__SERVICE__GRPC_PORT: 6334
       QDRANT__SERVICE__HTTP_PORT: 6333
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "bash -c 'exec 3<>/dev/tcp/localhost/6333 && printf \"GET /healthz HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n\" >&3'",
-        ]
+      test: [ "CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/localhost/6333 && printf \"GET /healthz HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n\" >&3'" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -84,7 +86,7 @@ services:
       dockerfile: Dockerfile
       # Using regular Dockerfile instead of Dockerfile.custom to avoid Zod v4 conflicts
       # with @directus-labs/collaborative-editing extension
-    container_name: synthstack-directus
+    container_name: ${CONTAINER_PREFIX:-synthstack}-directus
     ports:
       - "8099:8055"
     env_file:
@@ -93,7 +95,7 @@ services:
       # Security Keys
       KEY: ${DIRECTUS_KEY:-synthstack-key-change-in-production}
       SECRET: ${DIRECTUS_SECRET:-synthstack-secret-change-in-production}
-      
+
       # Database
       DB_CLIENT: pg
       DB_HOST: postgres
@@ -101,26 +103,26 @@ services:
       DB_DATABASE: ${DB_DATABASE:-synthstack}
       DB_USER: ${DB_USER:-synthstack}
       DB_PASSWORD: ${DB_PASSWORD:-synthstack_dev_2024}
-      
+
       # Cache
       CACHE_ENABLED: "true"
       CACHE_STORE: redis
       REDIS: redis://redis:6379
-      
+
       # Admin
       ADMIN_EMAIL: ${DIRECTUS_ADMIN_EMAIL:-admin@synthstack.app}
       ADMIN_PASSWORD: ${DIRECTUS_ADMIN_PASSWORD:-SynthStack2024!}
       ADMIN_TOKEN: ${DIRECTUS_ADMIN_TOKEN:-synthstack-static-admin-token-2024}
-      
+
       # CORS
       PUBLIC_URL: ${DIRECTUS_PUBLIC_URL:-http://localhost:8099}
       CORS_ENABLED: "true"
       CORS_ORIGIN: "http://localhost:3050,http://localhost:3003,http://localhost:8099"
-      
+
       # Storage
       STORAGE_LOCATIONS: local
       STORAGE_LOCAL_ROOT: ./uploads
-      
+
       # Logging
       LOG_LEVEL: info
       LOG_STYLE: pretty
@@ -163,7 +165,7 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://0.0.0.0:8055/server/ping || exit 1"]
+      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://0.0.0.0:8055/server/ping || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -177,7 +179,7 @@ services:
   # ============================================
   directus-init:
     image: curlimages/curl:latest
-    container_name: synthstack-directus-init
+    container_name: ${CONTAINER_PREFIX:-synthstack}-directus-init
     env_file:
       - .env
     environment:
@@ -186,7 +188,7 @@ services:
     depends_on:
       directus:
         condition: service_healthy
-    entrypoint: ["/bin/sh", "-c"]
+    entrypoint: [ "/bin/sh", "-c" ]
     command:
       - |
         echo "Creating demo user in Directus..."
@@ -252,7 +254,7 @@ services:
   # ============================================
   directus-migrate:
     image: postgres:15-alpine
-    container_name: synthstack-migrate
+    container_name: ${CONTAINER_PREFIX:-synthstack}-migrate
     env_file:
       - .env
     environment:
@@ -266,7 +268,7 @@ services:
         condition: service_healthy
     volumes:
       - ./services/directus/migrations:/migrations:ro
-    entrypoint: ["/bin/sh", "-c"]
+    entrypoint: [ "/bin/sh", "-c" ]
     command:
       - |
         echo "Running SynthStack database migrations..."
@@ -317,7 +319,7 @@ services:
     build:
       context: ./packages/api-gateway
       dockerfile: Dockerfile
-    container_name: synthstack-api
+    container_name: ${CONTAINER_PREFIX:-synthstack}-api
     ports:
       - "3003:3003"
     env_file:
@@ -326,7 +328,7 @@ services:
       NODE_ENV: development
       PORT: 3003
       HOST: 0.0.0.0
-      
+
       # Database
       DATABASE_URL: postgresql://${DB_USER:-synthstack}:${DB_PASSWORD:-synthstack_dev_2024}@postgres:5432/${DB_DATABASE:-synthstack}
 
@@ -347,14 +349,14 @@ services:
 
       # Vector DB
       QDRANT_URL: http://qdrant:6333
-      
+
       # CORS
       CORS_ORIGIN: "http://localhost:3000,http://localhost:3050,http://localhost:5174,http://localhost:8099"
-      
+
       # Stripe
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
-      
+
       # AI
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
@@ -380,7 +382,7 @@ services:
     build:
       context: ./packages/ml-service
       dockerfile: Dockerfile
-    container_name: synthstack-ml-service
+    container_name: ${CONTAINER_PREFIX:-synthstack}-ml-service
     # No profile = always runs by default
     ports:
       - "8001:8000"
@@ -404,7 +406,7 @@ services:
 
       # File Storage
       UPLOAD_DIR: /app/uploads
-      MAX_UPLOAD_SIZE: 52428800  # 50MB
+      MAX_UPLOAD_SIZE: 52428800 # 50MB
     volumes:
       - ./packages/ml-service:/app
       - ml_uploads:/app/uploads
@@ -425,8 +427,8 @@ services:
     build:
       context: ./packages/django-ml-service
       dockerfile: Dockerfile
-    container_name: synthstack-ml-django
-    profiles: ["django"]
+    container_name: ${CONTAINER_PREFIX:-synthstack}-ml-django
+    profiles: [ "django" ]
     ports:
       - "8001:8000"
     env_file:
@@ -451,7 +453,7 @@ services:
 
       # File Storage
       UPLOAD_DIR: /app/uploads
-      MAX_UPLOAD_SIZE: 52428800  # 50MB
+      MAX_UPLOAD_SIZE: 52428800 # 50MB
     volumes:
       - ./packages/django-ml-service:/app
       - django_ml_uploads:/app/uploads
@@ -471,7 +473,7 @@ services:
     build:
       context: ./apps/web
       dockerfile: Dockerfile.dev
-    container_name: synthstack-web
+    container_name: ${CONTAINER_PREFIX:-synthstack}-web
     ports:
       - "3050:3050"
     env_file:
@@ -501,7 +503,7 @@ services:
     volumes:
       - ./apps/web:/app
       - web_node_modules:/app/node_modules
-    command: ["sh", "-c", "pnpm install --shamefully-hoist && pnpm dev"]
+    command: [ "sh", "-c", "pnpm install --shamefully-hoist && pnpm dev" ]
     depends_on:
       - api-gateway
     restart: unless-stopped
@@ -532,6 +534,7 @@ volumes:
 # ============================================
 networks:
   synthstack:
+    name: ${NETWORK_NAME:-synthstack-network}
     driver: bridge
     ipam:
       config:
