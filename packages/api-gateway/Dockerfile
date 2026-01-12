@@ -1,4 +1,4 @@
-# SynthStack API Gateway - Fastify + Node.js
+# SynthStack API Gateway - Fastify + Node.js (Community Edition)
 # Build from repo root: docker build -f packages/api-gateway/Dockerfile .
 FROM node:20-alpine
 
@@ -14,7 +14,6 @@ COPY package.json ./package.json
 # Copy package.json files for all required workspaces
 COPY packages/api-gateway/package.json ./packages/api-gateway/
 COPY packages/types/package.json ./packages/types/
-COPY packages/referrals-credits/package.json ./packages/referrals-credits/
 
 # Install production dependencies only
 RUN pnpm install --prod --filter @synthstack/api-gateway...
@@ -22,7 +21,6 @@ RUN pnpm install --prod --filter @synthstack/api-gateway...
 # Copy pre-built dist folders
 COPY packages/api-gateway/dist ./packages/api-gateway/dist
 COPY packages/types/dist ./packages/types/dist
-COPY packages/referrals-credits/dist ./packages/referrals-credits/dist
 
 WORKDIR /app/packages/api-gateway
 

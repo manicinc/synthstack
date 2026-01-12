@@ -1,0 +1,35 @@
+# SynthStack API Gateway - Fastify + Node.js (Development)
+# Build from repo root: docker build -f packages/api-gateway/Dockerfile.dev .
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Copy workspace configuration
+COPY pnpm-workspace.yaml ./
+COPY package.json ./
+
+# Copy package.json files for required workspaces
+COPY packages/api-gateway/package.json ./packages/api-gateway/
+COPY packages/types/package.json ./packages/types/
+
+# Install all dependencies (including dev for tsx)
+RUN pnpm install --filter @synthstack/api-gateway... --filter @synthstack/types
+
+# Copy source code
+COPY packages/api-gateway ./packages/api-gateway
+COPY packages/types ./packages/types
+
+# Build types package first
+WORKDIR /app/packages/types
+RUN pnpm build
+
+WORKDIR /app/packages/api-gateway
+
+# Expose port
+EXPOSE 3003
+
+# Start development server with tsx
+CMD ["pnpm", "dev"]

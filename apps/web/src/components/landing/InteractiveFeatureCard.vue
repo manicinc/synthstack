@@ -218,7 +218,7 @@ const animationDelay = computed(() => ({
             cx="50"
             cy="20"
             r="5"
-            fill="#6366f1"
+            fill="#0d9488"
             class="mini-node"
             style="animation-delay: 0.2s"
           />
@@ -349,7 +349,7 @@ const animationDelay = computed(() => ({
   }
 
   .is-featured & {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+    background: linear-gradient(135deg, rgba(13, 148, 136, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%);
     border: 2px solid transparent;
     background-clip: padding-box;
   }
@@ -362,7 +362,7 @@ const animationDelay = computed(() => ({
   border-radius: 20px;
   background: radial-gradient(
     300px circle at var(--glow-x, 50%) var(--glow-y, 50%),
-    rgba(99, 102, 241, 0.15) 0%,
+    rgba(13, 148, 136, 0.15) 0%,
     transparent 60%
   );
   opacity: 0;
@@ -383,7 +383,7 @@ const animationDelay = computed(() => ({
   background: linear-gradient(
     135deg,
     transparent 0%,
-    rgba(99, 102, 241, 0.3) 50%,
+    rgba(13, 148, 136, 0.3) 50%,
     transparent 100%
   );
   opacity: 0;
@@ -395,7 +395,7 @@ const animationDelay = computed(() => ({
   }
 
   .is-featured & {
-    background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+    background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
     opacity: 1;
   }
 }
@@ -406,7 +406,7 @@ const animationDelay = computed(() => ({
   top: 16px;
   right: 16px;
   padding: 4px 10px;
-  background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+  background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
   color: white;
   font-size: 0.625rem;
   font-weight: 700;
@@ -496,7 +496,7 @@ const animationDelay = computed(() => ({
   transition: color 0.3s ease;
 
   .is-hovered & {
-    color: #a5b4fc;
+    color: #5eead4;
   }
 }
 
@@ -520,7 +520,7 @@ const animationDelay = computed(() => ({
   padding: 12px;
   background: rgba(0, 0, 0, 0.3);
   border-radius: 12px;
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  border: 1px solid rgba(13, 148, 136, 0.2);
   overflow: hidden;
 }
 
@@ -558,7 +558,7 @@ const animationDelay = computed(() => ({
   right: 8px;
   font-size: 0.6rem;
   font-family: 'JetBrains Mono', monospace;
-  color: rgba(99, 102, 241, 0.8);
+  color: rgba(13, 148, 136, 0.8);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -589,9 +589,9 @@ const animationDelay = computed(() => ({
   }
 
   &.tag-tech {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
-    border-color: rgba(99, 102, 241, 0.3);
-    color: #a5b4fc;
+    background: linear-gradient(135deg, rgba(13, 148, 136, 0.2) 0%, rgba(20, 184, 166, 0.2) 100%);
+    border-color: rgba(13, 148, 136, 0.3);
+    color: #5eead4;
     font-family: 'JetBrains Mono', monospace;
   }
 }
@@ -604,7 +604,7 @@ const animationDelay = computed(() => ({
   margin-top: 16px;
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #6366f1;
+  color: #0d9488;
   opacity: 0;
   transform: translateX(-10px);
   transition: all 0.3s ease;
@@ -636,7 +636,7 @@ const animationDelay = computed(() => ({
   position: absolute;
   width: 4px;
   height: 4px;
-  background: #6366f1;
+  background: #0d9488;
   border-radius: 50%;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -675,7 +675,7 @@ const animationDelay = computed(() => ({
   .card-glow-layer {
     background: radial-gradient(
       300px circle at var(--glow-x, 50%) var(--glow-y, 50%),
-      rgba(99, 102, 241, 0.1) 0%,
+      rgba(13, 148, 136, 0.1) 0%,
       transparent 60%
     );
   }
@@ -684,7 +684,7 @@ const animationDelay = computed(() => ({
     color: #1e293b;
 
     .is-hovered & {
-      color: #4f46e5;
+      color: #0d9488;
     }
   }
 
@@ -702,18 +702,18 @@ const animationDelay = computed(() => ({
     color: #475569;
 
     &.tag-tech {
-      background: rgba(99, 102, 241, 0.1);
-      color: #4f46e5;
+      background: rgba(13, 148, 136, 0.1);
+      color: #0d9488;
     }
   }
 
   .mini-dag-preview {
     background: rgba(0, 0, 0, 0.03);
-    border-color: rgba(99, 102, 241, 0.15);
+    border-color: rgba(13, 148, 136, 0.15);
   }
 
   .dag-label {
-    color: #4f46e5;
+    color: #0d9488;
   }
 }
 
@@ -733,5 +733,3 @@ const animationDelay = computed(() => ({
   }
 }
 </style>
-
-

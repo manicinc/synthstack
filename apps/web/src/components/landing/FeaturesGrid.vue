@@ -85,7 +85,7 @@ const features = computed<Feature[]>(() => [
     title: t('landing.featuresGrid.items.workflows.title'),
     description: t('landing.featuresGrid.items.workflows.description'),
     icon: 'account_tree',
-    color: '#6366f1',
+    color: '#0d9488',
     tags: ['LangGraph', 'DAG', 'Node-RED', '15+ Integrations'],
     featured: true,
     preview: 'dag',
@@ -96,7 +96,7 @@ const features = computed<Feature[]>(() => [
     title: t('landing.featuresGrid.items.aiAgents.title'),
     description: t('landing.featuresGrid.items.aiAgents.description'),
     icon: 'psychology',
-    color: '#8b5cf6',
+    color: '#14b8a6',
     tags: ['RAG', 'No-Code', 'LangGraph', 'Instant'],
     featured: true,
     preview: null
@@ -115,7 +115,7 @@ const features = computed<Feature[]>(() => [
     title: t('landing.featuresGrid.items.orchestration.title'),
     description: t('landing.featuresGrid.items.orchestration.description'),
     icon: 'hub',
-    color: '#8b5cf6',
+    color: '#14b8a6',
     tags: ['LangGraph', 'DAG', 'AI'],
     badge: 'AI'
   },
@@ -150,7 +150,7 @@ const features = computed<Feature[]>(() => [
     title: t('landing.featuresGrid.items.directus.title'),
     description: t('landing.featuresGrid.items.directus.description'),
     icon: 'dashboard_customize',
-    color: '#6366f1',
+    color: '#0d9488',
     tags: ['Visual Editor', 'Real-Time', 'Versioning']
   },
   {
@@ -158,7 +158,7 @@ const features = computed<Feature[]>(() => [
     title: t('landing.featuresGrid.items.visualEditing.title'),
     description: t('landing.featuresGrid.items.visualEditing.description'),
     icon: 'edit_note',
-    color: '#6366f1',
+    color: '#0d9488',
     tags: ['WYSIWYG', 'In-Context']
   },
   {
@@ -215,7 +215,7 @@ const features = computed<Feature[]>(() => [
     title: t('landing.featuresGrid.items.theming.title'),
     description: t('landing.featuresGrid.items.theming.description'),
     icon: 'palette',
-    color: '#8b5cf6',
+    color: '#14b8a6',
     tags: ['10 Presets', '60+ Variables', 'Real-Time']
   },
   {
@@ -252,7 +252,7 @@ const features = computed<Feature[]>(() => [
   background: linear-gradient(
     180deg,
     var(--bg-base) 0%,
-    rgba(99, 102, 241, 0.03) 50%,
+    rgba(13, 148, 136, 0.03) 50%,
     var(--bg-base) 100%
   );
   position: relative;
@@ -264,8 +264,8 @@ const features = computed<Feature[]>(() => [
     position: absolute;
     inset: 0;
     background-image:
-      linear-gradient(to right, rgba(99, 102, 241, 0.02) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(99, 102, 241, 0.02) 1px, transparent 1px);
+      linear-gradient(to right, rgba(13, 148, 136, 0.02) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(13, 148, 136, 0.02) 1px, transparent 1px);
     background-size: 60px 60px;
     pointer-events: none;
   }
@@ -367,14 +367,14 @@ const features = computed<Feature[]>(() => [
     background: linear-gradient(
       180deg,
       #ffffff 0%,
-      rgba(99, 102, 241, 0.04) 50%,
+      rgba(13, 148, 136, 0.04) 50%,
       #ffffff 100%
     );
 
     &::before {
       background-image:
-        linear-gradient(to right, rgba(99, 102, 241, 0.04) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+        linear-gradient(to right, rgba(13, 148, 136, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(13, 148, 136, 0.04) 1px, transparent 1px);
     }
   }
 
