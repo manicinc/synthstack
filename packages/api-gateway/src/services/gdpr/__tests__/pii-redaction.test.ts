@@ -131,8 +131,8 @@ describe('PII Redaction Service', () => {
     describe('API Key & Token Redaction', () => {
       it('should redact API keys', () => {
         const keys = [
-          'sk_test_FAKE_KEY_REDACTED',
-          'pk_test_abcdefghijklmnopqrstuvwxyz123456',
+          'sk_TEST_EXAMPLE_fake_key_for_testing_only',
+          'pk_TEST_EXAMPLE_fake_key_for_testing_only',
           'api_key_12345678901234567890',
         ];
 
@@ -259,7 +259,7 @@ describe('PII Redaction Service', () => {
           profile: {
             email: 'nested@example.com',
             settings: {
-              apiKey: 'sk_test_FAKE_KEY_REDACTED',
+              apiKey: 'sk_TEST_EXAMPLE_fake_key_for_testing_only',
             },
           },
         },
