@@ -137,10 +137,47 @@ async function createCheckout(userId: string, priceId: string) {
     metadata: { userId, priceId },
     subscription_data: {
       metadata: { userId },
+      trial_period_days: 3, // ← Free trial before first charge
     },
   });
   return session.url;
 }
+```
+
+### Trial Period Configuration
+
+> **Important**: Trial periods are configured in code, NOT in the Stripe Dashboard.
+
+| Setting | Location | Default | Notes |
+|---------|----------|---------|-------|
+| `trialDays` | `billing.ts` line 335 | 3 days | Passed to Stripe at checkout |
+| Trial ending email | `customer.subscription.trial_will_end` webhook | 3 days before end | Sends reminder email |
+
+To change the trial period:
+
+```typescript
+// packages/api-gateway/src/routes/billing.ts
+const session = await stripeService.createCheckoutSession({
+  userId,
+  email,
+  tier: tier as SubscriptionTier,
+  isYearly,
+  promoCode,
+  trialDays: 3, // ← Change this value (0 to disable trials)
+});
+```
+
+**How trials work:**
+1. Customer subscribes → Card is validated but NOT charged
+2. Subscription status = `trialing` for the trial period
+3. After trial ends → Stripe automatically charges the card
+4. Subscription status = `active`
+
+**Trial behaviors:**
+- No payment collected during trial (card is authorized only)
+- User has full access to paid features during trial
+- `customer.subscription.trial_will_end` webhook fires 3 days before end
+- If payment fails after trial, status becomes `past_due`
 ```
 
 ### Webhook Events to Handle

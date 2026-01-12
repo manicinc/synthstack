@@ -48,16 +48,68 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run Linting
-        run: pnpm lint
+        id: lint
+        run: |
+          pnpm lint && echo "lint_status=✅ Passed" >> $GITHUB_OUTPUT || echo "lint_status=⚠️ Issues found" >> $GITHUB_OUTPUT
         continue-on-error: true
 
       - name: Run Type Checking
-        run: pnpm typecheck
+        id: typecheck
+        run: |
+          pnpm typecheck && echo "typecheck_status=✅ Passed" >> $GITHUB_OUTPUT || echo "typecheck_status=⚠️ Issues found" >> $GITHUB_OUTPUT
         continue-on-error: true
 
       - name: Run Unit Tests
-        run: pnpm test
+        id: tests
+        run: |
+          # Run tests and capture output
+          pnpm test --reporter=json --outputFile=test-results.json 2>&1 | tee test-output.txt
+          
+          # Extract test counts from Vitest output
+          TESTS_PASSED=$(grep -oP '\d+(?= passed)' test-output.txt | head -1 || echo "0")
+          TESTS_FAILED=$(grep -oP '\d+(?= failed)' test-output.txt | head -1 || echo "0")
+          TEST_FILES=$(grep -oP '\d+(?= test files)' test-output.txt | head -1 || echo "0")
+          
+          # Calculate totals
+          TOTAL_TESTS=$((TESTS_PASSED + TESTS_FAILED))
+          
+          if [ "$TOTAL_TESTS" -gt 0 ]; then
+            PASS_RATE=$((TESTS_PASSED * 100 / TOTAL_TESTS))
+          else
+            PASS_RATE=0
+          fi
+          
+          echo "tests_passed=$TESTS_PASSED" >> $GITHUB_OUTPUT
+          echo "tests_failed=$TESTS_FAILED" >> $GITHUB_OUTPUT
+          echo "tests_total=$TOTAL_TESTS" >> $GITHUB_OUTPUT
+          echo "test_files=$TEST_FILES" >> $GITHUB_OUTPUT
+          echo "pass_rate=$PASS_RATE" >> $GITHUB_OUTPUT
+          
+          # Fail if tests failed
+          if [ "$TESTS_FAILED" -gt 0 ]; then
+            exit 1
+          fi
         continue-on-error: true
+
+      - name: Generate Test Summary
+        if: always()
+        run: |
+          echo "## 🧪 Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Result |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Tests Passed** | ${{ steps.tests.outputs.tests_passed || '0' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Tests Failed** | ${{ steps.tests.outputs.tests_failed || '0' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total Tests** | ${{ steps.tests.outputs.tests_total || '0' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Pass Rate** | ${{ steps.tests.outputs.pass_rate || '0' }}% |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Test Files** | ${{ steps.tests.outputs.test_files || '0' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Code Quality" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Linting | ${{ steps.lint.outputs.lint_status || '⚠️ Skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Type Checking | ${{ steps.typecheck.outputs.typecheck_status || '⚠️ Skipped' }} |" >> $GITHUB_STEP_SUMMARY
 
   # =========================================
   # Build Frontend

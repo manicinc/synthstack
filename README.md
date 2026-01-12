@@ -1,6 +1,6 @@
 # SynthStack Community Edition
 
-![Tests](https://img.shields.io/badge/tests-800%2B-brightgreen) ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue) ![Vue](https://img.shields.io/badge/Vue-3.x-42b883) ![License](https://img.shields.io/badge/license-MIT-green)
+[![CI](https://github.com/manicinc/synthstack/actions/workflows/ci.yml/badge.svg)](https://github.com/manicinc/synthstack/actions/workflows/ci.yml) ![Tests](https://img.shields.io/badge/tests-139%2B-brightgreen) ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue) ![Vue](https://img.shields.io/badge/Vue-3.x-42b883) ![License](https://img.shields.io/badge/license-MIT-green)
 
 **AI-Native SaaS Boilerplate**
 

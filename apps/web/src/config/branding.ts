@@ -2,10 +2,10 @@
  * SynthStack Branding Configuration
  *
  * Centralized configuration for all branding assets and settings.
- * Values are loaded from config.json with environment variable overrides.
+ * Default values are inlined here; environment variables (VITE_*) can override.
  *
  * To rebrand for your own SaaS:
- * 1. Edit config.json in the project root
+ * 1. Edit the DEFAULT_CONFIG below, or set environment variables
  * 2. Optionally override with environment variables (VITE_*)
  * 3. Replace logo files in /public/logo/
  * 4. Replace favicon files in /public/
@@ -17,8 +17,87 @@
  * console.log(branding.name) // 'SynthStack' or your custom name
  */
 
-// Import centralized config (loaded at build time via Vite)
-import configJson from '../../../../config.json'
+// ============================================
+// Default Configuration (from config.json)
+// ============================================
+// These defaults match the values in config.json at the project root.
+// Edit these values or use environment variables to customize.
+
+const DEFAULT_CONFIG = {
+  app: {
+    name: 'SynthStack',
+    tagline: 'Your AI Co-Founders',
+    description: 'AI-native, cross-platform SaaS boilerplate built with Vue Quasar. Ships for web, iOS, Android, desktop, and PWA from a single codebase.',
+    fullDescription: 'Meet your AI co-founders: 6 specialized agents (Researcher, Marketer, Developer, SEO Writer, Designer, General Assistant) with deep system integration, automatic RAG, proactive suggestions, and actionable capabilities like GitHub PRs, blog posts, and marketing content.',
+    domain: 'synthstack.app',
+  },
+  branding: {
+    logo: {
+      light: '/logo/synthstack-logo.svg',
+      dark: '/logo/synthstack-logo-dark.svg',
+      mark: '/logo/synthstack-mark.svg',
+      markDark: '/logo/synthstack-mark-dark.svg',
+    },
+    favicon: {
+      default: '/favicon.svg',
+      dark: '/favicon-dark.svg',
+      apple: '/icons/icon-192x192.png',
+    },
+    colors: {
+      primary: '#6366F1',
+      accent: '#00D4AA',
+      theme: '#6366F1',
+      background: '#0D0D0D',
+    },
+    og: {
+      image: '/og-image.svg',
+      type: 'website',
+    },
+  },
+  company: {
+    name: 'SynthStack',
+    legalName: 'Manic Inc.',
+    founded: '2024',
+    location: null,
+  },
+  contact: {
+    support: 'team@manic.agency',
+    sales: 'team@manic.agency',
+    general: 'team@manic.agency',
+    noreply: 'noreply@manic.agency',
+  },
+  social: {
+    github: 'https://github.com/manicinc/synthstack',
+    twitter: 'https://twitter.com/synthstack',
+    discord: 'https://discord.gg/synthstack',
+    linkedin: null,
+    youtube: null,
+  },
+  links: {
+    docs: '/docs',
+    changelog: '/changelog',
+    roadmap: '/roadmap',
+    status: null,
+  },
+  legal: {
+    privacy: '/privacy',
+    terms: '/terms',
+    cookies: '/cookies',
+    security: '/security',
+    gdpr: '/gdpr',
+  },
+  demo: {
+    enabled: true,
+    email: 'demo@synthstack.app',
+    password: 'DemoUser2024!',
+  },
+  features: {
+    copilot: false,
+    referrals: false,
+    analytics: true,
+    i18n: true,
+  },
+}
 
 // ============================================
 // Types
@@ -150,9 +229,9 @@ export interface BrandingConfig {
 // ============================================
 
 /**
- * Branding configuration loaded from config.json with env overrides.
+ * Branding configuration with environment variable overrides.
  *
- * Priority: Environment variables > config.json defaults
+ * Priority: Environment variables > DEFAULT_CONFIG
  *
  * Environment variables available:
  * - VITE_APP_NAME: App name
@@ -165,96 +244,96 @@ export interface BrandingConfig {
  * - VITE_ENABLE_REFERRALS: Enable referral system
  */
 export const branding: BrandingConfig = {
-  // Core Identity - env overrides config.json
-  name: import.meta.env.VITE_APP_NAME || configJson.app.name,
-  tagline: import.meta.env.VITE_APP_TAGLINE || configJson.app.tagline,
-  description: import.meta.env.VITE_APP_DESCRIPTION || configJson.app.description,
-  fullDescription: configJson.app.fullDescription,
-  domain: import.meta.env.VITE_APP_DOMAIN || configJson.app.domain,
+  // Core Identity - env overrides defaults
+  name: import.meta.env.VITE_APP_NAME || DEFAULT_CONFIG.app.name,
+  tagline: import.meta.env.VITE_APP_TAGLINE || DEFAULT_CONFIG.app.tagline,
+  description: import.meta.env.VITE_APP_DESCRIPTION || DEFAULT_CONFIG.app.description,
+  fullDescription: DEFAULT_CONFIG.app.fullDescription,
+  domain: import.meta.env.VITE_APP_DOMAIN || DEFAULT_CONFIG.app.domain,
 
-  // Contact - env overrides config.json
-  supportEmail: import.meta.env.VITE_SUPPORT_EMAIL || configJson.contact.support,
-  salesEmail: import.meta.env.VITE_SALES_EMAIL || configJson.contact.sales,
-  contactEmail: import.meta.env.VITE_CONTACT_EMAIL || configJson.contact.general,
+  // Contact - env overrides defaults
+  supportEmail: import.meta.env.VITE_SUPPORT_EMAIL || DEFAULT_CONFIG.contact.support,
+  salesEmail: import.meta.env.VITE_SALES_EMAIL || DEFAULT_CONFIG.contact.sales,
+  contactEmail: import.meta.env.VITE_CONTACT_EMAIL || DEFAULT_CONFIG.contact.general,
 
-  // Logo Assets - from config.json
+  // Logo Assets
   logo: {
-    light: configJson.branding.logo.light,
-    dark: configJson.branding.logo.dark,
-    mark: configJson.branding.logo.mark,
-    markDark: configJson.branding.logo.markDark,
+    light: DEFAULT_CONFIG.branding.logo.light,
+    dark: DEFAULT_CONFIG.branding.logo.dark,
+    mark: DEFAULT_CONFIG.branding.logo.mark,
+    markDark: DEFAULT_CONFIG.branding.logo.markDark,
   },
 
-  // Favicon Assets - from config.json
+  // Favicon Assets
   favicon: {
-    default: configJson.branding.favicon.default,
-    dark: configJson.branding.favicon.dark,
-    apple: configJson.branding.favicon.apple,
+    default: DEFAULT_CONFIG.branding.favicon.default,
+    dark: DEFAULT_CONFIG.branding.favicon.dark,
+    apple: DEFAULT_CONFIG.branding.favicon.apple,
   },
 
-  // Social Media - from config.json with nulls filtered
+  // Social Media - with nulls filtered
   social: {
-    github: configJson.social.github || undefined,
-    twitter: configJson.social.twitter || undefined,
-    discord: configJson.social.discord || undefined,
-    linkedin: configJson.social.linkedin || undefined,
-    youtube: configJson.social.youtube || undefined,
+    github: DEFAULT_CONFIG.social.github || undefined,
+    twitter: DEFAULT_CONFIG.social.twitter || undefined,
+    discord: DEFAULT_CONFIG.social.discord || undefined,
+    linkedin: DEFAULT_CONFIG.social.linkedin || undefined,
+    youtube: DEFAULT_CONFIG.social.youtube || undefined,
   },
 
-  // External Links - from config.json
+  // External Links
   links: {
-    docs: configJson.links.docs,
-    changelog: configJson.links.changelog || undefined,
-    roadmap: configJson.links.roadmap || undefined,
-    status: configJson.links.status || undefined,
-    apiDocs: `${import.meta.env.VITE_API_URL || `https://api.${configJson.app.domain}`}/docs`,
+    docs: DEFAULT_CONFIG.links.docs,
+    changelog: DEFAULT_CONFIG.links.changelog || undefined,
+    status: DEFAULT_CONFIG.links.status || undefined,
+    roadmap: DEFAULT_CONFIG.links.roadmap || undefined,
+    apiDocs: `${import.meta.env.VITE_API_URL || 'http://localhost:3003'}/docs`,
   },
 
-  // Demo Access - from config.json with env overrides
+  // Demo Access
   demo: {
-    adminUrl: import.meta.env.VITE_ADMIN_URL || `https://admin.${configJson.app.domain}`,
-    email: configJson.demo.email,
-    password: configJson.demo.password,
-    apiDocsUrl: `${import.meta.env.VITE_API_URL || `https://api.${configJson.app.domain}`}/docs`,
+    adminUrl: import.meta.env.VITE_ADMIN_URL || `https://admin.${DEFAULT_CONFIG.app.domain}`,
+    email: DEFAULT_CONFIG.demo.email,
+    password: DEFAULT_CONFIG.demo.password,
+    apiDocsUrl: `${import.meta.env.VITE_API_URL || 'http://localhost:3003'}/docs`,
   },
 
-  // Brand Colors - from config.json
+  // Theme Colors
   colors: {
-    primary: configJson.branding.colors.primary,
-    accent: configJson.branding.colors.accent,
-    theme: configJson.branding.colors.theme,
-    background: configJson.branding.colors.background,
+    primary: DEFAULT_CONFIG.branding.colors.primary,
+    accent: DEFAULT_CONFIG.branding.colors.accent,
+    theme: DEFAULT_CONFIG.branding.colors.theme,
+    background: DEFAULT_CONFIG.branding.colors.background,
   },
 
-  // Open Graph - from config.json
+  // Open Graph
   og: {
-    image: configJson.branding.og.image,
-    type: configJson.branding.og.type,
-    siteName: configJson.app.name,
+    image: DEFAULT_CONFIG.branding.og.image,
+    type: DEFAULT_CONFIG.branding.og.type,
+    siteName: import.meta.env.VITE_APP_NAME || DEFAULT_CONFIG.app.name,
   },
 
-  // Company - from config.json
+  // Company
   company: {
-    name: configJson.company.name,
-    founded: configJson.company.founded || undefined,
-    location: configJson.company.location || undefined,
+    name: DEFAULT_CONFIG.company.name,
+    founded: DEFAULT_CONFIG.company.founded || undefined,
+    location: DEFAULT_CONFIG.company.location || undefined,
   },
 
-  // Legal - from config.json
+  // Legal URLs
   legal: {
-    privacyUrl: configJson.legal.privacy,
-    termsUrl: configJson.legal.terms,
-    cookiesUrl: configJson.legal.cookies,
-    securityUrl: configJson.legal.security,
-    gdprUrl: configJson.legal.gdpr,
+    privacyUrl: DEFAULT_CONFIG.legal.privacy,
+    termsUrl: DEFAULT_CONFIG.legal.terms,
+    cookiesUrl: DEFAULT_CONFIG.legal.cookies,
+    securityUrl: DEFAULT_CONFIG.legal.security,
+    gdprUrl: DEFAULT_CONFIG.legal.gdpr,
   },
 
-  // Feature flags - env overrides config.json
+  // Feature flags - check env vars first
   features: {
-    copilot: import.meta.env.VITE_ENABLE_COPILOT === 'true' || configJson.features.copilot,
-    referrals: import.meta.env.VITE_ENABLE_REFERRALS === 'true' || configJson.features.referrals,
-    analytics: import.meta.env.VITE_ENABLE_ANALYTICS !== 'false' && configJson.features.analytics,
-    i18n: import.meta.env.VITE_I18N_ENABLED !== 'false' && configJson.features.i18n,
+    copilot: import.meta.env.VITE_ENABLE_COPILOT === 'true' || DEFAULT_CONFIG.features.copilot,
+    referrals: import.meta.env.VITE_ENABLE_REFERRALS === 'true' || DEFAULT_CONFIG.features.referrals,
+    analytics: DEFAULT_CONFIG.features.analytics,
+    i18n: DEFAULT_CONFIG.features.i18n,
   },
 }
 
@@ -263,32 +342,25 @@ export const branding: BrandingConfig = {
 // ============================================
 
 /**
- * Get logo based on current theme
+ * Get logo path based on current theme
  */
 export function getThemedLogo(isDark: boolean): string {
   return isDark ? branding.logo.dark : branding.logo.light
 }
 
 /**
- * Get mark/icon based on current theme
- */
-export function getThemedMark(isDark: boolean): string {
-  return isDark ? branding.logo.markDark : branding.logo.mark
-}
-
-/**
- * Get favicon based on current theme
+ * Get favicon path based on current theme
  */
 export function getThemedFavicon(isDark: boolean): string {
   return isDark ? branding.favicon.dark : branding.favicon.default
 }
 
 /**
- * Get full URL for a subdomain
+ * Get a subdomain URL for the configured domain
  */
 export function getSubdomainUrl(subdomain: string): string {
-  const protocol = import.meta.env.DEV ? 'http' : 'https'
   const domain = branding.domain
+  const protocol = domain.includes('localhost') ? 'http' : 'https'
   return `${protocol}://${subdomain}.${domain}`
 }
 
@@ -296,7 +368,8 @@ export function getSubdomainUrl(subdomain: string): string {
  * Check if a feature is enabled
  */
 export function isFeatureEnabled(feature: keyof BrandingConfig['features']): boolean {
-  return branding.features[feature]
+  return branding.features[feature] ?? false
 }
 
-export default branding
+// Export default config for reference
+export { DEFAULT_CONFIG }
