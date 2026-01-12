@@ -356,6 +356,13 @@ export function getThemedFavicon(isDark: boolean): string {
 }
 
 /**
+ * Get mark/icon path based on current theme
+ */
+export function getThemedMark(isDark: boolean): string {
+  return isDark ? branding.logo.markDark : branding.logo.mark
+}
+
+/**
  * Get a subdomain URL for the configured domain
  */
 export function getSubdomainUrl(subdomain: string): string {
