@@ -1,64 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#6366F1" />
-    <meta name="description" content="SynthStack - Your Agency in a Box. AI-native, cross-platform SaaS boilerplate with 6 AI Co-Founders, Directus CMS, invoicing, CRM, and complete business tools. Ship 10x faster." />
-    <meta name="keywords" content="SaaS boilerplate, AI agents, Vue Quasar, Directus CMS, invoicing system, CRM, project management, AI co-founders, cross-platform, PWA, mobile app development" />
-    <meta name="author" content="SynthStack" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://synthstack.app" />
 
-    <!-- Preconnect to fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#6366F1" />
+  <meta name="description" content="%VITE_APP_DESCRIPTION%" />
+  <meta name="keywords"
+    content="SaaS boilerplate, AI agents, Vue Quasar, Directus CMS, invoicing system, CRM, project management, AI co-founders, cross-platform, PWA, mobile app development" />
+  <meta name="author" content="%VITE_APP_NAME%" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="%VITE_APP_URL%" />
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Preconnect to fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <!-- Favicon with light/dark mode support -->
-    <!-- SVG favicons (modern browsers) -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" media="(prefers-color-scheme: light)" />
-    <link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" media="(prefers-color-scheme: dark)" />
-    <!-- PNG fallbacks (older browsers) -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" media="(prefers-color-scheme: light)" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-dark-32x32.png" media="(prefers-color-scheme: dark)" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" media="(prefers-color-scheme: light)" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-dark-16x16.png" media="(prefers-color-scheme: dark)" />
-    <!-- ICO fallback for IE/old browsers -->
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <!-- Apple Touch Icons -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+  <!-- Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
 
-    <!-- Open Graph -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="SynthStack" />
-    <meta property="og:title" content="SynthStack - Your Agency in a Box with 6 AI Co-Founders" />
-    <meta property="og:description" content="AI-native SaaS boilerplate with built-in CRM, invoicing, 6 AI agents, and complete business management. Build for web, iOS, Android, desktop, and PWA from a single codebase." />
-    <meta property="og:image" content="https://synthstack.app/og-image.png" />
-    <meta property="og:url" content="https://synthstack.app" />
-    <meta property="og:locale" content="en_US" />
+  <!-- Favicon with light/dark mode support -->
+  <!-- SVG favicons (modern browsers) -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" media="(prefers-color-scheme: light)" />
+  <link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" media="(prefers-color-scheme: dark)" />
+  <!-- PNG fallbacks (older browsers) -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" media="(prefers-color-scheme: light)" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-dark-32x32.png" media="(prefers-color-scheme: dark)" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" media="(prefers-color-scheme: light)" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-dark-16x16.png" media="(prefers-color-scheme: dark)" />
+  <!-- ICO fallback for IE/old browsers -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
 
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@synthstack" />
-    <meta name="twitter:creator" content="@synthstack" />
-    <meta name="twitter:title" content="SynthStack - Your Agency in a Box with AI Co-Founders" />
-    <meta name="twitter:description" content="AI-native SaaS boilerplate with 6 AI agents, CRM, invoicing, and complete business tools. Ship your next project 10x faster." />
-    <meta name="twitter:image" content="https://synthstack.app/og-image.png" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="%VITE_APP_NAME%" />
+  <meta property="og:title" content="%VITE_APP_NAME% - %VITE_APP_TAGLINE%" />
+  <meta property="og:description" content="%VITE_APP_DESCRIPTION%" />
+  <meta property="og:image" content="%VITE_APP_URL%/og-image.png" />
+  <meta property="og:url" content="%VITE_APP_URL%" />
+  <meta property="og:locale" content="en_US" />
 
-    <!-- Structured Data (Schema.org) -->
-    <script type="application/ld+json">
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="%VITE_SOCIAL_TWITTER%" />
+  <meta name="twitter:creator" content="%VITE_SOCIAL_TWITTER%" />
+  <meta name="twitter:title" content="%VITE_APP_NAME% - %VITE_APP_TAGLINE%" />
+  <meta name="twitter:description" content="%VITE_APP_DESCRIPTION%" />
+  <meta name="twitter:image" content="%VITE_APP_URL%/og-image.png" />
+
+  <!-- Structured Data (Schema.org) -->
+  <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
-      "name": "SynthStack",
+      "name": "%VITE_APP_NAME%",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Web, iOS, Android, Desktop",
-      "description": "AI-native SaaS boilerplate with 6 AI Co-Founders, Directus CMS, invoicing, CRM, and complete business management tools",
-      "image": "https://synthstack.app/og-image.png",
+      "description": "%VITE_APP_DESCRIPTION%",
+      "image": "%VITE_APP_URL%/og-image.png",
       "logo": {
         "@type": "ImageObject",
         "url": "https://synthstack.app/logo/synthstack-mark-512.png",
@@ -87,26 +91,40 @@
     }
     </script>
 
-    <title>SynthStack - Your Agency in a Box | AI-Native SaaS Boilerplate with 6 AI Co-Founders</title>
+  <title>%VITE_APP_NAME% - %VITE_APP_TAGLINE%</title>
 
-    <!-- Prevent FOUC (Flash of Unstyled Content) for dark mode -->
-    <script>
-      (function() {
-        var stored = localStorage.getItem('quasar-dark-mode');
-        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        var isDark = stored === 'true' || (stored === null && prefersDark);
-        document.documentElement.style.backgroundColor = isDark ? '#09090B' : '#FFFFFF';
-        document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
-      })();
-    </script>
-    <style>
-      html, body { margin: 0; padding: 0; min-height: 100vh; }
-      html { background-color: #09090B; } /* Dark mode default */
-      body { background-color: inherit; color: #fafafa; }
-    </style>
-  </head>
-  <body class="body--dark">
-    <!-- quasar:entry-point -->
-  </body>
+  <!-- Prevent FOUC (Flash of Unstyled Content) for dark mode -->
+  <script>
+    (function () {
+      var stored = localStorage.getItem('quasar-dark-mode');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var isDark = stored === 'true' || (stored === null && prefersDark);
+      document.documentElement.style.backgroundColor = isDark ? '#09090B' : '#FFFFFF';
+      document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+    })();
+  </script>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    html {
+      background-color: #09090B;
+    }
+
+    /* Dark mode default */
+    body {
+      background-color: inherit;
+      color: #fafafa;
+    }
+  </style>
+</head>
+
+<body class="body--dark">
+  <!-- quasar:entry-point -->
+</body>
+
 </html>
-

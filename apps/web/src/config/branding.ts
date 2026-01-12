@@ -248,7 +248,7 @@ export const branding: BrandingConfig = {
   name: import.meta.env.VITE_APP_NAME || DEFAULT_CONFIG.app.name,
   tagline: import.meta.env.VITE_APP_TAGLINE || DEFAULT_CONFIG.app.tagline,
   description: import.meta.env.VITE_APP_DESCRIPTION || DEFAULT_CONFIG.app.description,
-  fullDescription: DEFAULT_CONFIG.app.fullDescription,
+  fullDescription: import.meta.env.VITE_APP_FULL_DESCRIPTION || DEFAULT_CONFIG.app.fullDescription,
   domain: import.meta.env.VITE_APP_DOMAIN || DEFAULT_CONFIG.app.domain,
 
   // Contact - env overrides defaults
@@ -273,11 +273,11 @@ export const branding: BrandingConfig = {
 
   // Social Media - with nulls filtered
   social: {
-    github: DEFAULT_CONFIG.social.github || undefined,
-    twitter: DEFAULT_CONFIG.social.twitter || undefined,
-    discord: DEFAULT_CONFIG.social.discord || undefined,
-    linkedin: DEFAULT_CONFIG.social.linkedin || undefined,
-    youtube: DEFAULT_CONFIG.social.youtube || undefined,
+    github: import.meta.env.VITE_SOCIAL_GITHUB || DEFAULT_CONFIG.social.github || undefined,
+    twitter: import.meta.env.VITE_SOCIAL_TWITTER || DEFAULT_CONFIG.social.twitter || undefined,
+    discord: import.meta.env.VITE_SOCIAL_DISCORD || DEFAULT_CONFIG.social.discord || undefined,
+    linkedin: import.meta.env.VITE_SOCIAL_LINKEDIN || DEFAULT_CONFIG.social.linkedin || undefined,
+    youtube: import.meta.env.VITE_SOCIAL_YOUTUBE || DEFAULT_CONFIG.social.youtube || undefined,
   },
 
   // External Links
