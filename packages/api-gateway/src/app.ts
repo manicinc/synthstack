@@ -20,7 +20,7 @@ import fastifySwaggerUi from '@fastify/swagger-ui';
 import { initStripeService } from './services/stripe.js';
 import { initNewsletterService } from './services/newsletter/index.js';
 import { initAnalyticsService } from './services/analytics/index.js';
-import { initDocsIngestionService } from './services/docs-ingestion.js';
+// docs-ingestion removed - Community Edition (requires Qdrant)
 import { initOrchestrationService } from './services/orchestration/index.js';
 import { initOrchestrationQueueService } from './services/orchestration/queue.js';
 import { initAuthService, getAuthService } from './services/auth/index.js';
@@ -225,7 +225,7 @@ async function registerPlugins(app: FastifyInstance, options: AppOptions): Promi
     initEmailService(app);
     initNewsletterService(app);
     initAnalyticsService(app);
-    initDocsIngestionService(app);
+    // initDocsIngestionService removed - Community Edition
     initOrchestrationService(app);
     initOrchestrationQueueService(app);
   }

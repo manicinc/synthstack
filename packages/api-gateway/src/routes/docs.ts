@@ -1,14 +1,14 @@
 /**
- * Documentation API Routes
+ * Documentation API Routes - Community Edition
  *
  * Serves markdown documentation files from /docs/ folder
- * Also provides metadata, search, and RAG-powered semantic search functionality
+ * Provides metadata and keyword search functionality
+ * 
+ * Note: RAG/semantic search requires Pro Edition (Qdrant + embeddings)
  */
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { docsIngestionService } from '../services/docs-ingestion.js';
-import { embeddingsService } from '../services/embeddings.js';
 
 // Path to docs folder (relative to project root)
 const DOCS_DIR = path.resolve(process.cwd(), '..', 'docs');
@@ -195,7 +195,7 @@ export default async function docsRoutes(fastify: FastifyInstance) {
   });
 
   /**
-   * Search documentation content
+   * Search documentation content (keyword search)
    * GET /api/v1/docs/search?q=query
    */
   fastify.get<{
@@ -287,158 +287,6 @@ export default async function docsRoutes(fastify: FastifyInstance) {
     }
   });
 
-  /**
-   * Semantic search using RAG
-   * GET /api/v1/docs/rag/search?q=query
-   */
-  fastify.get<{
-    Querystring: { q: string; limit?: number; type?: string };
-  }>('/rag/search', {
-    schema: {
-      tags: ['Docs'],
-      summary: 'Semantic search documentation using AI embeddings',
-      querystring: {
-        type: 'object',
-        properties: {
-          q: { type: 'string', minLength: 2, description: 'Search query' },
-          limit: { type: 'number', default: 5, description: 'Max results' },
-          type: { type: 'string', enum: ['documentation', 'blog', 'all'], default: 'all' },
-        },
-        required: ['q'],
-      },
-      response: {
-        200: {
-          type: 'object',
-          properties: {
-            results: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  id: { type: 'string' },
-                  score: { type: 'number' },
-                  title: { type: 'string' },
-                  section: { type: 'string' },
-                  content: { type: 'string' },
-                  filename: { type: 'string' },
-                  type: { type: 'string' },
-                },
-              },
-            },
-            query: { type: 'string' },
-            available: { type: 'boolean' },
-          },
-        },
-      },
-    },
-  }, async (request, reply) => {
-    const { q, limit = 5, type = 'all' } = request.query;
-
-    if (!embeddingsService.isAvailable()) {
-      return {
-        results: [],
-        query: q,
-        available: false,
-      };
-    }
-
-    try {
-      const results = await docsIngestionService.searchDocs(q, {
-        limit,
-        type: type as 'documentation' | 'blog' | 'all',
-      });
-
-      return {
-        results,
-        query: q,
-        available: true,
-      };
-    } catch (error) {
-      fastify.log.error(error, 'RAG search failed');
-      return reply.status(500).send({ error: 'Semantic search failed' });
-    }
-  });
-
-  /**
-   * Trigger documentation re-ingestion
-   * POST /api/v1/docs/rag/ingest
-   */
-  fastify.post('/rag/ingest', {
-    schema: {
-      tags: ['Docs'],
-      summary: 'Re-ingest all documentation into RAG system',
-      security: [{ bearerAuth: [] }],
-      response: {
-        200: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
-            results: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  filename: { type: 'string' },
-                  chunksCreated: { type: 'number' },
-                  status: { type: 'string' },
-                  message: { type: 'string' },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    preHandler: [fastify.authenticate, fastify.requireAdmin],
-  }, async (request, reply) => {
-    if (!embeddingsService.isAvailable()) {
-      return reply.status(503).send({
-        success: false,
-        error: 'Embeddings service not available - check OPENAI_API_KEY',
-      });
-    }
-
-    try {
-      const results = await docsIngestionService.ingestAll();
-
-      return {
-        success: true,
-        results,
-      };
-    } catch (error) {
-      fastify.log.error(error, 'Documentation ingestion failed');
-      return reply.status(500).send({ error: 'Ingestion failed' });
-    }
-  });
-
-  /**
-   * Get RAG system status
-   * GET /api/v1/docs/rag/status
-   */
-  fastify.get('/rag/status', {
-    schema: {
-      tags: ['Docs'],
-      summary: 'Get RAG system status and stats',
-      response: {
-        200: {
-          type: 'object',
-          properties: {
-            available: { type: 'boolean' },
-            docsPath: { type: 'string' },
-            indexedFiles: { type: 'number' },
-            embeddingModel: { type: 'string' },
-            vectorDimensions: { type: 'number' },
-          },
-        },
-      },
-    },
-  }, async () => {
-    const stats = await docsIngestionService.getStats();
-
-    return {
-      ...stats,
-      embeddingModel: embeddingsService.getModel(),
-      vectorDimensions: embeddingsService.getDimension(),
-    };
-  });
+  // RAG/semantic search routes removed - Community Edition
+  // Upgrade to Pro for AI-powered semantic search with Qdrant
 }
