@@ -13,12 +13,9 @@ Welcome to the SynthStack documentation hub. Find everything you need to build, 
 
 - [AI Copilot](./features/COPILOT.md) - Built-in AI chat assistant with RAG
 - [Stripe Integration](./features/STRIPE_INTEGRATION.md) - Payment processing and subscriptions
-- [Referral System](./REFERRAL_SYSTEM.md) - User referral and rewards (technical)
-- [Referral Getting Started](./guides/REFERRAL_GETTING_STARTED.md) - User guide for referrals
-- [Unified Credit System](./UNIFIED_CREDIT_SYSTEM.md) - Credits, usage, and billing
-- [Feature Flags](./FEATURE_FLAGS.md) - Toggle features dynamically
 - [Newsletter & Analytics](./NEWSLETTER_ANALYTICS.md) - Email marketing and tracking
-- [Demo Credit System](./DEMO_CREDIT_SYSTEM.md) - Free trial system for guests
+
+> 💡 **Pro Edition includes additional features:** Referral System, Unified Credit System, Feature Flags, Demo Credit System. [Learn more →](https://synthstack.app/pricing)
 
 ## Implementation Guides
 
@@ -27,15 +24,15 @@ Welcome to the SynthStack documentation hub. Find everything you need to build, 
 - [Content Blocks](./guides/CONTENT_BLOCKS.md) - Reusable content management
 - [Project Invitations](./guides/PROJECT_INVITATIONS.md) - Project collaboration system
 - [Multilingual Content](./guides/MULTILINGUAL_CONTENT.md) - Internationalization setup
-- [Referral Getting Started](./guides/REFERRAL_GETTING_STARTED.md) - Referral program user guide
 
 ## AI & Machine Learning
 
-- [AI Co-Founders](./AI_COFOUNDERS.md) - AI agent system architecture
-- [Portal Copilot Architecture](./PORTAL_COPILOT_ARCHITECTURE.md) - Detailed copilot technical design
 - [Backend Options](./BACKEND_OPTIONS.md) - ML service comparison
-- [FastAPI ML Service](./ML_SERVICE_FASTAPI.md) - Python ML backend
-- [Django ML Service](./ML_SERVICE_DJANGO.md) - Alternative Python backend
+- [TypeScript ML Service](../packages/ts-ml-service/README.md) - Community Edition ML backend
+- [FastAPI ML Service](./ML_SERVICE_FASTAPI.md) - Python ML backend *(Pro Edition)*
+- [Django ML Service](./ML_SERVICE_DJANGO.md) - Alternative Python backend *(Pro Edition)*
+
+> 💡 **Pro Edition includes:** AI Co-Founders system, Portal Copilot Architecture, advanced workflow orchestration. [Learn more →](https://synthstack.app/pricing)
 
 ## Authentication & Security
 
@@ -69,14 +66,11 @@ Welcome to the SynthStack documentation hub. Find everything you need to build, 
 
 ## Workflows & Automation
 
-- [Workflow System](./workflows/README.md) - Automation framework
-- [Workflow Quick Start](./guides/WORKFLOW_QUICK_START.md) - 5-minute first workflow tutorial
-- [API Keys Setup](./guides/WORKFLOW_API_KEYS_SETUP.md) - Configure integrations
-- [LangGraph User Guide](./LANGGRAPH_USER_GUIDE.md) - AI chat, approvals, and memories
-- [Node-RED Operator Guide](./NODERED_OPERATOR_GUIDE.md) - Self-hosting and operations
 - [Cron Jobs](./CRON_JOBS.md) - Scheduled tasks
 - [Email Service](./EMAIL_SERVICE.md) - Transactional and marketing emails
 - [Scraping](./SCRAPING_PLAN.md) - Data collection system
+
+> 💡 **Pro Edition includes:** Workflow System, LangGraph AI Agent Orchestration, Node-RED Integration. [Learn more →](https://synthstack.app/pricing)
 
 ## Integrations
 

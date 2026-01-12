@@ -1,5 +1,7 @@
 # Django ML Service
 
+> 🔒 **Pro Edition Only**: Python ML services (FastAPI/Django) are available in SynthStack Pro. Community Edition uses the TypeScript-only `ts-ml-service`. [Upgrade to Pro →](https://synthstack.app/pricing)
+
 The Django ML service is SynthStack's alternative Python backend for AI/ML operations. It provides the same API endpoints as the FastAPI version but uses Django REST Framework, making it ideal for teams with Django experience.
 
 ## Quick Start
