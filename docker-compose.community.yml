@@ -15,7 +15,7 @@ services:
   # ============================================
   postgres:
     image: postgres:15-alpine
-    container_name: synthstack-community-postgres
+    container_name: synthstack-postgres
     env_file:
       - .env
     environment:
@@ -41,7 +41,7 @@ services:
   # ============================================
   redis:
     image: redis:7-alpine
-    container_name: synthstack-community-redis
+    container_name: synthstack-redis
     command: redis-server --appendonly yes
     ports:
       - "6399:6379"
@@ -63,7 +63,7 @@ services:
     build:
       context: ./services/directus
       dockerfile: Dockerfile
-    container_name: synthstack-community-directus
+    container_name: synthstack-directus
     ports:
       - "8099:8055"
     env_file:
@@ -136,7 +136,7 @@ services:
     build:
       context: .
       dockerfile: packages/api-gateway/Dockerfile.dev
-    container_name: synthstack-community-api-gateway
+    container_name: synthstack-api-gateway
     ports:
       - "3003:3003"
     env_file:
@@ -200,7 +200,7 @@ services:
     build:
       context: ./apps/web
       dockerfile: Dockerfile.dev
-    container_name: synthstack-community-web
+    container_name: synthstack-web
     ports:
       - "3050:3050"
     env_file:
