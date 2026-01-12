@@ -341,8 +341,8 @@ services:
       SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
 
-      # ML Service
-      ML_SERVICE_URL: http://ml-service:8000
+      # ML Service (TypeScript)
+      ML_SERVICE_URL: http://ts-ml-service:8001
 
       # Redis
       REDIS_URL: redis://redis:6379
@@ -374,22 +374,21 @@ services:
       - synthstack
 
   # ============================================
-  # ML Service (FastAPI + Python) - Default Backend
-  # Use: docker compose up (FastAPI is the default)
-  # To use Django instead: docker compose --profile django up
+  # ML Service (TypeScript/NestJS) - Community Edition
+  # Uses ts-ml-service instead of Python ml-service
   # ============================================
-  ml-service:
+  ts-ml-service:
     build:
-      context: ./packages/ml-service
+      context: ./packages/ts-ml-service
       dockerfile: Dockerfile
-    container_name: ${CONTAINER_PREFIX:-synthstack}-ml-service
-    # No profile = always runs by default
+    container_name: ${CONTAINER_PREFIX:-synthstack}-ts-ml-service
     ports:
-      - "8001:8000"
+      - "8001:8001"
     env_file:
       - .env
     environment:
-      ENVIRONMENT: development
+      NODE_ENV: development
+      PORT: 8001
 
       # AI APIs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
@@ -403,13 +402,6 @@ services:
 
       # Vector DB
       QDRANT_URL: http://qdrant:6333
-
-      # File Storage
-      UPLOAD_DIR: /app/uploads
-      MAX_UPLOAD_SIZE: 52428800 # 50MB
-    volumes:
-      - ./packages/ml-service:/app
-      - ml_uploads:/app/uploads
     depends_on:
       postgres:
         condition: service_healthy
@@ -419,52 +411,8 @@ services:
     networks:
       - synthstack
 
-  # ============================================
-  # ML Service (Django) - Alternative Backend
-  # Use: docker compose --profile django up
-  # ============================================
-  ml-service-django:
-    build:
-      context: ./packages/django-ml-service
-      dockerfile: Dockerfile
-    container_name: ${CONTAINER_PREFIX:-synthstack}-ml-django
-    profiles: [ "django" ]
-    ports:
-      - "8001:8000"
-    env_file:
-      - .env
-    environment:
-      DJANGO_ENV: development
-      DJANGO_DEBUG: "true"
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-synthstack-django-dev-secret-key-change-in-production}
-
-      # AI APIs
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-
-      # Database (for RAG)
-      DATABASE_URL: postgresql://${DB_USER:-synthstack}:${DB_PASSWORD:-synthstack_dev_2024}@postgres:5432/${DB_DATABASE:-synthstack}
-
-      # Redis
-      REDIS_URL: redis://redis:6379
-
-      # Vector DB
-      QDRANT_URL: http://qdrant:6333
-
-      # File Storage
-      UPLOAD_DIR: /app/uploads
-      MAX_UPLOAD_SIZE: 52428800 # 50MB
-    volumes:
-      - ./packages/django-ml-service:/app
-      - django_ml_uploads:/app/uploads
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    restart: unless-stopped
-    networks:
-      - synthstack
+  # NOTE: django-ml-service and ml-service (Python) are Pro Edition only.
+  # Community Edition uses ts-ml-service (TypeScript) above.
 
   # ============================================
   # Web Frontend (Vue 3 + Quasar) - Development
@@ -521,10 +469,6 @@ volumes:
   qdrant_data:
     driver: local
   directus_uploads:
-    driver: local
-  ml_uploads:
-    driver: local
-  django_ml_uploads:
     driver: local
   web_node_modules:
     driver: local

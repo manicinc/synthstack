@@ -21,7 +21,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
       - ./services/directus/migrations:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d printverse"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d printverse" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -39,7 +39,7 @@ services:
     volumes:
       - redis-data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -85,33 +85,31 @@ services:
       start_period: 60s
 
   # =========================================
-  # ML Service (Python/FastAPI)
+  # ML Service (TypeScript/NestJS) - Community Edition
   # =========================================
-  ml-service:
+  ts-ml-service:
     build:
-      context: ./packages/ml-service
+      context: ./packages/ts-ml-service
       dockerfile: Dockerfile
-    container_name: synthstack-ml
+    container_name: synthstack-ts-ml
     restart: unless-stopped
     ports:
-      - "8030:8000"
+      - "8030:8001"
     environment:
-      ENVIRONMENT: development
+      NODE_ENV: development
+      PORT: 8001
       REDIS_URL: redis://redis:6379
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/printverse
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
     depends_on:
       - redis
-    volumes:
-      - ./packages/ml-service/app:/app/app
-      - ml-cache:/app/cache
     healthcheck:
       test:
         - CMD
-        - python
-        - -c
-        - "import urllib.request, sys; sys.exit(0) if urllib.request.urlopen('http://127.0.0.1:8000/health').getcode()==200 else sys.exit(1)"
+        - node
+        - -e
+        - "require('http').get('http://127.0.0.1:8001/health', r => { if (r.statusCode === 200) process.exit(0); process.exit(1); }).on('error', () => process.exit(1));"
       interval: 10s
       timeout: 5s
       retries: 3
@@ -149,8 +147,8 @@ services:
     image: mailhog/mailhog:latest
     container_name: synthstack-mailhog
     ports:
-      - "1030:1025"  # SMTP
-      - "8035:8025"  # Web UI
+      - "1030:1025" # SMTP
+      - "8035:8025" # Web UI
 
 networks:
   default:
@@ -159,6 +157,6 @@ networks:
 volumes:
   postgres-data:
   redis-data:
-  ml-cache:
   api-node-modules:
+
 
