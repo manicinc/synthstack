@@ -242,13 +242,11 @@ Authorization: Bearer synthstack-static-admin-token-2024
 | **Cache** | Redis |
 | **Payments** | Stripe |
 
-### Optional ML Services
+### Machine Learning Service
 
 | Service | Technology | Use Case |
 |---------|------------|----------|
-| **ts-ml-service** | NestJS (TypeScript) | RAG, embeddings, analysis - no Python |
-| **ml-service** | FastAPI (Python) | Advanced ML, custom models |
-| **django-ml-service** | Django (Python) | Alternative for Django teams |
+| **ts-ml-service** | NestJS (TypeScript) | RAG, embeddings, analysis - **No Python Required** |
 
 ### Styling Architecture
 
@@ -277,7 +275,7 @@ Deploy as **monolithic** (single server) or **microservices** (distributed):
 |---------|-----------|------|----------------------|
 | **Frontend** | Vue 3 + Quasar | 3050 | ✅ Yes (static hosting) |
 | **API Gateway** | Fastify + Node.js | 3003 | ✅ Yes (stateless, scalable) |
-| **ML Service** | FastAPI or Django | 8001 | ✅ Yes (Python backend) |
+| **ML Service** | NestJS (TypeScript) | 8001 | ✅ Yes (full-stack TS) |
 | **CMS** | Directus | 8055 | ✅ Yes (headless CMS) |
 | **Database** | PostgreSQL | 5432 | ✅ Yes (can use hosted) |
 | **Cache/Queue** | Redis | 6379 | ✅ Yes (can use hosted) |
