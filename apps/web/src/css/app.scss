@@ -8,66 +8,57 @@
 // ============================================
 
 :root {
-  // Color System - Dark Mode (Default)
-  --color-bg-primary: #0D0D0D;
-  --color-bg-secondary: #1A1A1A;
-  --color-bg-tertiary: #262626;
-  --color-bg-elevated: #333333;
+  // ============================================
+  // APP SEMANTIC MAPPINGS
+  // Maps application-specific variables to the dynamic Theme System variables
+  // defined in the Theme Store (src/stores/theme.ts)
+  // ============================================
 
-  --color-surface-light: #F5F3EF;
-  --color-surface-medium: #E8E6E1;
-  --color-surface-dark: #D4D2CD;
+  // Backgrounds
+  --color-bg-primary: var(--bg-base);
+  --color-bg-secondary: var(--bg-subtle);
+  --color-bg-tertiary: var(--bg-muted);
+  --color-bg-elevated: var(--bg-elevated);
 
-  // Map theme variables to app variables for dark mode
-  // NOTE: theme.scss will define --text-primary etc, we just reference them here
-  --color-text-primary: var(--text-primary, #F5F3EF);
-  --color-text-secondary: var(--text-secondary, #A3A3A3);
-  --color-text-muted: var(--text-tertiary, #737373);
-  --color-text-inverse: #0D0D0D;
+  // Text
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-tertiary);
+  --color-text-inverse: var(--bg-base); // Simple inversion strategy
+
+  // Borders
+  --color-border: var(--border-default);
 
   // Accent Colors
-  --color-primary: #FF6B35;
-  --color-primary-hover: #FF8555;
-  --color-primary-active: #E55A2B;
-  --color-primary-muted: rgba(255, 107, 53, 0.15);
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-active: var(--color-primary-hover); // Fallback
+  --color-primary-muted: rgba(99, 102, 241, 0.15); // Hard fallback, should ideally be dynamic
 
-  --color-secondary: #2D9CDB;
-  --color-secondary-hover: #4DB0E8;
-  --color-secondary-active: #2588C2;
-  --color-secondary-muted: rgba(45, 156, 219, 0.15);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-hover: var(--color-secondary-hover);
+  --color-secondary-active: var(--color-secondary-hover);
+  --color-secondary-muted: rgba(20, 184, 166, 0.15);
 
-  --color-tertiary: #B87333;
-  --color-tertiary-hover: #D4894A;
-  --color-tertiary-active: #9E632C;
+  --color-tertiary: var(--color-accent);
+  --color-tertiary-hover: var(--color-accent-hover);
 
   // Semantic Colors
-  --color-success: #2ECC71;
-  --color-success-bg: rgba(46, 204, 113, 0.15);
-  --color-warning: #F1C40F;
-  --color-warning-bg: rgba(241, 196, 15, 0.15);
-  --color-error: #E74C3C;
-  --color-error-bg: rgba(231, 76, 60, 0.15);
-  --color-info: #2D9CDB;
-  --color-info-bg: rgba(45, 156, 219, 0.15);
+  --color-success: var(--color-success);
+  --color-success-bg: rgba(34, 197, 94, 0.1);
+  --color-warning: var(--color-warning);
+  --color-warning-bg: rgba(234, 179, 8, 0.1);
+  --color-error: var(--color-error);
+  --color-error-bg: rgba(239, 68, 68, 0.1);
+  --color-info: var(--color-info);
+  --color-info-bg: rgba(14, 165, 233, 0.1);
 
-  // Typography
-  --font-display: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
+  // Typography - Mapped from Theme
+  --font-display: var(--font-display, 'Plus Jakarta Sans', sans-serif);
+  --font-body: var(--font-sans, 'Inter', sans-serif);
+  --font-mono: var(--font-mono, 'JetBrains Mono', monospace);
 
-  // Type Scale
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-md: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.25rem;
-  --text-2xl: 1.5rem;
-  --text-3xl: 1.875rem;
-  --text-4xl: 2.25rem;
-  --text-5xl: 3rem;
-  --text-6xl: 4rem;
-
-  // Spacing
+  // Spacing (Keep existing definitions if they work, or map if needed)
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -82,48 +73,25 @@
   --space-24: 6rem;
 
   // Border Radius
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-2xl: 24px;
-  --radius-full: 9999px;
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-xl); // Fallback
+  --radius-full: var(--radius-full);
 
   // Shadows
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.25);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.3);
-  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.4);
-  --shadow-glow-primary: 0 0 20px rgba(255, 107, 53, 0.3);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-glow-primary: 0 0 20px rgba(99, 102, 241, 0.3);
 
   // Transitions
-  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
-  --duration-fast: 150ms;
-  --duration-normal: 250ms;
-  --duration-slow: 400ms;
-}
-
-// Border color variable
-:root {
-  --color-border: rgba(255, 255, 255, 0.1);
-}
-
-// Light mode overrides - Quasar uses .body--light
-// NOTE: These are defined BEFORE theme.scss import so theme can override
-.body--light,
-:root:not(.dark) {
-  --color-bg-primary: #ffffff;
-  --color-bg-secondary: #fafafa;
-  --color-bg-tertiary: #f4f4f5;
-  --color-bg-elevated: #e4e4e7;
-
-  --color-text-inverse: #ffffff;
-  --color-border: rgba(0, 0, 0, 0.12);
-
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
-  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.15);
+  --ease-default: var(--easing-default);
+  --duration-fast: var(--transition-fast);
+  --duration-normal: var(--transition-normal);
+  --duration-slow: var(--transition-slow);
 }
 
 // Map --color-text-* to theme.scss variables AFTER theme import
@@ -178,7 +146,12 @@ body {
 // Typography
 // ============================================
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-display);
   font-weight: 700;
   line-height: 1.2;
@@ -186,12 +159,29 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--color-text-primary);
 }
 
-h1 { font-size: var(--text-5xl); }
-h2 { font-size: var(--text-4xl); }
-h3 { font-size: var(--text-3xl); }
-h4 { font-size: var(--text-2xl); }
-h5 { font-size: var(--text-xl); }
-h6 { font-size: var(--text-lg); }
+h1 {
+  font-size: var(--text-5xl);
+}
+
+h2 {
+  font-size: var(--text-4xl);
+}
+
+h3 {
+  font-size: var(--text-3xl);
+}
+
+h4 {
+  font-size: var(--text-2xl);
+}
+
+h5 {
+  font-size: var(--text-xl);
+}
+
+h6 {
+  font-size: var(--text-lg);
+}
 
 p {
   margin: 0 0 var(--space-4);
@@ -208,7 +198,8 @@ a {
   }
 }
 
-code, pre {
+code,
+pre {
   font-family: var(--font-mono);
   font-size: 0.9em;
 }
@@ -283,13 +274,11 @@ pre {
 
 // Layer Lines Pattern (3D printing aesthetic)
 .bg-layers {
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(255, 107, 53, 0.03) 2px,
-    rgba(255, 107, 53, 0.03) 4px
-  );
+  background: repeating-linear-gradient(0deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 107, 53, 0.03) 2px,
+      rgba(255, 107, 53, 0.03) 4px);
 }
 
 // ============================================
@@ -453,8 +442,13 @@ pre {
 // ============================================
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeInUp {
@@ -462,6 +456,7 @@ pre {
     opacity: 0;
     transform: translateY(16px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -473,6 +468,7 @@ pre {
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -480,13 +476,25 @@ pre {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .animate-fade-in {
@@ -655,12 +663,10 @@ pre {
 // ============================================
 
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--color-bg-tertiary) 25%,
-    var(--color-bg-elevated) 50%,
-    var(--color-bg-tertiary) 75%
-  );
+  background: linear-gradient(90deg,
+      var(--color-bg-tertiary) 25%,
+      var(--color-bg-elevated) 50%,
+      var(--color-bg-tertiary) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: var(--radius-sm);
@@ -670,12 +676,12 @@ pre {
   @extend .skeleton;
   height: 1em;
   margin-bottom: 0.5em;
-  
+
   &.skeleton-title {
     height: 1.5em;
     width: 60%;
   }
-  
+
   &.skeleton-short {
     width: 40%;
   }
@@ -781,7 +787,7 @@ body.body--light {
   background-color: var(--bg-base) !important;
   color: var(--text-primary) !important;
   // DO NOT set -webkit-text-fill-color on body - it breaks inheritance
-  
+
   // CRITICAL: Ensure body is always visible in light mode
   // Something (possibly an animation or transition) was setting these to problematic values
   display: block !important;
@@ -810,8 +816,8 @@ body.body--light {
     -webkit-text-fill-color: #e2e8f0 !important;
 
     // Direct descendants inherit the light text color
-    > *, 
-    > * > * {
+    >*,
+    >*>* {
       -webkit-text-fill-color: inherit !important;
     }
 
@@ -820,7 +826,8 @@ body.body--light {
       -webkit-text-fill-color: #e2e8f0 !important;
     }
 
-    .link-btn, a {
+    .link-btn,
+    a {
       color: #14b8a6 !important;
       -webkit-text-fill-color: #14b8a6 !important;
     }
@@ -837,14 +844,17 @@ body.body--light {
   }
 
   // Cookie modal - ISOLATED dark component
-  .cookie-modal, .cookie-modal-overlay {
+  .cookie-modal,
+  .cookie-modal-overlay {
+
     // Direct descendants inherit
-    > *,
-    > * > * {
+    >*,
+    >*>* {
       -webkit-text-fill-color: inherit !important;
     }
 
-    h2, h4 {
+    h2,
+    h4 {
       color: #f8fafc !important;
       -webkit-text-fill-color: #f8fafc !important;
     }
@@ -857,9 +867,10 @@ body.body--light {
 
   // Demo status bar - ISOLATED dark component
   .demo-status-bar {
+
     // Direct descendants inherit
-    > *,
-    > * > * {
+    >*,
+    >*>* {
       -webkit-text-fill-color: inherit !important;
     }
 
@@ -882,7 +893,7 @@ body.body--light {
     .close-btn,
     .q-btn[aria-label*="close"] {
       color: rgba(255, 255, 255, 0.9) !important;
-      
+
       .q-icon {
         color: rgba(255, 255, 255, 0.9) !important;
       }
@@ -899,14 +910,20 @@ body.body--light {
 
   // Quasar notifications - keep proper colors
   .q-notification {
-    > *,
-    > * > * {
+
+    >*,
+    >*>* {
       -webkit-text-fill-color: inherit !important;
     }
   }
 
   // Typography - use theme variables with explicit text-fill-color
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     color: var(--text-primary);
     -webkit-text-fill-color: var(--text-primary);
   }
@@ -917,7 +934,12 @@ body.body--light {
   }
 
   // Ensure inline text elements inherit properly
-  span, li, td, th, label, a {
+  span,
+  li,
+  td,
+  th,
+  label,
+  a {
     color: inherit;
     -webkit-text-fill-color: currentColor;
   }
@@ -933,182 +955,190 @@ body.body--light {
 
   // Landing page specific sections
   .landing-page {
+    background: var(--bg-base) !important;
+    color: var(--text-primary) !important;
+
     // Section headers
     .section-header {
       h2 {
-        color: #18181b !important;
-        -webkit-text-fill-color: #18181b !important;
+        color: var(--text-primary) !important;
+        -webkit-text-fill-color: var(--text-primary) !important;
       }
+
       p {
-        color: #3f3f46 !important;
-        -webkit-text-fill-color: #3f3f46 !important;
+        color: var(--text-secondary) !important;
+        -webkit-text-fill-color: var(--text-secondary) !important;
       }
     }
 
     // Section badges
     .section-badge {
-      color: #0d9488 !important;
-      -webkit-text-fill-color: #0d9488 !important;
-      background: rgba(13, 148, 136, 0.1) !important;
+      color: var(--color-primary) !important;
+      -webkit-text-fill-color: var(--color-primary) !important;
+      background: rgba(99, 102, 241, 0.1) !important; // Fallback or dynamic
     }
 
     // Feature cards
     .feature-card {
-      background: #ffffff !important;
-      border-color: rgba(0, 0, 0, 0.1) !important;
+      background: var(--bg-elevated) !important;
+      border-color: var(--border-default) !important;
 
       h3 {
-        color: #18181b !important;
-        -webkit-text-fill-color: #18181b !important;
+        color: var(--text-primary) !important;
+        -webkit-text-fill-color: var(--text-primary) !important;
       }
+
       p {
-        color: #3f3f46 !important;
-        -webkit-text-fill-color: #3f3f46 !important;
+        color: var(--text-secondary) !important;
+        -webkit-text-fill-color: var(--text-secondary) !important;
       }
     }
 
     // Tags
     .tag {
-      color: #52525b !important;
-      -webkit-text-fill-color: #52525b !important;
-      background: #f4f4f5 !important;
+      color: var(--text-secondary) !important;
+      -webkit-text-fill-color: var(--text-secondary) !important;
+      background: var(--bg-muted) !important;
     }
 
     // Pricing cards
     .pricing-card {
-      background: #ffffff !important;
-      border-color: rgba(0, 0, 0, 0.1) !important;
+      background: var(--bg-elevated) !important;
+      border-color: var(--border-default) !important;
 
       h3 {
-        color: #18181b !important;
-        -webkit-text-fill-color: #18181b !important;
+        color: var(--text-primary) !important;
+        -webkit-text-fill-color: var(--text-primary) !important;
       }
 
       .price {
-        color: #18181b !important;
-        -webkit-text-fill-color: #18181b !important;
+        color: var(--text-primary) !important;
+        -webkit-text-fill-color: var(--text-primary) !important;
 
         .period {
-          color: #71717a !important;
-          -webkit-text-fill-color: #71717a !important;
+          color: var(--text-secondary) !important;
+          -webkit-text-fill-color: var(--text-secondary) !important;
         }
       }
 
       .pricing-desc {
-        color: #3f3f46 !important;
-        -webkit-text-fill-color: #3f3f46 !important;
+        color: var(--text-secondary) !important;
+        -webkit-text-fill-color: var(--text-secondary) !important;
       }
 
       &.featured {
-        border-color: #0d9488 !important;
+        border-color: var(--color-secondary) !important;
       }
     }
 
     // Features list
     .features-list li {
-      color: #3f3f46 !important;
-      -webkit-text-fill-color: #3f3f46 !important;
+      color: var(--text-secondary) !important;
+      -webkit-text-fill-color: var(--text-secondary) !important;
 
       &.disabled {
-        color: #a1a1aa !important;
-        -webkit-text-fill-color: #a1a1aa !important;
+        color: var(--text-tertiary) !important;
+        -webkit-text-fill-color: var(--text-tertiary) !important;
       }
     }
 
     // FAQ section
     .faq-section {
-      background: #fafafa !important;
+      background: var(--bg-subtle) !important;
     }
 
     .faq-item {
-      background: #ffffff !important;
-      border-color: rgba(0, 0, 0, 0.1) !important;
+      background: var(--bg-elevated) !important;
+      border-color: var(--border-default) !important;
 
       h3 {
-        color: #18181b !important;
-        -webkit-text-fill-color: #18181b !important;
+        color: var(--text-primary) !important;
+        -webkit-text-fill-color: var(--text-primary) !important;
       }
+
       p {
-        color: #3f3f46 !important;
-        -webkit-text-fill-color: #3f3f46 !important;
+        color: var(--text-secondary) !important;
+        -webkit-text-fill-color: var(--text-secondary) !important;
       }
     }
 
     // CTA section
     .cta-section {
       h2 {
-        color: #18181b !important;
-        -webkit-text-fill-color: #18181b !important;
+        color: var(--text-primary) !important;
+        -webkit-text-fill-color: var(--text-primary) !important;
       }
+
       p {
-        color: #3f3f46 !important;
-        -webkit-text-fill-color: #3f3f46 !important;
+        color: var(--text-secondary) !important;
+        -webkit-text-fill-color: var(--text-secondary) !important;
       }
     }
 
     // Tech section
     .tech-section {
-      border-color: rgba(0, 0, 0, 0.08) !important;
+      border-color: var(--border-default) !important;
     }
 
     .tech-label {
-      color: #52525b !important;
-      -webkit-text-fill-color: #52525b !important;
+      color: var(--text-secondary) !important;
+      -webkit-text-fill-color: var(--text-secondary) !important;
     }
 
     .tech-list li {
-      color: #18181b !important;
-      -webkit-text-fill-color: #18181b !important;
+      color: var(--text-primary) !important;
+      -webkit-text-fill-color: var(--text-primary) !important;
     }
 
     // More features banner
     .more-features {
-      background: #fafafa !important;
-      border-color: rgba(0, 0, 0, 0.08) !important;
+      background: var(--bg-subtle) !important;
+      border-color: var(--border-default) !important;
     }
 
     .more-feature {
-      color: #18181b !important;
-      -webkit-text-fill-color: #18181b !important;
+      color: var(--text-primary) !important;
+      -webkit-text-fill-color: var(--text-primary) !important;
     }
 
     // Open source section
     .opensource-card {
-      background: #fafafa !important;
+      background: var(--bg-subtle) !important;
 
       h2 {
-        color: #18181b !important;
-        -webkit-text-fill-color: #18181b !important;
+        color: var(--text-primary) !important;
+        -webkit-text-fill-color: var(--text-primary) !important;
       }
     }
 
     .opensource-description {
-      color: #3f3f46 !important;
-      -webkit-text-fill-color: #3f3f46 !important;
+      color: var(--text-secondary) !important;
+      -webkit-text-fill-color: var(--text-secondary) !important;
 
       strong {
-        color: #18181b !important;
-        -webkit-text-fill-color: #18181b !important;
+        color: var(--text-primary) !important;
+        -webkit-text-fill-color: var(--text-primary) !important;
       }
     }
 
     .feature-pill {
-      background: #ffffff !important;
-      border-color: rgba(0, 0, 0, 0.1) !important;
-      color: #18181b !important;
-      -webkit-text-fill-color: #18181b !important;
+      background: var(--bg-elevated) !important;
+      border-color: var(--border-default) !important;
+      color: var(--text-primary) !important;
+      -webkit-text-fill-color: var(--text-primary) !important;
     }
   }
 
   // Referral showcase
   .referral-showcase {
     .section-header h2 {
-      color: #18181b !important;
-      -webkit-text-fill-color: #18181b !important;
+      color: var(--text-primary) !important;
+      -webkit-text-fill-color: var(--text-primary) !important;
     }
+
     .section-header p {
-      color: #3f3f46 !important;
-      -webkit-text-fill-color: #3f3f46 !important;
+      color: var(--text-secondary) !important;
+      -webkit-text-fill-color: var(--text-secondary) !important;
     }
   }
 
@@ -1123,29 +1153,29 @@ body.body--light {
 
   // Quasar tabs in light mode
   .q-tabs {
-    background: #f4f4f5 !important;
+    background: var(--bg-muted) !important;
 
     .q-tab {
-      color: #3f3f46 !important;
-      -webkit-text-fill-color: #3f3f46 !important;
+      color: var(--text-secondary) !important;
+      -webkit-text-fill-color: var(--text-secondary) !important;
 
       .q-tab__icon {
-        color: #3f3f46 !important;
+        color: var(--text-secondary) !important;
       }
 
       .q-tab__label {
-        color: #3f3f46 !important;
-        -webkit-text-fill-color: #3f3f46 !important;
+        color: var(--text-secondary) !important;
+        -webkit-text-fill-color: var(--text-secondary) !important;
       }
 
       &.q-tab--active {
-        color: var(--q-primary) !important;
-        -webkit-text-fill-color: var(--q-primary) !important;
+        color: var(--color-primary) !important;
+        -webkit-text-fill-color: var(--color-primary) !important;
 
         .q-tab__icon,
         .q-tab__label {
-          color: var(--q-primary) !important;
-          -webkit-text-fill-color: var(--q-primary) !important;
+          color: var(--color-primary) !important;
+          -webkit-text-fill-color: var(--color-primary) !important;
         }
       }
     }
@@ -1159,61 +1189,61 @@ body.body--light {
   // Project detail page
   .project-detail-page {
     .project-header {
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(0, 212, 170, 0.08)) !important;
+      background: linear-gradient(135deg, rgba(var(--color-primary), 0.08), rgba(var(--color-accent), 0.08)) !important;
 
       h1 {
-        color: #18181b !important;
-        -webkit-text-fill-color: #18181b !important;
+        color: var(--text-primary) !important;
+        -webkit-text-fill-color: var(--text-primary) !important;
       }
 
       p {
-        color: #3f3f46 !important;
-        -webkit-text-fill-color: #3f3f46 !important;
+        color: var(--text-secondary) !important;
+        -webkit-text-fill-color: var(--text-secondary) !important;
       }
     }
 
     .stat-card {
-      background: #ffffff !important;
-      border-color: rgba(0, 0, 0, 0.1) !important;
+      background: var(--bg-elevated) !important;
+      border-color: var(--border-default) !important;
 
       .text-caption {
-        color: #71717a !important;
-        -webkit-text-fill-color: #71717a !important;
+        color: var(--text-tertiary) !important;
+        -webkit-text-fill-color: var(--text-tertiary) !important;
       }
     }
 
     // Todo items
     .todo-item {
       &:hover {
-        background-color: rgba(0, 0, 0, 0.03) !important;
+        background-color: var(--bg-subtle) !important;
       }
 
       .q-item__label {
-        color: #18181b !important;
-        -webkit-text-fill-color: #18181b !important;
+        color: var(--text-primary) !important;
+        -webkit-text-fill-color: var(--text-primary) !important;
 
         &.text-strike {
-          color: #a1a1aa !important;
-          -webkit-text-fill-color: #a1a1aa !important;
+          color: var(--text-tertiary) !important;
+          -webkit-text-fill-color: var(--text-tertiary) !important;
         }
       }
 
       .q-item__label--caption {
-        color: #71717a !important;
-        -webkit-text-fill-color: #71717a !important;
+        color: var(--text-tertiary) !important;
+        -webkit-text-fill-color: var(--text-tertiary) !important;
       }
     }
 
     // Copilot chat
     .copilot-card {
-      background: #ffffff !important;
-      border-color: rgba(0, 0, 0, 0.1) !important;
+      background: var(--bg-elevated) !important;
+      border-color: var(--border-default) !important;
     }
 
     .chat-message.assistant .message-content {
-      background: #f4f4f5 !important;
-      color: #18181b !important;
-      -webkit-text-fill-color: #18181b !important;
+      background: var(--bg-muted) !important;
+      color: var(--text-primary) !important;
+      -webkit-text-fill-color: var(--text-primary) !important;
     }
   }
 
@@ -1225,71 +1255,78 @@ body.body--light {
 
   // Quasar cards
   .q-card {
-    background: #ffffff !important;
-    border-color: rgba(0, 0, 0, 0.1) !important;
+    background: var(--bg-elevated) !important;
+    border-color: var(--border-default) !important;
 
-    .text-h6, .text-h5, .text-h4, .text-h3, .text-h2, .text-h1 {
-      color: #18181b !important;
-      -webkit-text-fill-color: #18181b !important;
+    .text-h6,
+    .text-h5,
+    .text-h4,
+    .text-h3,
+    .text-h2,
+    .text-h1 {
+      color: var(--text-primary) !important;
+      -webkit-text-fill-color: var(--text-primary) !important;
     }
 
-    .text-caption, .text-grey-6, .text-grey-7 {
-      color: #71717a !important;
-      -webkit-text-fill-color: #71717a !important;
+    .text-caption,
+    .text-grey-6,
+    .text-grey-7 {
+      color: var(--text-tertiary) !important;
+      -webkit-text-fill-color: var(--text-tertiary) !important;
     }
 
     // Ensure primary colored text stays primary
     .text-primary {
-      color: var(--q-primary) !important;
-      -webkit-text-fill-color: var(--q-primary) !important;
+      color: var(--color-primary) !important;
+      -webkit-text-fill-color: var(--color-primary) !important;
     }
   }
 
   // Quasar list items
   .q-item {
     .q-item__label {
-      color: #18181b !important;
-      -webkit-text-fill-color: #18181b !important;
+      color: var(--text-primary) !important;
+      -webkit-text-fill-color: var(--text-primary) !important;
     }
 
     .q-item__label--caption {
-      color: #71717a !important;
-      -webkit-text-fill-color: #71717a !important;
+      color: var(--text-tertiary) !important;
+      -webkit-text-fill-color: var(--text-tertiary) !important;
     }
   }
 
   // Quasar inputs
   .q-field {
     .q-field__control {
-      background: #ffffff !important;
+      background: var(--bg-base) !important;
     }
 
     .q-field__native,
     .q-field__input {
-      color: #18181b !important;
-      -webkit-text-fill-color: #18181b !important;
+      color: var(--text-primary) !important;
+      -webkit-text-fill-color: var(--text-primary) !important;
     }
 
     .q-field__label {
-      color: #71717a !important;
+      color: var(--text-tertiary) !important;
     }
   }
 
   // Quasar dialogs
   .q-dialog .q-card {
-    background: #ffffff !important;
+    background: var(--bg-elevated) !important;
 
     .text-h6 {
-      color: #18181b !important;
-      -webkit-text-fill-color: #18181b !important;
+      color: var(--text-primary) !important;
+      -webkit-text-fill-color: var(--text-primary) !important;
     }
   }
 
   // Button toggle
   .q-btn-toggle {
     .q-btn {
-      color: #3f3f46 !important;
-      -webkit-text-fill-color: #3f3f46 !important;
+      color: var(--text-secondary) !important;
+      -webkit-text-fill-color: var(--text-secondary) !important;
 
       &.q-btn--active {
         color: #ffffff !important;
@@ -1301,13 +1338,13 @@ body.body--light {
   // Timeline
   .q-timeline {
     .q-timeline__title {
-      color: #18181b !important;
-      -webkit-text-fill-color: #18181b !important;
+      color: var(--text-primary) !important;
+      -webkit-text-fill-color: var(--text-primary) !important;
     }
 
     .q-timeline__subtitle {
-      color: #71717a !important;
-      -webkit-text-fill-color: #71717a !important;
+      color: var(--text-tertiary) !important;
+      -webkit-text-fill-color: var(--text-tertiary) !important;
     }
   }
 
@@ -1316,59 +1353,59 @@ body.body--light {
     background: transparent !important;
 
     h5 {
-      color: #18181b !important;
-      -webkit-text-fill-color: #18181b !important;
+      color: var(--text-primary) !important;
+      -webkit-text-fill-color: var(--text-primary) !important;
     }
 
     .text-grey-6 {
-      color: #71717a !important;
-      -webkit-text-fill-color: #71717a !important;
+      color: var(--text-tertiary) !important;
+      -webkit-text-fill-color: var(--text-tertiary) !important;
     }
   }
 
   // Site Header - Navigation
   .site-header {
-    background: #ffffff !important;
-    border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+    background: var(--bg-base) !important;
+    border-bottom-color: var(--border-default) !important;
 
     .logo {
-      color: #18181b !important;
-      -webkit-text-fill-color: #18181b !important;
+      color: var(--text-primary) !important;
+      -webkit-text-fill-color: var(--text-primary) !important;
 
       span {
-        color: #18181b !important;
-        -webkit-text-fill-color: #18181b !important;
+        color: var(--text-primary) !important;
+        -webkit-text-fill-color: var(--text-primary) !important;
       }
     }
 
     .nav-links {
       a {
-        color: #3f3f46 !important;
-        -webkit-text-fill-color: #3f3f46 !important;
+        color: var(--text-secondary) !important;
+        -webkit-text-fill-color: var(--text-secondary) !important;
 
         &:hover,
         &.router-link-active {
-          color: #0d9488 !important;
-          -webkit-text-fill-color: #0d9488 !important;
+          color: var(--color-primary) !important;
+          -webkit-text-fill-color: var(--color-primary) !important;
         }
       }
     }
 
     .about-toggle {
-      color: #3f3f46 !important;
-      -webkit-text-fill-color: #3f3f46 !important;
+      color: var(--text-secondary) !important;
+      -webkit-text-fill-color: var(--text-secondary) !important;
     }
 
     .about-menu {
-      background: #ffffff !important;
-      border-color: rgba(0, 0, 0, 0.1) !important;
+      background: var(--bg-elevated) !important;
+      border-color: var(--border-default) !important;
 
       a {
-        color: #18181b !important;
-        -webkit-text-fill-color: #18181b !important;
+        color: var(--text-primary) !important;
+        -webkit-text-fill-color: var(--text-primary) !important;
 
         &:hover {
-          background: #f4f4f5 !important;
+          background: var(--bg-muted) !important;
         }
       }
     }
@@ -1380,30 +1417,30 @@ body.body--light {
     }
 
     .sign-in-btn {
-      color: #18181b !important;
-      -webkit-text-fill-color: #18181b !important;
+      color: var(--text-primary) !important;
+      -webkit-text-fill-color: var(--text-primary) !important;
 
       .q-btn__content {
-        color: #18181b !important;
-        -webkit-text-fill-color: #18181b !important;
+        color: var(--text-primary) !important;
+        -webkit-text-fill-color: var(--text-primary) !important;
       }
     }
 
     .theme-toggle-btn {
-      border-color: rgba(0, 0, 0, 0.1) !important;
-      background: #f4f4f5 !important;
+      border-color: var(--border-default) !important;
+      background: var(--bg-muted) !important;
 
       &:hover {
-        background: #e4e4e7 !important;
+        background: var(--bg-subtle) !important;
       }
     }
 
     .hamburger-btn {
-      border-color: rgba(0, 0, 0, 0.1) !important;
-      background: #f4f4f5 !important;
+      border-color: var(--border-default) !important;
+      background: var(--bg-muted) !important;
 
       span {
-        background: #18181b !important;
+        background: var(--text-primary) !important;
       }
     }
   }
@@ -1436,13 +1473,13 @@ body.body--light {
 
     // Flat/text buttons should have dark text
     &.q-btn--flat:not(.bg-primary):not(.bg-secondary) {
-      color: #18181b !important;
-      -webkit-text-fill-color: #18181b !important;
+      color: var(--text-primary) !important;
+      -webkit-text-fill-color: var(--text-primary) !important;
 
       .q-btn__content,
       .q-icon {
-        color: #18181b !important;
-        -webkit-text-fill-color: #18181b !important;
+        color: var(--text-primary) !important;
+        -webkit-text-fill-color: var(--text-primary) !important;
       }
     }
   }
@@ -1461,8 +1498,8 @@ body.body--light {
 
   // Hero Section Text - must override scoped styles
   // Need to explicitly set -webkit-text-fill-color to fix invisible text
-  .hero-title .title-line-1 .word > span:not(.gradient-word),
-  .landing-page .hero-title .title-line-1 .word > span:not(.gradient-word) {
+  .hero-title .title-line-1 .word>span:not(.gradient-word),
+  .landing-page .hero-title .title-line-1 .word>span:not(.gradient-word) {
     color: #18181b !important;
     -webkit-text-fill-color: #18181b !important;
   }
@@ -1828,7 +1865,7 @@ body.body--light {
     color: #1e293b !important;
   }
 
-  .demo-content > p {
+  .demo-content>p {
     color: #475569 !important;
   }
 
@@ -1862,9 +1899,11 @@ body.body--light {
 
 // Add padding for macOS traffic lights when in Electron
 .platform-electron.is-desktop {
+
   // macOS specific - add space for traffic lights
   &.body--darwin,
   body[data-platform="darwin"] & {
+
     .q-header,
     .site-header {
       padding-top: 38px !important;
@@ -1874,6 +1913,7 @@ body.body--light {
 
 // Alternative: detect via CSS env if available
 @supports (padding-top: env(titlebar-area-height)) {
+
   .platform-electron .q-header,
   .platform-electron .site-header {
     padding-top: env(titlebar-area-height, 38px);
@@ -1882,6 +1922,7 @@ body.body--light {
 
 // Fallback for Electron on macOS - apply via body class
 body.electron-mac {
+
   .q-header,
   .site-header,
   .q-layout__section--marginal {
@@ -1893,7 +1934,10 @@ body.electron-mac {
     -webkit-app-region: drag;
 
     // Buttons should not be draggable
-    button, a, input, .q-btn {
+    button,
+    a,
+    input,
+    .q-btn {
       -webkit-app-region: no-drag;
     }
   }
@@ -1904,6 +1948,7 @@ body.electron-mac {
 // ============================================
 
 .translucent-modal {
+
   // Blurred backdrop
   .q-dialog__backdrop {
     backdrop-filter: blur(8px);

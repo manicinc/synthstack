@@ -10,12 +10,13 @@ import type { ThemePreset } from '@/types/theme'
 
 /**
  * SynthStack - Default modern tech aesthetic
+ * Enhanced for Premium Feel
  */
 export const synthstackPreset: ThemePreset = {
   id: 'synthstack',
   slug: 'synthstack',
   name: 'SynthStack',
-  description: 'Modern tech aesthetic with indigo and teal accents',
+  description: 'Modern premium tech aesthetic with deep indigo and vibrant teal accents',
   category: 'modern',
   isDefault: true,
   isPremium: false,
@@ -23,11 +24,11 @@ export const synthstackPreset: ThemePreset = {
   // Preview colors for theme selector
   previewColors: {
     primary: '#6366F1',
-    secondary: '#00D4AA',
+    secondary: '#14B8A6',
     accent: '#8B5CF6',
   },
 
-  // Light Mode
+  // Light Mode - Crisp, Clean, High Contrast
   light: {
     bg: {
       base: '#FFFFFF',
@@ -46,28 +47,28 @@ export const synthstackPreset: ThemePreset = {
     },
     shadow: {
       sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-      md: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-      lg: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
-      xl: '0 20px 25px -5px rgb(0 0 0 / 0.1)',
+      md: '0 4px 6px -1px rgb(99 102 241 / 0.1), 0 2px 4px -1px rgb(99 102 241 / 0.06)', // Hint of indigo
+      lg: '0 10px 15px -3px rgb(99 102 241 / 0.1), 0 4px 6px -2px rgb(99 102 241 / 0.05)',
+      xl: '0 20px 25px -5px rgb(99 102 241 / 0.1), 0 10px 10px -5px rgb(99 102 241 / 0.04)',
     },
   },
 
-  // Dark Mode
+  // Dark Mode - Deep, Rich, Sophisticated
   dark: {
     bg: {
-      base: '#09090B',
-      subtle: '#0F0F12',
-      muted: '#18181B',
-      elevated: '#27272A',
+      base: '#0B0C15', // Deep Indigo-Black, not just grey
+      subtle: '#111322', // Slightly lighter indigo-black
+      muted: '#1A1D33',
+      elevated: '#16192C',
     },
     text: {
-      primary: '#FAFAFA',
-      secondary: '#A1A1AA',
-      tertiary: '#71717A',
+      primary: '#F8FAFC',
+      secondary: '#94A3B8',
+      tertiary: '#64748B',
     },
     border: {
-      default: '#27272A',
-      subtle: '#18181B',
+      default: '#1E293B',
+      subtle: '#0F172A',
     },
     shadow: {
       sm: '0 1px 2px 0 rgb(0 0 0 / 0.3)',
@@ -79,59 +80,72 @@ export const synthstackPreset: ThemePreset = {
 
   // Accent Colors (shared between modes)
   colors: {
-    primary: '#6366F1',
-    primaryHover: '#4F46E5',
-    secondary: '#00D4AA',
-    secondaryHover: '#00B894',
-    accent: '#8B5CF6',
-    accentHover: '#7C3AED',
-    success: '#22C55E',
-    warning: '#EAB308',
-    error: '#EF4444',
-    info: '#0EA5E9',
+    primary: '#6366F1', // Indigo 500
+    primaryHover: '#4F46E5', // Indigo 600
+    secondary: '#14B8A6', // Teal 500
+    secondaryHover: '#0D9488', // Teal 600
+    accent: '#8B5CF6', // Violet 500
+    accentHover: '#7C3AED', // Violet 600
+    success: '#10B981', // Emerald 500
+    warning: '#F59E0B', // Amber 500
+    error: '#EF4444', // Red 500
+    info: '#0EA5E9', // Sky 500
   },
 
   // Typography
   typography: {
-    fontSans: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    fontSans: "'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif",
     fontMono: "'JetBrains Mono', 'Fira Code', monospace",
-    fontDisplay: "'Cal Sans', 'Inter', sans-serif",
+    fontDisplay: "'Plus Jakarta Sans', 'Inter', sans-serif",
     fontSizeBase: '16px',
   },
 
   // Style characteristics
   style: {
     borderRadius: {
-      sm: '4px',
-      md: '8px',
-      lg: '12px',
-      xl: '16px',
+      sm: '6px',
+      md: '12px', // Modern generous radius
+      lg: '16px',
+      xl: '24px',
       full: '9999px',
     },
-    glassOpacity: 0.8,
+    glassOpacity: 0.7, // Frosted glass effect
     blur: {
-      sm: '4px',
-      md: '8px',
-      lg: '16px',
+      sm: '8px',
+      md: '16px', // Heavy blur for premium glass
+      lg: '24px',
     },
   },
 
   // Transitions
   transitions: {
     fast: '150ms',
-    normal: '250ms',
-    slow: '350ms',
+    normal: '300ms',
+    slow: '500ms',
     easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-    easingBounce: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+    easingBounce: 'cubic-bezier(0.34, 1.56, 0.64, 1)', // Bouncy and alive
   },
 
   // Component specific
   components: {
-    buttonPaddingX: '16px',
-    buttonPaddingY: '8px',
-    inputPaddingX: '12px',
-    inputPaddingY: '10px',
-    cardPadding: '24px',
+    buttonPaddingX: '20px',
+    buttonPaddingY: '10px',
+    inputPaddingX: '16px',
+    inputPaddingY: '12px',
+    cardPadding: '32px', // Spacious cards
+  },
+
+  // Custom CSS for advanced effects
+  customCSS: {
+    light: `
+      .q-btn.bg-primary { box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.39); }
+      .text-gradient { background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    `,
+    dark: `
+      .q-btn.bg-primary { box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.39); }
+      .glass-panel { background: rgba(22, 25, 44, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); }
+      .text-gradient { background: linear-gradient(135deg, #818CF8 0%, #A78BFA 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    `,
   },
 }
 
