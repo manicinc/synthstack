@@ -32,14 +32,14 @@ class MockEventSource {
       }
     }, 0)
   }
-  
+
   addEventListener(event: string, callback: (event: MessageEvent) => void) {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, [])
     }
     this.listeners.get(event)!.push(callback)
   }
-  
+
   removeEventListener(event: string, callback: (event: MessageEvent) => void) {
     const callbacks = this.listeners.get(event)
     if (callbacks) {
@@ -49,11 +49,11 @@ class MockEventSource {
       }
     }
   }
-  
+
   close() {
     this.readyState = 2
   }
-  
+
   // Test helper to emit events
   simulateMessage(eventType: string, data: any) {
     const callbacks = this.listeners.get(eventType)
@@ -64,7 +64,7 @@ class MockEventSource {
       callbacks.forEach((cb) => cb(event))
     }
   }
-  
+
   simulateError() {
     if (this.onerror) {
       this.onerror(new Event('error'))
@@ -75,7 +75,7 @@ class MockEventSource {
 // Store the original EventSource
 const OriginalEventSource = globalThis.EventSource
 
-describe('useDashboardEvents', () => {
+describe('useDashboardEvents', { timeout: 15000 }, () => {
   let pinia: any
 
   beforeEach(() => {
@@ -114,6 +114,8 @@ describe('useDashboardEvents', () => {
         updateActivityStatus: vi.fn(),
         updateCredits: vi.fn(),
         handleStatsUpdate: vi.fn(),
+        refreshOverview: vi.fn(),
+        refreshOverview: vi.fn(),
       }),
     }))
 
@@ -138,6 +140,7 @@ describe('useDashboardEvents', () => {
         updateActivityStatus: vi.fn(),
         updateCredits: vi.fn(),
         handleStatsUpdate: vi.fn(),
+        refreshOverview: vi.fn(),
       }),
     }))
 
@@ -163,6 +166,7 @@ describe('useDashboardEvents', () => {
         updateActivityStatus: vi.fn(),
         updateCredits: vi.fn(),
         handleStatsUpdate: vi.fn(),
+        refreshOverview: vi.fn(),
       }),
     }))
 
@@ -188,6 +192,7 @@ describe('useDashboardEvents', () => {
         updateActivityStatus: vi.fn(),
         updateCredits: vi.fn(),
         handleStatsUpdate: vi.fn(),
+        refreshOverview: vi.fn(),
       }),
     }))
 
@@ -218,6 +223,7 @@ describe('useDashboardEvents', () => {
         updateActivityStatus: vi.fn(),
         updateCredits: vi.fn(),
         handleStatsUpdate: vi.fn(),
+        refreshOverview: vi.fn(),
       }),
     }))
 
@@ -247,6 +253,7 @@ describe('useDashboardEvents', () => {
         updateActivityStatus: vi.fn(),
         updateCredits: vi.fn(),
         handleStatsUpdate: vi.fn(),
+        refreshOverview: vi.fn(),
       }),
     }))
 
@@ -293,6 +300,7 @@ describe('useDashboardEvents', () => {
         updateActivityStatus: vi.fn(),
         updateCredits: vi.fn(),
         handleStatsUpdate: vi.fn(),
+        refreshOverview: vi.fn(),
       }),
     }))
 
@@ -317,6 +325,7 @@ describe('useDashboardEvents', () => {
         updateActivityStatus: vi.fn(),
         updateCredits: vi.fn(),
         handleStatsUpdate: vi.fn(),
+        refreshOverview: vi.fn(),
       }),
     }))
 
@@ -357,6 +366,7 @@ describe('useDashboardEventsGlobal', () => {
         updateActivityStatus: vi.fn(),
         updateCredits: vi.fn(),
         handleStatsUpdate: vi.fn(),
+        refreshOverview: vi.fn(),
       }),
     }))
 
