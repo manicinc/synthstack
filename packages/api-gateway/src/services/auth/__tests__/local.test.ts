@@ -343,6 +343,77 @@ describe('LocalAuthProvider', () => {
       }
     });
 
+    it('should throw error for unverified email when verification is required', async () => {
+      // Create provider with email verification required
+      const providerWithVerification = new LocalAuthProvider({
+        jwtSecret: JWT_SECRET,
+        pool: mockPool,
+        baseUrl: 'http://localhost:3000',
+        requireEmailVerification: true,
+      });
+
+      const mockUser = {
+        id: 'user-123',
+        email: 'test@example.com',
+        display_name: 'Test User',
+        is_banned: false,
+        password_hash: 'hashed-password',
+        email_verified: false, // Not verified
+        failed_login_attempts: 0,
+        locked_until: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      mockPool.query.mockResolvedValueOnce({ rows: [mockUser] });
+      (argon2.verify as any).mockResolvedValue(true);
+
+      try {
+        await providerWithVerification.signIn({
+          email: 'test@example.com',
+          password: 'correctpassword',
+        });
+        expect.fail('Expected signIn to throw');
+      } catch (error: any) {
+        expect(error.code).toBe(AuthErrorCode.EMAIL_NOT_VERIFIED);
+        expect(error.message).toContain('verify your email');
+        expect(error.statusCode).toBe(403);
+      }
+    });
+
+    it('should allow sign in with unverified email when verification is not required', async () => {
+      // Provider without email verification requirement (default)
+      const mockUser = {
+        id: 'user-123',
+        email: 'test@example.com',
+        display_name: 'Test User',
+        avatar_url: null,
+        is_banned: false,
+        password_hash: 'hashed-password',
+        email_verified: false, // Not verified but should still work
+        failed_login_attempts: 0,
+        locked_until: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      mockPool.query
+        .mockResolvedValueOnce({ rows: [mockUser] }) // Get user
+        .mockResolvedValueOnce({}) // Reset failed attempts
+        .mockResolvedValueOnce({}); // Create session
+
+      (argon2.verify as any).mockResolvedValue(true);
+      (jwt.sign as any).mockReturnValue('access-token');
+
+      const result = await provider.signIn({
+        email: 'test@example.com',
+        password: 'correctpassword',
+      });
+
+      expect(result.user.email).toBe('test@example.com');
+      expect(result.accessToken).toBe('access-token');
+    });
+
     it('should reset failed attempts on successful login', async () => {
       const mockUser = {
         id: 'user-123',
@@ -850,10 +921,109 @@ describe('LocalAuthProvider', () => {
   // ============================================
 
   describe('OAuth', () => {
-    it('should throw error for OAuth (not supported)', () => {
+    it('should throw error for OAuth when called on LocalAuthProvider directly', () => {
+      // Note: OAuth is now supported through dedicated OAuth providers
+      // (GoogleOAuthProvider, GitHubOAuthProvider, etc.)
+      // The LocalAuthProvider.getOAuthUrl() is kept for backwards compatibility
+      // but delegates to the OAuth providers when configured
       expect(() =>
         provider.getOAuthUrl('google', 'https://example.com/callback')
       ).toThrow('OAuth not supported by local provider');
+    });
+  });
+
+  // ============================================
+  // Email Verification Tests
+  // ============================================
+
+  describe('verifyEmail', () => {
+    it('should verify email with valid token', async () => {
+      mockPool.query
+        .mockResolvedValueOnce({
+          rows: [{ user_id: 'user-123' }],
+        }) // 1. Find token
+        .mockResolvedValueOnce({}) // 2. Update email_verified = true
+        .mockResolvedValueOnce({
+          rows: [
+            {
+              id: 'user-123',
+              email: 'test@example.com',
+              display_name: 'Test User',
+              email_verified: true,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            },
+          ],
+        }); // 3. getUser call (SELECT from app_users JOIN local_auth_credentials)
+
+      await provider.verifyEmail('valid-verification-token');
+
+      expect(mockPool.query).toHaveBeenCalledWith(
+        expect.stringContaining('email_verified = true'),
+        ['user-123']
+      );
+    });
+
+    it('should throw error for invalid verification token', async () => {
+      mockPool.query.mockResolvedValueOnce({ rows: [] });
+
+      try {
+        await provider.verifyEmail('invalid-token');
+      } catch (error: any) {
+        expect(error.code).toBe(AuthErrorCode.INVALID_TOKEN);
+      }
+    });
+  });
+
+  describe('resendVerificationEmail', () => {
+    it('should create new verification token for unverified user', async () => {
+      mockPool.query
+        .mockResolvedValueOnce({
+          rows: [
+            {
+              id: 'user-123',
+              email: 'test@example.com',
+              email_verified: false,
+            },
+          ],
+        }) // Find user
+        .mockResolvedValueOnce({}); // Store new token
+
+      await provider.resendVerificationEmail('test@example.com');
+
+      expect(mockPool.query).toHaveBeenCalledWith(
+        expect.stringContaining('email_verification_token'),
+        expect.any(Array)
+      );
+    });
+
+    it('should throw error if user is already verified', async () => {
+      mockPool.query.mockResolvedValueOnce({
+        rows: [
+          {
+            id: 'user-123',
+            email: 'test@example.com',
+            email_verified: true,
+          },
+        ],
+      });
+
+      // Implementation throws error for already verified users
+      try {
+        await provider.resendVerificationEmail('test@example.com');
+        expect.fail('Expected resendVerificationEmail to throw');
+      } catch (error: any) {
+        expect(error.message).toContain('already verified');
+      }
+    });
+
+    it('should not reveal if user does not exist', async () => {
+      mockPool.query.mockResolvedValueOnce({ rows: [] });
+
+      // Should not throw error to avoid user enumeration
+      await expect(
+        provider.resendVerificationEmail('nonexistent@example.com')
+      ).resolves.toBeUndefined();
     });
   });
 });
