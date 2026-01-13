@@ -53,17 +53,12 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
+import { computed } from 'vue'
 import { useBranding } from '@/composables/useBranding'
 
-const router = useRouter()
 const { github } = useBranding()
 
-const edition = (import.meta.env.VITE_SYNTHSTACK_EDITION as string | undefined) || 'community'
-const isCommunityBuild = edition.toLowerCase() === 'community'
-const githubUrl = isCommunityBuild ? github.communityRepoUrl : github.proRepoUrl
-
-const resources = [
+const resources = computed(() => [
   {
     title: 'Documentation',
     description: 'Complete guides and API references',
@@ -73,17 +68,10 @@ const resources = [
   },
   {
     title: 'Branding Wizard',
-    description: 'Export a complete config.json for your brand',
+    description: 'Generate and export a complete config.json',
     icon: 'palette',
-    color: 'indigo',
+    color: 'primary',
     url: '/setup/branding'
-  },
-  {
-    title: 'Environment Setup',
-    description: 'Generate .env files for self-hosting',
-    icon: 'tune',
-    color: 'deep-orange',
-    url: '/setup/env'
   },
   {
     title: 'Blog',
@@ -104,15 +92,16 @@ const resources = [
     description: 'Source code and issue tracking',
     icon: 'code',
     color: 'grey-8',
-    url: githubUrl
+    url: github.communityRepoUrl
   }
-];
+])
 
 const openResource = (url: string) => {
   if (url.startsWith('http')) {
     window.open(url, '_blank');
   } else {
-    router.push(url);
+    // Navigate within app
+    window.location.href = url;
   }
 };
 </script>

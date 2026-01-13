@@ -218,35 +218,35 @@ export function useSeo() {
       }))
     }
   }
-
+  
   /**
    * Sets comprehensive page SEO
    */
   function setPageSeo(options: PageSeoOptions) {
     // Clear previous schemas
     clearSchemas()
-
+    
     // Set title
-    const fullTitle = options.title.includes('SynthStack')
-      ? options.title
+    const fullTitle = options.title.includes('SynthStack') 
+      ? options.title 
       : `${options.title} | SynthStack`
     setTitle(fullTitle)
-
+    
     // Set meta description
     setMeta('description', options.description)
     setMeta('og:description', options.description, true)
     setMeta('twitter:description', options.description)
-
+    
     // Set keywords
     if (options.keywords?.length) {
       setMeta('keywords', options.keywords.join(', '))
     }
-
+    
     // Set canonical
     if (options.canonicalPath) {
       setCanonical(options.canonicalPath)
     }
-
+    
     // Set robots
     const robotsDirectives: string[] = []
     if (options.noIndex) robotsDirectives.push('noindex')

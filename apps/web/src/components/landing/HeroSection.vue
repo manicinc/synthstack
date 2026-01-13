@@ -114,7 +114,7 @@
             icon="code"
             class="demo-btn"
             data-testid="hero-cta-secondary"
-            :href="githubUrl"
+            href="https://github.com/manicinc/synthstack"
             target="_blank"
           />
         </div>
@@ -145,10 +145,9 @@
         aria-label="SynthStack visualization"
       >
         <AnimatedTerminal @open-branding-wizard="brandingWizardOpen = true" />
+        <BrandingWizardDialog v-model="brandingWizardOpen" />
       </div>
     </div>
-
-    <BrandingWizardDialog v-model="brandingWizardOpen" />
   </section>
 </template>
 
@@ -157,7 +156,6 @@ import { computed, ref, onMounted, nextTick, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useVisualEditing } from '@/composables/useVisualEditing'
 import type { Page } from '@/composables/usePages'
-import { branding } from '@/config/branding'
 import AnimatedTerminal from '@/components/ui/AnimatedTerminal.vue'
 import BrandingWizardDialog from '@/components/branding/BrandingWizardDialog.vue'
 import AnimatedBox from '@/components/ui/AnimatedBox.vue'
@@ -167,7 +165,7 @@ import { analyticsEvents } from '@/boot/analytics'
 import { useThemeStore } from '@/stores/theme'
 
 const themeStore = useThemeStore()
-const githubUrl = branding.social.github || branding.github.communityRepoUrl
+const brandingWizardOpen = ref(false)
 
 // Computed style for light mode text visibility
 const lightModeTextStyle = computed(() => {
@@ -205,8 +203,6 @@ const props = withDefaults(defineProps<Props>(), {
   promoStats: null,
   checkoutLoading: false
 })
-
-const brandingWizardOpen = ref(false)
 
 const emit = defineEmits<{
   (e: 'checkout'): void
@@ -794,3 +790,4 @@ onMounted(async () => {
   color: var(--text-primary) !important;
 }
 </style>
+

@@ -89,15 +89,15 @@
       <div class="container">
         <h2>OrcaSlicer: The Advanced Slicer for Modern Printers</h2>
         <p>
-          <strong>OrcaSlicer</strong> is a powerful fork of Bambu Studio and PrusaSlicer
-          that adds advanced features like built-in calibration tools, improved multi-color
-          support, and Klipper optimizations. It's become the go-to slicer for users of
+          <strong>OrcaSlicer</strong> is a powerful fork of Bambu Studio and PrusaSlicer 
+          that adds advanced features like built-in calibration tools, improved multi-color 
+          support, and Klipper optimizations. It's become the go-to slicer for users of 
           <strong>Bambu Lab</strong>, <strong>Voron</strong>, and other high-speed printers.
         </p>
         <p>
-          Key features include <strong>flow calibration</strong>, <strong>pressure advance
-            tuning</strong>, <strong>max volumetric speed</strong> calculations, and support
-          for <strong>Input Shaper</strong>. SynthStack generates profiles that leverage
+          Key features include <strong>flow calibration</strong>, <strong>pressure advance 
+            tuning</strong>, <strong>max volumetric speed</strong> calculations, and support 
+          for <strong>Input Shaper</strong>. SynthStack generates profiles that leverage 
           all these features automatically.
         </p>
       </div>
@@ -174,6 +174,7 @@ onMounted(() => {
 
 .cta-section { padding: var(--space-4xl) 0; .cta-card { max-width: 600px; margin: 0 auto; padding: var(--space-2xl); border-radius: var(--radius-xl); text-align: center; &.orca { background: linear-gradient(135deg, rgba(0, 180, 216, 0.1) 0%, var(--bg-tertiary) 100%); border: 1px solid rgba(0, 180, 216, 0.2); } h2 { font-family: var(--font-display); font-size: var(--text-2xl); margin-bottom: var(--space-sm); } p { color: var(--text-secondary); margin-bottom: var(--space-lg); } } }
 </style>
+
 
 
 

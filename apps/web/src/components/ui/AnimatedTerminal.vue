@@ -222,7 +222,7 @@ let showcaseFrame: number | null = null;
 let showcaseInterval: ReturnType<typeof setInterval> | null = null;
 let collapseFrame: number | null = null;
 
-// Emit for setup wizard link
+// Emit for Branding Wizard (hero terminal interaction)
 const emit = defineEmits<{
   (e: 'open-branding-wizard'): void;
 }>();
@@ -300,7 +300,7 @@ function closeTerminal() {
   minimizeTerminal();
 }
 
-// Open the branding wizard (hero interactive setup)
+// Open branding wizard
 function openBrandingWizard() {
   emit('open-branding-wizard');
 }

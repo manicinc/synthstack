@@ -19,8 +19,8 @@
           AI-Powered 3D Printing Profile Generator
         </p>
         <p class="description">
-          We're on a mission to make perfect 3D prints accessible to everyone.
-          From beginners to professionals, SynthStack uses artificial intelligence
+          We're on a mission to make perfect 3D prints accessible to everyone. 
+          From beginners to professionals, SynthStack uses artificial intelligence 
           to generate optimized slicer settings for any printer and filament combination.
         </p>
       </div>
@@ -445,6 +445,7 @@ onMounted(() => {
   }
 }
 </style>
+
 
 
 

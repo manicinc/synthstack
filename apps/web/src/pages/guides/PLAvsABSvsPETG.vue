@@ -386,7 +386,7 @@
           <section class="guide-cta">
             <h2>Get Perfect Settings for Any Filament</h2>
             <p>
-              Tell SynthStack your filament type and we'll generate optimized settings
+              Tell SynthStack your filament type and we'll generate optimized settings 
               for your specific printer and model.
             </p>
             <q-btn
@@ -594,6 +594,7 @@ onMounted(() => {
   }
 }
 </style>
+
 
 
 
