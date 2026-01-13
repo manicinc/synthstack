@@ -342,36 +342,36 @@
     "quickActions": {
       "title": "快捷操作",
       "newGeneration": "新建生成",
-      "browsePrinters": "浏览打印机",
+      "browsePrinters": "浏览模板",
       "viewProfiles": "查看配置"
     },
     "recentGenerations": {
       "title": "最近生成",
-      "empty": "暂无生成记录。从上传STL开始吧！"
+      "empty": "暂无生成记录。先写一个 Prompt 吧！"
     }
   },
   "generate": {
-    "title": "生成打印设置",
+    "title": "生成内容",
     "upload": {
-      "title": "上传STL",
-      "dragDrop": "将您的STL文件拖放到此处",
+      "title": "编写 Prompt",
+      "dragDrop": "描述你想生成的内容",
       "or": "或",
       "browse": "浏览文件",
       "maxSize": "最大文件大小：50MB"
     },
     "analysis": {
-      "title": "模型分析",
+      "title": "选项",
       "dimensions": "尺寸",
       "volume": "体积",
       "faces": "面数",
       "overhangs": "悬垂",
       "thinWalls": "薄壁",
-      "difficulty": "打印难度"
+      "difficulty": "复杂度"
     },
     "settings": {
-      "title": "设置",
-      "printer": "选择打印机",
-      "filament": "选择耗材",
+      "title": "配置",
+      "printer": "选择模板",
+      "filament": "选择渠道",
       "quality": "质量预设",
       "priorities": "优先级",
       "speed": "速度",
@@ -379,10 +379,10 @@
       "material": "材料用量"
     },
     "result": {
-      "title": "生成的设置",
+      "title": "生成结果",
       "confidence": "置信度",
       "export": "导出",
-      "save": "保存配置",
+      "save": "保存",
       "regenerate": "重新生成"
     }
   },
