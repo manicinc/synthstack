@@ -19,6 +19,8 @@ if (dotenvResult.error) {
   console.log('[Quasar Config] Loaded .env successfully');
 }
 console.log('[Quasar Config] VITE_ENABLE_COPILOT:', process.env.VITE_ENABLE_COPILOT);
+console.log('[Quasar Config] VITE_ENABLE_COPILOT_RAG:', process.env.VITE_ENABLE_COPILOT_RAG);
+console.log('[Quasar Config] VITE_ENABLE_AI_AGENTS:', process.env.VITE_ENABLE_AI_AGENTS);
 console.log('[Quasar Config] VITE_ENABLE_REFERRALS:', process.env.VITE_ENABLE_REFERRALS);
 
 export default configure(function (ctx) {
@@ -89,6 +91,13 @@ export default configure(function (ctx) {
         APP_URL: process.env.VITE_APP_URL || 'http://localhost:3000',
         // Feature flags - exposed as process.env.ENABLE_COPILOT (not VITE_ENABLE_COPILOT)
         ENABLE_COPILOT: process.env.VITE_ENABLE_COPILOT || 'false',
+        // Back-compat: if new flags are missing, fall back to ENABLE_COPILOT (legacy behavior)
+        ENABLE_AI_AGENTS: process.env.VITE_ENABLE_AI_AGENTS ?? process.env.VITE_ENABLE_COPILOT ?? 'false',
+        ENABLE_COPILOT_RAG:
+          process.env.VITE_ENABLE_COPILOT_RAG ??
+          process.env.VITE_ENABLE_AI_AGENTS ??
+          process.env.VITE_ENABLE_COPILOT ??
+          'false',
         ENABLE_REFERRALS: process.env.VITE_ENABLE_REFERRALS || 'false',
         // App mode: 'full' = web with landing pages, 'app' = mobile/desktop app-only
         APP_MODE: (ctx.mode.capacitor || ctx.mode.electron) ? 'app' : 'full'

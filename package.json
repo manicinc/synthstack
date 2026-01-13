@@ -21,7 +21,7 @@
     "build:api": "pnpm --filter @synthstack/api-gateway build",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
-    "test": "ENABLE_COPILOT=false ENABLE_REFERRALS=false ENABLE_WORKFLOWS=false pnpm --filter @synthstack/web test",
+    "test": "ENABLE_COPILOT=true ENABLE_AI_AGENTS=false ENABLE_COPILOT_RAG=false ENABLE_REFERRALS=false ENABLE_WORKFLOWS=false pnpm --filter @synthstack/web test",
     "test:web": "pnpm --filter @synthstack/web test",
     "test:api": "pnpm --filter @synthstack/api-gateway test",
     "test:coverage": "pnpm --filter @synthstack/web test:coverage",
