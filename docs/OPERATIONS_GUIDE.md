@@ -133,9 +133,10 @@ ANTHROPIC_API_KEY=sk-ant-...
 STRIPE_SECRET_KEY=sk_live_...
 SENDGRID_API_KEY=SG....
 
-# Qdrant Vector Database
+# Qdrant Vector Database (open-source; self-host or Qdrant Cloud)
 QDRANT_URL=https://qdrant.yourdomain.com
-QDRANT_API_KEY=<api-key>
+# Optional: only needed for Qdrant Cloud (or secured self-hosted Qdrant).
+QDRANT_API_KEY=
 
 # ========================================
 # Monitoring

@@ -1,346 +1,136 @@
 # SynthStack Production Setup Checklist
 
-## ✅ Completed
+This is the practical checklist for launching a production SynthStack Community instance using `deploy/docker-compose.yml`.
 
-- [x] Stripe products created (Maker, Pro, Agency, Lifetime)
-- [x] Stripe price IDs configured in .env files
-- [x] 3-day free trial implemented
-- [x] Supabase project created
-- [x] Supabase API keys configured
-- [x] Email fixed (noreply@manic.agency, replies to team@manic.agency)
-
-## 🔄 Required Next Steps
-
-### 1. Choose Edition (LITE vs PRO)
-
-**Action Required:** Decide which edition to deploy
-
-**LITE (Community Edition)** - Free for learning/personal/evaluation (Community License, non-commercial):
-- ✅ Core platform (projects, auth, billing, CMS, i18n)
-- ✅ Stripe integration
-- ✅ TypeScript ML service + text/image generation (BYOK keys)
-- ❌ AI Copilot/Agent system
-- ❌ Referral system
-- ❌ Workflow automation (Node-RED / agent workflows)
-
-**PRO (Commercial Edition)** - Full features:
-- ✅ Everything in LITE
-- ✅ AI Copilot/Agent system (LangGraph)
-- ✅ Referral & rewards system
-- ✅ Workflow automation (Node-RED + advanced orchestration)
-- ✅ Optional Python backends (FastAPI, Django)
-
-**Setup:**
-```bash
-# For LITE version
-cp .env.lite.example .env
-
-# For PRO version
-cp .env.pro.example .env
-```
-
-**Environment Variables:**
-- LITE: `ENABLE_COPILOT=false`, `ENABLE_REFERRALS=false`
-- PRO: `ENABLE_COPILOT=true`, `ENABLE_REFERRALS=true`
-
-📖 [Full comparison →](./VERSIONS.md)
-
-**Current Status:** [ ] Choose edition and configure environment
+Start here (in order):
+- [Deployment Quick Start](./DEPLOYMENT_QUICK_START.md)
+- [Deployment Guide](./DEPLOYMENT_GUIDE.md)
+- [Auth Provider Wizard](./guides/AUTH_PROVIDER_WIZARD.md)
+- [Database Provider Wizard](./guides/DATABASE_PROVIDER_WIZARD.md)
 
 ---
 
-### 2. Supabase Database Connection
+## 1) Confirm License/Use Case
 
-**Action Required:** Get the Supabase database connection string
-
-**Steps:**
-1. Go to Supabase Dashboard → **Project Settings** → **Database**
-2. Scroll to **Connection String** section
-3. Select **Connection Pooling** mode (port 6543) - **IMPORTANT for production**
-4. Copy the connection string (format: `postgres://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-us-east-1.pooler.supabase.com:6543/postgres`)
-5. Replace `[PASSWORD]` with your database password
-6. Update in `.env` and `packages/api-gateway/.env`:
-   ```bash
-   DATABASE_URL=postgres://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-us-east-1.pooler.supabase.com:6543/postgres
-   ```
-
-**Current Status:** Placeholder value set, needs actual connection string
+- [ ] Confirm you’re allowed to use the Community edition for your use case
+- [ ] Review: [License FAQ](./LICENSE-FAQ.md)
+- [ ] Feature overview: [Pricing & Features](./PRICING_AND_FEATURES.md)
 
 ---
 
-### 3. Stripe Webhook Configuration
+## 2) Provision Your Server (Provider-Agnostic)
 
-**Action Required:** Set up webhook endpoint in Stripe dashboard
+- [ ] Ubuntu 22.04/24.04 VM with a public IP (4GB+ RAM recommended)
+- [ ] Firewall open: `80/tcp`, `443/tcp`, `22/tcp`
+- [ ] (Recommended) Static IP (AWS Elastic IP / GCP reserved IP)
 
-**Steps:**
-1. Go to [Stripe Dashboard](https://dashboard.stripe.com) → **Developers** → **Webhooks**
-2. Click **Add endpoint**
-3. Enter webhook URL:
-   - **Production:** `https://api.synthstack.app/api/v1/webhooks/stripe`
-   - **Development:** Use Stripe CLI forwarding (see below)
-4. Select events to listen to:
-   - ✅ `checkout.session.completed`
-   - ✅ `checkout.session.expired`
-   - ✅ `customer.subscription.created`
-   - ✅ `customer.subscription.updated`
-   - ✅ `customer.subscription.deleted`
-   - ✅ `customer.subscription.paused`
-   - ✅ `customer.subscription.resumed`
-   - ✅ `customer.subscription.trial_will_end`
-   - ✅ `invoice.paid`
-   - ✅ `invoice.payment_failed`
-   - ✅ `invoice.upcoming`
-   - ✅ `invoice.finalized`
-   - ✅ `customer.created`
-   - ✅ `customer.updated`
-5. Copy the **Signing secret** (starts with `whsec_`)
-6. Update in `.env` and `packages/api-gateway/.env`:
-   ```bash
-   STRIPE_WEBHOOK_SECRET=whsec_...
-   ```
-
-**Development Testing:**
-```bash
-# Install Stripe CLI
-brew install stripe/stripe-cli/stripe
-
-# Login to Stripe
-stripe login
-
-# Forward webhooks to local API
-stripe listen --forward-to localhost:3030/api/v1/webhooks/stripe
-
-# In another terminal, trigger test events
-stripe trigger checkout.session.completed
-stripe trigger customer.subscription.updated
-```
-
-**Current Status:** Webhook secret is placeholder, needs actual value
+Provider walkthroughs:
+- [AWS EC2 Deployment](./deployment/providers/AWS_EC2.md)
+- [GCP Compute Engine Deployment](./deployment/providers/GCP_COMPUTE_ENGINE.md)
 
 ---
 
-### 4. Run Database Migrations
+## 3) Create a Deploy User + Install Docker
 
-**Action Required:** Run all SQL migration files in Supabase
+- [ ] Create a `deploy` user (or pick an existing one)
+- [ ] Ensure the user can run `docker` without password prompts
+- [ ] Ensure the user can write to `/opt/synthstack` and `/var/www/synthstack`
 
-**Steps:**
-1. Go to Supabase Dashboard → **SQL Editor**
-2. Run migrations in order (they're numbered):
-   ```
-   services/directus/migrations/001_initial_schema.sql
-   services/directus/migrations/003_subscription_billing.sql
-   services/directus/migrations/070_local_auth.sql
-   services/directus/migrations/082_demo_copilot_credits.sql
-   services/directus/migrations/084_payment_sessions.sql
-   ... (run all relevant migrations)
-   ```
-3. Or use migration runner if available
-
-**Key Tables Created:**
-- `app_users` - User accounts
-- `subscription_plans` - Tier configurations
-- `payment_webhooks` - Webhook event log
-- `credit_transactions` - Credit usage history
-- `subscription_history` - Tier changes audit
-- `invoice_cache` - Stripe invoice cache
-- `credit_purchases` - One-time credit purchases
-
-**Current Status:** Migrations not yet run on Supabase
+Reference: [Deployment Guide](./DEPLOYMENT_GUIDE.md)
 
 ---
 
-### 5. Supabase Authentication Setup
+## 4) Configure Production Environment (`deploy/.env`)
 
-**Action Required:** Enable auth providers in Supabase
+On your machine:
 
-**Steps:**
-1. Go to Supabase Dashboard → **Authentication** → **Providers**
+- [ ] `cp deploy/.env.example deploy/.env`
+- [ ] Fill in required values (minimum):
+  - `POSTGRES_USER`, `POSTGRES_PASSWORD`, `DATABASE_URL`
+  - `JWT_SECRET`
+  - `DIRECTUS_KEY`, `DIRECTUS_SECRET`, `DIRECTUS_ADMIN_EMAIL`, `DIRECTUS_ADMIN_PASSWORD`, `DIRECTUS_ADMIN_TOKEN`
 
-**Email Provider:**
-- Enable **Email** provider
-- Configure email templates:
-  - Confirmation email
-  - Magic link email
-  - Password reset email
-- Set **Site URL:** `https://synthstack.app`
-- Set **Redirect URLs:**
-  - `https://synthstack.app/auth/callback`
-  - `http://localhost:3000/auth/callback` (for development)
-
-**OAuth Providers (Optional):**
-- **Google OAuth:**
-  1. Enable Google provider
-  2. Enter Client ID and Client Secret from [Google Cloud Console](https://console.cloud.google.com)
-
-- **GitHub OAuth:**
-  1. Enable GitHub provider
-  2. Enter Client ID and Client Secret from [GitHub Developer Settings](https://github.com/settings/developers)
-
-**Current Status:** Auth providers not yet configured
+Auth choice:
+- [ ] Supabase Auth: set `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+  - Setup: [Supabase Auth Setup](./guides/SUPABASE_AUTH_SETUP.md)
+- [ ] Local Auth: no Supabase keys required
+  - Setup: [Local Auth Setup](./guides/LOCAL_AUTH_SETUP.md)
 
 ---
 
-### 6. Row Level Security (RLS)
+## 5) Configure CI/CD Secrets (Optional, but Recommended)
 
-**Action Required:** Enable RLS policies for security
+If using GitHub Actions deploys, set repo secrets:
+- [ ] `REMOTE_SSH_KEY`
+- [ ] `REMOTE_USER`
+- [ ] `REMOTE_HOST_PRODUCTION`
 
-**Steps:**
-1. Go to Supabase Dashboard → **Authentication** → **Policies**
-2. Enable RLS on all tables
-3. Create policies (or run from SQL editor):
-
-```sql
--- Allow users to read their own data
-CREATE POLICY "Users can view own data" ON app_users
-  FOR SELECT USING (auth.uid() = id);
-
--- Allow users to update their own profile
-CREATE POLICY "Users can update own profile" ON app_users
-  FOR UPDATE USING (auth.uid() = id);
-
--- Allow users to view own transactions
-CREATE POLICY "Users can view own credit transactions" ON credit_transactions
-  FOR SELECT USING (auth.uid() = user_id);
-
--- Allow users to view own subscription history
-CREATE POLICY "Users can view own subscription history" ON subscription_history
-  FOR SELECT USING (auth.uid() = user_id);
-
--- Allow users to view own invoices
-CREATE POLICY "Users can view own invoices" ON invoice_cache
-  FOR SELECT USING (auth.uid() = user_id);
-```
-
-**Current Status:** RLS not yet configured
+Reference: [GitHub Secrets](./deployment/GITHUB_SECRETS.md)
 
 ---
 
-### 7. Environment Variables Final Check
+## 6) First Deploy
 
-**Verify these are set in production .env:**
+Recommended first deploy (uploads `deploy/.env` + deploy config):
+- [ ] Run `./deploy-with-env.sh`
+
+Then verify on the server:
+- [ ] `docker compose -f deploy/docker-compose.yml ps`
+- [ ] `docker compose -f deploy/docker-compose.yml logs -f --tail=200`
+
+---
+
+## 7) Migrations (How Your DB Gets Created)
+
+You should not manually paste SQL into dashboards.
+
+SynthStack uses a one-shot migrator container (`directus-migrate`) that applies `*.sql` files and records them in `synthstack_migrations`.
+
+- [ ] Run migrations on the server:
 
 ```bash
-# Supabase
-SUPABASE_URL=https://insonkkyuhktanzczcde.supabase.co
-SUPABASE_ANON_KEY=sb_publishable_T-tJDS182b92RABeAfVnMg_Gq_qg7rD
-SUPABASE_SERVICE_ROLE_KEY=***REMOVED***
-
-# Stripe (Production Keys - NOT test keys!)
-STRIPE_SECRET_KEY=sk_live_... (currently set)
-STRIPE_WEBHOOK_SECRET=whsec_... (NEEDS UPDATE)
-
-# Database
-DATABASE_URL=postgres://... (NEEDS UPDATE)
-
-# Email
-RESEND_API_KEY=***REMOVED*** (set)
-RESEND_FROM_EMAIL=noreply@manic.agency (set)
-
-# Frontend
-FRONTEND_URL=https://synthstack.app (set)
-APP_URL=https://synthstack.app (set)
+docker compose -f deploy/docker-compose.yml up -d directus-migrate
 ```
 
----
-
-### 8. Test the Complete Flow
-
-**Action Required:** End-to-end testing
-
-**Subscription Flow Test:**
-1. Visit pricing page: `https://synthstack.app/pricing`
-2. Click "Get Started" on Maker plan
-3. Complete checkout with test card: `4242 4242 4242 4242`
-4. Verify webhook received in Supabase `payment_webhooks` table
-5. Verify user upgraded in `app_users` table
-6. Verify credits added
-7. Test generation to consume credits
-8. Test Stripe Customer Portal: `https://synthstack.app/app/subscription`
-
-**Lifetime License Test:**
-1. Apply promo code `EARLYSYNTH` at checkout
-2. Verify $100 discount applied ($149 instead of $249)
-3. Complete payment
-4. Verify lifetime tier in database
+Reference: [Database Management](./DATABASE_MANAGEMENT.md)
 
 ---
 
-## 📋 Additional Configuration
+## 8) Stripe (Optional)
 
-### Stripe Customer Portal
+- [ ] Set `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` in `deploy/.env`
+- [ ] Create webhook endpoint in Stripe pointing at your production API
 
-**Steps:**
-1. Go to Stripe Dashboard → **Settings** → **Billing** → **Customer Portal**
-2. **Activate** the customer portal
-3. Configure allowed features:
-   - ✅ Cancel subscriptions
-   - ✅ Update payment methods
-   - ✅ View invoices
-   - ✅ Pause subscriptions (optional)
-   - ✅ Switch plans (upgrade/downgrade)
-4. Set business information and branding
-
-### Stripe Tax (Optional but Recommended)
-
-**Steps:**
-1. Go to Stripe Dashboard → **Settings** → **Tax**
-2. Enable **Stripe Tax**
-3. Register tax IDs for your business
-4. Configure tax collection for different regions
+Guide: [Stripe Integration](./features/STRIPE_INTEGRATION.md)
 
 ---
 
-## 📊 Error Tracking (Recommended)
+## 9) Email (Recommended)
 
-Set up Sentry for production error monitoring.
+- [ ] Set `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_FROM_NAME` in `deploy/.env`
 
-**Steps:**
-1. Create Sentry account at [sentry.io](https://sentry.io)
-2. Create two projects:
-   - **synthstack-web** (Vue.js platform)
-   - **synthstack-api** (Node.js platform)
-3. Get DSN for each project (Settings → Client Keys)
-4. Update environment files:
-   ```bash
-   # apps/web/.env
-   VITE_SENTRY_DSN=https://xxx@o123456.ingest.sentry.io/xxx
-   VITE_SENTRY_ENVIRONMENT=production
-
-   # packages/api-gateway/.env
-   SENTRY_DSN=https://xxx@o123456.ingest.sentry.io/xxx
-   SENTRY_ENVIRONMENT=production
-   ```
-5. Deploy and verify errors are captured
-
-**Current Status:** [ ] Not yet configured
-
-📖 [Full Sentry Setup Guide →](./guides/SENTRY_SETUP.md)
+Guide: [Email Service](./EMAIL_SERVICE.md)
 
 ---
 
-## 🚨 Security Checklist
+## 10) Backups (Don’t Skip This)
 
-- [ ] All `.env` files in `.gitignore`
-- [ ] Production API keys (not test keys)
-- [ ] HTTPS enforced on all domains
-- [ ] CORS configured correctly
-- [ ] RLS enabled on all Supabase tables
-- [ ] Webhook signature verification enabled
-- [ ] Rate limiting configured
-- [ ] API authentication required
+- [ ] If you run local Postgres on the VM: confirm you have offsite backups/snapshots
+- [ ] If you use managed Postgres: confirm your plan’s retention + practice restores
+
+Reference:
+- [Database Provider Wizard](./guides/DATABASE_PROVIDER_WIZARD.md)
+- [Database Management](./DATABASE_MANAGEMENT.md)
 
 ---
 
-## 📞 Support & Resources
+## 11) Production Security Basics
 
-- **Stripe Dashboard:** https://dashboard.stripe.com
-- **Supabase Dashboard:** https://supabase.com/dashboard
-- **Stripe Webhooks Guide:** https://stripe.com/docs/webhooks
-- **Supabase Auth Guide:** https://supabase.com/docs/guides/auth
-- **API Documentation:** `/packages/api-gateway/README.md`
-- **Stripe Integration:** `./features/STRIPE_INTEGRATION.md`
+- [ ] Rotate any default/example secrets before launch
+- [ ] Lock down SSH (`22/tcp`) as appropriate for your deploy method
+- [ ] Ensure HTTPS works for `@`, `www`, `api`, and `admin`
+- [ ] Verify CORS is correct for your domains
 
 ---
 
-**Last Updated:** 2025-01-06
-**Status:** ⚠️ In Progress - Critical items pending
+**Last Updated:** January 2026

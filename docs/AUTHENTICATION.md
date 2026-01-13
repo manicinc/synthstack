@@ -145,12 +145,16 @@ DATABASE_URL=postgresql://user:password@localhost:5432/synthstack
 
 ### 3. Apply Migration
 
-Local auth tables are created by `services/directus/migrations/070_local_auth.sql`.
+Local auth tables are created by:
+
+- `services/directus/migrations/070_local_auth.sql`
+- `services/directus/migrations/071_local_auth_schema_fix.sql`
 
 If you need to apply it manually:
 
 ```bash
 docker compose exec -T postgres psql -U "${DB_USER:-synthstack}" -d "${DB_DATABASE:-synthstack}" < services/directus/migrations/070_local_auth.sql
+docker compose exec -T postgres psql -U "${DB_USER:-synthstack}" -d "${DB_DATABASE:-synthstack}" < services/directus/migrations/071_local_auth_schema_fix.sql
 ```
 
 ### 4. Enable Local Auth Provider

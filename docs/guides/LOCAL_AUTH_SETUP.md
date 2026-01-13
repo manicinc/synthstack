@@ -18,9 +18,10 @@ Use this guide if you want **fully self-hosted authentication** (no Supabase dep
 
 ## Step 1: Ensure Local Auth Tables Exist
 
-Local auth requires the migration:
+Local auth requires these migrations:
 
 - `services/directus/migrations/070_local_auth.sql`
+- `services/directus/migrations/071_local_auth_schema_fix.sql`
 
 You can verify tables exist:
 
@@ -35,6 +36,7 @@ In local dev (docker compose):
 
 ```bash
 docker compose exec -T postgres psql -U "${DB_USER:-synthstack}" -d "${DB_DATABASE:-synthstack}" < services/directus/migrations/070_local_auth.sql
+docker compose exec -T postgres psql -U "${DB_USER:-synthstack}" -d "${DB_DATABASE:-synthstack}" < services/directus/migrations/071_local_auth_schema_fix.sql
 ```
 
 In production, apply the same SQL against your production Postgres (where `DATABASE_URL` points).
@@ -119,4 +121,3 @@ curl http://localhost:3003/api/v1/auth/providers
 ```
 
 You should see `activeProvider: "local"` and `providers.local: true`.
-

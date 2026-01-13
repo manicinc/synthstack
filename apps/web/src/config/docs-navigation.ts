@@ -119,6 +119,30 @@ const ALL_DOCS_NAVIGATION: DocNavItem[] = [
         file: 'AUTHENTICATION.md'
       },
       {
+        title: 'Auth Provider Wizard',
+        slug: 'auth-provider-wizard',
+        source: 'markdown',
+        file: 'guides/AUTH_PROVIDER_WIZARD.md'
+      },
+      {
+        title: 'Supabase Auth Setup',
+        slug: 'supabase-auth-setup',
+        source: 'markdown',
+        file: 'guides/SUPABASE_AUTH_SETUP.md'
+      },
+      {
+        title: 'Local Auth Setup',
+        slug: 'local-auth-setup',
+        source: 'markdown',
+        file: 'guides/LOCAL_AUTH_SETUP.md'
+      },
+      {
+        title: 'OAuth Setup (Supabase)',
+        slug: 'oauth-setup',
+        source: 'markdown',
+        file: 'guides/OAUTH_SETUP.md'
+      },
+      {
         title: 'Email Service',
         slug: 'email-service',
         source: 'markdown',
@@ -172,6 +196,12 @@ const ALL_DOCS_NAVIGATION: DocNavItem[] = [
     source: 'section',
     children: [
       {
+        title: 'Deployment Quick Start',
+        slug: 'deployment-quick-start',
+        source: 'markdown',
+        file: 'DEPLOYMENT_QUICK_START.md'
+      },
+      {
         title: 'Deployment Providers',
         slug: 'deployment-providers',
         source: 'markdown',
@@ -196,10 +226,28 @@ const ALL_DOCS_NAVIGATION: DocNavItem[] = [
         file: 'SELF_HOSTING.md'
       },
       {
+        title: 'Setup Checklist',
+        slug: 'setup-checklist',
+        source: 'markdown',
+        file: 'SETUP_CHECKLIST.md'
+      },
+      {
+        title: 'Database Provider Wizard',
+        slug: 'database-provider-wizard',
+        source: 'markdown',
+        file: 'guides/DATABASE_PROVIDER_WIZARD.md'
+      },
+      {
         title: 'Deployment Guide',
         slug: 'deployment-guide',
         source: 'markdown',
         file: 'DEPLOYMENT_GUIDE.md'
+      },
+      {
+        title: 'GitHub Secrets (CI/CD)',
+        slug: 'github-secrets',
+        source: 'markdown',
+        file: 'deployment/GITHUB_SECRETS.md'
       },
       {
         title: 'Production Checklist',

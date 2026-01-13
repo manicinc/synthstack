@@ -229,7 +229,10 @@ COPILOT_FALLBACK_MODEL=claude-3-5-sonnet-20241022
 COPILOT_EMBEDDING_MODEL=text-embedding-3-small
 OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
+# Qdrant is open-source and can be self-hosted (default via Docker in local dev).
 QDRANT_URL=http://qdrant:6333
+# Optional: only needed for Qdrant Cloud (or secured self-hosted Qdrant).
+QDRANT_API_KEY=
 ```
 
 ### Default Settings

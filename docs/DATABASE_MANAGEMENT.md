@@ -294,50 +294,50 @@ Examples:
 - 130_add_user_preferences.sql
 ```
 
-### Creating a New Migration
+### How Migrations Are Applied (Recommended)
+
+SynthStack uses a one-shot Docker service (`directus-migrate`) that:
+
+- waits for Directus to initialize its schema
+- applies each `*.sql` migration in lexicographic order
+- tracks applied migrations in `synthstack_migrations` (so each file runs once)
+
+**Local dev:** `docker compose up -d` runs `directus-migrate` automatically (after Directus is healthy).  
+After pulling updates, run:
 
 ```bash
-#!/bin/bash
-# create-migration.sh
+docker compose up -d directus-migrate
+```
 
-MIGRATION_NUMBER=$(ls services/directus/migrations/ | grep -E '^[0-9]+' | tail -1 | cut -d'_' -f1)
-NEXT_NUMBER=$((MIGRATION_NUMBER + 1))
-DESCRIPTION=$1
+**Production (Community deploy):**
 
-FILENAME="services/directus/migrations/${NEXT_NUMBER}_${DESCRIPTION}.sql"
+```bash
+docker compose -f deploy/docker-compose.yml up -d directus-migrate
+```
 
-cat > "$FILENAME" << 'EOF'
--- Migration: [Description]
--- Created: $(date +%Y-%m-%d)
+### Where Migration Files Live
+
+- Source of truth: `services/directus/migrations/*.sql` (used by both dev and production deploy)
+
+### Creating a New Migration
+
+1. Create a new file in `services/directus/migrations/` (never edit old migration files once shipped).
+2. Keep it **additive + idempotent** (`CREATE TABLE IF NOT EXISTS`, `ADD COLUMN IF NOT EXISTS`, etc.).
+
+Example skeleton:
+
+```sql
+-- Migration: 125_add_example_table.sql
+-- Description: Add example table for feature X
 
 BEGIN;
 
--- Add your DDL statements here
 CREATE TABLE IF NOT EXISTS example (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    created_at TIMESTAMPTZ DEFAULT NOW()
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Add indexes
-CREATE INDEX IF NOT EXISTS idx_example_created ON example(created_at);
-
 COMMIT;
-EOF
-
-echo "Created migration: $FILENAME"
-```
-
-### Running Migrations
-
-```bash
-# Run all pending migrations
-psql -h localhost -d synthstack -f services/directus/migrations/*.sql
-
-# Run specific migration
-psql -h localhost -d synthstack -f services/directus/migrations/120_ml_service_shared_db.sql
-
-# Dry run (show SQL without executing)
-cat services/directus/migrations/120_ml_service_shared_db.sql
 ```
 
 ### Migration Best Practices

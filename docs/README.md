@@ -21,6 +21,9 @@ Welcome to the SynthStack documentation hub. Find everything you need to build, 
 
 ## Implementation Guides
 
+- [Auth Provider Wizard](./guides/AUTH_PROVIDER_WIZARD.md) - Pick Supabase vs Local auth
+- [Supabase Auth Setup](./guides/SUPABASE_AUTH_SETUP.md) - Recommended path (OAuth)
+- [Local Auth Setup](./guides/LOCAL_AUTH_SETUP.md) - Fully self-hosted (no OAuth yet)
 - [OAuth Setup](./guides/OAUTH_SETUP.md) - Configure third-party authentication
 - [Guest Invites](./guides/GUEST_INVITES.md) - Guest user invitation system
 - [Content Blocks](./guides/CONTENT_BLOCKS.md) - Reusable content management
@@ -52,6 +55,7 @@ Welcome to the SynthStack documentation hub. Find everything you need to build, 
 ## Deployment
 
 - [Self-Hosting Guide](./SELF_HOSTING.md) - Deploy on your own infrastructure
+- [Database Provider Wizard](./guides/DATABASE_PROVIDER_WIZARD.md) - Local Postgres vs managed Postgres
 - [Deployment Providers](./DEPLOYMENT_PROVIDERS.md) - Linode, DigitalOcean, AWS, etc.
 - [AWS EC2 Deployment](./deployment/providers/AWS_EC2.md) - Full walkthrough
 - [GCP Compute Engine Deployment](./deployment/providers/GCP_COMPUTE_ENGINE.md) - Full walkthrough
@@ -65,6 +69,7 @@ Welcome to the SynthStack documentation hub. Find everything you need to build, 
 - [Architecture Overview](./reference/ARCHITECTURE_OVERVIEW.md) - Complete project summary
 - [Service Map](./SERVICE_MAP.md) - System architecture diagram
 - [Collections Reference](./COLLECTIONS_REFERENCE.md) - Database schema
+- [Database Management](./DATABASE_MANAGEMENT.md) - Migrations, backups, operations
 - [Project Roadmap](./reference/ROADMAP.md) - Future features and plans
 - [Project Status](./reference/PROJECT_STATUS.md) - Current implementation status
 

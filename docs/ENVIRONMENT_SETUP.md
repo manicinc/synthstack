@@ -45,10 +45,10 @@ OPENAI_API_KEY=sk-xxx
 STRIPE_SECRET_KEY=sk_test_xxx
 SUPABASE_URL=https://your-project.supabase.co
 
-# After (real values)
+# After (your real values)
 OPENAI_API_KEY=sk-proj-abc123...
 STRIPE_SECRET_KEY=sk_test_51R8N...
-SUPABASE_URL=https://insonkkyuhktanzczcde.supabase.co
+SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 ```
 
 ### 3. Create Personal LITE and PRO Configs

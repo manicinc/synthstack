@@ -119,7 +119,7 @@ docker compose -f docker-compose.django.yml up -d
 - **📱 Cross-Platform** - Vue Quasar builds web, iOS, Android, desktop (Electron), and PWA from one codebase
 - **🤖 AI Copilot** - Built-in chat assistant with RAG, streaming, and markdown support ([Guide](./docs/features/COPILOT.md))
 - **📝 Directus CMS** - Headless CMS with WYSIWYG editor, custom extensions, models your Postgres DB - manage blog, products, users, and custom content
-- **🔐 Flexible Authentication** - Choose between Supabase (managed) or Local PostgreSQL (self-hosted). Both support OAuth, JWT, and RBAC
+- **🔐 Flexible Authentication** - Supabase (managed OAuth) or Local PostgreSQL (self-hosted email/password; OAuth coming soon)
 - **💳 Stripe Billing** - Subscriptions, lifetime licenses, one-time payments, usage-based pricing
 - **📧 Email System** - Mailgun/SendGrid for transactional emails, newsletters, and marketing automation
 - **📊 Analytics** - Built-in event tracking, dashboards, and user behavior insights
@@ -130,19 +130,19 @@ docker compose -f docker-compose.django.yml up -d
 
 **Choose Your Auth Provider:**
 - **Supabase Auth** (Default) - Managed service with built-in OAuth providers
-- **Local PostgreSQL Auth** - Self-hosted with no external dependencies
+- **Local PostgreSQL Auth** - Fully self-hosted (email/password today; OAuth coming soon)
 
 **Security Features:**
 - Argon2id password hashing (65536 memory cost)
 - JWT access tokens (1h) + refresh tokens (7d)
-- OAuth support: Google, GitHub, Discord, Microsoft
+- OAuth support (Supabase): Google, GitHub, Discord, Microsoft
 - Account lockout after failed attempts
 - Email verification workflow
 - Session management with token rotation
 
 **Toggle via database config** - switch providers at runtime without code changes.
 
-📖 [Authentication Documentation](docs/AUTHENTICATION.md)
+📖 [Authentication Documentation](docs/AUTHENTICATION.md) | [Auth Provider Wizard](docs/guides/AUTH_PROVIDER_WIZARD.md)
 
 ## 💳 Flexible Pricing Models
 
