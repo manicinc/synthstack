@@ -36,6 +36,8 @@ import authRoutes from './routes/auth.js';
 import projectsRoutes from './routes/projects.js';
 import profilesRoutes from './routes/profiles.js';
 import creditsRoutes from './routes/credits.js';
+import generationRoutes from './routes/generation.js';
+import chatRoutes from './routes/chat.js';
 import webhooksRoutes from './routes/webhooks.js';
 import subscriptionRoutes from './routes/subscriptions.js';
 import communityRoutes from './routes/community.js';
@@ -343,6 +345,8 @@ async function registerRoutes(app: FastifyInstance, options: AppOptions): Promis
   await app.register(projectsRoutes, { prefix: '/api/v1/projects' });
   await app.register(profilesRoutes, { prefix: '/api/v1/profiles' });
   await app.register(creditsRoutes, { prefix: '/api/v1/credits' });
+  await app.register(generationRoutes, { prefix: '/api/v1/generation' });
+  await app.register(chatRoutes, { prefix: '/api/v1/chat' });
   await app.register(communityRoutes, { prefix: '/api/v1' });
 
   // Billing routes require Stripe (skip in test mode when skipServices is true)
