@@ -9,8 +9,8 @@
     "pricing": "定价",
     "dashboard": "控制面板",
     "generate": "生成",
-    "printers": "打印机",
-    "filaments": "耗材",
+    "printers": "模板",
+    "filaments": "集成",
     "profiles": "配置文件",
     "myProfiles": "我的配置",
     "history": "历史记录",
@@ -22,8 +22,8 @@
   },
   "landing": {
     "hero": {
-      "title": "每次都是完美打印",
-      "subtitle": "上传您的STL文件。获取AI优化设置。导出到任何切片软件。",
+      "title": "你的机构装进一个盒子",
+      "subtitle": "AI 原生跨平台 SaaS 模板。品牌配置、部署、发布更快。",
       "cta": "早鸟优惠 - $149",
       "secondaryCta": "在GitHub上查看",
       "promoWithStats": "限量 {max} 份终身许可证 • 剩余 {remaining} 份 • 节省 {discount}",
@@ -157,45 +157,45 @@
       "title": "为什么选择SynthStack？",
       "subtitle": "使用AI驱动的开发更快发布。",
       "stlAnalysis": {
-        "title": "智能STL分析",
-        "description": "我们的AI检查您模型的几何形状，检测悬垂、薄壁和最佳打印方向。"
+        "title": "配置向导",
+        "description": "几分钟内用向导完成品牌、密钥和部署配置，内置生产级模板。"
       },
       "aiSettings": {
-        "title": "AI生成设置",
-        "description": "根据您特定的打印机、耗材和模型特征获取优化参数。"
+        "title": "AI 联合创始人",
+        "description": "带 RAG 的专业代理了解你的文档、CMS 和项目；在审批下自动执行任务。"
       },
       "multiSlicer": {
-        "title": "随处导出",
-        "description": "下载适用于OrcaSlicer、PrusaSlicer、Cura等的即用配置文件。"
+        "title": "跨平台",
+        "description": "Quasar 单一代码库覆盖 Web / iOS / Android / Desktop / PWA。"
       },
       "community": {
-        "title": "社区验证",
-        "description": "分享配置文件，查看成功率，建立在有效方案之上。"
+        "title": "开源 + Pro",
+        "description": "Community 版免费起步，Pro 版提供高级功能、支持与更新。"
       }
     },
     "howItWorks": {
       "title": "工作原理",
       "step1": {
-        "title": "上传您的STL",
-        "description": "拖放您的3D模型进行即时分析"
+        "title": "使用模板",
+        "description": "从模板创建仓库，几分钟内本地启动。"
       },
       "step2": {
-        "title": "选择您的设置",
-        "description": "从我们的数据库中选择您的打印机和耗材"
+        "title": "配置 Branding 与 .env",
+        "description": "用向导生成 `config.json` 和 `.env` 文件。"
       },
       "step3": {
-        "title": "生成设置",
-        "description": "AI为您的特定打印创建优化参数"
+        "title": "构建与自动化",
+        "description": "创建项目、工作流与代理，连接集成。"
       },
       "step4": {
-        "title": "导出并打印",
-        "description": "下载到您的切片软件并开始打印"
+        "title": "部署",
+        "description": "使用 Docker 与 CI/CD 部署，快速迭代并扩展。"
       }
     },
     "stats": {
       "profiles": "已生成配置",
-      "printers": "支持的打印机",
-      "successRate": "成功率"
+      "printers": "集成",
+      "successRate": "生产就绪"
     },
     "featuresGrid": {
       "badge": "您需要的一切",
