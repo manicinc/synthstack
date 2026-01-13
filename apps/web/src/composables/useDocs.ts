@@ -11,6 +11,7 @@ import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import hljs from 'highlight.js/lib/core'
 import { docsNavigation, flattenNavigation } from '@/config/docs-navigation'
+import { branding } from '@/config/branding'
 
 // Import languages for syntax highlighting
 import javascript from 'highlight.js/lib/languages/javascript'
@@ -111,8 +112,8 @@ function githubRepoBaseUrl(): string | null {
   const edition = (import.meta.env.VITE_SYNTHSTACK_EDITION as string | undefined) || 'community'
   const envRepo = (import.meta.env.VITE_GITHUB_REPO_URL as string | undefined) || ''
   const repoFromEdition = edition.toLowerCase() === 'community'
-    ? 'https://github.com/manicinc/synthstack'
-    : 'https://github.com/manicinc/synthstack-pro'
+    ? branding.github.communityRepoUrl
+    : branding.github.proRepoUrl
 
   const chosen = (envRepo || repoFromEdition).replace(/\/+$/, '')
   return chosen ? chosen : null

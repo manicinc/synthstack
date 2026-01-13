@@ -114,7 +114,7 @@
             icon="code"
             class="demo-btn"
             data-testid="hero-cta-secondary"
-            href="https://github.com/manicinc/synthstack"
+            :href="githubUrl"
             target="_blank"
           />
         </div>
@@ -157,6 +157,7 @@ import { computed, ref, onMounted, nextTick, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useVisualEditing } from '@/composables/useVisualEditing'
 import type { Page } from '@/composables/usePages'
+import { branding } from '@/config/branding'
 import AnimatedTerminal from '@/components/ui/AnimatedTerminal.vue'
 import BrandingWizardDialog from '@/components/branding/BrandingWizardDialog.vue'
 import AnimatedBox from '@/components/ui/AnimatedBox.vue'
@@ -166,6 +167,7 @@ import { analyticsEvents } from '@/boot/analytics'
 import { useThemeStore } from '@/stores/theme'
 
 const themeStore = useThemeStore()
+const githubUrl = branding.social.github || branding.github.communityRepoUrl
 
 // Computed style for light mode text visibility
 const lightModeTextStyle = computed(() => {

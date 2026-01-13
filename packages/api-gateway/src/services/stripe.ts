@@ -571,7 +571,7 @@ export class StripeService {
         customer_email: email,
         payment_method_types: ['card'],
         line_items: [{ price: priceId, quantity: 1 }],
-        success_url: process.env.FRONTEND_URL + '/?license=success&session_id={CHECKOUT_SESSION_ID}',
+        success_url: process.env.FRONTEND_URL + '/license-access?session={CHECKOUT_SESSION_ID}',
         cancel_url: process.env.FRONTEND_URL + '/?license=cancelled',
         allow_promotion_codes: true,
         billing_address_collection: 'required',

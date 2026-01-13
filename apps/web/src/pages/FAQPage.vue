@@ -98,9 +98,18 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { branding } from '@/config/branding'
 
 const searchQuery = ref('')
 const activeCategory = ref('general')
+
+const supportEmail = branding.supportEmail || 'team@manic.agency'
+const discordUrl = branding.social.discord || 'https://discord.gg/synthstack'
+const proRepoUrl = branding.github.proRepoUrl
+const proRepoCloneUrl = `${proRepoUrl}.git`
+const proRepoFullName = `${branding.github.orgName}/${branding.github.proRepoName}`
+const proRepoDirName = branding.github.proRepoName
+const communityRepoUrl = branding.github.communityRepoUrl
 
 const categories = [
   { id: 'general', label: 'General', icon: 'info' },
@@ -390,9 +399,9 @@ const faqs = ref([
       <li><strong>Click the link</strong> to the license access portal</li>
       <li><strong>Submit your GitHub username</strong> in the form</li>
       <li><strong>Accept the GitHub invitation</strong> sent to your GitHub account email</li>
-      <li><strong>Clone the repository</strong>: <code>git clone https://github.com/manicinc/synthstack-pro.git</code></li>
+      <li><strong>Clone the repository</strong>: <code>git clone ${proRepoCloneUrl}</code></li>
     </ol>
-    <p>The entire process takes about 5 minutes. You'll receive Read access to the private <code>manicinc/synthstack-pro</code> repository.</p>
+    <p>The entire process takes about 5 minutes. You'll receive Read access to the private <code>${proRepoFullName}</code> repository.</p>
     <p class="citation">📚 Don't have a GitHub account? <a href="https://github.com/signup">Create one free at github.com →</a></p>`
   },
   {
@@ -411,7 +420,7 @@ const faqs = ref([
       <li>Optional upgrade available for major version releases</li>
     </ul>
     <p><strong>Pull updates anytime:</strong></p>
-    <code>cd synthstack-pro<br>git pull origin main</code>
+    <code>cd ${proRepoDirName}<br>git pull origin main</code>
     <p class="citation">📚 We follow semantic versioning (SemVer). Your code will never break from pulling updates within your license period.</p>`
   },
   {
@@ -455,7 +464,7 @@ const faqs = ref([
     question: 'What happens if I change my GitHub username?',
     answer: `<p>If you change your GitHub username after receiving access:</p>
     <ol>
-      <li><strong>Contact us</strong> at <a href="mailto:team@manic.agency">team@manic.agency</a></li>
+      <li><strong>Contact us</strong> at <a href="mailto:${supportEmail}">${supportEmail}</a></li>
       <li>Provide your <strong>old username</strong> and <strong>new username</strong></li>
       <li>We'll <strong>update your access</strong> within 24 hours</li>
     </ol>
@@ -480,7 +489,7 @@ const faqs = ref([
       <li>Try cloning via SSH instead of HTTPS</li>
     </ul>
     <p><strong>3. Still stuck?</strong></p>
-    <p>Contact <a href="mailto:team@manic.agency">team@manic.agency</a> with:</p>
+    <p>Contact <a href="mailto:${supportEmail}">${supportEmail}</a> with:</p>
     <ul>
       <li>Your purchase email</li>
       <li>GitHub username submitted</li>
@@ -495,7 +504,7 @@ const faqs = ref([
     <p><strong>Refund policy:</strong></p>
     <ul>
       <li>Request a refund within 30 days of purchase</li>
-      <li>Email <a href="mailto:team@manic.agency">team@manic.agency</a> with your purchase details</li>
+      <li>Email <a href="mailto:${supportEmail}">${supportEmail}</a> with your purchase details</li>
       <li>Full refund processed within 5-7 business days</li>
       <li>Your GitHub access will be revoked</li>
     </ul>

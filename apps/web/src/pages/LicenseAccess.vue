@@ -61,7 +61,7 @@
             <h3>Next Steps:</h3>
             <ol>
               <li>Check your email from GitHub (noreply@github.com)</li>
-              <li>Click "Join @manicinc" to accept the invitation</li>
+              <li>Click "Join @{{ githubOrgName }}" to accept the invitation</li>
               <li>You'll immediately get access to the repository</li>
             </ol>
           </div>
@@ -76,7 +76,7 @@
           />
 
           <div class="help-text q-mt-md">
-            <p>Haven't received the email? Check your spam folder or contact team@manic.agency</p>
+            <p>Haven't received the email? Check your spam folder or contact <a :href="`mailto:${supportEmail}`">{{ supportEmail }}</a></p>
           </div>
         </div>
 
@@ -87,21 +87,21 @@
           <p>Your GitHub access is now active. You can clone the repository and start building!</p>
 
           <div class="code-block">
-            <code>git clone https://github.com/manicinc/synthstack-pro.git</code>
+            <code>{{ cloneCommand }}</code>
             <q-btn
               flat
               dense
               icon="content_copy"
-              @click="copyToClipboard('git clone https://github.com/manicinc/synthstack-pro.git')"
+              @click="copyToClipboard(cloneCommand)"
             />
           </div>
 
           <div class="next-steps q-mt-lg">
             <h3>Essential Resources:</h3>
             <ul>
-              <li><a href="https://github.com/manicinc/synthstack-pro" target="_blank">View Repository →</a></li>
+              <li><a :href="proRepoUrl" target="_blank">View Repository →</a></li>
               <li><a href="/docs" target="_blank">API Documentation →</a></li>
-              <li><a href="https://discord.gg/synthstack" target="_blank">Join Discord →</a></li>
+              <li><a :href="discordUrl" target="_blank">Join Discord →</a></li>
             </ul>
           </div>
         </div>
@@ -110,7 +110,7 @@
         <div v-else-if="error" class="error">
           <q-icon name="error" color="negative" size="48px" />
           <h2>{{ error }}</h2>
-          <p>Please contact team@manic.agency for assistance.</p>
+          <p>Please contact <a :href="`mailto:${supportEmail}`">{{ supportEmail }}</a> for assistance.</p>
         </div>
       </div>
     </div>
@@ -121,11 +121,17 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useQuasar } from 'quasar'
+import { branding } from '@/config/branding'
 
 const route = useRoute()
 const $q = useQuasar()
 
-const sessionId = ref(route.query.session as string)
+function firstQueryValue(value: unknown): string {
+  if (Array.isArray(value)) return String(value[0] || '')
+  return typeof value === 'string' ? value : ''
+}
+
+const sessionId = ref(firstQueryValue(route.query.session) || firstQueryValue(route.query.session_id))
 const license = ref<any>(null)
 const loading = ref(true)
 const error = ref('')
@@ -133,7 +139,12 @@ const githubUsername = ref('')
 const submitting = ref(false)
 const checking = ref(false)
 
-const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3003'
+const supportEmail = branding.supportEmail || 'team@manic.agency'
+const discordUrl = branding.social.discord || 'https://discord.gg/synthstack'
+const githubOrgName = branding.github.orgName
+const proRepoUrl = branding.github.proRepoUrl
+const cloneCommand = `git clone ${proRepoUrl}.git`
 
 onMounted(async () => {
   if (!sessionId.value) {

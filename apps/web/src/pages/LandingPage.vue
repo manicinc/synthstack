@@ -58,6 +58,7 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue'
 import { useQuasar } from 'quasar'
+import { useRouter } from 'vue-router'
 import { usePages, type Page } from '@/composables/usePages'
 import { useSeo } from '@/composables/useSeo'
 import { logError } from '@/utils/devLogger'
@@ -85,6 +86,7 @@ import DirectusLicensingBanner from '@/components/landing/DirectusLicensingBanne
 const { fetchPage } = usePages()
 const { setPageSeo } = useSeo()
 const $q = useQuasar()
+const router = useRouter()
 
 // Page content from Directus
 const page = ref<Page | null>(null)
@@ -171,18 +173,9 @@ onMounted(async () => {
     analyticsEvents.purchase('SynthStack Pro - Lifetime', 297, sessionId)
     adConversions.premiumSubscription(297)
 
-    // Show success notification
-    $q.notify({
-      type: 'positive',
-      message: 'Purchase successful! Check your email for next steps.',
-      caption: 'You\'ll receive instructions to access the GitHub repository.',
-      timeout: 6000,
-      icon: 'check_circle',
-      position: 'top',
-    })
-
-    // Clear URL params
-    window.history.replaceState({}, '', '/')
+    // Route directly to the License Access onboarding flow
+    await router.replace({ name: 'license-access', query: { session: sessionId } })
+    return
   } else if (licenseStatus === 'cancelled') {
     // Show cancelled notification
     $q.notify({
