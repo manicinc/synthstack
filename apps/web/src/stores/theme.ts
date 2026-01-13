@@ -14,9 +14,10 @@ import { devWarn, logError } from '@/utils/devLogger'
 import type { Theme, ColorMode, ThemePreset, SiteThemeSettings, ThemeCategory } from '@/types/theme'
 import { DEFAULT_THEME, presetToTheme } from '@/types/theme'
 import { themePresetsList, getPresetBySlug, getDefaultPreset } from '@/config/themePresets'
+import { getApiBaseUrl } from '@/utils/apiUrl'
 
 const STORAGE_KEY = 'synthstack-theme'
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3003'
+const API_BASE = getApiBaseUrl()
 
 export const useThemeStore = defineStore('theme', () => {
   // ============================================
@@ -296,37 +297,57 @@ export const useThemeStore = defineStore('theme', () => {
   function applyTheme() {
     if (typeof document === 'undefined') return
 
-    const root = document.documentElement
-    const body = document.body
-    const preset = currentPreset.value
-    const isDarkMode = resolvedMode.value === 'dark'
+    try {
+      const root = document.documentElement
+      const body = document.body
+      const preset = currentPreset.value
 
-    // Update current theme ref
-    currentTheme.value = presetToTheme(preset)
+      // Safety check - ensure preset exists
+      if (!preset) {
+        devWarn('No preset found, skipping theme application')
+        return
+      }
 
-    // Toggle body classes for mode
-    body.classList.toggle('body--dark', isDarkMode)
-    body.classList.toggle('body--light', !isDarkMode)
-    root.classList.toggle('dark', isDarkMode)
+      const isDarkMode = resolvedMode.value === 'dark'
 
-    // Set theme/preset class
-    root.setAttribute('data-theme', preset.slug)
-    root.setAttribute('data-preset', preset.slug)
+      // Update current theme ref
+      currentTheme.value = presetToTheme(preset)
 
-    // Generate and apply CSS variables
-    const vars = generateCSSVariables(preset, isDarkMode)
-    Object.entries(vars).forEach(([key, value]) => {
-      root.style.setProperty(key, value)
-    })
+      // Toggle body classes for mode
+      body.classList.toggle('body--dark', isDarkMode)
+      body.classList.toggle('body--light', !isDarkMode)
+      // Toggle root (html) classes - BOTH dark AND light needed for CSS selectors
+      root.classList.toggle('dark', isDarkMode)
+      root.classList.toggle('light', !isDarkMode)
 
-    // Apply custom CSS if present
-    applyCustomCSS(preset, isDarkMode)
+      // Set theme/preset class
+      root.setAttribute('data-theme', preset.slug)
+      root.setAttribute('data-preset', preset.slug)
 
-    // Update meta theme-color
-    const bgColor = isDarkMode ? preset.dark.bg.base : preset.light.bg.base
-    const metaTheme = document.querySelector('meta[name="theme-color"]')
-    if (metaTheme) {
-      metaTheme.setAttribute('content', bgColor)
+      // Generate and apply CSS variables
+      const vars = generateCSSVariables(preset, isDarkMode)
+      Object.entries(vars).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          root.style.setProperty(key, value)
+        }
+      })
+
+      // Light mode is handled by CSS variables and app.scss
+      // No additional JavaScript-based overrides needed
+
+      // Apply custom CSS if present
+      applyCustomCSS(preset, isDarkMode)
+
+      // Update meta theme-color
+      const bgColor = isDarkMode ? preset.dark?.bg?.base : preset.light?.bg?.base
+      if (bgColor) {
+        const metaTheme = document.querySelector('meta[name="theme-color"]')
+        if (metaTheme) {
+          metaTheme.setAttribute('content', bgColor)
+        }
+      }
+    } catch (error) {
+      devWarn('Error applying theme:', error)
     }
   }
 
@@ -336,27 +357,60 @@ export const useThemeStore = defineStore('theme', () => {
   function generateCSSVariables(preset: ThemePreset, isDark: boolean): Record<string, string> {
     const mode = isDark ? preset.dark : preset.light
 
+    // Fallback values if mode is completely missing
+    const fallbackBg = {
+      base: isDark ? '#09090B' : '#FFFFFF',
+      subtle: isDark ? '#18181B' : '#FAFAFA',
+      muted: isDark ? '#27272A' : '#F5F5F5',
+      elevated: isDark ? '#09090B' : '#FFFFFF',
+    }
+    const fallbackText = {
+      primary: isDark ? '#FAFAFA' : '#111111',
+      secondary: isDark ? '#A1A1AA' : '#4A4A4A',
+      tertiary: isDark ? '#71717A' : '#8A8A8A',
+    }
+    const fallbackBorder = {
+      default: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+      subtle: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+    }
+    const fallbackShadow = {
+      sm: '0 1px 2px rgba(0,0,0,0.05)',
+      md: '0 4px 6px rgba(0,0,0,0.1)',
+      lg: '0 10px 15px rgba(0,0,0,0.1)',
+      xl: '0 20px 25px rgba(0,0,0,0.15)',
+    }
+
+    // Use mode values with fallbacks
+    const bg = mode?.bg || fallbackBg
+    const text = mode?.text || fallbackText
+    const border = mode?.border || fallbackBorder
+    const shadow = mode?.shadow || fallbackShadow
+
+    if (!mode) {
+      devWarn(`Missing ${isDark ? 'dark' : 'light'} mode for preset ${preset.slug}, using fallbacks`)
+    }
+
     return {
-      // Backgrounds
-      '--bg-base': mode.bg.base,
-      '--bg-subtle': mode.bg.subtle,
-      '--bg-muted': mode.bg.muted,
-      '--bg-elevated': mode.bg.elevated,
+      // Backgrounds (using fallback-aware variables)
+      '--bg-base': bg.base,
+      '--bg-subtle': bg.subtle,
+      '--bg-muted': bg.muted,
+      '--bg-elevated': bg.elevated,
 
-      // Text
-      '--text-primary': mode.text.primary,
-      '--text-secondary': mode.text.secondary,
-      '--text-tertiary': mode.text.tertiary,
+      // Text (using fallback-aware variables)
+      '--text-primary': text.primary,
+      '--text-secondary': text.secondary,
+      '--text-tertiary': text.tertiary,
 
-      // Borders
-      '--border-default': mode.border.default,
-      '--border-subtle': mode.border.subtle,
+      // Borders (using fallback-aware variables)
+      '--border-default': border.default,
+      '--border-subtle': border.subtle,
 
-      // Shadows
-      '--shadow-sm': mode.shadow.sm,
-      '--shadow-md': mode.shadow.md,
-      '--shadow-lg': mode.shadow.lg,
-      '--shadow-xl': mode.shadow.xl,
+      // Shadows (using fallback-aware variables)
+      '--shadow-sm': shadow.sm,
+      '--shadow-md': shadow.md,
+      '--shadow-lg': shadow.lg,
+      '--shadow-xl': shadow.xl,
 
       // Colors (same for both modes)
       '--color-primary': preset.colors.primary,
