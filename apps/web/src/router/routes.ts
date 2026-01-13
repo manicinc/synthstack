@@ -199,6 +199,15 @@ const landingRoutes: RouteRecordRaw[] = [
         meta: { title: 'Documentation' }
       },
       {
+        path: 'setup/branding',
+        name: 'setup-branding',
+        component: () => import('pages/setup/BrandingWizardPage.vue'),
+        meta: {
+          title: 'Branding Wizard',
+          description: 'Generate a complete config.json for rebranding SynthStack in minutes.'
+        }
+      },
+      {
         path: 'news',
         name: 'news',
         component: () => import('pages/NewsPage.vue'),
@@ -414,6 +423,18 @@ const appRoutes: RouteRecordRaw[] = [
         name: 'generate',
         component: () => import('pages/app/GeneratePage.vue'),
         meta: { title: 'Generate' }
+      },
+      {
+        path: 'images',
+        name: 'image-generation',
+        component: () => import('pages/app/ImageGenerationPage.vue'),
+        meta: { title: 'Image Generation' }
+      },
+      {
+        path: 'chat',
+        name: 'chat',
+        component: () => import('pages/app/ChatPage.vue'),
+        meta: { title: 'AI Chat' }
       },
       {
         path: 'projects',

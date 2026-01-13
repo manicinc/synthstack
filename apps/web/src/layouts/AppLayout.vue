@@ -103,6 +103,28 @@
             </q-tooltip>
           </q-item>
 
+          <!-- Community Edition: standalone chat (no agents/RAG) -->
+          <q-item
+            v-if="!FEATURES.COPILOT"
+            clickable
+            :active="route.name === 'chat'"
+            :to="{ name: 'chat' }"
+          >
+            <q-item-section avatar>
+              <q-icon name="chat" />
+            </q-item-section>
+            <q-item-section v-if="!appSidebarMini">
+              AI Chat
+            </q-item-section>
+            <q-tooltip
+              v-if="appSidebarMini"
+              anchor="center right"
+              self="center left"
+            >
+              AI Chat
+            </q-tooltip>
+          </q-item>
+
           <q-item
             clickable
             :active="route.name === 'generate'"
@@ -120,6 +142,26 @@
               self="center left"
             >
               Generate
+            </q-tooltip>
+          </q-item>
+
+          <q-item
+            clickable
+            :active="route.name === 'image-generation'"
+            :to="{ name: 'image-generation' }"
+          >
+            <q-item-section avatar>
+              <q-icon name="image" />
+            </q-item-section>
+            <q-item-section v-if="!appSidebarMini">
+              Images
+            </q-item-section>
+            <q-tooltip
+              v-if="appSidebarMini"
+              anchor="center right"
+              self="center left"
+            >
+              Images
             </q-tooltip>
           </q-item>
 
