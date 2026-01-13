@@ -16,6 +16,16 @@ const CHAT_TIER_CREDIT_COSTS: Record<ModelTier, number> = {
   premium: 5,
 };
 
+// Models supported by the Community ML service fallback (OpenAI-only)
+const ML_SERVICE_MODELS = new Set([
+  'gpt-4o-mini',
+  'gpt-4o',
+  'gpt-5.2',
+  'gpt-4-turbo',
+  'gpt-4',
+  'gpt-3.5-turbo',
+]);
+
 // Legacy mapping for models not present in the router registry
 const LEGACY_MODEL_TIERS: Record<string, ModelTier> = {
   'gpt-3.5-turbo': 'cheap',
@@ -23,6 +33,7 @@ const LEGACY_MODEL_TIERS: Record<string, ModelTier> = {
   'gpt-4-turbo': 'standard',
   'gpt-4o': 'standard',
   'gpt-4': 'premium',
+  'gpt-5.2': 'premium',
   'o1-mini': 'premium',
   'o1': 'premium',
 };
@@ -60,6 +71,18 @@ export default async function chatRoutes(fastify: FastifyInstance) {
 
   function isSupportedModel(model: string): boolean {
     return Boolean(modelRegistry.getModel(model) || LEGACY_MODEL_TIERS[model]);
+  }
+
+  function mapToMlServiceModel(model: string | undefined, tier: ModelTier): string {
+    if (model && ML_SERVICE_MODELS.has(model)) return model;
+    switch (tier) {
+      case 'premium':
+        return 'gpt-5.2';
+      case 'standard':
+        return 'gpt-4o';
+      default:
+        return 'gpt-4o-mini';
+    }
   }
 
   /**
@@ -118,10 +141,10 @@ export default async function chatRoutes(fastify: FastifyInstance) {
                 role: { type: 'string', enum: ['user', 'assistant', 'system'] },
                 content: { type: 'string' },
               },
-            },
-            minItems: 1,
           },
-          model: { type: 'string', default: 'gpt-3.5-turbo' },
+          minItems: 1,
+        },
+          model: { type: 'string', default: 'gpt-4o-mini' },
           modelTier: { type: 'string', enum: ['cheap', 'standard', 'premium'], default: 'cheap' },
           maxTokens: { type: 'number', minimum: 100, maximum: 4000, default: 500 },
           temperature: { type: 'number', minimum: 0, maximum: 2, default: 0.7 },
@@ -131,7 +154,7 @@ export default async function chatRoutes(fastify: FastifyInstance) {
   }, async (request: any, reply) => {
     try {
       const userId = request.user.id;
-      const { messages, model = 'gpt-3.5-turbo', modelTier, maxTokens = 500, temperature = 0.7 } = request.body;
+      const { messages, model = 'gpt-4o-mini', modelTier, maxTokens = 500, temperature = 0.7 } = request.body;
 
       if (model && !isSupportedModel(model)) {
         return reply.status(400).send({
@@ -140,6 +163,9 @@ export default async function chatRoutes(fastify: FastifyInstance) {
           model,
         });
       }
+
+      const resolvedTier = resolveModelTier(model, modelTier);
+      const mlModel = mapToMlServiceModel(model, resolvedTier);
 
       // Check credits
       const creditCost = resolveCreditCost(model, modelTier);
@@ -160,7 +186,7 @@ export default async function chatRoutes(fastify: FastifyInstance) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages,
-          model,
+          model: mlModel,
           max_tokens: maxTokens,
           temperature,
         }),
@@ -185,7 +211,7 @@ export default async function chatRoutes(fastify: FastifyInstance) {
         content: result.content,
         choices: result.choices,
         usage: result.usage,
-        model: result.model || model,
+        model: result.model || mlModel,
         creditsUsed: creditCost,
       };
     } catch (error) {
@@ -332,12 +358,13 @@ export default async function chatRoutes(fastify: FastifyInstance) {
       }
 
       // Fallback: ML service non-streaming + chunked output (still SSE on the wire)
+      const mlModel = mapToMlServiceModel(model, resolvedTier);
       const mlResponse = await fetch(`${mlServiceUrl}/chat/completions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages,
-          model: model || 'gpt-3.5-turbo',
+          model: mlModel,
           max_tokens: maxTokens,
           temperature,
         }),
