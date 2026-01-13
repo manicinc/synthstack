@@ -31,7 +31,9 @@ pnpm install && docker compose up -d && pnpm dev:web
   - Document processing
   - All cloud LLM integrations
 
-### Option B: Python Services (Edge Cases Only)
+### Option B: Python Services (Pro Edition Only 🔒)
+
+> ⚠️ **Note:** Python ML services are available in [SynthStack Pro](https://github.com/manicinc/synthstack-pro) only.
 
 Add Python services only when you need:
 - **Custom model training/fine-tuning** (PyTorch, HuggingFace)
@@ -39,15 +41,15 @@ Add Python services only when you need:
 - **Specialized ML pipelines** (scikit-learn, custom preprocessing)
 
 ```bash
-# TypeScript + Python ML services
+# TypeScript + Python ML services (Pro Edition only)
 docker compose -f docker-compose.full.yml up -d
 ```
 
-**Choose your Python backend:**
+**Python backends available in Pro:**
 - **FastAPI** (`ml-service`) - High-performance async, production default
 - **Django** (`django-ml-service`) - Batteries-included, great for Django teams
 
-> 💡 **Bottom line:** Start with TypeScript-only. You have 100% feature parity. Add Python later only if you need local models or custom training.
+> 💡 **Community Edition** uses `ts-ml-service` (TypeScript) which provides full AI capabilities without Python.
 
 **[Architecture Decision Guide](./docs/ARCHITECTURE_DECISION.md)** | **[TypeScript Quick Start](./docs/QUICKSTART_TYPESCRIPT.md)** | **[Full AI Quick Start](./docs/QUICKSTART_FULL_AI.md)**
 
