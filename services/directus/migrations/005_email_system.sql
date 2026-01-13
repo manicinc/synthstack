@@ -312,9 +312,9 @@ INSERT INTO email_templates (slug, name, category, subject, html_template, text_
   'welcome',
   'Welcome Email',
   'transactional',
-  'Welcome to Printverse, <%= userName %>!',
-  '<!DOCTYPE html><html><body><h1>Welcome <%= userName %>!</h1><p>Thanks for joining Printverse. Here''s how to get started...</p></body></html>',
-  'Welcome <%= userName %>! Thanks for joining Printverse...',
+  'Welcome to SynthStack, <%= userName %>!',
+  '<!DOCTYPE html><html><body><h1>Welcome <%= userName %>!</h1><p>Thanks for joining SynthStack. Here''s how to get started...</p></body></html>',
+  'Welcome <%= userName %>! Thanks for joining SynthStack...',
   '[{"name": "userName", "type": "string", "required": true}, {"name": "userEmail", "type": "string", "required": true}]'
 ),
 (

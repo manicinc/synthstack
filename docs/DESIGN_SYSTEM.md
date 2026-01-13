@@ -30,7 +30,7 @@ Each preset defines complete light AND dark mode variants. Users can switch pres
 
 ### 1.1 Brand Essence
 
-**Printverse** embodies the spirit of the modern maker movement—where precision engineering meets creative craft. Our visual identity bridges the gap between vintage workshop aesthetics and cutting-edge technology, creating a **retro-futuristic** experience that feels both trustworthy and innovative.
+**SynthStack** embodies the spirit of the modern maker movement—where precision engineering meets creative craft. Our visual identity bridges the gap between vintage workshop aesthetics and cutting-edge technology, creating a **retro-futuristic** experience that feels both trustworthy and innovative.
 
 ### 1.2 Brand Attributes
 
@@ -540,7 +540,7 @@ Create custom icons for:
 
 ### 9.1 Concept
 
-The Printverse logo combines:
+The SynthStack logo combines:
 - **Geometric "P"** — Strong, technical, memorable
 - **Layer lines** — Horizontal lines through the letterform representing 3D print layers
 - **Precision feel** — Clean edges, exact proportions
@@ -586,7 +586,7 @@ Minimum clear space = height of the "P" character on all sides.
 
 ### 10.1 Default: Dark Mode
 
-Printverse defaults to dark mode—it's a workshop at night, focused and productive.
+SynthStack defaults to dark mode—it's a workshop at night, focused and productive.
 
 ### 10.2 Light Mode Adjustments
 

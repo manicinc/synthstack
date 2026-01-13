@@ -1,4 +1,4 @@
--- Printverse Seed Data
+-- SynthStack Seed Data
 -- Sample data for development and testing
 
 -- =========================================

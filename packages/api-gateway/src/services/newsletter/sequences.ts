@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify';
 
 export const SEQUENCES = {
   welcome: { name: 'Welcome Series', steps: [
-    { id: 'w1', name: 'Welcome', delayDays: 0, subject: 'Welcome!', html: '<h1>Welcome to Printverse!</h1>' },
+    { id: 'w1', name: 'Welcome', delayDays: 0, subject: 'Welcome!', html: '<h1>Welcome to SynthStack!</h1>' },
     { id: 'w2', name: 'Guide', delayDays: 2, subject: 'Quick Start', html: '<h1>Getting Started</h1>' },
   ]},
   trial_ending: { name: 'Trial Ending', steps: [

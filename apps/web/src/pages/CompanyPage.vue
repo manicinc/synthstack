@@ -10,17 +10,17 @@
       <div class="container">
         <div class="hero-logo">
           <img
-            src="/logo/printverse-mark.svg"
-            alt="Printverse"
+            src="/logo/synthstack-mark.svg"
+            alt="SynthStack"
           >
         </div>
-        <h1>Printverse</h1>
+        <h1>SynthStack</h1>
         <p class="tagline">
           AI-Powered 3D Printing Profile Generator
         </p>
         <p class="description">
-          We're on a mission to make perfect 3D prints accessible to everyone. 
-          From beginners to professionals, Printverse uses artificial intelligence 
+          We're on a mission to make perfect 3D prints accessible to everyone.
+          From beginners to professionals, SynthStack uses artificial intelligence
           to generate optimized slicer settings for any printer and filament combination.
         </p>
       </div>
@@ -39,7 +39,7 @@
               size="32px"
             />
             <h2>About Us</h2>
-            <p>Learn about our mission, values, and the technology behind Printverse.</p>
+            <p>Learn about our mission, values, and the technology behind SynthStack.</p>
             <span class="link-arrow">
               <q-icon name="sym_o_arrow_forward" />
             </span>
@@ -116,7 +116,7 @@
               size="32px"
             />
             <h2>Manic Agency</h2>
-            <p>Printverse is created by Manic Agency.</p>
+            <p>SynthStack is created by Manic Agency.</p>
             <span class="link-arrow">
               <q-icon name="sym_o_open_in_new" />
             </span>
@@ -155,7 +155,7 @@
         <h2>Follow Us</h2>
         <div class="social-links">
           <a
-            href="https://twitter.com/printverse"
+            href="https://twitter.com/synthstack"
             target="_blank"
             rel="noopener"
             class="social-link"
@@ -167,7 +167,7 @@
             Twitter
           </a>
           <a
-            href="https://github.com/manicinc/printverse"
+            href="https://github.com/manicinc/synthstack"
             target="_blank"
             rel="noopener"
             class="social-link"
@@ -179,7 +179,7 @@
             GitHub
           </a>
           <a
-            href="https://discord.gg/printverse"
+            href="https://discord.gg/synthstack"
             target="_blank"
             rel="noopener"
             class="social-link"
@@ -191,7 +191,7 @@
             Discord
           </a>
           <a
-            href="https://www.youtube.com/@printverse"
+            href="https://www.youtube.com/@synthstack"
             target="_blank"
             rel="noopener"
             class="social-link"
@@ -216,11 +216,11 @@ const { setPageSeo, addSchema } = useSeo()
 
 onMounted(() => {
   setPageSeo({
-    title: 'Company - About Printverse | Printverse',
-    description: 'Learn about Printverse, the AI-powered 3D printing profile generator. Explore our mission, team, careers, and company news.',
+    title: 'Company - About SynthStack | SynthStack',
+    description: 'Learn about SynthStack, the AI-powered 3D printing profile generator. Explore our mission, team, careers, and company news.',
     keywords: [
-      'printverse company',
-      'about printverse',
+      'synthstack company',
+      'about synthstack',
       '3d printing startup',
       'ai slicer company'
     ],
@@ -234,9 +234,9 @@ onMounted(() => {
   // Add Organization schema
   addSchema({
     '@type': 'Organization',
-    name: 'Printverse',
+    name: 'SynthStack',
     url: 'https://synthstack.app',
-    logo: 'https://synthstack.app/logo/printverse-logo.svg',
+    logo: 'https://synthstack.app/logo/synthstack-logo.svg',
     description: 'AI-powered 3D printing profile generator',
     foundingDate: '2024',
     founders: [{
@@ -245,9 +245,9 @@ onMounted(() => {
       url: 'https://manic.agency'
     }],
     sameAs: [
-      'https://twitter.com/printverse',
-      'https://github.com/manicinc/printverse',
-      'https://discord.gg/printverse'
+      'https://twitter.com/synthstack',
+      'https://github.com/manicinc/synthstack',
+      'https://discord.gg/synthstack'
     ]
   })
 })
@@ -445,7 +445,6 @@ onMounted(() => {
   }
 }
 </style>
-
 
 
 

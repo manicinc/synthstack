@@ -94,9 +94,9 @@
                 <h3>Discord</h3>
                 <p>Join our community</p>
                 <a
-                  href="https://discord.gg/printverse"
+                  href="https://discord.gg/synthstack"
                   target="_blank"
-                >discord.gg/printverse</a>
+                >discord.gg/synthstack</a>
               </div>
               
               <div class="info-card">
@@ -107,9 +107,9 @@
                 <h3>Twitter</h3>
                 <p>Follow for updates</p>
                 <a
-                  href="https://twitter.com/printverse"
+                  href="https://twitter.com/synthstack"
                   target="_blank"
-                >@printverse</a>
+                >@synthstack</a>
               </div>
             </div>
 

@@ -60,7 +60,7 @@ async function directusRequest(
   body?: unknown
 ): Promise<unknown> {
   const directusUrl = config.directus?.url || process.env.DIRECTUS_URL || 'http://localhost:8056';
-  const directusToken = config.directus?.token || process.env.DIRECTUS_TOKEN || 'printverse-static-admin-token-2024';
+  const directusToken = config.directus?.token || process.env.DIRECTUS_TOKEN || 'synthstack-static-admin-token-2024';
   
   const response = await fetch(`${directusUrl}${endpoint}`, {
     method,

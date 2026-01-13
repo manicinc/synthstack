@@ -184,7 +184,7 @@ spec:
             - name: CRON_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: printverse-secrets
+                  name: synthstack-secrets
                   key: cron-secret
             command:
             - /bin/sh

@@ -1,6 +1,6 @@
 # Newsletter & Analytics Integration
 
-Comprehensive newsletter management and analytics tracking for Printverse.
+Comprehensive newsletter management and analytics tracking for SynthStack.
 
 ## Newsletter Integration
 

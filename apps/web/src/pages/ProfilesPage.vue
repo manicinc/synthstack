@@ -117,7 +117,7 @@ const profiles = [
 
 onMounted(() => {
   setPageSeo({
-    title: 'Community Slicer Profiles - Download Free 3D Printing Settings | Printverse',
+    title: 'Community Slicer Profiles - Download Free 3D Printing Settings | SynthStack',
     description: 'Browse and download community-shared slicer profiles for Cura, PrusaSlicer, and OrcaSlicer. Find optimized settings for your printer.',
     keywords: ['slicer profiles', 'cura profiles download', 'prusaslicer profiles', '3d printer profiles', 'community profiles'],
     canonicalPath: '/profiles',

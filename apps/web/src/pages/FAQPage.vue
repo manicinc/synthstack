@@ -4,7 +4,7 @@
     <section class="page-hero">
       <div class="hero-content">
         <h1>Frequently Asked Questions</h1>
-        <p>Everything you need to know about Printverse.</p>
+        <p>Everything you need to know about SynthStack.</p>
       </div>
     </section>
 
@@ -116,10 +116,10 @@ const faqs = ref([
   // General
   {
     category: 'general',
-    question: 'What is Printverse?',
-    answer: `<p>Printverse is an AI-powered platform that generates optimized 3D print settings by analyzing STL geometry, correlating printer/material specifications, and producing slicer-ready profiles.</p>
-    <p>Unlike generic slicer presets, Printverse uses <strong>Retrieval-Augmented Generation (RAG)</strong> to pull from manufacturer documentation, community-validated settings, and research-backed optimal parameters.</p>
-    <p class="citation">📚 Our database contains 300+ printers and material profiles validated against real-world print outcomes. <a href="/blog/how-printverse-ai-works">Learn how our AI works →</a></p>`
+    question: 'What is SynthStack?',
+    answer: `<p>SynthStack is an AI-powered platform that generates optimized 3D print settings by analyzing STL geometry, correlating printer/material specifications, and producing slicer-ready profiles.</p>
+    <p>Unlike generic slicer presets, SynthStack uses <strong>Retrieval-Augmented Generation (RAG)</strong> to pull from manufacturer documentation, community-validated settings, and research-backed optimal parameters.</p>
+    <p class="citation">📚 Our database contains 300+ printers and material profiles validated against real-world print outcomes. <a href="/blog/how-synthstack-ai-works">Learn how our AI works →</a></p>`
   },
   {
     category: 'general',
@@ -133,7 +133,7 @@ const faqs = ref([
   },
   {
     category: 'general',
-    question: 'Do I need an account to use Printverse?',
+    question: 'Do I need an account to use SynthStack?',
     answer: `<p>No! Core functionality is <strong>completely free and requires no account</strong>. You can:</p>
     <ul><li>Upload STL/OBJ/3MF files (up to 50MB)</li><li>Generate optimized profiles</li><li>Export to all supported slicers</li></ul>
     <p>An account is only needed to save profiles, sync across devices, or access premium features like unlimited generations and API access.</p>`
@@ -154,14 +154,14 @@ const faqs = ref([
   {
     category: 'general',
     question: 'How does the AI generate settings?',
-    answer: `<p>Printverse uses a multi-stage AI pipeline:</p>
+    answer: `<p>SynthStack uses a multi-stage AI pipeline:</p>
     <ol>
       <li><strong>Geometry Analysis</strong>: Trimesh analyzes your STL for overhangs (&gt;45°), thin walls (&lt;0.8mm), bridge spans, and complexity</li>
       <li><strong>RAG Retrieval</strong>: pgvector embeddings search our knowledge base for relevant manufacturer specs and community profiles</li>
       <li><strong>LLM Generation</strong>: Claude/GPT-4o generates settings with confidence scores and citations</li>
       <li><strong>Schema Validation</strong>: Zod validates all outputs against slicer-specific schemas</li>
     </ol>
-    <p class="citation">📚 <a href="/blog/how-printverse-ai-works">Read our deep-dive on the AI architecture →</a></p>`
+    <p class="citation">📚 <a href="/blog/how-synthstack-ai-works">Read our deep-dive on the AI architecture →</a></p>`
   },
   // Profiles
   {
@@ -322,7 +322,7 @@ const faqs = ref([
   // Pricing
   {
     category: 'pricing',
-    question: 'Is Printverse free?',
+    question: 'Is SynthStack free?',
     answer: `<p><strong>Yes!</strong> Core features are completely free:</p>
     <ul>
       <li>Upload STL files up to 50MB</li>

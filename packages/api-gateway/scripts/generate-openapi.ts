@@ -69,7 +69,7 @@ function generateSummaryMarkdown(spec: any): string {
   const paths = spec.paths || {};
   const tags = spec.tags || [];
   
-  let md = `# Printverse API Documentation
+  let md = `# SynthStack API Documentation
 
 **Version:** ${spec.info?.version || '1.0.0'}
 **Base URL:** ${spec.servers?.[0]?.url || 'https://api.synthstack.app'}

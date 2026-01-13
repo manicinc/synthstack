@@ -1,5 +1,5 @@
--- SynthStack Default Admin & Demo Users
--- Migration 019: Create default owner and demo accounts
+-- SynthStack Community: Default Admin & Demo Users
+-- Migration 019: Create default admin + demo accounts (Community-safe)
 --
 -- Credentials:
 --   Admin: admin@synthstack.app / synthstack123
@@ -26,14 +26,14 @@ INSERT INTO app_users (
   'SynthStack Admin',
   true,
   true,
-  'lifetime',
+  'community',
   'active',
   NOW(),
   NOW()
 ) ON CONFLICT (email) DO UPDATE SET
   is_admin = true,
   is_moderator = true,
-  subscription_tier = 'lifetime',
+  subscription_tier = 'community',
   subscription_status = 'active',
   updated_at = NOW();
 
@@ -56,61 +56,27 @@ INSERT INTO app_users (
   'Demo User',
   false,
   false,
-  'pro',
+  'community',
   'active',
   NOW(),
   NOW()
 ) ON CONFLICT (email) DO UPDATE SET
-  subscription_tier = 'pro',
+  subscription_tier = 'community',
   subscription_status = 'active',
   updated_at = NOW();
 
 -- ============================================
--- Set edition to premium for this instance
+-- COMMUNITY EDITION: Set edition to community
 -- ============================================
 UPDATE edition_config SET
-  edition = 'premium',
+  edition = 'community',
   updated_at = NOW()
 WHERE id = (SELECT id FROM edition_config LIMIT 1);
 
 -- If no edition_config exists, create one
 INSERT INTO edition_config (edition, max_docs_indexed, max_credits_per_month)
-SELECT 'premium', 1000, 10000
+SELECT 'community', 10, 50
 WHERE NOT EXISTS (SELECT 1 FROM edition_config);
-
--- ============================================
--- Grant admin user all premium feature overrides
--- ============================================
-INSERT INTO user_feature_overrides (user_id, feature_key, is_enabled, reason)
-SELECT
-  u.id,
-  f.key,
-  true,
-  'admin_default'
-FROM app_users u
-CROSS JOIN feature_flags f
-WHERE u.email = 'admin@synthstack.app'
-  AND f.is_premium = true
-ON CONFLICT (user_id, feature_key) DO UPDATE SET
-  is_enabled = true,
-  reason = 'admin_default';
-
--- ============================================
--- Grant demo user premium feature overrides
--- ============================================
-INSERT INTO user_feature_overrides (user_id, feature_key, is_enabled, reason)
-SELECT
-  u.id,
-  f.key,
-  true,
-  'demo_account'
-FROM app_users u
-CROSS JOIN feature_flags f
-WHERE u.email = 'demo@synthstack.app'
-  AND f.is_premium = true
-ON CONFLICT (user_id, feature_key) DO UPDATE SET
-  is_enabled = true,
-  reason = 'demo_account';
 
 -- ============================================
 -- Comments

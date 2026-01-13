@@ -1,8 +1,8 @@
-# Printverse Frontend Architecture
+# SynthStack Frontend Architecture
 
 ## Overview
 
-The Printverse frontend is built with Vue 3, Quasar Framework, and TypeScript. This document provides a comprehensive guide to the architecture, patterns, and conventions used throughout the codebase.
+The SynthStack frontend is built with Vue 3, Quasar Framework, and TypeScript. This document provides a comprehensive guide to the architecture, patterns, and conventions used throughout the codebase.
 
 ## Tech Stack
 

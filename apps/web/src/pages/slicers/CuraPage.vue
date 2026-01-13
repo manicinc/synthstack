@@ -61,7 +61,7 @@
     <section class="features-section">
       <div class="container">
         <h2 class="section-title">
-          Why Use Printverse for Cura?
+          Why Use SynthStack for Cura?
         </h2>
         <div class="features-grid">
           <div class="feature-card">
@@ -263,42 +263,42 @@
         <article class="seo-article">
           <h2>Best Cura Settings for 3D Printing in 2024</h2>
           <p>
-            <strong>Ultimaker Cura</strong> is one of the most popular slicers for FDM 
-            3D printing, used by millions of makers worldwide. Getting the right 
-            <strong>Cura settings</strong> is essential for successful prints, but the 
+            <strong>Ultimaker Cura</strong> is one of the most popular slicers for FDM
+            3D printing, used by millions of makers worldwide. Getting the right
+            <strong>Cura settings</strong> is essential for successful prints, but the
             hundreds of parameters can be overwhelming.
           </p>
           <p>
-            Printverse simplifies this by using AI to generate optimized <strong>Cura 
-              profiles</strong> based on your specific model, printer, and filament. 
-            Whether you're printing with <strong>PLA</strong>, <strong>PETG</strong>, 
-            <strong>ABS</strong>, or <strong>TPU</strong>, our profiles are tuned for 
+            SynthStack simplifies this by using AI to generate optimized <strong>Cura
+              profiles</strong> based on your specific model, printer, and filament.
+            Whether you're printing with <strong>PLA</strong>, <strong>PETG</strong>,
+            <strong>ABS</strong>, or <strong>TPU</strong>, our profiles are tuned for
             each material's unique requirements.
           </p>
           <h3>Key Cura Settings Explained</h3>
           <p>
-            <strong>Layer height</strong> determines print resolution and time. A 
-            0.2mm layer height works well for most prints, while 0.1mm provides finer 
-            detail. <strong>Print speed</strong> typically ranges from 40-60mm/s for 
+            <strong>Layer height</strong> determines print resolution and time. A
+            0.2mm layer height works well for most prints, while 0.1mm provides finer
+            detail. <strong>Print speed</strong> typically ranges from 40-60mm/s for
             quality prints, with faster speeds possible on well-tuned machines.
           </p>
           <p>
-            <strong>Retraction settings</strong> are crucial for preventing stringing. 
-            Direct drive extruders typically need 0.5-2mm retraction distance, while 
-            Bowden setups may need 4-7mm. <strong>Retraction speed</strong> of 25-45mm/s 
+            <strong>Retraction settings</strong> are crucial for preventing stringing.
+            Direct drive extruders typically need 0.5-2mm retraction distance, while
+            Bowden setups may need 4-7mm. <strong>Retraction speed</strong> of 25-45mm/s
             works well for most setups.
           </p>
           <p>
-            <strong>Infill patterns</strong> like Gyroid and Cubic provide good strength 
-            with reasonable print times. <strong>Infill density</strong> of 15-20% works 
+            <strong>Infill patterns</strong> like Gyroid and Cubic provide good strength
+            with reasonable print times. <strong>Infill density</strong> of 15-20% works
             for decorative items, while functional parts may need 40-60%.
           </p>
           <h3>Compatible Printers</h3>
           <p>
-            Printverse generates Cura profiles for all major printers including 
-            <strong>Creality Ender 3</strong>, <strong>Ender 3 V2</strong>, 
-            <strong>Ender 5</strong>, <strong>CR-10</strong>, <strong>Anycubic Kobra</strong>, 
-            <strong>Artillery Sidewinder</strong>, <strong>Elegoo Neptune</strong>, 
+            SynthStack generates Cura profiles for all major printers including
+            <strong>Creality Ender 3</strong>, <strong>Ender 3 V2</strong>,
+            <strong>Ender 5</strong>, <strong>CR-10</strong>, <strong>Anycubic Kobra</strong>,
+            <strong>Artillery Sidewinder</strong>, <strong>Elegoo Neptune</strong>,
             <strong>Prusa i3 MK3S</strong>, and custom/DIY printers.
           </p>
         </article>
@@ -311,7 +311,7 @@
         <div class="cta-card">
           <h2>Ready to Optimize Your Cura Settings?</h2>
           <p>
-            Upload your STL and get a perfect Cura profile in under 30 seconds. 
+            Upload your STL and get a perfect Cura profile in under 30 seconds.
             No more trial and error—just great prints.
           </p>
           <q-btn
@@ -373,7 +373,7 @@ const popularProfiles = [
 // SEO Setup
 onMounted(() => {
   setPageSeo({
-    title: 'Cura Settings Generator - AI Cura Profile Creator | Printverse',
+    title: 'Cura Settings Generator - AI Cura Profile Creator | SynthStack',
     description: 'Generate optimized Ultimaker Cura slicer settings with AI. Get perfect Cura profiles for PLA, PETG, ABS. Supports Ender 3, Prusa, Anycubic, and 200+ printers.',
     keywords: [
       'cura settings',
@@ -428,10 +428,10 @@ onMounted(() => {
       },
       {
         '@type': 'Question',
-        name: 'What Cura version does Printverse support?',
+        name: 'What Cura version does SynthStack support?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Printverse supports Ultimaker Cura 5.x (latest version) and exports .curaprofile files that are fully compatible with Cura\'s profile import feature.'
+          text: 'SynthStack supports Ultimaker Cura 5.x (latest version) and exports .curaprofile files that are fully compatible with Cura\'s profile import feature.'
         }
       }
     ]
@@ -837,7 +837,6 @@ onMounted(() => {
   }
 }
 </style>
-
 
 
 

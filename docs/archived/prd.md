@@ -1,14 +1,14 @@
-# Printverse: AI-Powered 3D Print Settings Optimizer — Comprehensive PRD Research Report
+# SynthStack: AI-Powered 3D Print Settings Optimizer — Comprehensive PRD Research Report
 
-> For a concise version, see `PRINTVERSE_PRD.md` (kept alongside this comprehensive PRD).
+> For a concise version, see `SYNTHSTACK_PRD.md` (kept alongside this comprehensive PRD).
 
-The market for AI-powered 3D print settings optimization is **wide open**. With the closest direct competitor (3DOptimizer) now defunct, Printverse has first-mover advantage to become the definitive platform for automated print profile generation. This report synthesizes extensive research across competitive landscape, technical architecture, RAG systems, slicer formats, and go-to-market strategy to provide a production-ready product blueprint.
+The market for AI-powered 3D print settings optimization is **wide open**. With the closest direct competitor (3DOptimizer) now defunct, SynthStack has first-mover advantage to become the definitive platform for automated print profile generation. This report synthesizes extensive research across competitive landscape, technical architecture, RAG systems, slicer formats, and go-to-market strategy to provide a production-ready product blueprint.
 
 ---
 
 ## Executive summary
 
-Printverse addresses a critical unmet need in the 3D printing ecosystem: **no active tool combines AI-powered settings generation with multi-slicer export**. The competitive landscape reveals tools focused on print monitoring (SimplyPrint, Obico) or failure detection (PrintWatch), but none that analyze STL geometry, correlate printer/material specifications, and generate optimized profiles.
+SynthStack addresses a critical unmet need in the 3D printing ecosystem: **no active tool combines AI-powered settings generation with multi-slicer export**. The competitive landscape reveals tools focused on print monitoring (SimplyPrint, Obico) or failure detection (PrintWatch), but none that analyze STL geometry, correlate printer/material specifications, and generate optimized profiles.
 
 **Key strategic findings:**
 - The $7-14/month pricing is competitive—below Grammarly's $12/month and well under specialized AI tools like Jasper ($39/month)
@@ -28,7 +28,7 @@ The recommended MVP timeline is **6-8 weeks** for core functionality, with a tot
 
 The 3D print settings optimization market is fragmented, with **no dominant AI-powered solution** for consumer/prosumer users. Existing tools address adjacent problems—print farm management, failure detection, profile sharing—but none truly automate the settings generation workflow.
 
-**3DOptimizer**, historically the closest competitor, appears defunct with its domain now parked. This leaves a significant market vacuum for Printverse.
+**3DOptimizer**, historically the closest competitor, appears defunct with its domain now parked. This leaves a significant market vacuum for SynthStack.
 
 ### Current competitive players
 
@@ -42,7 +42,7 @@ The 3D print settings optimization market is fragmented, with **no dominant AI-p
 
 ### Community profile platforms lack quality control
 
-Printables, Cura Marketplace, and GitHub repositories offer community-shared profiles, but with **no validation system**. Users report spending hours "dialing in" settings because shared profiles rarely work without modification. Printverse can differentiate through:
+Printables, Cura Marketplace, and GitHub repositories offer community-shared profiles, but with **no validation system**. Users report spending hours "dialing in" settings because shared profiles rarely work without modification. SynthStack can differentiate through:
 
 - **AI settings generation** based on specific printer/material/model triangulation
 - **Community profiles with verification metrics** (print success rates, user ratings)
@@ -71,7 +71,7 @@ For a startup building RAG capabilities, **Qdrant** offers the optimal balance o
 | **pgvector** | ~$250 (Supabase) | ⚠️ Manual | ✅ PostgreSQL | SQL integration |
 | **Chroma** | Free (self) | ⚠️ Limited | ✅ Easy | Rapid prototyping |
 
-**Alternative path:** If Printverse already commits to PostgreSQL, pgvector offers a unified data layer, reducing operational complexity.
+**Alternative path:** If SynthStack already commits to PostgreSQL, pgvector offers a unified data layer, reducing operational complexity.
 
 ### Chunking strategy for technical documentation
 
@@ -84,7 +84,7 @@ Technical documentation requires specialized chunking strategies to preserve str
 | Settings parameters | Per-parameter | 15% | Granular retrieval |
 | Prose documentation | 256-512 tokens | 10% | Dense retrieval |
 
-Research shows **page-level chunking achieved highest accuracy (0.648)** with lowest variance. For Printverse's technical content, medium-sized chunks (512-1024 tokens) perform optimally.
+Research shows **page-level chunking achieved highest accuracy (0.648)** with lowest variance. For SynthStack's technical content, medium-sized chunks (512-1024 tokens) perform optimally.
 
 ### Embedding model recommendation
 
@@ -378,7 +378,7 @@ The $7/month entry point is **competitive and well-positioned**—below Grammarl
 
 **Conversion optimization:**
 - Trigger upgrade prompts when users hit daily limit during a project
-- Show "powered by Printverse" watermark on free exports
+- Show "powered by SynthStack" watermark on free exports
 - Clear value demonstration before hitting paywall
 
 ### API pricing
@@ -546,19 +546,19 @@ Implement **differential privacy** for aggregated telemetry—add noise, enforce
 
 ### Business
 - **Enterprise pricing**: What would print farms or manufacturers pay for fleet management?
-- **Hardware integration**: Could Printverse partner with printer manufacturers for native integration?
+- **Hardware integration**: Could SynthStack partner with printer manufacturers for native integration?
 - **Training data**: Can user feedback improve recommendations without violating privacy?
 
 ### Product
 - **Failure prediction**: Beyond settings, can AI predict likely failure modes pre-print?
-- **G-code generation**: Should Printverse eventually become a full slicer replacement?
+- **G-code generation**: Should SynthStack eventually become a full slicer replacement?
 - **Physical validation**: How to verify AI-recommended settings actually work?
 
 ---
 
 ## Competitive analysis matrix
 
-| Feature | Printverse (Planned) | SimplyPrint | Obico | 3DOptimizer (defunct) | Cura Marketplace |
+| Feature | SynthStack (Planned) | SimplyPrint | Obico | 3DOptimizer (defunct) | Cura Marketplace |
 |---------|---------------------|-------------|-------|----------------------|------------------|
 | AI settings generation | ✅ | ❌ | ❌ | ✅ (limited) | ❌ |
 | STL complexity analysis | ✅ | Basic | ❌ | ❌ | ❌ |
@@ -573,7 +573,7 @@ Implement **differential privacy** for aggregated telemetry—add noise, enforce
 
 ## Conclusion
 
-Printverse enters a market with genuine unmet demand and no active direct competitor. The technical architecture is well-defined: Vue 3 + Quasar frontend, hybrid Node.js/Python backend, PostgreSQL with pgvector for RAG, and Cloudflare R2 for cost-effective file storage.
+SynthStack enters a market with genuine unmet demand and no active direct competitor. The technical architecture is well-defined: Vue 3 + Quasar frontend, hybrid Node.js/Python backend, PostgreSQL with pgvector for RAG, and Cloudflare R2 for cost-effective file storage.
 
 **Three critical success factors:**
 
@@ -581,4 +581,4 @@ Printverse enters a market with genuine unmet demand and no active direct compet
 2. **Community network effects**: Build the definitive database of validated printer/filament profiles
 3. **Speed to market**: 8-week MVP timeline captures first-mover advantage before incumbents add AI features
 
-The $7-14/month pricing is appropriately positioned for the prosumer market. With careful execution, Printverse can become the authoritative platform for 3D print optimization—filling a gap the community has struggled with for years.
+The $7-14/month pricing is appropriately positioned for the prosumer market. With careful execution, SynthStack can become the authoritative platform for 3D print optimization—filling a gap the community has struggled with for years.

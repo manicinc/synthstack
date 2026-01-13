@@ -320,7 +320,7 @@ const { setPageSeo } = useSeo()
 
 onMounted(() => {
   setPageSeo({
-    title: '3D Printing Guides & Tutorials | Printverse',
+    title: '3D Printing Guides & Tutorials | SynthStack',
     description: 'Master 3D printing with comprehensive guides on layer height, retraction, filaments, troubleshooting, and printer calibration. Free tutorials for beginners to advanced.',
     keywords: [
       '3d printing guides',

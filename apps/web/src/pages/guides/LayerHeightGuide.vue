@@ -266,7 +266,7 @@
           <section class="guide-cta">
             <h2>Let AI Choose Your Layer Height</h2>
             <p>
-              Printverse analyzes your model geometry and automatically selects the optimal 
+              SynthStack analyzes your model geometry and automatically selects the optimal
               layer height based on detail requirements and print time goals.
             </p>
             <q-btn
@@ -291,7 +291,7 @@ const { setPageSeo, setHowToSeo, addSchema } = useSeo()
 
 onMounted(() => {
   setPageSeo({
-    title: 'Layer Height Guide - Choose the Right Resolution | Printverse',
+    title: 'Layer Height Guide - Choose the Right Resolution | SynthStack',
     description: 'Complete guide to layer height in 3D printing. Learn how to choose between 0.1mm, 0.2mm, 0.3mm and when to use each for quality, speed, or strength.',
     keywords: [
       'layer height',
@@ -331,7 +331,7 @@ onMounted(() => {
     '@type': 'Article',
     headline: 'Layer Height Explained: The Complete Guide',
     description: 'Comprehensive guide to choosing layer height for 3D printing',
-    author: { '@type': 'Organization', name: 'Printverse' },
+    author: { '@type': 'Organization', name: 'SynthStack' },
     datePublished: '2024-12-01',
     dateModified: '2024-12-05'
   })
@@ -595,7 +595,6 @@ onMounted(() => {
   }
 }
 </style>
-
 
 
 

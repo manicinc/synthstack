@@ -18,7 +18,7 @@
  * const { setPageSeo, setArticleSeo, setProductSeo } = useSeo()
  * 
  * setPageSeo({
- *   title: 'Best 3D Printer Settings | Printverse',
+ *   title: 'Best 3D Printer Settings | SynthStack',
  *   description: 'Generate optimized slicer profiles...',
  *   keywords: ['3d printing', 'slicer settings']
  * })
@@ -34,7 +34,7 @@ const BASE_URL = 'https://synthstack.app'
 const ORGANIZATION_SCHEMA = {
   '@type': 'Organization',
   '@id': `${BASE_URL}/#organization`,
-  name: 'Printverse',
+  name: 'SynthStack',
   url: BASE_URL,
   logo: {
     '@type': 'ImageObject',
@@ -43,11 +43,11 @@ const ORGANIZATION_SCHEMA = {
     height: 512
   },
   sameAs: [
-    'https://twitter.com/printverse',
-    'https://github.com/manicinc/printverse',
-    'https://discord.gg/printverse',
-    'https://www.youtube.com/@printverse',
-    'https://www.reddit.com/r/printverse',
+    'https://twitter.com/synthstack',
+    'https://github.com/manicinc/synthstack',
+    'https://discord.gg/synthstack',
+    'https://www.youtube.com/@synthstack',
+    'https://www.reddit.com/r/synthstack',
     'https://manic.agency'
   ],
   contactPoint: {
@@ -67,7 +67,7 @@ const WEBSITE_SCHEMA = {
   '@type': 'WebSite',
   '@id': `${BASE_URL}/#website`,
   url: BASE_URL,
-  name: 'Printverse',
+  name: 'SynthStack',
   description: 'AI-powered 3D printing profile generator for Cura, PrusaSlicer, OrcaSlicer, and more',
   publisher: { '@id': `${BASE_URL}/#organization` },
   potentialAction: {
@@ -218,35 +218,35 @@ export function useSeo() {
       }))
     }
   }
-  
+
   /**
    * Sets comprehensive page SEO
    */
   function setPageSeo(options: PageSeoOptions) {
     // Clear previous schemas
     clearSchemas()
-    
+
     // Set title
-    const fullTitle = options.title.includes('Printverse') 
-      ? options.title 
-      : `${options.title} | Printverse`
+    const fullTitle = options.title.includes('SynthStack')
+      ? options.title
+      : `${options.title} | SynthStack`
     setTitle(fullTitle)
-    
+
     // Set meta description
     setMeta('description', options.description)
     setMeta('og:description', options.description, true)
     setMeta('twitter:description', options.description)
-    
+
     // Set keywords
     if (options.keywords?.length) {
       setMeta('keywords', options.keywords.join(', '))
     }
-    
+
     // Set canonical
     if (options.canonicalPath) {
       setCanonical(options.canonicalPath)
     }
-    
+
     // Set robots
     const robotsDirectives: string[] = []
     if (options.noIndex) robotsDirectives.push('noindex')
@@ -259,7 +259,7 @@ export function useSeo() {
     
     // Set Open Graph
     setMeta('og:type', options.ogType || 'website', true)
-    setMeta('og:site_name', 'Printverse', true)
+    setMeta('og:site_name', 'SynthStack', true)
     setMeta('og:locale', 'en_US', true)
     
     if (options.ogImage) {
@@ -274,8 +274,8 @@ export function useSeo() {
     
     // Set Twitter Card
     setMeta('twitter:card', 'summary_large_image')
-    setMeta('twitter:site', '@printverse')
-    setMeta('twitter:creator', '@printverse')
+    setMeta('twitter:site', '@synthstack')
+    setMeta('twitter:creator', '@synthstack')
     
     // Add base schemas
     addSchema(ORGANIZATION_SCHEMA)
@@ -428,12 +428,12 @@ export function useSeo() {
   }
   
   /**
-   * Sets SEO for software application (the Printverse app itself)
+   * Sets SEO for software application (the SynthStack app itself)
    */
   function setSoftwareAppSeo() {
     addSchema({
       '@type': 'SoftwareApplication',
-      name: 'Printverse',
+      name: 'SynthStack',
       applicationCategory: 'DesignApplication',
       operatingSystem: 'Web',
       offers: {

@@ -1,9 +1,32 @@
+FROM node:20-alpine AS extensions-builder
+
+WORKDIR /build
+
+RUN apk add --no-cache python3 make g++ git
+
+# Build all Directus extensions into dist/
+COPY extensions ./extensions
+RUN set -e; \
+  find ./extensions -type d -name node_modules -prune -o -type f -name package.json -print | while read -r pkg; do \
+    dir="$$(dirname "$$pkg")"; \
+    echo "Building Directus extension: $$dir"; \
+    cd "$$dir"; \
+    if [ -f package-lock.json ]; then \
+      npm ci --no-audit --no-fund; \
+    else \
+      npm install --no-audit --no-fund; \
+    fi; \
+    npm run build; \
+    cd /build; \
+  done; \
+  find ./extensions -type d -name node_modules -prune -exec rm -rf '{}' +;
+
 FROM directus/directus:11.3.5
 
 USER root
 
-# Copy custom extensions (with pre-built dist/)
-COPY extensions /directus/extensions
+# Copy built extensions
+COPY --from=extensions-builder /build/extensions /directus/extensions
 
 # Copy public assets for branding (logo, favicon)
 COPY public /directus/public

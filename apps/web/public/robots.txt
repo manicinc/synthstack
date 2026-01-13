@@ -1,4 +1,4 @@
-# robots.txt for Printverse
+# robots.txt for SynthStack
 # https://synthstack.app
 
 # Allow all search engines

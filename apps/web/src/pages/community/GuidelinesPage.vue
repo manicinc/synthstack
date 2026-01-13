@@ -9,7 +9,7 @@
         />
         <h1>Community Guidelines</h1>
         <p class="subtitle">
-          Help us keep Printverse a welcoming place for all makers
+          Help us keep SynthStack a welcoming place for all makers
         </p>
       </div>
 

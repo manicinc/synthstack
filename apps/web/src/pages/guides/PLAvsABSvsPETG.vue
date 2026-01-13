@@ -386,7 +386,7 @@
           <section class="guide-cta">
             <h2>Get Perfect Settings for Any Filament</h2>
             <p>
-              Tell Printverse your filament type and we'll generate optimized settings 
+              Tell SynthStack your filament type and we'll generate optimized settings
               for your specific printer and model.
             </p>
             <q-btn
@@ -411,7 +411,7 @@ const { setPageSeo, addSchema } = useSeo()
 
 onMounted(() => {
   setPageSeo({
-    title: 'PLA vs PETG vs ABS: Complete Filament Comparison 2024 | Printverse',
+    title: 'PLA vs PETG vs ABS: Complete Filament Comparison 2024 | SynthStack',
     description: 'Compare PLA, PETG, and ABS filaments. Learn about strength, temperature resistance, printing difficulty, and which is best for your project.',
     keywords: [
       'pla vs petg',
@@ -438,7 +438,7 @@ onMounted(() => {
     '@type': 'Article',
     headline: 'PLA vs PETG vs ABS: Complete Filament Comparison',
     description: 'Comprehensive comparison of the three most popular 3D printing filaments',
-    author: { '@type': 'Organization', name: 'Printverse' },
+    author: { '@type': 'Organization', name: 'SynthStack' },
     datePublished: '2024-12-01',
     dateModified: '2024-12-05',
     about: [
@@ -594,7 +594,6 @@ onMounted(() => {
   }
 }
 </style>
-
 
 
 

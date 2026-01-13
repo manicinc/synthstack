@@ -140,7 +140,7 @@ const { setPageSeo } = useSeo()
 
 onMounted(() => {
   setPageSeo({
-    title: 'Bambu Studio Settings Generator - AI Profile Creator | Printverse',
+    title: 'Bambu Studio Settings Generator - AI Profile Creator | SynthStack',
     description: 'Generate optimized Bambu Studio settings for X1 Carbon, P1P, P1S, and A1 printers. Perfect AMS multi-color profiles with AI.',
     keywords: [
       'bambu studio settings',

@@ -67,14 +67,14 @@
           <div class="mission-text">
             <h2>Our Mission</h2>
             <p>
-              We believe every maker deserves perfect prints without the frustration 
-              of endless calibration and failed attempts. Printverse uses cutting-edge 
-              AI to analyze your models and generate optimized slicer profiles that 
+              We believe every maker deserves perfect prints without the frustration
+              of endless calibration and failed attempts. SynthStack uses cutting-edge
+              AI to analyze your models and generate optimized slicer profiles that
               work the first time.
             </p>
             <p>
-              Founded in 2024 by a team of 3D printing enthusiasts and machine learning 
-              engineers, we've helped generate over 50,000 successful print profiles 
+              Founded in 2024 by a team of 3D printing enthusiasts and machine learning
+              engineers, we've helped generate over 50,000 successful print profiles
               for makers around the world.
             </p>
           </div>

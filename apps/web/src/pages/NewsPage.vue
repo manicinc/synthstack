@@ -4,7 +4,7 @@
     <section class="page-hero">
       <div class="hero-content">
         <h1>News & Updates</h1>
-        <p>The latest from Printverse—features, announcements, and more.</p>
+        <p>The latest from SynthStack—features, announcements, and more.</p>
       </div>
     </section>
 
@@ -125,8 +125,8 @@ const news = ref([
     day: '15',
     year: '2024',
     type: 'Announcement',
-    title: 'Printverse Beta is Live!',
-    description: 'After months of development and testing, we\'re excited to open Printverse to everyone. Generate your first profile today!'
+    title: 'SynthStack Beta is Live!',
+    description: 'After months of development and testing, we\'re excited to open SynthStack to everyone. Generate your first profile today!'
   },
   {
     id: 5,

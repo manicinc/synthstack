@@ -1,4 +1,4 @@
--- Printverse Admin Extensions Migration
+-- SynthStack Admin Extensions Migration
 -- User management, community moderation, and analytics tables
 
 -- ============================================

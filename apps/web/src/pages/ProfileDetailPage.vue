@@ -104,7 +104,7 @@ onMounted(() => {
   }
   
   setPageSeo({
-    title: `${profile.value.name} - Slicer Profile | Printverse`,
+    title: `${profile.value.name} - Slicer Profile | SynthStack`,
     description: profile.value.description,
     canonicalPath: `/profiles/${id}`,
     breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Profiles', url: '/profiles' }, { name: profile.value.name, url: `/profiles/${id}` }]

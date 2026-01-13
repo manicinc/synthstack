@@ -57,7 +57,7 @@ const API_BASE_URL = (() => {
 })()
 
 /**
- * Creates an axios instance configured for the Printverse API
+ * Creates an axios instance configured for the SynthStack API
  */
 const createApiClient = () => {
   const client = axios.create({

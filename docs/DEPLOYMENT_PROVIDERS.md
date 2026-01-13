@@ -714,7 +714,7 @@ To migrate SynthStack from one provider to another:
 ssh root@OLD_SERVER_IP
 
 # Backup database
-docker exec printverse-postgres pg_dump -U synthstack synthstack > /tmp/backup.sql
+docker exec synthstack-postgres pg_dump -U synthstack synthstack > /tmp/backup.sql
 
 # Backup uploaded files (if using local storage)
 tar -czf /tmp/uploads.tar.gz /opt/synthstack/uploads
@@ -875,7 +875,7 @@ dig synthstack.app NS +short
 
 ```bash
 # Check Traefik logs
-docker logs printverse-traefik
+docker logs synthstack-traefik
 
 # Common errors:
 # - DNS not pointing to server

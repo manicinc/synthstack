@@ -99,7 +99,7 @@ SMTP_PORT=587
 SMTP_USER=your-email@gmail.com
 SMTP_PASSWORD=your-app-password
 SMTP_FROM_EMAIL=noreply@synthstack.app
-SMTP_FROM_NAME=Printverse
+SMTP_FROM_NAME=SynthStack
 SMTP_SECURE=false
 
 # Redis (for queue)
@@ -720,4 +720,4 @@ For issues:
 
 **Email Service Version:** 1.0.0  
 **Last Updated:** December 2024  
-**Maintained by:** Printverse Team
+**Maintained by:** SynthStack Team

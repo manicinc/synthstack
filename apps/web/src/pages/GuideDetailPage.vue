@@ -103,7 +103,7 @@
           </div>
           <div class="cta-box">
             <h3>Skip the Manual Configuration</h3>
-            <p>Let Printverse AI generate these settings for your specific model automatically.</p>
+            <p>Let SynthStack AI generate these settings for your specific model automatically.</p>
             <q-btn
               label="Try Free Generation"
               color="accent"

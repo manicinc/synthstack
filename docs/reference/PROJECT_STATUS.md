@@ -269,7 +269,7 @@ OVERALL PROGRESS:   ████████████████░░░░
 ## 🏗️ File Structure Overview
 
 ```
-printverse/
+synthstack/
 ├── apps/
 │   └── web/                         # Vue 3 + Quasar Frontend
 │       ├── src/

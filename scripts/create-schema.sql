@@ -1,4 +1,4 @@
--- Printverse Database Schema
+-- SynthStack Database Schema
 -- Comprehensive schema with pricing, credits, community features
 
 -- Enable UUID extension

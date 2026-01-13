@@ -60,7 +60,7 @@
     <section class="features-section">
       <div class="container">
         <h2 class="section-title">
-          Why Use Printverse for PrusaSlicer?
+          Why Use SynthStack for PrusaSlicer?
         </h2>
         <div class="features-grid">
           <div class="feature-card">
@@ -220,7 +220,7 @@
           <p>
             Getting optimal <strong>PrusaSlicer settings</strong> requires understanding 
             the relationship between print quality, speed, and material properties. 
-            Printverse analyzes your specific model to determine the best balance.
+            SynthStack analyzes your specific model to determine the best balance.
           </p>
           <h3>PrusaSlicer vs Cura</h3>
           <p>
@@ -279,7 +279,7 @@ const { setPageSeo, addSchema } = useSeo()
 
 onMounted(() => {
   setPageSeo({
-    title: 'PrusaSlicer Settings Generator - AI Profile Creator | Printverse',
+    title: 'PrusaSlicer Settings Generator - AI Profile Creator | SynthStack',
     description: 'Generate optimized PrusaSlicer settings with AI. Perfect profiles for Prusa MK4, MK3S+, Mini+, XL, Voron, and compatible printers. Export as 3MF with all settings.',
     keywords: [
       'prusaslicer settings',

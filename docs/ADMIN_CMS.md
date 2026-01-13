@@ -1,8 +1,8 @@
-# Printverse Admin CMS Documentation
+# SynthStack Admin CMS Documentation
 
 ## Overview
 
-The Printverse Admin CMS is built on [Directus](https://directus.io/), providing a comprehensive internal management system for content, users, moderation, and analytics. This document covers the architecture, collections, flows, and testing infrastructure.
+The SynthStack Admin CMS is built on [Directus](https://directus.io/), providing a comprehensive internal management system for content, users, moderation, and analytics. This document covers the architecture, collections, flows, and testing infrastructure.
 
 ## Architecture
 
@@ -315,10 +315,10 @@ Migrations are located in `services/directus/migrations/`:
 ### Running Migrations
 ```bash
 # Via Docker
-docker exec printverse-postgres psql -U postgres -d printverse -f /docker-entrypoint-initdb.d/002_admin_extensions.sql
+docker exec synthstack-postgres psql -U postgres -d synthstack -f /docker-entrypoint-initdb.d/002_admin_extensions.sql
 
 # Or locally with psql
-psql -U postgres -d printverse -f services/directus/migrations/002_admin_extensions.sql
+psql -U postgres -d synthstack -f services/directus/migrations/002_admin_extensions.sql
 ```
 
 ## Security
@@ -367,10 +367,10 @@ psql -U postgres -d printverse -f services/directus/migrations/002_admin_extensi
 docker ps | grep directus
 
 # View logs
-docker logs printverse-directus
+docker logs synthstack-directus
 
 # Restart container
-docker restart printverse-directus
+docker restart synthstack-directus
 ```
 
 ### Sync Issues

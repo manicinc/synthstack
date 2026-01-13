@@ -1,4 +1,4 @@
--- Printverse Directus Schema Migration
+-- SynthStack Directus Schema Migration
 -- Initial schema setup for printers, filaments, and profiles
 
 -- Enable UUID extension

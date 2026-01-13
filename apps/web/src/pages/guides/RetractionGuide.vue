@@ -250,7 +250,7 @@
           <section class="guide-cta">
             <h2>Auto-Tune Your Retraction</h2>
             <p>
-              Printverse automatically sets retraction based on your extruder type, filament, 
+              SynthStack automatically sets retraction based on your extruder type, filament,
               and print speed. No more guessing.
             </p>
             <q-btn
@@ -275,7 +275,7 @@ const { setPageSeo, setHowToSeo } = useSeo()
 
 onMounted(() => {
   setPageSeo({
-    title: 'Retraction Settings Guide - Fix Stringing Forever | Printverse',
+    title: 'Retraction Settings Guide - Fix Stringing Forever | SynthStack',
     description: 'Master retraction settings to eliminate stringing and oozing. Learn optimal retraction distance and speed for direct drive and Bowden extruders.',
     keywords: [
       'retraction settings',
@@ -352,7 +352,6 @@ onMounted(() => {
   }
 }
 </style>
-
 
 
 

@@ -10,7 +10,7 @@
         <div class="hero-badge">
           We're Hiring!
         </div>
-        <h1>Join the Printverse Team</h1>
+        <h1>Join the SynthStack Team</h1>
         <p class="subtitle">
           Help us revolutionize 3D printing with AI. We're looking for passionate 
           makers, engineers, and creators to join our mission.
@@ -22,7 +22,7 @@
     <section class="perks-section">
       <div class="container">
         <h2 class="section-title">
-          Why Printverse?
+          Why SynthStack?
         </h2>
         <div class="perks-grid">
           <div class="perk-card">
@@ -124,7 +124,7 @@
           <h2>Don't see your role?</h2>
           <p>
             We're always looking for talented people. Send us your resume and tell us 
-            how you can contribute to Printverse.
+            how you can contribute to SynthStack.
           </p>
           <q-btn
             label="Send General Application"
@@ -172,11 +172,11 @@ const openPositions = [
 // SEO
 onMounted(() => {
   setPageSeo({
-    title: 'Careers - Join the Printverse Team | Printverse',
-    description: 'Join Printverse and help revolutionize 3D printing with AI. View open positions in engineering, ML, design, and marketing. Remote-first culture.',
+    title: 'Careers - Join the SynthStack Team | SynthStack',
+    description: 'Join SynthStack and help revolutionize 3D printing with AI. View open positions in engineering, ML, design, and marketing. Remote-first culture.',
     keywords: [
-      'printverse careers',
-      'printverse jobs',
+      'synthstack careers',
+      'synthstack jobs',
       '3d printing jobs',
       'ai ml jobs',
       'remote engineering jobs',
@@ -194,7 +194,7 @@ onMounted(() => {
     addSchema({
       '@type': 'JobPosting',
       title: job.title,
-      description: `${job.title} position at Printverse`,
+      description: `${job.title} position at SynthStack`,
       employmentType: job.type === 'Full-time' ? 'FULL_TIME' : 'PART_TIME',
       jobLocation: {
         '@type': 'Place',
@@ -206,7 +206,7 @@ onMounted(() => {
       jobLocationType: 'TELECOMMUTE',
       hiringOrganization: {
         '@type': 'Organization',
-        name: 'Printverse',
+        name: 'SynthStack',
         sameAs: 'https://synthstack.app'
       }
     })

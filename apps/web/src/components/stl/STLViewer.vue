@@ -174,7 +174,7 @@ const loadModel = async () => {
 
     // Material
     const material = new THREE.MeshStandardMaterial({ 
-      color: props.color || 0xff6b35, // Printverse orange
+      color: props.color || 0xff6b35, // SynthStack orange
       metalness: 0.2,
       roughness: 0.5,
     })

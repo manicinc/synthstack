@@ -1,8 +1,8 @@
-# Stripe Integration Plan for Printverse
+# Stripe Integration Plan for SynthStack
 
 ## Overview
 
-This document outlines the comprehensive plan for integrating Stripe payments with Printverse, including user authentication via Supabase, subscription management, and credit-based usage.
+This document outlines the comprehensive plan for integrating Stripe payments with SynthStack, including user authentication via Supabase, subscription management, and credit-based usage.
 
 ## Architecture
 
