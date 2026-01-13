@@ -4,10 +4,12 @@ Welcome to the SynthStack documentation hub. Find everything you need to build, 
 
 ## Getting Started
 
-- [Quick Start](../QUICK_START.md) - Get running locally in 5 minutes
+- [Quick Start](./QUICK_START.md) - Get running locally in 5 minutes
+- [FAQ](./FAQ.md) - Common questions and answers
+- [Troubleshooting](./TROUBLESHOOTING.md) - Fix common setup and runtime issues
 - [Deployment Quick Start](./DEPLOYMENT_QUICK_START.md) - Deploy to production in 30 minutes
 - [Setup Checklist](./SETUP_CHECKLIST.md) - Production deployment checklist
-- [Deployment Guide](../DEPLOYMENT_GUIDE.md) - Complete self-hosting guide
+- [Deployment Guide](./DEPLOYMENT_GUIDE.md) - Complete self-hosting guide
 
 ## Features
 
@@ -80,7 +82,7 @@ Welcome to the SynthStack documentation hub. Find everything you need to build, 
 
 ## Design & Branding
 
-- [Design System](../DESIGN_SYSTEM.md) - UI/UX guidelines
+- [Design System](./DESIGN_SYSTEM.md) - UI/UX guidelines
 - [White Label](./WHITE_LABEL.md) - Customization guide
 - [Pricing & Features](./PRICING_AND_FEATURES.md) - Billing configuration
 - [SEO Optimization](./SEO_OPTIMIZATION.md) - Search engine optimization
@@ -96,7 +98,7 @@ Welcome to the SynthStack documentation hub. Find everything you need to build, 
 
 - [License FAQ](./LICENSE-FAQ.md) - Common licensing questions
 - [Commercial License](../COMMERCIAL-LICENSE.md) - Commercial use terms
-- [MIT License](../LICENSE) - Open source license
+- [Community License](../LICENSE) - Modified MIT (non-commercial) terms
 
 ## Historical Documents
 

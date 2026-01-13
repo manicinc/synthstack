@@ -10,6 +10,7 @@ import { devLog, devWarn, devError, logError } from '@/utils/devLogger'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import hljs from 'highlight.js/lib/core'
+import { docsNavigation, flattenNavigation } from '@/config/docs-navigation'
 
 // Import languages for syntax highlighting
 import javascript from 'highlight.js/lib/languages/javascript'
@@ -60,6 +61,136 @@ export interface DocHeading {
   id: string
   text: string
   level: number
+}
+
+function normalizeDocsFilePath(file: string): string {
+  return (file || '').replace(/\\/g, '/').replace(/^\.\/+/, '').replace(/^\/+/, '')
+}
+
+function dirnamePosix(posixPath: string): string {
+  const normalized = (posixPath || '').replace(/\\/g, '/')
+  const index = normalized.lastIndexOf('/')
+  if (index === -1) return ''
+  return normalized.slice(0, index)
+}
+
+function normalizePosixPath(inputPath: string): string {
+  const raw = (inputPath || '').replace(/\\/g, '/')
+  const isAbsolute = raw.startsWith('/')
+  const segments = raw.split('/').filter((segment) => segment !== '' && segment !== '.')
+  const stack: string[] = []
+
+  for (const segment of segments) {
+    if (segment === '..') {
+      if (stack.length > 0 && stack[stack.length - 1] !== '..') {
+        stack.pop()
+      } else {
+        stack.push('..')
+      }
+      continue
+    }
+    stack.push(segment)
+  }
+
+  const normalized = stack.join('/')
+  return isAbsolute ? `/${normalized}` : normalized
+}
+
+const DOCS_FILE_TO_NAV_SLUG = (() => {
+  const map = new Map<string, string>()
+  const flat = flattenNavigation(docsNavigation)
+  for (const item of flat) {
+    if (item.source === 'markdown' && item.file) {
+      map.set(normalizeDocsFilePath(item.file), item.slug)
+    }
+  }
+  return map
+})()
+
+function githubRepoBaseUrl(): string | null {
+  const edition = (import.meta.env.VITE_SYNTHSTACK_EDITION as string | undefined) || 'community'
+  const envRepo = (import.meta.env.VITE_GITHUB_REPO_URL as string | undefined) || ''
+  const repoFromEdition = edition.toLowerCase() === 'community'
+    ? 'https://github.com/manicinc/synthstack'
+    : 'https://github.com/manicinc/synthstack-pro'
+
+  const chosen = (envRepo || repoFromEdition).replace(/\/+$/, '')
+  return chosen ? chosen : null
+}
+
+function githubDefaultBranch(): string {
+  return ((import.meta.env.VITE_GITHUB_DEFAULT_BRANCH as string | undefined) || 'main').trim() || 'main'
+}
+
+function githubBlobBaseUrl(): string | null {
+  const repo = githubRepoBaseUrl()
+  if (!repo) return null
+  return `${repo}/blob/${githubDefaultBranch()}`
+}
+
+let currentDocsFilenameForLinkResolution: string | null = null
+
+function resolveRepoPathFromHref(pathPart: string, currentFilename: string | null): string | null {
+  if (!pathPart) return null
+  if (pathPart.startsWith('/')) return null
+
+  const normalizedCurrent = currentFilename ? normalizeDocsFilePath(currentFilename) : ''
+  const baseRepoPath = normalizedCurrent ? `docs/${normalizedCurrent}` : 'docs'
+  const baseRepoDir = dirnamePosix(baseRepoPath) || 'docs'
+
+  const resolved = normalizePosixPath(`${baseRepoDir}/${pathPart}`)
+  if (!resolved || resolved.startsWith('..')) return null
+  return resolved
+}
+
+function toDocsRouteFromMarkdownLink(href: string): string | null {
+  if (!href) return null
+  if (href.startsWith('#')) return href
+  if (href.startsWith('/docs/')) return href
+  if (href.startsWith('http') || href.startsWith('//') || href.startsWith('mailto:') || href.startsWith('tel:')) return null
+
+  const [pathPart, hashPart] = href.split('#')
+  if (!pathPart.toLowerCase().endsWith('.md')) return null
+
+  const repoPath = resolveRepoPathFromHref(pathPart, currentDocsFilenameForLinkResolution)
+  if (!repoPath || !repoPath.startsWith('docs/')) return null
+
+  const docsPath = repoPath.replace(/^docs\//, '')
+  if (!docsPath.toLowerCase().endsWith('.md')) return null
+
+  const navSlug = DOCS_FILE_TO_NAV_SLUG.get(normalizeDocsFilePath(docsPath))
+  const slug = (navSlug || docsPath)
+    .replace(/\.md$/i, '')
+    .toLowerCase()
+    .replace(/[_/]/g, '-')
+
+  if (!slug) return null
+
+  const hash = hashPart ? `#${hashPart}` : ''
+  return `/docs/${slug}${hash}`
+}
+
+function toGitHubUrlFromMarkdownLink(href: string): string | null {
+  if (!href) return null
+  if (href.startsWith('#')) return null
+  if (href.startsWith('/')) return null
+  if (href.startsWith('http') || href.startsWith('//') || href.startsWith('mailto:') || href.startsWith('tel:')) return null
+
+  const [pathPart, hashPart] = href.split('#')
+  if (!pathPart) return null
+
+  const repoPath = resolveRepoPathFromHref(pathPart, currentDocsFilenameForLinkResolution)
+  if (!repoPath) return null
+
+  const blobBase = githubBlobBaseUrl()
+  if (!blobBase) return null
+
+  const hash = hashPart ? `#${hashPart}` : ''
+  return `${blobBase}/${repoPath}${hash}`
+}
+
+function resolveMarkdownLinkHref(href: string): string | null {
+  return toDocsRouteFromMarkdownLink(href) || toGitHubUrlFromMarkdownLink(href)
 }
 
 /**
@@ -124,10 +255,11 @@ function configureMarked() {
   // Custom link renderer to open external links in new tab
   renderer.link = function ({ href, title, tokens }: { href: string; title?: string | null; tokens: unknown[] }): string {
     const text = tokens.map((t: unknown) => (t as { raw?: string }).raw || '').join('')
-    const isExternal = href.startsWith('http') || href.startsWith('//')
+    const resolvedHref = resolveMarkdownLinkHref(href) || href
+    const isExternal = resolvedHref.startsWith('http') || resolvedHref.startsWith('//')
     const attrs = isExternal ? ' target="_blank" rel="noopener noreferrer"' : ''
     const titleAttr = title ? ` title="${title}"` : ''
-    return `<a href="${href}"${titleAttr}${attrs}>${text}</a>`
+    return `<a href="${resolvedHref}"${titleAttr}${attrs}>${text}</a>`
   }
 
   marked.setOptions({
@@ -177,7 +309,10 @@ function extractTitle(markdown: string): string {
 /**
  * Render markdown to sanitized HTML
  */
-function renderMarkdown(content: string): string {
+function renderMarkdown(content: string, options: { filename?: string | null } = {}): string {
+  const previousFilename = currentDocsFilenameForLinkResolution
+  currentDocsFilenameForLinkResolution = options.filename ? normalizeDocsFilePath(options.filename) : null
+
   try {
     const html = marked.parse(content) as string
     return DOMPurify.sanitize(html, {
@@ -187,16 +322,27 @@ function renderMarkdown(content: string): string {
         'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
         'table', 'thead', 'tbody', 'tr', 'th', 'td',
         'img', 'hr', 'div', 'span', 'button',
-        'dl', 'dt', 'dd', 'sup', 'sub'
+        'dl', 'dt', 'dd', 'sup', 'sub', 'kbd',
+        'details', 'summary',
+        'figure', 'figcaption',
+        'iframe',
+        'video', 'source'
       ],
       ALLOWED_ATTR: [
         'href', 'target', 'rel', 'class', 'id',
         'src', 'alt', 'title', 'width', 'height',
-        'data-code', 'colspan', 'rowspan'
+        'data-code', 'colspan', 'rowspan',
+        // iframe
+        'allow', 'allowfullscreen', 'frameborder', 'loading', 'referrerpolicy', 'sandbox',
+        // video
+        'controls', 'autoplay', 'muted', 'loop', 'playsinline', 'poster', 'preload', 'type'
       ],
+      ALLOWED_URI_REGEXP: /^(?:(?:https?:)?\/\/|\/|#|mailto:|tel:)/i,
     })
   } catch {
     return '<p class="error">Failed to render content</p>'
+  } finally {
+    currentDocsFilenameForLinkResolution = previousFilename
   }
 }
 
@@ -220,15 +366,16 @@ export function useDocs() {
         `/docs/${encodeURIComponent(filename)}`
       )
 
-      if (!response) {
-        throw new Error('Document not found')
-      }
+	      if (!response) {
+	        throw new Error('Document not found')
+	      }
 
-      const content = response.content
-      const html = renderMarkdown(content)
-      const headings = extractHeadings(content)
-      const title = extractTitle(content)
-      const slug = filename.replace('.md', '').toLowerCase().replace(/_/g, '-')
+	      const sourceFilename = response.filename || filename
+	      const content = response.content
+	      const html = renderMarkdown(content, { filename: sourceFilename })
+	      const headings = extractHeadings(content)
+	      const title = extractTitle(content)
+	      const slug = sourceFilename.replace(/\.md$/i, '').toLowerCase().replace(/[_/]/g, '-')
 
       const doc: DocContent = {
         title,

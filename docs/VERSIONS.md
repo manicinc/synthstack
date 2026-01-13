@@ -11,7 +11,7 @@ SynthStack is available in two versions built from the same codebase using featu
 | Invoicing & Billing | ✅ | ✅ |
 | Stripe Integration | ✅ | ✅ |
 | ML Services (NLP, RAG, etc.) | ✅ | ✅ |
-| Node-RED Workflows | ✅ | ✅ |
+| Node-RED Workflows | ❌ | ✅ |
 | i18n (Internationalization) | ✅ | ✅ |
 | Analytics Dashboard | ✅ | ✅ |
 | GDPR Compliance Tools | ✅ | ✅ |
@@ -29,7 +29,7 @@ The root directory contains three environment configuration files:
 
 ### `.env.lite`
 - **Purpose**: LITE (Community Edition) configuration
-- **Features**: All features EXCEPT AI Copilot and Referrals
+- **Features**: Core platform (no Copilot, Referrals, or Workflows)
 - **Feature Flags**:
   ```bash
   ENABLE_COPILOT=false
@@ -40,7 +40,7 @@ The root directory contains three environment configuration files:
 
 ### `.env.pro`
 - **Purpose**: PRO (Commercial Edition) configuration
-- **Features**: ALL features including AI Copilot and Referrals
+- **Features**: ALL features including AI Copilot, Referrals, and Workflows
 - **Feature Flags**:
   ```bash
   ENABLE_COPILOT=true
@@ -308,10 +308,10 @@ If UI components don't appear:
 ## License Implications
 
 ### LITE (Community Edition)
-- Open-source (MIT License)
-- Free for commercial use
+- Community License (modified MIT, non-commercial)
+- Free for learning, personal projects, and evaluation
 - No AI Copilot or Referral features
-- Full access to source code
+- Source available under the Community License terms
 
 ### PRO (Commercial Edition)
 - Commercial License required

@@ -9,7 +9,7 @@
  * Copyright (c) 2025 Manic Inc.
  *
  * This source code is licensed under:
- * - MIT License (Community Edition) - for non-commercial use
+ * - Community License (modified MIT) - for non-commercial use
  * - Commercial License - for commercial production use
  *
  * See LICENSE and COMMERCIAL-LICENSE.md in the repository root for full terms.
@@ -47,4 +47,3 @@ watch(() => themeStore.isDark, (isDark) => {
 <style lang="scss">
 // Global app styles are in src/css/app.scss
 </style>
-

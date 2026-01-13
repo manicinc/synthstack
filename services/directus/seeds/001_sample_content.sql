@@ -56,7 +56,7 @@ ON CONFLICT (slug) DO NOTHING;
 -- FAQ items
 INSERT INTO faq_items (question, answer, category, status) VALUES
   ('What is SynthStack?', 'SynthStack is an AI-native SaaS boilerplate with authentication, subscriptions, community forums, CMS, and AI integration out of the box. It helps you ship faster by providing all the common SaaS features pre-built.', 'General', 'published'),
-  ('Is SynthStack free to use?', 'Yes! SynthStack is open source under the MIT license. You can use it for any project, commercial or personal.', 'Pricing', 'published'),
+  ('Is SynthStack free to use?', 'Yes! The Community Edition is free for learning, personal projects, and evaluation under the Community License (modified MIT, non-commercial). For commercial production use, purchase a Commercial License.', 'Pricing', 'published'),
   ('What AI providers are supported?', 'We support OpenAI (GPT-4, GPT-3.5) and Anthropic (Claude) with streaming chat completions, embeddings, and more.', 'Technical', 'published'),
   ('Can I customize the branding?', 'Absolutely! All branding, colors, logos, and content are fully customizable. Check our design system docs for details.', 'General', 'published'),
   ('How do I deploy to production?', 'We provide Docker Compose files for production deployment. You can also deploy to any platform that supports Node.js and PostgreSQL.', 'Technical', 'published'),
@@ -68,7 +68,7 @@ INSERT INTO company_pages (slug, title, content, status, seo_title, seo_descript
   (
     'about',
     'About SynthStack',
-    E'# About SynthStack\n\nWe built SynthStack to solve a problem we faced ourselves: every new SaaS project required building the same authentication, payment, and community features from scratch.\n\n## Our Mission\n\nTo empower developers to ship AI-powered products faster by providing a production-ready, fully-featured boilerplate.\n\n## What Makes Us Different\n\n- **AI-First**: Built with OpenAI and Anthropic integration from day one\n- **Complete**: Not just a template - includes CMS, admin, community, and more\n- **Battle-Tested**: Used in production by multiple startups\n- **Open Source**: MIT licensed, community-driven\n\n## The Team\n\nBuilt with care by [Manic Agency](https://manic.agency)',
+    E'# About SynthStack\n\nWe built SynthStack to solve a problem we faced ourselves: every new SaaS project required building the same authentication, payment, and community features from scratch.\n\n## Our Mission\n\nTo empower developers to ship AI-powered products faster by providing a production-ready, fully-featured boilerplate.\n\n## What Makes Us Different\n\n- **AI-First**: Built with OpenAI and Anthropic integration from day one\n- **Complete**: Not just a template - includes CMS, admin, community, and more\n- **Battle-Tested**: Used in production by multiple startups\n- **Source Available**: Community License (modified MIT, non-commercial)\n\n## The Team\n\nBuilt with care by [Manic Agency](https://manic.agency)',
     'published',
     'About SynthStack - AI-Native SaaS Boilerplate',
     'Learn about SynthStack and our mission to help developers ship AI-powered SaaS products faster.'
@@ -114,4 +114,3 @@ INSERT INTO career_openings (title, slug, department, location, employment_type,
     120000
   )
 ON CONFLICT (slug) DO NOTHING;
-

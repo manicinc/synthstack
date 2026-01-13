@@ -5,6 +5,8 @@
  * Supports both markdown files from /docs/ and Directus CMS content.
  */
 
+import { FEATURES } from '@/config/features'
+
 export interface DocNavItem {
   title: string
   slug: string
@@ -13,12 +15,14 @@ export interface DocNavItem {
   source: 'markdown' | 'directus' | 'section'
   file?: string      // For markdown: filename in /docs/
   category?: string  // For directus: filter by category slug
+  badge?: 'Pro' | 'Community' | 'Internal' | 'Coming Soon'
+  hidden?: boolean
 }
 
 /**
- * Main documentation navigation structure
+ * Main documentation navigation structure (unfiltered)
  */
-export const docsNavigation: DocNavItem[] = [
+const ALL_DOCS_NAVIGATION: DocNavItem[] = [
   {
     title: 'Getting Started',
     slug: 'getting-started',
@@ -38,11 +42,54 @@ export const docsNavigation: DocNavItem[] = [
         file: 'QUICK_START.md'
       },
       {
+        title: 'FAQ',
+        slug: 'faq',
+        source: 'markdown',
+        file: 'FAQ.md'
+      },
+      {
+        title: 'Troubleshooting',
+        slug: 'troubleshooting',
+        source: 'markdown',
+        file: 'TROUBLESHOOTING.md'
+      },
+      {
+        title: 'Onboarding',
+        slug: 'onboarding',
+        source: 'markdown',
+        file: 'ONBOARDING.md'
+      },
+      {
+        title: 'Environment Setup',
+        slug: 'environment-setup',
+        source: 'markdown',
+        file: 'ENVIRONMENT_SETUP.md'
+      },
+      {
+        title: 'Versions',
+        slug: 'versions',
+        source: 'markdown',
+        file: 'VERSIONS.md'
+      },
+      {
+        title: 'Branding & Theming',
+        slug: 'branding-theming',
+        source: 'markdown',
+        file: 'customization/BRANDING.md'
+      },
+      {
+        title: 'Configuration Guide',
+        slug: 'configuration-guide',
+        source: 'markdown',
+        file: 'customization/CONFIGURATION.md'
+      },
+      {
         title: 'Lifetime License Setup',
         slug: 'lifetime-license-setup',
         icon: 'vpn_key',
         source: 'markdown',
-        file: 'guides/LIFETIME_LICENSE_GETTING_STARTED.md'
+        file: 'guides/LIFETIME_LICENSE_GETTING_STARTED.md',
+        badge: 'Pro'
       },
       {
         title: 'Tutorials',
@@ -141,6 +188,12 @@ export const docsNavigation: DocNavItem[] = [
         slug: 'deployment-guide',
         source: 'markdown',
         file: 'DEPLOYMENT_GUIDE.md'
+      },
+      {
+        title: 'Production Checklist',
+        slug: 'production-checklist',
+        source: 'markdown',
+        file: 'deployment/PRODUCTION_CHECKLIST.md'
       }
     ]
   },
@@ -165,6 +218,52 @@ export const docsNavigation: DocNavItem[] = [
     ]
   },
   {
+    title: 'Reference',
+    slug: 'reference',
+    icon: 'library_books',
+    source: 'section',
+    children: [
+      {
+        title: 'API Quick Reference',
+        slug: 'api-quick-reference',
+        source: 'markdown',
+        file: 'reference/API_QUICK_REFERENCE.md'
+      },
+      {
+        title: 'API Reference',
+        slug: 'api-reference',
+        source: 'markdown',
+        file: 'reference/API_REFERENCE.md'
+      },
+      {
+        title: 'Architecture Overview',
+        slug: 'architecture-overview',
+        source: 'markdown',
+        file: 'reference/ARCHITECTURE_OVERVIEW.md'
+      },
+      {
+        title: 'Tech Stack',
+        slug: 'tech-stack',
+        source: 'markdown',
+        file: 'reference/TECH_STACK.md'
+      }
+    ]
+  },
+  {
+    title: 'Legal',
+    slug: 'legal',
+    icon: 'gavel',
+    source: 'section',
+    children: [
+      {
+        title: 'License FAQ',
+        slug: 'license-faq',
+        source: 'markdown',
+        file: 'LICENSE-FAQ.md'
+      }
+    ]
+  },
+  {
     title: 'Tutorials',
     slug: 'tutorials',
     icon: 'school',
@@ -172,6 +271,42 @@ export const docsNavigation: DocNavItem[] = [
     category: 'tutorial'
   }
 ]
+
+function isCommunityBuild(): boolean {
+  const edition = (import.meta.env.VITE_SYNTHSTACK_EDITION as string | undefined)
+  if (edition) return edition.toLowerCase() === 'community'
+
+  // Fall back to feature flags (LITE/Community builds disable PRO modules).
+  return !FEATURES.COPILOT && !FEATURES.REFERRALS
+}
+
+function filterNavigationForBuild(items: DocNavItem[]): DocNavItem[] {
+  const community = isCommunityBuild()
+
+  return items
+    .map((item) => ({
+      ...item,
+      children: item.children ? filterNavigationForBuild(item.children) : undefined,
+    }))
+    .filter((item) => {
+      if (item.hidden) return false
+      if (item.badge === 'Internal') return false
+      if (community && item.badge === 'Pro') return false
+
+      if (item.source === 'section' && item.children && item.children.length === 0) return false
+
+      // Avoid dead links in Community builds when those features are hard-disabled.
+      if (community && !FEATURES.COPILOT && item.slug === 'copilot') return false
+      if (community && !FEATURES.REFERRALS && item.slug === 'referral-system') return false
+
+      return true
+    })
+}
+
+/**
+ * Navigation structure used by the docs UI (edition-aware)
+ */
+export const docsNavigation: DocNavItem[] = filterNavigationForBuild(ALL_DOCS_NAVIGATION)
 
 /**
  * Flatten navigation for search

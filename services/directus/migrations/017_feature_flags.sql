@@ -2,7 +2,7 @@
 -- Migration 017: Feature Flags for Premium vs Community Edition
 --
 -- This migration creates a comprehensive feature flag system to support:
--- - Community Edition (separate repo, free, open-source core)
+-- - Community Edition (separate repo, source-available core)
 -- - Premium Edition (all AI Cofounders, GitHub integration, proactive suggestions)
 -- - Optional cheap subscription ($2-4/mo) with limited credits for basic AI features
 
@@ -161,7 +161,7 @@ CREATE TABLE IF NOT EXISTS edition_config (
 -- ============================================
 
 -- Add new tier values to existing constraint if not present
--- Community: Free open-source (separate repo)
+-- Community: Community License (separate repo, non-commercial)
 -- Subscriber: $2-4/mo with limited credits
 -- Premium: $297 lifetime (all features)
 -- Note: This extends the existing subscription_plans concept

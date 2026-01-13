@@ -97,7 +97,7 @@ Click ⚙️ in the input box to configure:
 - **RAG Context** (On/Off) - Include documentation
 - **Sources** (1-10) - Number of docs to retrieve
 
-**[Full Copilot Guide →](./docs/features/COPILOT.md)**
+**[Full Copilot Guide →](./features/COPILOT.md)**
 
 ---
 
@@ -263,7 +263,7 @@ docker compose ps
 
 ### Deploy to Production
 
-**Required GitHub Secrets** ([full guide](./docs/deployment/GITHUB_SECRETS.md)):
+**Required GitHub Secrets** ([full guide](./deployment/GITHUB_SECRETS.md)):
 
 ```bash
 # Via GitHub CLI (https://cli.github.com/)
@@ -280,8 +280,8 @@ Then push to `main` branch - GitHub Actions auto-deploys!
 
 ### Learn More
 - **[Full Documentation](./README.md)** - Complete setup guide
-- **[GitHub Secrets Guide](./docs/deployment/GITHUB_SECRETS.md)** - All deployment secrets
-- **[Copilot Guide](./docs/features/COPILOT.md)** - AI assistant features
+- **[GitHub Secrets Guide](./deployment/GITHUB_SECRETS.md)** - All deployment secrets
+- **[Copilot Guide](./features/COPILOT.md)** - AI assistant features
 - **[Web App README](./apps/web/README.md)** - Frontend documentation
 - **[API Reference](http://localhost:3003/docs)** - Live API docs (when running)
 

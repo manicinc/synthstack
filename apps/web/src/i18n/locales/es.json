@@ -40,7 +40,7 @@
     "opensource": {
       "badge": "Gratis Para Siempre",
       "title": "Edición Comunitaria",
-      "description": "El núcleo completo de SynthStack es gratuito y de código abierto. Construye aplicaciones SaaS listas para producción con temas, pagos (Stripe o LemonSqueezy), suscripciones, blog, CMS para gestión de contenido y base de datos.",
+      "description": "El núcleo completo de SynthStack tiene código fuente disponible bajo la Licencia Comunitaria (MIT modificada, no comercial). Ideal para aprender, proyectos personales y evaluación.",
       "features": {
         "themes": "Temas y Modo Oscuro",
         "payments": "Stripe / LemonSqueezy",
@@ -49,7 +49,7 @@
         "cms": "Directus CMS",
         "email": "Plantillas de Email",
         "crossPlatform": "Multiplataforma",
-        "license": "Licencia MIT"
+        "license": "Licencia Comunitaria (MIT modificada)"
       },
       "github": {
         "label": "Dar Estrella en GitHub"
@@ -58,14 +58,14 @@
     },
     "pricing": {
       "title": "Precios Simples y Transparentes",
-      "subtitle": "Núcleo de código abierto, agentes de IA premium",
+      "subtitle": "Núcleo con código fuente disponible, agentes de IA premium",
       "community": {
         "name": "Comunidad",
         "price": "Gratis",
         "period": "para siempre",
-        "description": "Boilerplate SaaS de código abierto",
+        "description": "Starter kit con código fuente disponible (no comercial)",
         "features": {
-          "source": "Código fuente completo (MIT)",
+          "source": "Código fuente completo (Licencia Comunitaria)",
           "cms": "Integración Directus CMS",
           "billing": "Facturación Stripe/LemonSqueezy",
           "blog": "Blog y newsletter",
@@ -118,10 +118,10 @@
       "items": {
         "free": {
           "question": "¿SynthStack es realmente gratis?",
-          "answer": "¡Sí! La Edición Comunitaria es 100% gratuita y de código abierto bajo licencia MIT. Úsala para proyectos personales, startups o aplicaciones comerciales. AI Co-Founders es un complemento premium opcional."
+          "answer": "¡Sí! La Edición Comunitaria es gratuita para aprender, proyectos personales y evaluación bajo la Licencia Comunitaria (MIT modificada, no comercial). Para uso comercial en producción, compra una Licencia Comercial."
         },
         "included": {
-          "question": "¿Qué incluye la versión de código abierto?",
+          "question": "¿Qué incluye la Edición Comunitaria?",
           "answer": "Todo lo que necesitas para un SaaS en producción: Vue 3 + Quasar UI, Fastify API, Directus CMS, autenticación Supabase, facturación Stripe, blog, newsletter, analíticas, temas y builds multiplataforma."
         },
         "referral": {
@@ -151,7 +151,7 @@
       "subtitle": "Boilerplate SaaS full-stack con superpoderes de IA. Lanza 10x más rápido.",
       "primary": "Comenzar Gratis",
       "secondary": "Actualizar a Pro",
-      "note": "Núcleo gratuito de código abierto · Pro: $297 de por vida · Recompensas por referidos disponibles"
+      "note": "Núcleo bajo Licencia Comunitaria · Pro: $297 de por vida · Recompensas por referidos disponibles"
     },
     "features": {
       "title": "¿Por Qué SynthStack?",

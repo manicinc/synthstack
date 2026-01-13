@@ -53,6 +53,16 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const edition = (import.meta.env.VITE_SYNTHSTACK_EDITION as string | undefined) || 'community'
+const isCommunityBuild = edition.toLowerCase() === 'community'
+const githubUrl = isCommunityBuild
+  ? 'https://github.com/manicinc/synthstack'
+  : 'https://github.com/manicinc/synthstack-pro'
+
 const resources = [
   {
     title: 'Documentation',
@@ -80,7 +90,7 @@ const resources = [
     description: 'Source code and issue tracking',
     icon: 'code',
     color: 'grey-8',
-    url: 'https://github.com/synthstack/synthstack'
+    url: githubUrl
   }
 ];
 
@@ -88,8 +98,7 @@ const openResource = (url: string) => {
   if (url.startsWith('http')) {
     window.open(url, '_blank');
   } else {
-    // Navigate within app
-    window.location.href = url;
+    router.push(url);
   }
 };
 </script>

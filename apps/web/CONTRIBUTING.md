@@ -197,8 +197,7 @@ Major architectural decisions should be documented in `docs/adr/` (Architecture 
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the project's MIT License.
-
+By contributing, you agree that your contributions will be licensed under the project's dual-license terms (Community License / Commercial License). See `LICENSE` and `COMMERCIAL-LICENSE.md` in the repository root.
 
 
 

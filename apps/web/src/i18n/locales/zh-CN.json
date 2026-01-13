@@ -40,7 +40,7 @@
     "opensource": {
       "badge": "永久免费",
       "title": "社区版",
-      "description": "完整的SynthStack核心是免费开源的。构建具有主题、支付（Stripe或LemonSqueezy）、订阅、博客、内容和数据库管理CMS的生产就绪SaaS应用。",
+      "description": "SynthStack完整核心在社区许可（修改版MIT，非商用）下提供源码。适合学习、个人项目和评估。",
       "features": {
         "themes": "主题 & 深色模式",
         "payments": "Stripe / LemonSqueezy",
@@ -49,7 +49,7 @@
         "cms": "Directus CMS",
         "email": "邮件模板",
         "crossPlatform": "跨平台",
-        "license": "MIT许可证"
+        "license": "社区许可（修改版MIT）"
       },
       "github": {
         "label": "在GitHub上点星"
@@ -58,14 +58,14 @@
     },
     "pricing": {
       "title": "简单透明的定价",
-      "subtitle": "开源核心，高级AI代理",
+      "subtitle": "源码可用核心，高级AI代理",
       "community": {
         "name": "社区版",
         "price": "免费",
         "period": "永久",
-        "description": "开源SaaS模板",
+        "description": "源码可用SaaS模板（非商用）",
         "features": {
-          "source": "完整源代码（MIT）",
+          "source": "完整源代码（社区许可）",
           "cms": "Directus CMS集成",
           "billing": "Stripe/LemonSqueezy计费",
           "blog": "博客 & 新闻通讯",
@@ -118,10 +118,10 @@
       "items": {
         "free": {
           "question": "SynthStack真的免费吗？",
-          "answer": "是的！社区版在MIT许可证下100%免费开源。可用于个人项目、初创公司或商业应用。AI Co-Founders是可选的高级附加组件。"
+          "answer": "是的！社区版在社区许可（修改版MIT，非商用）下可免费用于学习、个人项目和评估。商业生产使用需要购买商业许可。"
         },
         "included": {
-          "question": "开源版本包含什么？",
+          "question": "社区版包含什么？",
           "answer": "生产级SaaS所需的一切：Vue 3 + Quasar UI、Fastify API、Directus CMS、Supabase认证、Stripe计费、博客、新闻通讯、分析、主题和跨平台构建。"
         },
         "referral": {
@@ -151,7 +151,7 @@
       "subtitle": "具有AI超能力的全栈SaaS模板。10倍速度发布。",
       "primary": "免费开始",
       "secondary": "升级到Pro",
-      "note": "免费开源核心 · Pro: $297 终身 · 推荐奖励可用"
+      "note": "社区许可核心 · Pro: $297 终身 · 推荐奖励可用"
     },
     "features": {
       "title": "为什么选择SynthStack？",

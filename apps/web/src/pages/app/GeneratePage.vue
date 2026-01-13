@@ -191,17 +191,17 @@
               </template>
             </q-input>
 
-            <div class="generation-options">
-              <q-select
-                v-model="imageModel"
-                :options="imageModels"
-                label="AI Model"
-                outlined
-                dense
-                emit-value
-                map-options
-                class="option-field"
-              />
+	            <div class="generation-options">
+	              <q-select
+	                v-model="imageQuality"
+	                :options="imageQualities"
+	                label="Quality"
+	                outlined
+	                dense
+	                emit-value
+	                map-options
+	                class="option-field"
+	              />
 
               <q-select
                 v-model="imageSize"
@@ -214,15 +214,17 @@
                 class="option-field"
               />
 
-              <q-select
-                v-model="imageStyle"
-                :options="imageStyles"
-                label="Style"
-                outlined
-                dense
-                class="option-field"
-              />
-            </div>
+	              <q-select
+	                v-model="imageStyle"
+	                :options="imageStyles"
+	                label="Style"
+	                outlined
+	                dense
+	                emit-value
+	                map-options
+	                class="option-field"
+	              />
+	            </div>
           </q-card-section>
 
           <q-card-actions align="right">
@@ -497,22 +499,30 @@
                   <q-tooltip>Download {{ documentFormat.toUpperCase() }}</q-tooltip>
                 </q-btn>
               </div>
-            </div>
-            <div class="document-preview">
-              <div v-html="generatedDocument" />
-            </div>
-          </q-card-section>
-        </q-card>
-      </div>
+	            </div>
+	            <div class="document-preview">
+	              <div
+	                v-if="documentFormat === 'html'"
+	                v-html="generatedDocument"
+	              />
+	              <pre
+	                v-else
+	                class="document-text"
+	              ><code>{{ generatedDocument }}</code></pre>
+	            </div>
+	          </q-card-section>
+	        </q-card>
+	      </div>
     </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useQuasar } from 'quasar'
-import { api } from '@/services/api'
-import { devLog, devWarn, devError, logError } from '@/utils/devLogger'
+	import { ref } from 'vue'
+	import { useQuasar } from 'quasar'
+	import DOMPurify from 'dompurify'
+	import { api } from '@/services/api'
+	import { logError } from '@/utils/devLogger'
 
 const $q = useQuasar()
 
@@ -534,8 +544,8 @@ const textPrompt = ref('')
 const textModel = ref('gpt-4')
 const textModels = [
   { label: 'GPT-4', value: 'gpt-4' },
-  { label: 'GPT-3.5 Turbo', value: 'gpt-3.5-turbo' },
-  { label: 'Claude 3 Sonnet', value: 'claude-3-sonnet' }
+  { label: 'GPT-4 Turbo', value: 'gpt-4-turbo' },
+  { label: 'GPT-3.5 Turbo', value: 'gpt-3.5-turbo' }
 ]
 const textLength = ref(500)
 const textTone = ref('Professional')
@@ -543,11 +553,10 @@ const generatedText = ref('')
 
 // Image Generation
 const imagePrompt = ref('')
-const imageModel = ref('dall-e-3')
-const imageModels = [
-  { label: 'DALL-E 3', value: 'dall-e-3' },
-  { label: 'DALL-E 2', value: 'dall-e-2' },
-  { label: 'Stable Diffusion', value: 'stable-diffusion' }
+const imageQuality = ref<'standard' | 'hd'>('standard')
+const imageQualities = [
+  { label: 'Standard', value: 'standard' },
+  { label: 'HD', value: 'hd' }
 ]
 const imageSize = ref('1024x1024')
 const imageSizes = [
@@ -555,8 +564,11 @@ const imageSizes = [
   { label: '1792x1024', value: '1792x1024' },
   { label: '1024x1792', value: '1024x1792' }
 ]
-const imageStyle = ref('natural')
-const imageStyles = ['Natural', 'Vivid', 'Minimalist', 'Abstract', 'Realistic']
+const imageStyle = ref<'natural' | 'vivid'>('natural')
+const imageStyles = [
+  { label: 'Natural', value: 'natural' },
+  { label: 'Vivid', value: 'vivid' }
+]
 const generatedImages = ref<Array<{ url: string }>>([])
 
 // Code Generation
@@ -575,8 +587,8 @@ const codePrompt = ref('')
 const codeModel = ref('gpt-4')
 const codeModels = [
   { label: 'GPT-4', value: 'gpt-4' },
-  { label: 'Claude 3 Opus', value: 'claude-3-opus' },
-  { label: 'Code Llama', value: 'code-llama' }
+  { label: 'GPT-4 Turbo', value: 'gpt-4-turbo' },
+  { label: 'GPT-3.5 Turbo', value: 'gpt-3.5-turbo' }
 ]
 const includeComments = ref(true)
 const includeTests = ref(false)
@@ -596,14 +608,61 @@ const documentPrompt = ref('')
 const documentFormat = ref('markdown')
 const documentFormats = [
   { label: 'Markdown', value: 'markdown' },
-  { label: 'PDF', value: 'pdf' },
-  { label: 'DOCX', value: 'docx' },
-  { label: 'HTML', value: 'html' }
+  { label: 'HTML', value: 'html' },
+  { label: 'PDF (Coming Soon)', value: 'pdf', disable: true },
+  { label: 'DOCX (Coming Soon)', value: 'docx', disable: true }
 ]
 const documentLength = ref('Medium')
 const generatedDocument = ref('')
 
 // Methods
+function clampTokens(raw: number): number {
+  const safe = Number.isFinite(raw) ? raw : 1000
+  return Math.max(100, Math.min(4000, Math.round(safe)))
+}
+
+function tokensForWords(words: number): number {
+  const safeWords = Number.isFinite(words) ? Math.max(50, Math.min(8000, words)) : 500
+  return clampTokens(safeWords * 2)
+}
+
+function buildTextSystemPrompt(): string {
+  const tone = textTone.value || 'Professional'
+  const templatePrompts: Record<string, string> = {
+    'blog-post': 'You are an expert blog writer.',
+    marketing: 'You are an expert marketing copywriter.',
+    email: 'You are an expert email copywriter.',
+    social: 'You are an expert social media writer.',
+    product: 'You are an expert product copywriter.',
+    custom: 'You are an expert writer.'
+  }
+  const base = templatePrompts[textTemplate.value] || templatePrompts.custom
+  return `${base} Tone: ${tone}.`
+}
+
+function buildCodeSystemPrompt(): string {
+  const language = codeLanguage.value
+  const commentRule = includeComments.value ? 'Include concise comments.' : 'Do not include comments.'
+  const testsRule = includeTests.value
+    ? 'Include unit tests as well (clearly separated with filenames).'
+    : ''
+
+  return [
+    'You are a senior software engineer.',
+    `Return only ${language} code.`,
+    commentRule,
+    testsRule,
+    'Do not wrap in Markdown fences. Do not include explanations.'
+  ].filter(Boolean).join(' ')
+}
+
+function buildDocumentSystemPrompt(): string {
+  const format = documentFormat.value === 'html' ? 'HTML' : 'Markdown'
+  const type = documentType.value
+  const length = documentLength.value
+  return `You are an expert consultant. Generate a ${type} in ${format}. Length: ${length}. Output only the ${format} content (no preamble).`
+}
+
 async function generateText() {
   if (!textPrompt.value.trim()) {
     $q.notify({
@@ -616,15 +675,15 @@ async function generateText() {
 
   generating.value = true
   try {
-    const response = await api.post('/api/v1/ai/generate/text', {
-      prompt: textPrompt.value,
-      template: textTemplate.value,
-      model: textModel.value,
-      length: textLength.value,
-      tone: textTone.value
+    const response = await api.post('/api/v1/generation/text', {
+      prompt: `${textPrompt.value.trim()}\n\nTarget length: about ${textLength.value} words.`,
+      systemPrompt: buildTextSystemPrompt(),
+      maxTokens: tokensForWords(textLength.value),
+      temperature: 0.7,
+      model: textModel.value
     })
 
-    generatedText.value = response.data.text
+    generatedText.value = response.data?.content || ''
 
     $q.notify({
       type: 'positive',
@@ -635,7 +694,7 @@ async function generateText() {
     logError('Text generation failed:', error)
     $q.notify({
       type: 'negative',
-      message: error.response?.data?.message || 'Failed to generate text',
+      message: error?.message || 'Failed to generate text',
       position: 'top'
     })
   } finally {
@@ -655,14 +714,15 @@ async function generateImage() {
 
   generating.value = true
   try {
-    const response = await api.post('/api/v1/ai/generate/image', {
-      prompt: imagePrompt.value,
-      model: imageModel.value,
+    const response = await api.post('/api/v1/generation/image', {
+      prompt: imagePrompt.value.trim(),
       size: imageSize.value,
+      quality: imageQuality.value,
       style: imageStyle.value
     })
 
-    generatedImages.value = response.data.images
+    const imageUrl = response.data?.imageUrl
+    generatedImages.value = imageUrl ? [{ url: imageUrl }] : []
 
     $q.notify({
       type: 'positive',
@@ -673,7 +733,7 @@ async function generateImage() {
     logError('Image generation failed:', error)
     $q.notify({
       type: 'negative',
-      message: error.response?.data?.message || 'Failed to generate image',
+      message: error?.message || 'Failed to generate image',
       position: 'top'
     })
   } finally {
@@ -693,15 +753,15 @@ async function generateCode() {
 
   generating.value = true
   try {
-    const response = await api.post('/api/v1/ai/generate/code', {
-      prompt: codePrompt.value,
-      language: codeLanguage.value,
-      model: codeModel.value,
-      includeComments: includeComments.value,
-      includeTests: includeTests.value
+    const response = await api.post('/api/v1/generation/text', {
+      prompt: codePrompt.value.trim(),
+      systemPrompt: buildCodeSystemPrompt(),
+      maxTokens: 2000,
+      temperature: 0.2,
+      model: codeModel.value
     })
 
-    generatedCode.value = response.data.code
+    generatedCode.value = response.data?.content || ''
 
     $q.notify({
       type: 'positive',
@@ -712,7 +772,7 @@ async function generateCode() {
     logError('Code generation failed:', error)
     $q.notify({
       type: 'negative',
-      message: error.response?.data?.message || 'Failed to generate code',
+      message: error?.message || 'Failed to generate code',
       position: 'top'
     })
   } finally {
@@ -732,14 +792,16 @@ async function generateDocument() {
 
   generating.value = true
   try {
-    const response = await api.post('/api/v1/ai/generate/document', {
-      prompt: documentPrompt.value,
-      type: documentType.value,
-      format: documentFormat.value,
-      length: documentLength.value
+    const response = await api.post('/api/v1/generation/text', {
+      prompt: documentPrompt.value.trim(),
+      systemPrompt: buildDocumentSystemPrompt(),
+      maxTokens: 2500,
+      temperature: 0.6,
+      model: textModel.value
     })
 
-    generatedDocument.value = response.data.document
+    const raw = response.data?.content || ''
+    generatedDocument.value = documentFormat.value === 'html' ? DOMPurify.sanitize(raw) : raw
 
     $q.notify({
       type: 'positive',
@@ -750,7 +812,7 @@ async function generateDocument() {
     logError('Document generation failed:', error)
     $q.notify({
       type: 'negative',
-      message: error.response?.data?.message || 'Failed to generate document',
+      message: error?.message || 'Failed to generate document',
       position: 'top'
     })
   } finally {

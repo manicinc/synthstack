@@ -406,7 +406,7 @@ Key settings in `quasar.config.js`:
 
 ## 📄 License
 
-This project is licensed under the **MIT License** (Community Edition) or **Commercial License** (Pro Edition).
+This project is licensed under the **Community License** (modified MIT, non-commercial) or **Commercial License** (Pro Edition).
 
 See [LICENSE](../../LICENSE) for details.
 

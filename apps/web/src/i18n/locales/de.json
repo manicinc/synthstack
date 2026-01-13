@@ -40,7 +40,7 @@
     "opensource": {
       "badge": "Für Immer Kostenlos",
       "title": "Community Edition",
-      "description": "Der komplette SynthStack-Kern ist kostenlos und Open Source. Erstellen Sie produktionsreife SaaS-Apps mit Themes, Zahlungen (Stripe oder LemonSqueezy), Abonnements, Blog, CMS für Content- und Datenbankverwaltung.",
+      "description": "Der komplette SynthStack-Kern ist als Quellcode verfügbar unter der Community-Lizenz (modifizierte MIT, nicht-kommerziell). Ideal zum Lernen, für Side-Projects und Evaluation.",
       "features": {
         "themes": "Themes & Dark Mode",
         "payments": "Stripe / LemonSqueezy",
@@ -49,7 +49,7 @@
         "cms": "Directus CMS",
         "email": "E-Mail-Vorlagen",
         "crossPlatform": "Plattformübergreifend",
-        "license": "MIT-Lizenz"
+        "license": "Community-Lizenz (modifizierte MIT)"
       },
       "github": {
         "label": "Auf GitHub markieren"
@@ -58,14 +58,14 @@
     },
     "pricing": {
       "title": "Einfache, Transparente Preise",
-      "subtitle": "Open-Source-Kern, Premium-KI-Agenten",
+      "subtitle": "Quellcode verfügbarer Kern, Premium-KI-Agenten",
       "community": {
         "name": "Community",
         "price": "Kostenlos",
         "period": "für immer",
-        "description": "Open-Source SaaS Boilerplate",
+        "description": "Quellcode verfügbares Starter-Kit (nicht-kommerziell)",
         "features": {
-          "source": "Vollständiger Quellcode (MIT)",
+          "source": "Vollständiger Quellcode (Community-Lizenz)",
           "cms": "Directus CMS Integration",
           "billing": "Stripe/LemonSqueezy Abrechnung",
           "blog": "Blog & Newsletter",
@@ -118,10 +118,10 @@
       "items": {
         "free": {
           "question": "Ist SynthStack wirklich kostenlos?",
-          "answer": "Ja! Die Community Edition ist 100% kostenlos und Open Source unter MIT-Lizenz. Verwenden Sie es für persönliche Projekte, Startups oder kommerzielle Apps. AI Co-Founders ist ein optionales Premium-Add-on."
+          "answer": "Ja! Die Community Edition ist kostenlos für Lernen, private Projekte und Evaluation unter der Community-Lizenz (modifizierte MIT, nicht-kommerziell). Für kommerzielle Produktion benötigen Sie eine Commercial License."
         },
         "included": {
-          "question": "Was ist in der Open-Source-Version enthalten?",
+          "question": "Was ist in der Community Edition enthalten?",
           "answer": "Alles, was Sie für ein Produktions-SaaS benötigen: Vue 3 + Quasar UI, Fastify API, Directus CMS, Supabase Auth, Stripe-Abrechnung, Blog, Newsletter, Analytics, Theming und plattformübergreifende Builds."
         },
         "referral": {
@@ -151,7 +151,7 @@
       "subtitle": "Full-Stack SaaS Boilerplate mit KI-Superkräften. 10x schneller ausliefern.",
       "primary": "Kostenlos Starten",
       "secondary": "Auf Pro Upgraden",
-      "note": "Kostenloser Open-Source-Kern · Pro: $297 lebenslang · Empfehlungsbelohnungen verfügbar"
+      "note": "Kern unter Community-Lizenz · Pro: $297 lebenslang · Empfehlungsbelohnungen verfügbar"
     },
     "features": {
       "title": "Warum SynthStack?",

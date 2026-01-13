@@ -532,137 +532,14 @@ redis-cli -h redis.example.com ping
 
 ### Docker Compose Production
 
-**File:** `docker-compose.prod.yml`
+Use the production compose file included in this repository:
 
-```yaml
-version: '3.8'
+- **File:** `deploy/docker-compose.yml`
+- **Reverse proxy + TLS:** Traefik (Let’s Encrypt)
+- **Images:** `ghcr.io/<org>/<app>/*` (override via env)
 
-services:
-  # API Gateway
-  api-gateway:
-    image: synthstack/api-gateway:latest
-    restart: always
-    ports:
-      - "3003:3003"
-    environment:
-      NODE_ENV: production
-      DATABASE_URL: ${DATABASE_URL}
-      REDIS_URL: ${REDIS_URL}
-      JWT_SECRET: ${JWT_SECRET}
-    depends_on:
-      - postgres
-      - redis
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    deploy:
-      replicas: 3
-      resources:
-        limits:
-          cpus: '2'
-          memory: 4G
-        reservations:
-          cpus: '1'
-          memory: 2G
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "100m"
-        max-file: "10"
-
-  # ML Service
-  ml-service:
-    image: synthstack/ml-service:latest
-    restart: always
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    deploy:
-      replicas: 2
-      resources:
-        limits:
-          cpus: '2'
-          memory: 4G
-
-  # PostgreSQL
-  postgres:
-    image: postgres:16-alpine
-    restart: always
-    environment:
-      POSTGRES_DB: synthstack
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=en_US.UTF-8"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    command:
-      - "postgres"
-      - "-c"
-      - "max_connections=200"
-      - "-c"
-      - "shared_buffers=512MB"
-      - "-c"
-      - "effective_cache_size=2GB"
-      - "-c"
-      - "maintenance_work_mem=128MB"
-      - "-c"
-      - "checkpoint_completion_target=0.9"
-      - "-c"
-      - "wal_buffers=16MB"
-      - "-c"
-      - "default_statistics_target=100"
-      - "-c"
-      - "random_page_cost=1.1"
-      - "-c"
-      - "effective_io_concurrency=200"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Redis
-  redis:
-    image: redis:7-alpine
-    restart: always
-    command: redis-server --requirepass ${REDIS_PASSWORD} --maxmemory 2gb --maxmemory-policy allkeys-lru
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-
-  # Nginx
-  nginx:
-    image: nginx:alpine
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./ssl:/etc/nginx/ssl:ro
-      - nginx_cache:/var/cache/nginx
-    depends_on:
-      - api-gateway
-
-volumes:
-  postgres_data:
-    driver: local
-  redis_data:
-    driver: local
-  nginx_cache:
-    driver: local
+```bash
+docker compose -f deploy/docker-compose.yml up -d
 ```
 
 ### Kubernetes Deployment

@@ -15,18 +15,20 @@
 
 **Action Required:** Decide which edition to deploy
 
-**LITE (Community Edition)** - Free, open-source:
-- ✅ All core features (projects, billing, invoicing, ML services, RAG, i18n)
+**LITE (Community Edition)** - Free for learning/personal/evaluation (Community License, non-commercial):
+- ✅ Core platform (projects, auth, billing, CMS, i18n)
 - ✅ Stripe integration
-- ✅ TypeScript + Python ML services
-- ✅ Node-RED workflows
+- ✅ TypeScript ML service + text/image generation (BYOK keys)
 - ❌ AI Copilot/Agent system
 - ❌ Referral system
+- ❌ Workflow automation (Node-RED / agent workflows)
 
 **PRO (Commercial Edition)** - Full features:
 - ✅ Everything in LITE
 - ✅ AI Copilot/Agent system (LangGraph)
 - ✅ Referral & rewards system
+- ✅ Workflow automation (Node-RED + advanced orchestration)
+- ✅ Optional Python backends (FastAPI, Django)
 
 **Setup:**
 ```bash

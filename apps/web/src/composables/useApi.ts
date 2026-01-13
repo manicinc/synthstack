@@ -35,8 +35,26 @@ export interface ApiError {
   details?: Record<string, string[]>
 }
 
-/** Base API URL - defaults to /api/v1 */
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
+/**
+ * Base API URL - always targets the `/api/v1` REST API (not the Swagger UI at `/docs`).
+ *
+ * Examples:
+ * - VITE_API_URL="http://localhost:3003"      -> "http://localhost:3003/api/v1"
+ * - VITE_API_URL="http://localhost:3003/api"  -> "http://localhost:3003/api/v1" (still normalized)
+ * - VITE_API_URL="/api/v1"                    -> "/api/v1"
+ */
+const API_BASE_URL = (() => {
+  const raw = (import.meta.env.VITE_API_URL as string | undefined) || ''
+  const trimmed = raw.replace(/\/+$/, '')
+
+  if (!trimmed) return '/api/v1'
+  if (trimmed.endsWith('/api/v1')) return trimmed
+
+  // If someone provided "/api" or "http://host/api", normalize to "/api/v1"
+  if (trimmed.endsWith('/api')) return `${trimmed}/v1`
+
+  return `${trimmed}/api/v1`
+})()
 
 /**
  * Creates an axios instance configured for the Printverse API
@@ -106,15 +124,23 @@ export function useApi() {
     config?: AxiosRequestConfig
   ): Promise<T | null> => {
     loading.value = true
-    error.value = null
+	    error.value = null
 
-    try {
-      const response = await client[method]<ApiResponse<T>>(url, method === 'get' ? config : data, config)
-      return response.data.data
-    } catch (err) {
-      const axiosError = err as AxiosError<ApiError>
-      error.value = axiosError.response?.data || { 
-        message: axiosError.message || 'An unexpected error occurred' 
+	    try {
+	      const response = await client[method]<unknown>(url, method === 'get' ? config : data, config)
+
+	      // Support both API response styles:
+	      // - Wrapped: { data: T, ... }
+	      // - Direct: T
+	      const payload = (response as any)?.data
+	      if (payload && typeof payload === 'object' && 'data' in payload) {
+	        return (payload as { data: T }).data
+	      }
+	      return payload as T
+	    } catch (err) {
+	      const axiosError = err as AxiosError<ApiError>
+	      error.value = axiosError.response?.data || { 
+	        message: axiosError.message || 'An unexpected error occurred' 
       }
       return null
     } finally {
@@ -199,6 +225,4 @@ export function useApi() {
 }
 
 export default useApi
-
-
 

@@ -85,11 +85,12 @@ function createApiClient(): AxiosInstance {
       }
 
       // Transform error
+      const responseData = error.response?.data as any
       const apiError: ApiError = {
-        message: error.response?.data?.message || error.message || 'An error occurred',
-        code: error.response?.data?.code || 'UNKNOWN_ERROR',
+        message: responseData?.message || responseData?.error || error.message || 'An error occurred',
+        code: responseData?.code || 'UNKNOWN_ERROR',
         status: error.response?.status || 500,
-        details: error.response?.data?.details
+        details: responseData?.details
       }
 
       return Promise.reject(apiError)
@@ -1063,5 +1064,4 @@ export default {
   patch,
   del
 }
-
 

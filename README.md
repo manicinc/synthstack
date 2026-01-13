@@ -4,7 +4,7 @@
 
 **Your Agency in a Box**
 
-AI-native, cross-platform SaaS boilerplate built with Vue Quasar. Ships for web, iOS, Android, desktop, and PWA from a single codebase. Complete with Directus CMS (models your Postgres DB), AI copilot, analytics, email, newsletter, blog, and product management.
+Source-available, cross-platform SaaS boilerplate built with Vue Quasar. Ships for web, iOS, Android, desktop, and PWA from a single codebase. Includes Directus CMS (models your Postgres DB), analytics, email, newsletter, blog, and product management. Pro Edition adds AI Copilot, workflows, and referrals.
 
 ![SynthStack](apps/web/public/og-image.svg)
 
@@ -41,14 +41,16 @@ Batteries-included Python backend. Drop-in replacement for TypeScript.
 docker compose -f docker-compose.django.yml up -d
 ```
 
-**All backends provide identical functionality:**
-- Full Vue/Quasar frontend with cross-platform (iOS, Android, Desktop, PWA)
-- API Gateway with auth, billing, agents, workflows
-- RAG/embeddings (OpenAI, Anthropic, OpenRouter)
-- Vector search (Qdrant)
-- AI agents and orchestration
-- Document processing
-- All cloud LLM integrations
+**All backends provide identical core platform functionality:**
+- Full Vue/Quasar frontend with cross-platform builds (iOS, Android, Desktop, PWA)
+- API Gateway with authentication, billing, CMS integration, and core APIs
+- Text/image generation endpoints (BYOK: OpenAI/Anthropic/OpenRouter keys)
+- Document processing (uploads, parsing, previews)
+
+**Pro Edition adds:**
+- AI Copilot + agentic workflows (LangGraph + approvals)
+- Referrals & rewards system
+- AI-powered semantic docs search (RAG) and advanced automation modules
 
 > 💡 **Community Edition** uses TypeScript (NestJS). **Pro Edition** adds Python (FastAPI, Django) as alternative backends.
 
@@ -71,7 +73,7 @@ docker compose -f docker-compose.django.yml up -d
 
 | License | Use Case | Restrictions |
 |---------|----------|--------------|
-| **MIT (Community)** | Learning, personal projects, evaluation | Non-commercial only, cannot build competing boilerplates |
+| **Community License (modified MIT)** | Learning, personal projects, evaluation | Non-commercial only, cannot build competing boilerplates |
 | **Commercial License** | Production SaaS, commercial use, client work | Cannot resell as boilerplate, cannot redistribute source |
 
 **What You Can Build:**
@@ -597,11 +599,7 @@ See [Testing Guide](docs/TESTING_GUIDE.md) for how to write and edit tests.
 ### Docker Production
 
 ```bash
-# Build production images
-docker compose -f docker-compose.prod.yml build
-
-# Deploy
-docker compose -f docker-compose.prod.yml up -d
+docker compose -f deploy/docker-compose.yml up -d
 ```
 
 ### Environment Variables (Production)
@@ -629,7 +627,7 @@ docker compose -f docker-compose.prod.yml up -d
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) for details.
+Community License (modified MIT, non-commercial) - see [LICENSE](LICENSE) for details.
 
 ---
 

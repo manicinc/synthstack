@@ -40,7 +40,7 @@
     "opensource": {
       "badge": "永久無料",
       "title": "コミュニティエディション",
-      "description": "SynthStackの完全なコアは無料でオープンソースです。テーマ、決済（StripeまたはLemonSqueezy）、サブスクリプション、ブログ、コンテンツとデータベース管理用CMSを備えた本番対応SaaSアプリを構築できます。",
+      "description": "SynthStackの完全なコアは、コミュニティライセンス（修正MIT、非商用）の下でソース利用できます。学習、サイドプロジェクト、評価に最適です。",
       "features": {
         "themes": "テーマ & ダークモード",
         "payments": "Stripe / LemonSqueezy",
@@ -49,7 +49,7 @@
         "cms": "Directus CMS",
         "email": "メールテンプレート",
         "crossPlatform": "クロスプラットフォーム",
-        "license": "MITライセンス"
+        "license": "コミュニティライセンス（修正MIT）"
       },
       "github": {
         "label": "GitHubでスターを付ける"
@@ -58,14 +58,14 @@
     },
     "pricing": {
       "title": "シンプルで透明な料金",
-      "subtitle": "オープンソースコア、プレミアムAIエージェント",
+      "subtitle": "ソース利用可能コア、プレミアムAIエージェント",
       "community": {
         "name": "コミュニティ",
         "price": "無料",
         "period": "永久",
-        "description": "オープンソース SaaS ボイラープレート",
+        "description": "ソース利用可能SaaSボイラープレート（非商用）",
         "features": {
-          "source": "完全なソースコード（MIT）",
+          "source": "完全なソースコード（コミュニティライセンス）",
           "cms": "Directus CMS統合",
           "billing": "Stripe/LemonSqueezy課金",
           "blog": "ブログ & ニュースレター",
@@ -118,10 +118,10 @@
       "items": {
         "free": {
           "question": "SynthStackは本当に無料ですか？",
-          "answer": "はい！コミュニティエディションはMITライセンスの下で100%無料でオープンソースです。個人プロジェクト、スタートアップ、商用アプリに使用できます。AI Co-Foundersはオプションのプレミアムアドオンです。"
+          "answer": "はい！コミュニティエディションはコミュニティライセンス（修正MIT、非商用）の下で、学習・個人プロジェクト・評価用途に無料で利用できます。商用本番利用には商用ライセンスが必要です。"
         },
         "included": {
-          "question": "オープンソース版には何が含まれていますか？",
+          "question": "コミュニティエディションには何が含まれていますか？",
           "answer": "本番SaaSに必要なすべて：Vue 3 + Quasar UI、Fastify API、Directus CMS、Supabase認証、Stripe課金、ブログ、ニュースレター、アナリティクス、テーマ、クロスプラットフォームビルド。"
         },
         "referral": {
@@ -151,7 +151,7 @@
       "subtitle": "AIスーパーパワーを備えたフルスタックSaaSボイラープレート。10倍速くリリース。",
       "primary": "無料で始める",
       "secondary": "Proにアップグレード",
-      "note": "無料オープンソースコア · Pro: $297 ライフタイム · 紹介リワード利用可能"
+      "note": "コミュニティライセンスコア · Pro: $297 ライフタイム · 紹介リワード利用可能"
     },
     "features": {
       "title": "なぜSynthStack？",

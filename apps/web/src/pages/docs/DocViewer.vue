@@ -166,12 +166,10 @@ import { useVisualEditing } from '@/composables/useVisualEditing'
 import { useSeo } from '@/composables/useSeo'
 import { findDocBySlug, getAdjacentDocs, type DocNavItem } from '@/config/docs-navigation'
 import { api } from '@/services/api'
-import { devLog, devWarn, devError, logError } from '@/utils/devLogger'
-import { marked } from 'marked'
-import DOMPurify from 'dompurify'
+import { devLog } from '@/utils/devLogger'
 
 const route = useRoute()
-const { fetchMarkdownDoc, fetchTutorial, setupCodeCopyHandlers, loading, error } = useDocs()
+const { fetchMarkdownDoc, fetchTutorial, setupCodeCopyHandlers, renderMarkdown, extractHeadings, loading, error } = useDocs()
 const { editableAttr } = useVisualEditing()
 
 // State
@@ -199,6 +197,9 @@ function formatDate(dateString: string): string {
 async function loadDoc() {
   if (!slug.value) return
 
+  doc.value = null
+  directusDoc.value = null
+
   const nav = navItem.value
 
   // Try to fetch from Directus docs collection first
@@ -213,7 +214,8 @@ async function loadDoc() {
     if (response.data.data?.[0]) {
       directusDoc.value = response.data.data[0]
       const content = directusDoc.value.content || ''
-      const html = DOMPurify.sanitize(marked.parse(content) as string)
+      const html = renderMarkdown(content)
+      const headings = extractHeadings(content)
 
       doc.value = {
         title: directusDoc.value.title,
@@ -221,7 +223,7 @@ async function loadDoc() {
         content,
         html,
         source: 'directus',
-        headings: [],
+        headings,
         lastModified: directusDoc.value.updated_at
       }
     }
@@ -238,9 +240,8 @@ async function loadDoc() {
       // Fetch from Directus CMS tutorials
       doc.value = await fetchTutorial(slug.value)
     } else {
-      // Try markdown by slug convention
-      const filename = slug.value.toUpperCase().replace(/-/g, '_') + '.md'
-      doc.value = await fetchMarkdownDoc(filename)
+      // Try markdown by slug (supports nested docs, too)
+      doc.value = await fetchMarkdownDoc(slug.value)
     }
   }
 
@@ -569,17 +570,75 @@ onMounted(async () => {
     }
   }
 
-  :deep(hr) {
-    border: none;
-    height: 1px;
-    background: var(--border-default);
-    margin: 32px 0;
-  }
+	  :deep(hr) {
+	    border: none;
+	    height: 1px;
+	    background: var(--border-default);
+	    margin: 32px 0;
+	  }
 
-  :deep(img) {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
+	  :deep(details) {
+	    margin: 16px 0;
+	    padding: 12px 16px;
+	    background: var(--bg-elevated);
+	    border: 1px solid var(--border-default);
+	    border-radius: 10px;
+	  }
+
+	  :deep(summary) {
+	    cursor: pointer;
+	    font-weight: 700;
+	    color: var(--text-primary);
+	    list-style: none;
+	  }
+
+	  :deep(details > summary::-webkit-details-marker) {
+	    display: none;
+	  }
+
+	  :deep(details > summary::before) {
+	    content: '▸';
+	    display: inline-block;
+	    margin-right: 8px;
+	    color: var(--text-tertiary);
+	    transition: transform 0.15s ease;
+	  }
+
+	  :deep(details[open] > summary::before) {
+	    transform: rotate(90deg);
+	  }
+
+	  :deep(kbd) {
+	    font-family: 'JetBrains Mono', monospace;
+	    font-size: 0.85em;
+	    padding: 2px 6px;
+	    border-radius: 6px;
+	    background: var(--bg-elevated);
+	    border: 1px solid var(--border-default);
+	  }
+
+	  :deep(iframe) {
+	    width: 100%;
+	    aspect-ratio: 16 / 9;
+	    border: 1px solid var(--border-default);
+	    border-radius: 12px;
+	    background: #000;
+	    margin: 16px 0;
+	  }
+
+	  :deep(video) {
+	    width: 100%;
+	    max-width: 100%;
+	    border: 1px solid var(--border-default);
+	    border-radius: 12px;
+	    background: #000;
+	    margin: 16px 0;
+	  }
+
+	  :deep(img) {
+	    max-width: 100%;
+	    height: auto;
+	    border-radius: 8px;
     margin: 16px 0;
   }
 }

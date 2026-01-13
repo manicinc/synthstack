@@ -9,9 +9,12 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { resolveDocsDir } from '../utils/docsPath.js';
 
-// Path to docs folder (relative to project root)
-const DOCS_DIR = path.resolve(process.cwd(), '..', 'docs');
+// Path to docs folder (works in Docker + local dev)
+const DOCS_DIR = resolveDocsDir();
+
+const DEFAULT_EXCLUDED_DIRS = new Set(['internal', 'archived']);
 
 interface DocFile {
   filename: string;
@@ -34,9 +37,60 @@ function extractTitle(content: string): string {
  */
 function fileToSlug(filename: string): string {
   return filename
-    .replace('.md', '')
+    .replace(/\.md$/, '')
     .toLowerCase()
-    .replace(/_/g, '-');
+    .replace(/[_/]/g, '-');
+}
+
+async function listMarkdownFiles(
+  rootDir: string,
+  options: { excludeDirs?: Set<string> } = {}
+): Promise<string[]> {
+  const excludeDirs = options.excludeDirs ?? new Set<string>();
+  const results: string[] = [];
+
+  async function walk(dir: string): Promise<void> {
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      if (entry.name.startsWith('.')) continue;
+
+      const fullPath = path.join(dir, entry.name);
+      const relativePath = path.relative(rootDir, fullPath).split(path.sep).join('/');
+
+      if (entry.isDirectory()) {
+        const topLevelDir = relativePath.split('/')[0];
+        if (excludeDirs.has(topLevelDir)) continue;
+        await walk(fullPath);
+        continue;
+      }
+
+      if (entry.isFile() && entry.name.endsWith('.md')) {
+        results.push(relativePath);
+      }
+    }
+  }
+
+  await walk(rootDir);
+  return results.sort();
+}
+
+function normalizeRequestedPath(rawIdentifier: string): string {
+  let decoded = rawIdentifier;
+  try {
+    decoded = decodeURIComponent(rawIdentifier);
+  } catch {
+    // Keep raw if decode fails (Fastify already decoded most cases)
+  }
+
+  const normalized = decoded.replace(/\\/g, '/').trim();
+
+  // Basic safety: no null bytes, no absolute paths, no traversal segments
+  if (!normalized || normalized.includes('\0')) return '';
+  if (normalized.startsWith('/') || normalized.startsWith('..')) return '';
+  if (normalized.split('/').some((part) => part === '..')) return '';
+
+  return normalized;
 }
 
 export default async function docsRoutes(fastify: FastifyInstance) {
@@ -69,14 +123,13 @@ export default async function docsRoutes(fastify: FastifyInstance) {
         },
       },
     },
-  }, async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const files = await fs.readdir(DOCS_DIR);
-      const mdFiles = files.filter(f => f.endsWith('.md'));
+	  }, async (request: FastifyRequest, reply: FastifyReply) => {
+	    try {
+	      const mdFiles = await listMarkdownFiles(DOCS_DIR, { excludeDirs: DEFAULT_EXCLUDED_DIRS });
 
-      const docs: DocFile[] = await Promise.all(
-        mdFiles.map(async (filename) => {
-          const filePath = path.join(DOCS_DIR, filename);
+	      const docs: DocFile[] = await Promise.all(
+	        mdFiles.map(async (filename) => {
+	          const filePath = path.join(DOCS_DIR, filename);
           const stats = await fs.stat(filePath);
           const content = await fs.readFile(filePath, 'utf-8');
 
@@ -138,25 +191,24 @@ export default async function docsRoutes(fastify: FastifyInstance) {
         },
       },
     },
-  }, async (request, reply) => {
-    const { identifier } = request.params;
+	  }, async (request, reply) => {
+	    const { identifier: rawIdentifier } = request.params;
+	    const identifier = normalizeRequestedPath(rawIdentifier);
 
-    // Security: prevent directory traversal
-    if (identifier.includes('..') || identifier.includes('/') || identifier.includes('\\')) {
-      return reply.status(400).send({ error: 'Invalid filename' });
-    }
+	    if (!identifier) {
+	      return reply.status(400).send({ error: 'Invalid filename' });
+	    }
 
-    try {
-      // Try direct filename first
-      let filename = identifier;
+	    try {
+	      // Try direct filename first
+	      let filename = identifier;
 
-      // If not ending in .md, treat as slug and find matching file
-      if (!identifier.endsWith('.md')) {
-        const files = await fs.readdir(DOCS_DIR);
-        const mdFiles = files.filter(f => f.endsWith('.md'));
+	      // If not ending in .md, treat as slug and find matching file
+	      if (!identifier.endsWith('.md')) {
+	        const mdFiles = await listMarkdownFiles(DOCS_DIR, { excludeDirs: DEFAULT_EXCLUDED_DIRS });
 
-        // Find file matching the slug
-        filename = mdFiles.find(f => fileToSlug(f) === identifier.toLowerCase()) || '';
+	        // Find file matching the slug
+	        filename = mdFiles.find(f => fileToSlug(f) === identifier.toLowerCase()) || '';
 
         if (!filename) {
           return reply.status(404).send({ error: 'Document not found' });
@@ -234,15 +286,14 @@ export default async function docsRoutes(fastify: FastifyInstance) {
     },
   }, async (request, reply) => {
     const { q } = request.query;
-    const query = q.toLowerCase();
+	    const query = q.toLowerCase();
 
-    try {
-      const files = await fs.readdir(DOCS_DIR);
-      const mdFiles = files.filter(f => f.endsWith('.md'));
+	    try {
+	      const mdFiles = await listMarkdownFiles(DOCS_DIR, { excludeDirs: DEFAULT_EXCLUDED_DIRS });
 
-      const results = await Promise.all(
-        mdFiles.map(async (filename) => {
-          const filePath = path.join(DOCS_DIR, filename);
+	      const results = await Promise.all(
+	        mdFiles.map(async (filename) => {
+	          const filePath = path.join(DOCS_DIR, filename);
           const content = await fs.readFile(filePath, 'utf-8');
           const lowerContent = content.toLowerCase();
 

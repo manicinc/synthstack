@@ -34,8 +34,8 @@ INSERT INTO pages (
 <h2>Complete Admin Dashboard</h2>
 <p>Full-featured CMS and administrative control center powered by Directus</p>
 
-<h2>Open Source & Self-Hosted</h2>
-<p>MIT licensed. Deploy on your own infrastructure or use our cloud hosting. Full control over your data and customizations.</p>',
+<h2>Self-Hosted & Source-Available</h2>
+<p>Community License (modified MIT, non-commercial). Deploy on your own infrastructure or use our cloud hosting. Full control over your data and customizations.</p>',
   'SynthStack - Your Agency in a Box | AI-Native Full-Stack Platform',
   'Vue Quasar full-stack boilerplate with 6 AI Co-Founders. Complete with CMS, analytics, email, payments, and AI agents. Ship 10x faster.',
   NOW(),
