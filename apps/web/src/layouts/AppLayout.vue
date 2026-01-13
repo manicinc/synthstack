@@ -465,7 +465,6 @@ import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useQuasar } from 'quasar'
 import { useRoute, useRouter } from 'vue-router'
 import { FEATURES } from '@/config/features'
-import { useThemeStore } from '@/stores/theme'
 import { useAuthStore } from '@/stores/auth'
 import { useDemoStore } from '@/stores/demo'
 import { useProjectsStore } from '@/stores/projects'
@@ -481,7 +480,6 @@ import ElectronTitleBar from '@/components/layout/ElectronTitleBar.vue'
 const $q = useQuasar()
 const route = useRoute()
 const router = useRouter()
-const themeStore = useThemeStore()
 const authStore = useAuthStore()
 const demoStore = useDemoStore()
 const projectsStore = useProjectsStore()
@@ -558,11 +556,6 @@ onMounted(async () => {
   // and auto-showing on desktop. Setting it manually here causes race
   // conditions with Quasar's Screen plugin initialization in Playwright.
   // appSidebarOpen defaults to true, and show-if-above handles the rest.
-
-  themeStore.initialize()
-  watchEffect(() => {
-    $q.dark.set(themeStore.isDark)
-  })
 
   // Initialize demo mode if not authenticated
   if (!authStore.isAuthenticated) {

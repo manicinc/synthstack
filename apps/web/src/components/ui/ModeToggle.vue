@@ -99,16 +99,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useThemeStore } from '@/stores/theme'
-import { useQuasar } from 'quasar'
 
 const themeStore = useThemeStore()
-const $q = useQuasar()
 
 const isDark = computed(() => themeStore.isDark)
 
 function toggleMode() {
   themeStore.toggleDarkMode()
-  $q.dark.set(themeStore.isDark)
 }
 </script>
 

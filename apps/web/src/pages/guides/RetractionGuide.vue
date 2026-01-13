@@ -250,7 +250,7 @@
           <section class="guide-cta">
             <h2>Auto-Tune Your Retraction</h2>
             <p>
-              SynthStack automatically sets retraction based on your extruder type, filament, 
+              SynthStack automatically sets retraction based on your extruder type, filament,
               and print speed. No more guessing.
             </p>
             <q-btn
@@ -352,7 +352,6 @@ onMounted(() => {
   }
 }
 </style>
-
 
 
 

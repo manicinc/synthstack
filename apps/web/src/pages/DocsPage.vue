@@ -69,8 +69,16 @@
                   class="nav-item"
                   :class="{ active: currentSlug === item.slug }"
                 >
-                  <router-link :to="`/docs/${item.slug}`">
-                    {{ item.title }}
+                  <router-link :to="`/docs/${item.slug}`" class="nav-link">
+                    <span class="nav-title">{{ item.title }}</span>
+                    <q-badge
+                      v-if="item.badge"
+                      :color="badgeColor(item.badge)"
+                      outline
+                      class="nav-badge"
+                    >
+                      {{ item.badge }}
+                    </q-badge>
                   </router-link>
                 </li>
               </ul>
@@ -90,31 +98,140 @@
 
       <!-- Main Content -->
       <main class="docs-content">
+        <!-- Search results -->
+        <div
+          v-if="!currentSlug && searchQuery.trim().length >= 2"
+          class="docs-search"
+        >
+          <div class="search-header">
+            <div>
+              <h1>Search</h1>
+              <p class="search-subtitle">
+                Results for “{{ searchQuery.trim() }}”
+              </p>
+            </div>
+
+            <q-btn-toggle
+              v-if="ragAvailable"
+              v-model="searchMode"
+              toggle-color="primary"
+              :options="[
+                { label: 'Keyword', value: 'keyword', icon: 'manage_search' },
+                { label: 'Semantic', value: 'semantic', icon: 'auto_awesome' }
+              ]"
+              dense
+              unelevated
+              class="search-toggle"
+            />
+          </div>
+
+          <div
+            v-if="searching"
+            class="search-loading"
+          >
+            <q-skeleton type="text" width="65%" class="q-mb-sm" />
+            <q-skeleton type="text" width="90%" class="q-mb-md" />
+            <q-skeleton type="rect" height="88px" class="q-mb-sm" />
+            <q-skeleton type="rect" height="88px" class="q-mb-sm" />
+            <q-skeleton type="rect" height="88px" />
+          </div>
+
+          <div
+            v-else-if="searchResults.length === 0"
+            class="search-empty"
+          >
+            <q-icon name="search_off" size="44px" class="q-mb-sm" />
+            <div class="text-h6">No results</div>
+            <div class="text-body2 text-grey-7">
+              Try a different keyword, or browse from the sidebar.
+            </div>
+          </div>
+
+          <div
+            v-else
+            class="search-results"
+          >
+            <router-link
+              v-for="result in searchResults"
+              :key="result.id"
+              :to="`/docs/${result.slug}`"
+              class="search-result"
+            >
+              <div class="result-top">
+                <div class="result-title">{{ result.title }}</div>
+                <q-badge
+                  v-if="result.badge"
+                  :color="badgeColor(result.badge)"
+                  outline
+                  class="result-badge"
+                >
+                  {{ result.badge }}
+                </q-badge>
+              </div>
+              <div
+                v-if="result.subtitle"
+                class="result-subtitle"
+              >
+                {{ result.subtitle }}
+              </div>
+              <div class="result-excerpt">
+                {{ result.excerpt }}
+              </div>
+              <div
+                v-if="typeof result.meta === 'string'"
+                class="result-meta"
+              >
+                {{ result.meta }}
+              </div>
+            </router-link>
+          </div>
+        </div>
+
         <!-- Welcome/Overview when no doc selected -->
         <div
-          v-if="!currentSlug"
+          v-else-if="!currentSlug"
           class="docs-welcome"
         >
-          <h1>{{ appName }} Documentation</h1>
+          <h1>SynthStack Documentation</h1>
           <p class="lead">
-            Welcome to the {{ appName }} documentation. Here you'll find guides,
+            Welcome to the SynthStack documentation. Here you'll find guides,
             tutorials, and technical documentation to help you get the most
             out of the platform.
           </p>
 
-          <q-card class="wizard-callout" bordered>
-            <q-card-section class="row items-center q-col-gutter-md">
-              <div class="col">
-                <div class="text-subtitle1 text-weight-bold">Branding Wizard</div>
-                <div class="text-body2 text-grey-7">
-                  Generate a complete <code>config.json</code> for your brand in minutes.
-                </div>
+          <q-banner
+            dense
+            rounded
+            class="bg-blue-1 text-blue-10 q-mb-lg"
+          >
+            <template #avatar>
+              <q-icon
+                name="palette"
+                color="blue-8"
+              />
+            </template>
+            <div class="text-body2">
+              <strong>Rebrand fast:</strong> Generate a complete <code>config.json</code> with the Branding Wizard.
+            </div>
+            <template #action>
+              <div class="row items-center q-gutter-sm">
+                <q-btn
+                  flat
+                  dense
+                  color="blue-10"
+                  label="Branding"
+                  to="/setup/branding"
+                />
+                <q-btn
+                  flat
+                  dense
+                  color="blue-10"
+                  label="Env Setup"
+                  to="/setup/env"
+                />
               </div>
-              <div class="col-auto">
-                <q-btn color="primary" icon="palette" label="Open Wizard" to="/setup/branding" />
-              </div>
-            </q-card-section>
-          </q-card>
+            </template>
+          </q-banner>
 
           <div class="quick-links">
             <router-link
@@ -166,24 +283,62 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useSeo } from '@/composables/useSeo'
 import { useApi } from '@/composables/useApi'
-import { useBranding } from '@/composables/useBranding'
-import { docsNavigation } from '@/config/docs-navigation'
-import { devLog, devWarn, devError, logError } from '@/utils/devLogger'
+import { docsNavigation, flattenNavigation } from '@/config/docs-navigation'
+import { logError } from '@/utils/devLogger'
 
 const route = useRoute()
 const { get } = useApi()
 const { setPageSeo } = useSeo()
-const { name: appName } = useBranding()
 
 setPageSeo({
-  title: `${appName} Documentation`,
-  description: `${appName} documentation, guides, and tutorials for developers and users.`,
+  title: 'Documentation',
+  description: 'SynthStack documentation, guides, and tutorials for developers and users.',
 })
 
 // State
 const sidebarOpen = ref(false)
 const searchQuery = ref('')
 const docsList = ref<Array<{ filename: string; title: string; slug: string; lastModified: string }>>([])
+const ragAvailable = ref(false)
+const searching = ref(false)
+const searchMode = ref<'keyword' | 'semantic'>('keyword')
+
+type SearchResult = {
+  id: string
+  slug: string
+  title: string
+  subtitle?: string
+  excerpt: string
+  badge?: 'Pro' | 'Community' | 'Internal' | 'Coming Soon'
+  meta?: string
+}
+
+const navByFile = (() => {
+  const map = new Map<string, { slug: string; badge?: SearchResult['badge'] }>()
+  const flat = flattenNavigation(docsNavigation)
+  for (const item of flat) {
+    if (item.source === 'markdown' && item.file) {
+      map.set(item.file.replace(/\\/g, '/'), { slug: item.slug, badge: item.badge })
+    }
+  }
+  return map
+})()
+
+function fileToSlug(filename: string): string {
+  return filename.replace(/\.md$/i, '').toLowerCase().replace(/[_/]/g, '-')
+}
+
+function badgeColor(badge: SearchResult['badge']): string {
+  if (badge === 'Pro') return 'deep-purple-5'
+  if (badge === 'Community') return 'green-6'
+  if (badge === 'Coming Soon') return 'grey-6'
+  return 'grey-7'
+}
+
+const keywordResults = ref<SearchResult[]>([])
+const semanticResults = ref<SearchResult[]>([])
+
+const searchResults = computed(() => (searchMode.value === 'semantic' ? semanticResults.value : keywordResults.value))
 
 // Current doc slug from route
 const currentSlug = computed(() => route.params.slug as string || '')
@@ -228,6 +383,95 @@ async function fetchDocsList() {
   }
 }
 
+async function fetchRagAvailability() {
+  try {
+    const status = await get<{ available: boolean }>('/docs/rag/status')
+    ragAvailable.value = status?.available ?? false
+  } catch {
+    ragAvailable.value = false
+  }
+}
+
+function truncate(text: string, max = 180): string {
+  const cleaned = (text || '').replace(/\s+/g, ' ').trim()
+  if (cleaned.length <= max) return cleaned
+  return cleaned.slice(0, max - 1) + '…'
+}
+
+async function runKeywordSearch(query: string) {
+  const params = new URLSearchParams({ q: query })
+  const response = await get<{
+    results: Array<{ filename: string; title: string; slug: string; excerpt: string; matches: number }>
+  }>(`/docs/search?${params}`)
+
+  const results = response?.results || []
+  keywordResults.value = results.map((r) => {
+    const nav = navByFile.get(r.filename)
+    const slug = nav?.slug || r.slug
+    return {
+      id: `kw:${r.filename}`,
+      slug,
+      title: r.title,
+      excerpt: truncate(r.excerpt, 220),
+      badge: nav?.badge,
+      meta: `${r.matches} match${r.matches === 1 ? '' : 'es'}`
+    }
+  })
+}
+
+async function runSemanticSearch(query: string) {
+  const params = new URLSearchParams({ q: query, limit: '10', type: 'documentation' })
+  const response = await get<{
+    results: Array<{ id: string; score: number; title: string; section: string; content: string; filename: string }>
+    available: boolean
+  }>(`/docs/rag/search?${params}`)
+
+  if (typeof response?.available === 'boolean') {
+    ragAvailable.value = response.available
+  }
+
+  const results = response?.results || []
+  semanticResults.value = results.map((r) => {
+    const nav = navByFile.get(r.filename)
+    const slug = nav?.slug || fileToSlug(r.filename)
+    return {
+      id: `rag:${r.id}`,
+      slug,
+      title: r.title,
+      subtitle: r.section,
+      excerpt: truncate(r.content, 240),
+      badge: nav?.badge,
+      meta: `Score ${Math.round(r.score * 100)}%`
+    }
+  })
+}
+
+let searchTimer: ReturnType<typeof setTimeout> | null = null
+watch([searchQuery, searchMode], ([query]) => {
+  if (searchTimer) clearTimeout(searchTimer)
+
+  const normalized = (query || '').trim()
+  if (normalized.length < 2) {
+    keywordResults.value = []
+    semanticResults.value = []
+    searching.value = false
+    return
+  }
+
+  searchTimer = setTimeout(async () => {
+    searching.value = true
+    try {
+      if (searchMode.value === 'semantic') {
+        await runSemanticSearch(normalized)
+      } else {
+        await runKeywordSearch(normalized)
+      }
+    } finally {
+      searching.value = false
+    }
+  }, 250)
+})
+
 // Format date helper
 function formatDate(dateString: string): string {
   if (!dateString) return ''
@@ -238,10 +482,14 @@ function formatDate(dateString: string): string {
 // Close sidebar on route change (mobile)
 watch(() => route.params.slug, () => {
   sidebarOpen.value = false
+  if (route.params.slug) {
+    searchQuery.value = ''
+  }
 })
 
 onMounted(() => {
   fetchDocsList()
+  fetchRagAvailability()
 })
 </script>
 
@@ -378,6 +626,25 @@ onMounted(() => {
   }
 }
 
+.nav-link {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-badge {
+  font-size: 0.65rem;
+  line-height: 1;
+}
+
 // Mobile menu button
 .mobile-menu-btn {
   display: none;
@@ -405,6 +672,108 @@ onMounted(() => {
   }
 }
 
+.docs-search {
+  max-width: 900px;
+
+  .search-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      margin: 0 0 8px;
+    }
+  }
+
+  .search-subtitle {
+    margin: 0;
+    color: var(--text-secondary);
+  }
+
+  .search-toggle {
+    flex-shrink: 0;
+  }
+}
+
+.search-loading {
+  padding: 8px 0;
+}
+
+.search-empty {
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--text-secondary);
+
+  .q-icon {
+    color: var(--text-tertiary);
+  }
+}
+
+.search-results {
+  display: grid;
+  gap: 12px;
+}
+
+.search-result {
+  display: block;
+  padding: 16px 18px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.04);
+    transform: translateY(-1px);
+  }
+
+  .result-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .result-title {
+    font-weight: 800;
+    color: var(--text-primary);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .result-badge {
+    font-size: 0.65rem;
+    line-height: 1;
+  }
+
+  .result-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+
+  .result-excerpt {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .result-meta {
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+  }
+}
+
 // Welcome section
 .docs-welcome {
   max-width: 900px;
@@ -425,11 +794,6 @@ onMounted(() => {
     line-height: 1.6;
     margin-bottom: 48px;
   }
-}
-
-.wizard-callout {
-  margin: -24px 0 40px;
-  background: var(--surface-1);
 }
 
 .quick-links {

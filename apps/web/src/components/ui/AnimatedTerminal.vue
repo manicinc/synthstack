@@ -12,6 +12,7 @@
  * - Time-based variations and ambient loops
  */
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import { useThemeStore } from '@/stores/theme';
 
 // Props
 interface Props {
@@ -23,6 +24,12 @@ const props = withDefaults(defineProps<Props>(), {
   autoPlay: true,
   loop: true,
 });
+
+const themeStore = useThemeStore();
+const allowFlashyLightPresets = new Set(['brutalist', 'cyberpunk', 'terminal']);
+const isCalmLightMode = computed(() =>
+  !themeStore.isDark && !allowFlashyLightPresets.has(themeStore.currentPresetSlug)
+);
 
 // Alien terminal characters
 const ALIEN_CHARS = '░▒▓█◢◣◤◥⬡⬢╔╗╚╝═║▲▼◀▶◉◎●⟨⟩⟪⟫⌬⌭⌮∆∇⊕⊖⊗λΣΩπ∞≋≈01';
@@ -215,14 +222,16 @@ const VISUALIZATION_LABELS: Record<VisualizationType, string> = {
 let animationFrame: number | null = null;
 let bootTimeout: ReturnType<typeof setTimeout> | null = null;
 let typeTimeout: ReturnType<typeof setTimeout> | null = null;
+let cursorInterval: ReturnType<typeof setInterval> | null = null;
 let glitchInterval: ReturnType<typeof setInterval> | null = null;
 let particleInterval: ReturnType<typeof setInterval> | null = null;
 let ambientFrame: number | null = null;
 let showcaseFrame: number | null = null;
 let showcaseInterval: ReturnType<typeof setInterval> | null = null;
+let showcaseTimeout: ReturnType<typeof setTimeout> | null = null;
 let collapseFrame: number | null = null;
 
-// Emit for Branding Wizard (hero terminal interaction)
+// Emit for setup wizard link
 const emit = defineEmits<{
   (e: 'open-branding-wizard'): void;
 }>();
@@ -300,7 +309,7 @@ function closeTerminal() {
   minimizeTerminal();
 }
 
-// Open branding wizard
+// Open the branding wizard (hero interactive setup)
 function openBrandingWizard() {
   emit('open-branding-wizard');
 }
@@ -570,16 +579,59 @@ function runTypingPhase() {
 
 // Trigger glitch effect
 function triggerGlitch() {
+  if (isCalmLightMode.value) return;
   glitchActive.value = true;
   setTimeout(() => {
     glitchActive.value = false;
   }, 80 + Math.random() * 120);
 }
 
+function stopIdleEffects() {
+  if (cursorInterval) {
+    clearInterval(cursorInterval);
+    cursorInterval = null;
+  }
+  if (glitchInterval) {
+    clearInterval(glitchInterval);
+    glitchInterval = null;
+  }
+  if (particleInterval) {
+    clearInterval(particleInterval);
+    particleInterval = null;
+  }
+  if (ambientFrame) {
+    cancelAnimationFrame(ambientFrame);
+    ambientFrame = null;
+  }
+  if (showcaseFrame) {
+    cancelAnimationFrame(showcaseFrame);
+    showcaseFrame = null;
+  }
+  if (showcaseInterval) {
+    clearInterval(showcaseInterval);
+    showcaseInterval = null;
+  }
+  if (showcaseTimeout) {
+    clearTimeout(showcaseTimeout);
+    showcaseTimeout = null;
+  }
+}
+
 // Start idle effects
 function startIdleEffects() {
+  stopIdleEffects();
+
+  showCursor.value = true;
+  glitchActive.value = false;
+  showcaseTransition.value = false;
+
+  // Calm light-mode presets: keep the terminal stable (no glitch/particle/cursor blinking)
+  if (isCalmLightMode.value) {
+    return;
+  }
+
   // Cursor blink
-  setInterval(() => {
+  cursorInterval = setInterval(() => {
     showCursor.value = !showCursor.value;
   }, 530);
 
@@ -618,7 +670,7 @@ function startIdleEffects() {
   animateAmbient();
 
   // Start showcase after 3 seconds of idle
-  setTimeout(() => {
+  showcaseTimeout = setTimeout(() => {
     startShowcase();
   }, 3000);
 }
@@ -867,6 +919,7 @@ function updateCrm(deltaTime: number) {
 
 // Start showcase mode
 function startShowcase() {
+  if (isCalmLightMode.value) return;
   phase.value = 'showcase';
   currentVisualization.value = 'neural';
   initNeuralNetwork();
@@ -978,7 +1031,28 @@ const terminalStyle = computed(() => ({
 onMounted(() => {
   initUserState();
   if (props.autoPlay) {
-    setTimeout(runBootSequence, 100);
+    bootTimeout = setTimeout(runBootSequence, 100);
+  }
+});
+
+watch(isCalmLightMode, (calm) => {
+  if (calm) {
+    stopIdleEffects();
+    glitchActive.value = false;
+    showcaseTransition.value = false;
+    showCursor.value = true;
+    if (phase.value === 'showcase') {
+      phase.value = 'idle';
+    }
+    return;
+  }
+
+  // If we're already in an idle/showcase phase, restart effects in the new mode.
+  if (phase.value === 'idle') {
+    startIdleEffects();
+  }
+  if (phase.value === 'showcase') {
+    startShowcase();
   }
 });
 
@@ -989,9 +1063,11 @@ onUnmounted(() => {
   if (collapseFrame) cancelAnimationFrame(collapseFrame);
   if (bootTimeout) clearTimeout(bootTimeout);
   if (typeTimeout) clearTimeout(typeTimeout);
+  if (cursorInterval) clearInterval(cursorInterval);
   if (glitchInterval) clearInterval(glitchInterval);
   if (particleInterval) clearInterval(particleInterval);
   if (showcaseInterval) clearInterval(showcaseInterval);
+  if (showcaseTimeout) clearTimeout(showcaseTimeout);
 });
 </script>
 

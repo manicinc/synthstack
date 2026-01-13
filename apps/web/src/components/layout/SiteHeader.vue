@@ -532,7 +532,6 @@
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import { useThemeStore } from '@/stores/theme'
 import { useFeatureStore } from '@/stores/features'
-import { useQuasar } from 'quasar'
 import { useBranding } from '@/composables/useBranding'
 import { themePresets } from '@/config/themePresets'
 import AnimatedLogo from '@/components/ui/AnimatedLogo.vue'
@@ -540,7 +539,6 @@ import LanguageSwitcher from '@/components/ui/LanguageSwitcher.vue'
 
 const themeStore = useThemeStore()
 const featureStore = useFeatureStore()
-const $q = useQuasar()
 const { name, social, demo } = useBranding()
 // demo is a computed ref, so access its value
 const adminUrl = computed(() => demo.value.adminUrl)
@@ -559,12 +557,10 @@ const availablePresets = computed(() => Object.values(themePresets))
 
 function toggleTheme() {
   themeStore.toggleDarkMode()
-  $q.dark.set(themeStore.isDark)
 }
 
 function selectPreset(slug: string) {
   themeStore.setPreset(slug)
-  $q.dark.set(themeStore.isDark)
   themeDropdownOpen.value = false
   showThemeDialog.value = false
 }
@@ -1152,6 +1148,54 @@ onBeforeUnmount(() => {
 
   &:hover {
     background: var(--lp-bg-alt-hover, rgba(0, 0, 0, 0.07));
+  }
+}
+</style>
+
+<!-- Unscoped styles for light mode - maximum specificity -->
+<style lang="scss">
+// FORCE light mode header text to be visible
+body.body--light {
+  .site-header {
+    background: var(--bg-base, #ffffff) !important;
+    border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+    
+    .logo {
+      color: #18181b !important;
+      -webkit-text-fill-color: #18181b !important;
+      
+      span {
+        color: #18181b !important;
+        -webkit-text-fill-color: #18181b !important;
+      }
+    }
+    
+    .nav-links {
+      a, button, span {
+        color: #3f3f46 !important;
+        -webkit-text-fill-color: #3f3f46 !important;
+      }
+      
+      a:hover, a:focus {
+        color: #0d9488 !important;
+        -webkit-text-fill-color: #0d9488 !important;
+      }
+    }
+    
+    .about-toggle {
+      color: #3f3f46 !important;
+      -webkit-text-fill-color: #3f3f46 !important;
+      
+      .chevron {
+        color: #3f3f46 !important;
+        -webkit-text-fill-color: #3f3f46 !important;
+      }
+    }
+    
+    .preset-name {
+      color: #18181b !important;
+      -webkit-text-fill-color: #18181b !important;
+    }
   }
 }
 </style>

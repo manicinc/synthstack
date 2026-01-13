@@ -9,8 +9,8 @@
     "pricing": "Precios",
     "dashboard": "Panel",
     "generate": "Generar",
-    "printers": "Plantillas",
-    "filaments": "Integraciones",
+    "printers": "Impresoras",
+    "filaments": "Filamentos",
     "profiles": "Perfiles",
     "myProfiles": "Mis Perfiles",
     "history": "Historial",
@@ -22,8 +22,8 @@
   },
   "landing": {
     "hero": {
-      "title": "Tu Agencia en una Caja",
-      "subtitle": "Boilerplate SaaS con IA nativa y multiplataforma. Marca, despliega y lanza más rápido.",
+      "title": "Impresiones Perfectas, Siempre",
+      "subtitle": "Sube tu STL. Obtén configuraciones optimizadas por IA. Exporta a cualquier slicer.",
       "cta": "Acceso Early Bird - $149",
       "secondaryCta": "Ver en GitHub",
       "promoWithStats": "Limitado a {max} licencias de por vida • {remaining} restantes • Ahorra {discount}",
@@ -157,45 +157,45 @@
       "title": "¿Por Qué SynthStack?",
       "subtitle": "Lanza más rápido con desarrollo impulsado por IA.",
       "stlAnalysis": {
-        "title": "Asistente de Configuración",
-        "description": "Configura branding, claves y despliegue en minutos con wizards guiados y plantillas listas para producción."
+        "title": "Análisis Inteligente de STL",
+        "description": "Nuestra IA examina la geometría de tu modelo, detectando voladizos, paredes delgadas y orientaciones óptimas de impresión."
       },
       "aiSettings": {
-        "title": "Co-Fundadores IA",
-        "description": "Agentes especializados con RAG que conocen tus docs, CMS y proyectos. Automatiza tareas reales con aprobación."
+        "title": "Configuraciones Generadas por IA",
+        "description": "Obtén parámetros optimizados basados en tu impresora, filamento y características específicas del modelo."
       },
       "multiSlicer": {
-        "title": "Multiplataforma",
-        "description": "Web, iOS, Android, Desktop y PWA desde una sola base de código con Quasar."
+        "title": "Exporta a Cualquier Lugar",
+        "description": "Descarga perfiles listos para usar en OrcaSlicer, PrusaSlicer, Cura y más."
       },
       "community": {
-        "title": "Open Source + Pro",
-        "description": "Edición Community para empezar gratis y Pro para características avanzadas, soporte y actualizaciones."
+        "title": "Validado por la Comunidad",
+        "description": "Comparte perfiles, ve tasas de éxito y construye sobre lo que funciona."
       }
     },
     "howItWorks": {
       "title": "Cómo Funciona",
       "step1": {
-        "title": "Usa el Template",
-        "description": "Crea tu repo desde el template y ejecuta el stack localmente en minutos."
+        "title": "Sube Tu STL",
+        "description": "Arrastra y suelta tu modelo 3D para análisis instantáneo"
       },
       "step2": {
-        "title": "Configura Branding y .env",
-        "description": "Genera `config.json` y archivos `.env` con los wizards integrados."
+        "title": "Selecciona Tu Configuración",
+        "description": "Elige tu impresora y filamento de nuestra base de datos"
       },
       "step3": {
-        "title": "Construye y Automatiza",
-        "description": "Crea proyectos, flujos y agentes; conecta tus integraciones favoritas."
+        "title": "Genera Configuraciones",
+        "description": "La IA crea parámetros optimizados para tu impresión específica"
       },
       "step4": {
-        "title": "Despliega",
-        "description": "Despliega con Docker y CI/CD, itera rápido y escala cuando lo necesites."
+        "title": "Exporta e Imprime",
+        "description": "Descarga para tu slicer y comienza a imprimir"
       }
     },
     "stats": {
       "profiles": "Perfiles Generados",
-      "printers": "Integraciones",
-      "successRate": "Listo para Producción"
+      "printers": "Impresoras Soportadas",
+      "successRate": "Tasa de Éxito"
     },
     "featuresGrid": {
       "badge": "Todo lo que Necesitas",
@@ -342,36 +342,36 @@
     "quickActions": {
       "title": "Acciones Rápidas",
       "newGeneration": "Nueva Generación",
-      "browsePrinters": "Explorar Plantillas",
+      "browsePrinters": "Explorar Impresoras",
       "viewProfiles": "Ver Perfiles"
     },
     "recentGenerations": {
       "title": "Generaciones Recientes",
-      "empty": "Sin generaciones aún. Comienza con un prompt."
+      "empty": "Sin generaciones aún. ¡Comienza subiendo un STL!"
     }
   },
   "generate": {
-    "title": "Generar Contenido",
+    "title": "Generar Configuraciones de Impresión",
     "upload": {
-      "title": "Escribe un Prompt",
-      "dragDrop": "Describe lo que quieres generar",
+      "title": "Subir STL",
+      "dragDrop": "Arrastra y suelta tu archivo STL aquí",
       "or": "o",
       "browse": "Explorar Archivos",
       "maxSize": "Tamaño máximo: 50MB"
     },
     "analysis": {
-      "title": "Opciones",
+      "title": "Análisis del Modelo",
       "dimensions": "Dimensiones",
       "volume": "Volumen",
       "faces": "Caras",
       "overhangs": "Voladizos",
       "thinWalls": "Paredes Delgadas",
-      "difficulty": "Complejidad"
+      "difficulty": "Dificultad de Impresión"
     },
     "settings": {
-      "title": "Configuración",
-      "printer": "Seleccionar Plantilla",
-      "filament": "Seleccionar Canal",
+      "title": "Configuraciones",
+      "printer": "Seleccionar Impresora",
+      "filament": "Seleccionar Filamento",
       "quality": "Preset de Calidad",
       "priorities": "Prioridades",
       "speed": "Velocidad",
@@ -379,10 +379,10 @@
       "material": "Uso de Material"
     },
     "result": {
-      "title": "Resultado Generado",
+      "title": "Configuraciones Generadas",
       "confidence": "Confianza",
       "export": "Exportar",
-      "save": "Guardar",
+      "save": "Guardar Perfil",
       "regenerate": "Regenerar"
     }
   },

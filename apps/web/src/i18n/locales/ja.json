@@ -9,8 +9,8 @@
     "pricing": "料金",
     "dashboard": "ダッシュボード",
     "generate": "生成",
-    "printers": "テンプレート",
-    "filaments": "インテグレーション",
+    "printers": "プリンター",
+    "filaments": "フィラメント",
     "profiles": "プロファイル",
     "myProfiles": "マイプロファイル",
     "history": "履歴",
@@ -22,8 +22,8 @@
   },
   "landing": {
     "hero": {
-      "title": "Your Agency in a Box",
-      "subtitle": "AIネイティブなクロスプラットフォームSaaSボイラープレート。Brandingとデプロイを整えて、より速く出荷。",
+      "title": "毎回完璧なプリント",
+      "subtitle": "STLをアップロード。AI最適化設定を取得。どんなスライサーにもエクスポート。",
       "cta": "アーリーバードアクセス - $149",
       "secondaryCta": "GitHubで見る",
       "promoWithStats": "ライフタイムライセンス {max} 件限定 • 残り {remaining} 件 • {discount} お得",
@@ -157,45 +157,45 @@
       "title": "なぜSynthStack？",
       "subtitle": "AI搭載開発でより速くリリース。",
       "stlAnalysis": {
-        "title": "セットアップ・ウィザード",
-        "description": "ブランド設定、キー、デプロイをガイド付きで数分で構成。プロダクション向けテンプレートも同梱。"
+        "title": "スマートSTL分析",
+        "description": "AIがモデルの形状を検査し、オーバーハング、薄い壁、最適なプリント方向を検出します。"
       },
       "aiSettings": {
-        "title": "AI 共同創業者",
-        "description": "RAG で docs/CMS/プロジェクトを理解する専門エージェント。承認付きで実作業を自動化。"
+        "title": "AI生成設定",
+        "description": "お使いのプリンター、フィラメント、モデル特性に基づいた最適化パラメーターを取得できます。"
       },
       "multiSlicer": {
-        "title": "クロスプラットフォーム",
-        "description": "Quasar で Web / iOS / Android / Desktop / PWA を 1 つのコードベースで。"
+        "title": "どこへでもエクスポート",
+        "description": "OrcaSlicer、PrusaSlicer、Curaなど用の即使用可能なプロファイルをダウンロード。"
       },
       "community": {
-        "title": "Open Source + Pro",
-        "description": "Community で無料スタート、Pro で高度機能・サポート・アップデート。"
+        "title": "コミュニティ検証済み",
+        "description": "プロファイルを共有し、成功率を確認し、効果的な方法を基に構築。"
       }
     },
     "howItWorks": {
       "title": "使い方",
       "step1": {
-        "title": "テンプレートを使用",
-        "description": "テンプレートからリポジトリを作成し、ローカルで起動。"
+        "title": "STLをアップロード",
+        "description": "3Dモデルをドラッグ＆ドロップして即座に分析"
       },
       "step2": {
-        "title": "Branding と .env を設定",
-        "description": "ウィザードで `config.json` と `.env` を生成。"
+        "title": "セットアップを選択",
+        "description": "データベースからプリンターとフィラメントを選択"
       },
       "step3": {
-        "title": "構築と自動化",
-        "description": "プロジェクト、ワークフロー、エージェントを作成し、連携を接続。"
+        "title": "設定を生成",
+        "description": "AIがお使いのプリント用に最適化されたパラメーターを作成"
       },
       "step4": {
-        "title": "デプロイ",
-        "description": "Docker と CI/CD でデプロイし、素早く反復・スケール。"
+        "title": "エクスポート＆プリント",
+        "description": "スライサー用にダウンロードしてプリント開始"
       }
     },
     "stats": {
       "profiles": "生成されたプロファイル",
-      "printers": "インテグレーション",
-      "successRate": "本番対応"
+      "printers": "対応プリンター",
+      "successRate": "成功率"
     },
     "featuresGrid": {
       "badge": "必要なものすべて",
@@ -342,36 +342,36 @@
     "quickActions": {
       "title": "クイックアクション",
       "newGeneration": "新規生成",
-      "browsePrinters": "テンプレートを閲覧",
+      "browsePrinters": "プリンターを閲覧",
       "viewProfiles": "プロファイルを表示"
     },
     "recentGenerations": {
       "title": "最近の生成",
-      "empty": "まだ生成がありません。プロンプトから始めましょう。"
+      "empty": "まだ生成がありません。STLのアップロードから始めましょう！"
     }
   },
   "generate": {
-    "title": "コンテンツを生成",
+    "title": "プリント設定を生成",
     "upload": {
-      "title": "プロンプト入力",
-      "dragDrop": "生成したい内容を入力してください",
+      "title": "STLアップロード",
+      "dragDrop": "STLファイルをここにドラッグ＆ドロップ",
       "or": "または",
       "browse": "ファイルを選択",
       "maxSize": "最大ファイルサイズ：50MB"
     },
     "analysis": {
-      "title": "オプション",
+      "title": "モデル分析",
       "dimensions": "寸法",
       "volume": "体積",
       "faces": "面数",
       "overhangs": "オーバーハング",
       "thinWalls": "薄い壁",
-      "difficulty": "複雑さ"
+      "difficulty": "プリント難易度"
     },
     "settings": {
       "title": "設定",
-      "printer": "テンプレートを選択",
-      "filament": "チャンネルを選択",
+      "printer": "プリンターを選択",
+      "filament": "フィラメントを選択",
       "quality": "品質プリセット",
       "priorities": "優先度",
       "speed": "速度",
@@ -379,10 +379,10 @@
       "material": "材料使用量"
     },
     "result": {
-      "title": "生成結果",
+      "title": "生成された設定",
       "confidence": "信頼度",
       "export": "エクスポート",
-      "save": "保存",
+      "save": "プロファイルを保存",
       "regenerate": "再生成"
     }
   },

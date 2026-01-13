@@ -266,7 +266,7 @@
           <section class="guide-cta">
             <h2>Let AI Choose Your Layer Height</h2>
             <p>
-              SynthStack analyzes your model geometry and automatically selects the optimal 
+              SynthStack analyzes your model geometry and automatically selects the optimal
               layer height based on detail requirements and print time goals.
             </p>
             <q-btn
@@ -595,7 +595,6 @@ onMounted(() => {
   }
 }
 </style>
-
 
 
 

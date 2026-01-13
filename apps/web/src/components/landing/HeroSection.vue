@@ -114,7 +114,7 @@
             icon="code"
             class="demo-btn"
             data-testid="hero-cta-secondary"
-            href="https://github.com/manicinc/synthstack"
+            :href="githubUrl"
             target="_blank"
           />
         </div>
@@ -145,9 +145,10 @@
         aria-label="SynthStack visualization"
       >
         <AnimatedTerminal @open-branding-wizard="brandingWizardOpen = true" />
-        <BrandingWizardDialog v-model="brandingWizardOpen" />
       </div>
     </div>
+
+    <BrandingWizardDialog v-model="brandingWizardOpen" />
   </section>
 </template>
 
@@ -156,6 +157,7 @@ import { computed, ref, onMounted, nextTick, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useVisualEditing } from '@/composables/useVisualEditing'
 import type { Page } from '@/composables/usePages'
+import { branding } from '@/config/branding'
 import AnimatedTerminal from '@/components/ui/AnimatedTerminal.vue'
 import BrandingWizardDialog from '@/components/branding/BrandingWizardDialog.vue'
 import AnimatedBox from '@/components/ui/AnimatedBox.vue'
@@ -165,16 +167,18 @@ import { analyticsEvents } from '@/boot/analytics'
 import { useThemeStore } from '@/stores/theme'
 
 const themeStore = useThemeStore()
-const brandingWizardOpen = ref(false)
+const githubUrl = branding.social.github || branding.github.communityRepoUrl
 
 // Computed style for light mode text visibility
 const lightModeTextStyle = computed(() => {
   if (themeStore.isDark) return {}
   return {
-    opacity: '1 !important',
-    visibility: 'visible',
-    color: '#18181b',
-    WebkitTextFillColor: '#18181b'
+    '--delay': '0ms',
+    '--color-delay': '0ms',
+    opacity: '1',
+    visibility: 'visible' as const,
+    color: 'var(--text-primary)',
+    WebkitTextFillColor: 'var(--text-primary)'
   }
 })
 
@@ -182,9 +186,9 @@ const lightModeSubtitleStyle = computed(() => {
   if (themeStore.isDark) return {}
   return {
     opacity: '1',
-    visibility: 'visible',
-    color: '#3f3f46',
-    WebkitTextFillColor: '#3f3f46'
+    visibility: 'visible' as const,
+    color: 'var(--text-secondary)',
+    WebkitTextFillColor: 'var(--text-secondary)'
   }
 })
 
@@ -203,6 +207,8 @@ const props = withDefaults(defineProps<Props>(), {
   promoStats: null,
   checkoutLoading: false
 })
+
+const brandingWizardOpen = ref(false)
 
 const emit = defineEmits<{
   (e: 'checkout'): void
@@ -790,4 +796,3 @@ onMounted(async () => {
   color: var(--text-primary) !important;
 }
 </style>
-

@@ -99,8 +99,6 @@ function startAnimation() {
 const forceLightModeVisibility = () => {
   if (themeStore.isDark || !textRef.value) return
   
-  console.log('[AutonomousText] Forcing light mode visibility')
-  
   const el = textRef.value
   const textContent = el.querySelector('.text-content') as HTMLElement
   const textGlow = el.querySelector('.text-glow') as HTMLElement
@@ -109,12 +107,15 @@ const forceLightModeVisibility = () => {
     textContent.style.setProperty('opacity', '1', 'important')
     textContent.style.setProperty('clip-path', 'inset(0 0% 0 0)', 'important')
     textContent.style.setProperty('visibility', 'visible', 'important')
-    textContent.style.setProperty('-webkit-text-fill-color', 'transparent', 'important')
+    // Use SOLID color in light mode - gradient text can render inconsistently and appear invisible
+    textContent.style.setProperty('background', 'none', 'important')
+    textContent.style.setProperty('-webkit-text-fill-color', '#0d9488', 'important')
+    textContent.style.setProperty('color', '#0d9488', 'important')
   }
   
   if (textGlow) {
-    textGlow.style.setProperty('opacity', '0.4', 'important')
-    textGlow.style.setProperty('-webkit-text-fill-color', 'transparent', 'important')
+    // Hide glow layer in light mode - blur can look like flicker on white backgrounds
+    textGlow.style.setProperty('display', 'none', 'important')
   }
 }
 
@@ -330,25 +331,31 @@ onMounted(() => {
   }
 }
 
-// LIGHT MODE: Force visibility using :global() for body selector
-:global(.body--light) .autonomous-text {
-  --gradient-1: #4f46e5;  // Darker indigo
-  --gradient-2: #059669;  // Darker teal
-  --gradient-3: #7c3aed;  // Darker purple
-}
-
+// LIGHT MODE: Use SOLID COLOR - gradients don't render reliably
+// The gradient text effect uses background-clip:text + transparent fill
+// but this can fail in light mode due to specificity/override issues.
 :global(.body--light) .autonomous-text .text-content {
   opacity: 1 !important;
   clip-path: inset(0 0% 0 0) !important;
   visibility: visible !important;
+  // SOLID COLOR instead of gradient
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: #0d9488 !important; // Teal - matches brand
+  color: #0d9488 !important;
+  animation: none !important;
+  transition: none !important;
 }
 
-:global(.body--light) .autonomous-text .text-layer {
-  -webkit-text-fill-color: transparent !important;
-}
-
+// HIDE glow layer in light mode - blur effect looks bad / can flicker
 :global(.body--light) .autonomous-text .text-glow {
-  opacity: 0.4 !important;
+  display: none !important;
+}
+
+// Hide shimmer in light mode
+:global(.body--light) .autonomous-text .shimmer-sweep {
+  display: none !important;
 }
 
 // Force visibility when light-mode-force class is applied via Vue
@@ -357,10 +364,13 @@ onMounted(() => {
     opacity: 1 !important;
     clip-path: inset(0 0% 0 0) !important;
     visibility: visible !important;
+    background: none !important;
+    -webkit-text-fill-color: #0d9488 !important;
+    color: #0d9488 !important;
   }
   
   .text-glow {
-    opacity: 0.4 !important;
+    display: none !important;
   }
 }
 </style>

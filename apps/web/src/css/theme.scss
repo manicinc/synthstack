@@ -12,7 +12,6 @@
 // ============================================
 
 :root,
-html.dark,
 .body--dark {
   // Landing Page Variables (mapped to theme system)
   --lp-bg: #09090b;
@@ -131,7 +130,6 @@ html.dark,
 // Theme Variables - Light Mode
 // ============================================
 
-html.light,
 .body--light {
   // Landing Page Variables (mapped to theme system)
   --lp-bg: #ffffff;
@@ -574,3 +572,4 @@ html.no-transitions *::before,
 html.no-transitions *::after {
   transition: none !important;
 }
+

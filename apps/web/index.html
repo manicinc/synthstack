@@ -97,35 +97,12 @@
   <title>SynthStack - Your Autonomous Agency in a Box</title>
 
 
-  <!-- Prevent FOUC (Flash of Unstyled Content) for light/dark mode -->
+  <!-- Prevent FOUC (Flash of Unstyled Content) for dark mode -->
   <script>
     (function () {
-      var isDark = true; // Default to dark
-      var stored = localStorage.getItem('synthstack-theme');
-
-      if (stored) {
-        try {
-          // Handle new JSON format: {presetSlug, colorMode}
-          var prefs = JSON.parse(stored);
-          if (prefs.colorMode === 'light') {
-            isDark = false;
-          } else if (prefs.colorMode === 'dark') {
-            isDark = true;
-          } else if (prefs.colorMode === 'system') {
-            isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          }
-        } catch (e) {
-          // Handle legacy format: just 'light' or 'dark' string
-          if (stored === 'light') isDark = false;
-          else if (stored === 'dark') isDark = true;
-        }
-      } else {
-        // No stored preference - use system preference
-        isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      }
-
-      // Apply immediately to prevent flash
-      document.documentElement.classList.add(isDark ? 'dark' : 'light');
+      var stored = localStorage.getItem('quasar-dark-mode');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var isDark = stored === 'true' || (stored === null && prefersDark);
       document.documentElement.style.backgroundColor = isDark ? '#09090B' : '#FFFFFF';
       document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
     })();
@@ -138,31 +115,19 @@
       min-height: 100vh;
     }
 
-    /* Initial colors before Vue hydration (FOUC prevention script sets html.dark/light class) */
-    html.dark {
+    html {
       background-color: #09090B;
-      color-scheme: dark;
-      color: #FAFAFA;
     }
 
-    html.light {
-      background-color: #FFFFFF;
-      color-scheme: light;
-      color: #18181b;
-    }
-
-    /* Loading state text color */
-    html.light body {
-      color: #18181b;
-    }
-
-    html.dark body {
-      color: #FAFAFA;
+    /* Dark mode default */
+    body {
+      background-color: inherit;
+      color: #fafafa;
     }
   </style>
 </head>
 
-<body>
+<body class="body--dark">
   <!-- quasar:entry-point -->
 </body>
 
