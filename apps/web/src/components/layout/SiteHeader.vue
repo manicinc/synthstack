@@ -34,11 +34,18 @@
           >GitHub</a>
         </li>
         <li
+          ref="aboutDropdownEl"
           class="about-dropdown"
           @mouseenter="aboutOpen = true"
           @mouseleave="aboutOpen = false"
         >
-          <button class="about-toggle">
+          <button
+            type="button"
+            class="about-toggle"
+            :aria-expanded="aboutOpen"
+            aria-haspopup="menu"
+            @click="aboutOpen = !aboutOpen"
+          >
             Resources
             <span
               class="chevron"
@@ -135,6 +142,74 @@
           v-if="showLanguageSwitcher"
           variant="compact"
         />
+        <!-- Theme Preset Dropdown -->
+        <div
+          ref="themeDropdownEl"
+          class="theme-preset-dropdown"
+          @mouseenter="themeDropdownOpen = true"
+          @mouseleave="themeDropdownOpen = false"
+        >
+          <button
+            type="button"
+            class="theme-preset-btn"
+            :title="'Theme: ' + (currentPreset?.name || 'Default')"
+            :aria-expanded="themeDropdownOpen"
+            aria-haspopup="menu"
+            @click="themeDropdownOpen = !themeDropdownOpen"
+          >
+            <svg
+              class="palette-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.61-.23-1.2-.64-1.67-.08-.1-.13-.21-.13-.33 0-.28.22-.5.5-.5H16c3.31 0 6-2.69 6-6 0-4.96-4.49-9-10-9zM5.5 12c-.83 0-1.5-.67-1.5-1.5S4.67 9 5.5 9 7 9.67 7 10.5 6.33 12 5.5 12zm3-4C7.67 8 7 7.33 7 6.5S7.67 5 8.5 5s1.5.67 1.5 1.5S9.33 8 8.5 8zm7 0c-.83 0-1.5-.67-1.5-1.5S14.67 5 15.5 5s1.5.67 1.5 1.5S16.33 8 15.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S17.67 9 18.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
+          <Transition name="dropdown-fade">
+            <div
+              v-if="themeDropdownOpen"
+              class="theme-preset-menu"
+              role="menu"
+            >
+              <div class="preset-menu-header">Theme Presets</div>
+              <div class="preset-list">
+                <button
+                  v-for="preset in availablePresets"
+                  :key="preset.slug"
+                  type="button"
+                  class="preset-option"
+                  :class="{ active: currentPreset?.slug === preset.slug }"
+                  role="menuitem"
+                  @click="selectPreset(preset.slug)"
+                >
+                  <div class="preset-colors">
+                    <span
+                      class="color-dot"
+                      :style="{ background: preset.colors.primary }"
+                    />
+                    <span
+                      class="color-dot"
+                      :style="{ background: preset.colors.secondary }"
+                    />
+                    <span
+                      class="color-dot"
+                      :style="{ background: preset.colors.accent }"
+                    />
+                  </div>
+                  <span class="preset-name">{{ preset.name }}</span>
+                  <span
+                    v-if="preset.isPremium"
+                    class="premium-badge"
+                  >PRO</span>
+                </button>
+              </div>
+            </div>
+          </Transition>
+        </div>
         <a
           :href="adminUrl"
           target="_blank"
@@ -190,6 +265,25 @@
           >
             <path
               d="M21.752 15.002A9.718 9.718 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+        <!-- Theme Preset Button -->
+        <button
+          type="button"
+          class="theme-preset-btn mobile-preset-btn"
+          :title="'Theme: ' + (currentPreset?.name || 'Default')"
+          @click="showThemeDialog = true"
+        >
+          <svg
+            class="palette-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.61-.23-1.2-.64-1.67-.08-.1-.13-.21-.13-.33 0-.28.22-.5.5-.5H16c3.31 0 6-2.69 6-6 0-4.96-4.49-9-10-9zM5.5 12c-.83 0-1.5-.67-1.5-1.5S4.67 9 5.5 9 7 9.67 7 10.5 6.33 12 5.5 12zm3-4C7.67 8 7 7.33 7 6.5S7.67 5 8.5 5s1.5.67 1.5 1.5S9.33 8 8.5 8zm7 0c-.83 0-1.5-.67-1.5-1.5S14.67 5 15.5 5s1.5.67 1.5 1.5S16.33 8 15.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S17.67 9 18.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"
               fill="currentColor"
             />
           </svg>
@@ -372,34 +466,151 @@
         </div>
       </Transition>
     </Teleport>
+
+    <Teleport to="body">
+      <Transition name="dialog-fade">
+        <div
+          v-if="showThemeDialog"
+          class="theme-dialog-overlay"
+          @click.self="showThemeDialog = false"
+        >
+          <div
+            class="theme-preset-menu theme-preset-menu--dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Theme presets"
+          >
+            <div class="theme-dialog-header">
+              <div class="theme-dialog-title">Theme Presets</div>
+              <button
+                type="button"
+                class="theme-dialog-close"
+                aria-label="Close"
+                @click="showThemeDialog = false"
+              >
+                ×
+              </button>
+            </div>
+            <div class="preset-list">
+              <button
+                v-for="preset in availablePresets"
+                :key="preset.slug"
+                type="button"
+                class="preset-option"
+                :class="{ active: currentPreset?.slug === preset.slug }"
+                @click="selectPreset(preset.slug)"
+              >
+                <div class="preset-colors">
+                  <span
+                    class="color-dot"
+                    :style="{ background: preset.colors.primary }"
+                  />
+                  <span
+                    class="color-dot"
+                    :style="{ background: preset.colors.secondary }"
+                  />
+                  <span
+                    class="color-dot"
+                    :style="{ background: preset.colors.accent }"
+                  />
+                </div>
+                <span class="preset-name">{{ preset.name }}</span>
+                <span
+                  v-if="preset.isPremium"
+                  class="premium-badge"
+                >PRO</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </header>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import { useThemeStore } from '@/stores/theme'
 import { useFeatureStore } from '@/stores/features'
 import { useQuasar } from 'quasar'
 import { useBranding } from '@/composables/useBranding'
+import { themePresets } from '@/config/themePresets'
 import AnimatedLogo from '@/components/ui/AnimatedLogo.vue'
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher.vue'
 
 const themeStore = useThemeStore()
 const featureStore = useFeatureStore()
 const $q = useQuasar()
-const { name, mark, social, links, demo } = useBranding()
+const { name, social, demo } = useBranding()
 // demo is a computed ref, so access its value
 const adminUrl = computed(() => demo.value.adminUrl)
 const mobileMenu = ref(false)
 const aboutOpen = ref(false)
+const themeDropdownOpen = ref(false)
+const showThemeDialog = ref(false)
+
+const aboutDropdownEl = ref<HTMLElement | null>(null)
+const themeDropdownEl = ref<HTMLElement | null>(null)
 
 const isDark = computed(() => themeStore.isDark)
 const showLanguageSwitcher = computed(() => featureStore.hasLanguageSwitching)
+const currentPreset = computed(() => themeStore.currentPreset)
+const availablePresets = computed(() => Object.values(themePresets))
 
 function toggleTheme() {
   themeStore.toggleDarkMode()
   $q.dark.set(themeStore.isDark)
 }
+
+function selectPreset(slug: string) {
+  themeStore.setPreset(slug)
+  $q.dark.set(themeStore.isDark)
+  themeDropdownOpen.value = false
+  showThemeDialog.value = false
+}
+
+function handleKeydown(e: KeyboardEvent) {
+  if (e.key !== 'Escape') return
+
+  if (showThemeDialog.value) {
+    showThemeDialog.value = false
+    return
+  }
+  if (themeDropdownOpen.value) {
+    themeDropdownOpen.value = false
+    return
+  }
+  if (aboutOpen.value) {
+    aboutOpen.value = false
+    return
+  }
+  if (mobileMenu.value) {
+    mobileMenu.value = false
+  }
+}
+
+function handleGlobalClick(e: MouseEvent) {
+  const target = e.target as Node | null
+  if (!target) return
+
+  if (aboutOpen.value && aboutDropdownEl.value && !aboutDropdownEl.value.contains(target)) {
+    aboutOpen.value = false
+  }
+
+  if (themeDropdownOpen.value && themeDropdownEl.value && !themeDropdownEl.value.contains(target)) {
+    themeDropdownOpen.value = false
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeydown)
+  window.addEventListener('click', handleGlobalClick)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeydown)
+  window.removeEventListener('click', handleGlobalClick)
+})
 </script>
 
 
@@ -736,5 +947,211 @@ function toggleTheme() {
   opacity: 0;
   transform: translateY(-8px);
 }
-</style>
 
+// Dialog fade transition
+.dialog-fade-enter-active,
+.dialog-fade-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.dialog-fade-enter-from,
+.dialog-fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px) scale(0.98);
+}
+
+// Theme Preset Dropdown
+.theme-preset-dropdown {
+  position: relative;
+}
+
+.theme-preset-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: var(--surface-2, transparent);
+  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.1));
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  .palette-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--text-secondary, #666);
+    transition: color 0.2s ease;
+  }
+
+  &:hover {
+    background: var(--surface-hover, rgba(255, 255, 255, 0.05));
+    border-color: var(--border-strong, rgba(255, 255, 255, 0.15));
+    transform: scale(1.05);
+
+    .palette-icon {
+      color: var(--lp-primary, #0d9488);
+    }
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.theme-preset-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 220px;
+  background: var(--lp-bg, #fff);
+  border: 1px solid var(--lp-border, rgba(0, 0, 0, 0.1));
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  padding: 8px;
+  z-index: 1000;
+
+  .preset-menu-header {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--lp-text-secondary, #666);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--lp-border, rgba(0, 0, 0, 0.08));
+    margin-bottom: 4px;
+  }
+
+  .preset-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+
+  .preset-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    width: 100%;
+    text-align: left;
+
+    &:hover {
+      background: var(--lp-bg-alt, rgba(0, 0, 0, 0.04));
+    }
+
+    &.active {
+      background: var(--lp-primary-muted, rgba(13, 148, 136, 0.1));
+
+      .preset-name {
+        color: var(--lp-primary, #0d9488);
+        font-weight: 600;
+      }
+    }
+
+    .preset-colors {
+      display: flex;
+      gap: 3px;
+    }
+
+    .color-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .preset-name {
+      flex: 1;
+      font-size: 0.875rem;
+      color: var(--lp-text, #111);
+    }
+
+    .premium-badge {
+      font-size: 0.625rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff;
+    }
+  }
+}
+
+.mobile-preset-btn {
+  .palette-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// Mobile theme dialog
+.theme-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 1001;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+}
+
+.theme-preset-menu--dialog {
+  position: relative;
+  top: auto;
+  right: auto;
+  width: min(440px, calc(100vw - 32px));
+  max-height: min(75vh, 560px);
+  margin: 0 auto;
+}
+
+.theme-preset-menu--dialog .preset-list {
+  max-height: min(60vh, 420px);
+}
+
+.theme-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--lp-border, rgba(0, 0, 0, 0.08));
+  margin: -8px -8px 8px;
+}
+
+.theme-dialog-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--lp-text-secondary, #666);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.theme-dialog-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--lp-border, rgba(0, 0, 0, 0.1));
+  background: var(--lp-bg-alt, rgba(0, 0, 0, 0.04));
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--lp-text, #111);
+
+  &:hover {
+    background: var(--lp-bg-alt-hover, rgba(0, 0, 0, 0.07));
+  }
+}
+</style>
