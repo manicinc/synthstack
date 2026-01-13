@@ -10,6 +10,7 @@ SynthStack is available in two versions built from the same codebase using featu
 | Client Portal | ✅ | ✅ |
 | Invoicing & Billing | ✅ | ✅ |
 | Stripe Integration | ✅ | ✅ |
+| Basic Copilot | ✅ | ✅ |
 | Text + Image Generation (BYOK) | ✅ | ✅ |
 | RAG / Doc Chat | ❌ | ✅ |
 | Node-RED Workflows | ❌ | ✅ |
@@ -19,18 +20,20 @@ SynthStack is available in two versions built from the same codebase using featu
 | **AI Agents (LangGraph)** | ❌ | ✅ |
 | **Referral System** | ❌ | ✅ |
 
+For a licensing + template overview, see [EDITION_MATRIX.md](./EDITION_MATRIX.md).
+
 ## Configuration Files
 
-The root directory contains three environment configuration files:
+The root directory includes safe-to-commit templates plus gitignored local profiles:
 
 ### `.env.example`
 - **Purpose**: Template with placeholder values
 - **Usage**: Copy to `.env` and fill in your credentials
 - **Version**: PRO (copilot and referrals enabled by default)
 
-### `.env.lite`
-- **Purpose**: LITE (Community Edition) configuration
-- **Features**: Core platform + basic chat/generation (no agents, no RAG, no referrals, no workflows)
+### `.env.lite.example`
+- **Purpose**: LITE (Community Edition) template
+- **Features**: Basic Copilot enabled (no agents, no RAG, no referrals)
 - **Feature Flags**:
   ```bash
   ENABLE_COPILOT=true
@@ -43,9 +46,9 @@ The root directory contains three environment configuration files:
   VITE_ENABLE_REFERRALS=false
   ```
 
-### `.env.pro`
-- **Purpose**: PRO (Commercial Edition) configuration
-- **Features**: ALL features including AI Copilot, Referrals, and Workflows
+### `.env.pro.example`
+- **Purpose**: PRO (Commercial Edition) template
+- **Features**: ALL features including Copilot RAG, AI Agents, and Referrals
 - **Feature Flags**:
   ```bash
   ENABLE_COPILOT=true
@@ -57,6 +60,11 @@ The root directory contains three environment configuration files:
   VITE_ENABLE_COPILOT_RAG=true
   VITE_ENABLE_REFERRALS=true
   ```
+
+### Local profiles (gitignored)
+- `.env` - your active config
+- `.env.lite` - optional local LITE profile
+- `.env.pro` - optional local PRO profile
 
 ## Quick Start
 
@@ -73,7 +81,10 @@ pnpm build:lite
 
 **Option 2: Manual setup**
 ```bash
-# Copy LITE config
+# First-time: create your local profile from the template
+cp .env.lite.example .env.lite
+
+# Activate it
 cp .env.lite .env
 
 # Run services
@@ -93,7 +104,10 @@ pnpm build:pro
 
 **Option 2: Manual setup**
 ```bash
-# Copy PRO config
+# First-time: create your local profile from the template
+cp .env.pro.example .env.pro
+
+# Activate it
 cp .env.pro .env
 
 # Run services
@@ -102,10 +116,10 @@ pnpm dev
 
 ## Package-Level Configuration
 
-Each package also has its own `.env`, `.env.lite`, and `.env.pro` files:
+SynthStack uses a small set of environment files depending on what you run:
 
 ### Backend (api-gateway)
-- **Location**: `packages/api-gateway/.env*`
+- **Location**: root `.env` (loaded by default from `packages/api-gateway/src/config/index.ts`)
 - **Feature Flags**:
   - `ENABLE_COPILOT` - Enable/disable basic AI surfaces (chat/generation)
   - `ENABLE_AI_AGENTS` - Enable/disable agentic AI (LangGraph + agents)
@@ -113,7 +127,7 @@ Each package also has its own `.env`, `.env.lite`, and `.env.pro` files:
   - `ENABLE_REFERRALS` - Enable/disable referral & rewards system
 
 ### Frontend (web)
-- **Location**: `apps/web/.env*`
+- **Location**: `apps/web/.env*` (VITE_ variables used at build/dev time)
 - **Feature Flags**:
   - `VITE_ENABLE_COPILOT` - Show/hide basic AI UI components
   - `VITE_ENABLE_AI_AGENTS` - Show/hide agentic AI UI (Copilot Hub)
@@ -168,11 +182,11 @@ export const FEATURES = {
 Simply copy the desired environment file and restart the dev servers:
 
 ```bash
-# Switch to LITE
+# Switch to LITE (first-time: cp .env.lite.example .env.lite)
 cp .env.lite .env
 pnpm dev
 
-# Switch to PRO
+# Switch to PRO (first-time: cp .env.pro.example .env.pro)
 cp .env.pro .env
 pnpm dev
 ```
@@ -214,12 +228,14 @@ When using Docker, the root `.env` file is automatically loaded by Docker Compos
 
 ### LITE Version
 ```bash
+# First-time: cp .env.lite.example .env.lite
 cp .env.lite .env
 docker compose up
 ```
 
 ### PRO Version
 ```bash
+# First-time: cp .env.pro.example .env.pro
 cp .env.pro .env
 docker compose up
 ```
@@ -304,7 +320,7 @@ VITE_ENABLE_REFERRALS=false
 
 ### Feature Not Loading
 
-1. **Check environment file**: Ensure you copied the correct `.env.lite` or `.env.pro`
+1. **Check environment file**: Ensure you copied the correct `.env.lite` or `.env.pro` (first-time: create from `.env.lite.example` / `.env.pro.example`)
 2. **Restart dev servers**: Changes to `.env` require restart
 3. **Check logs**: Look for feature initialization messages:
    ```
@@ -317,7 +333,7 @@ VITE_ENABLE_REFERRALS=false
 If copilot or referral routes return 404, it means:
 - The feature is disabled in the backend
 - The routes were not registered
-- Check `ENABLE_AI_AGENTS` and `ENABLE_REFERRALS` in `packages/api-gateway/.env`
+- Check `ENABLE_AI_AGENTS` and `ENABLE_REFERRALS` in the root `.env` (api-gateway loads from `packages/api-gateway/src/config/index.ts`)
 
 ### Components Not Rendering
 

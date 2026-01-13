@@ -4,6 +4,8 @@
 
 SynthStack uses environment files to configure both LITE and PRO versions. This guide explains the file structure and setup workflow.
 
+Tip: The web app includes an **Environment Setup Wizard** at `/setup/env` that can generate ready-to-copy `.env` files from the repo templates.
+
 ## Environment Files
 
 ### Template Files (Committed to Git)
@@ -13,7 +15,7 @@ These files contain **placeholder values** and are safe to commit:
 | File | Purpose |
 |------|---------|
 | `.env.example` | Main template with placeholder values (PRO version) |
-| `.env.lite.example` | LITE version template (copilot/referrals disabled) |
+| `.env.lite.example` | LITE version template (basic copilot; no agents/RAG/referrals) |
 | `.env.pro.example` | PRO version template (all features enabled) |
 
 ### Personal Configuration Files (NOT in Git)
@@ -23,8 +25,8 @@ These files contain **real credentials** and are ignored by git:
 | File | Purpose | Created From |
 |------|---------|--------------|
 | `.env` | Active configuration used by services | Copy from any .example file |
-| `.env.lite` | Your personal LITE version config with real values | Copy from `.env` and change flags |
-| `.env.pro` | Your personal PRO version config with real values | Copy from `.env` and keep flags |
+| `.env.lite` | Your personal LITE version config with real values | Copy from `.env.lite.example` |
+| `.env.pro` | Your personal PRO version config with real values | Copy from `.env.pro.example` |
 
 ## Initial Setup
 
@@ -56,28 +58,11 @@ SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 Once your `.env` has real values, create personal versions for easy switching:
 
 ```bash
-# Create LITE version (with your real credentials)
-cp .env .env.lite
+# First-time: create your local profiles from the templates
+cp .env.lite.example .env.lite
+cp .env.pro.example .env.pro
 
-# Edit .env.lite and change feature flags to:
-# ENABLE_COPILOT=false
-# ENABLE_REFERRALS=false
-# VITE_ENABLE_COPILOT=false
-# VITE_ENABLE_REFERRALS=false
-
-# Create PRO version (with your real credentials)
-cp .env .env.pro
-
-# Keep all flags as true in .env.pro
-```
-
-**Quick flag updates:**
-```bash
-# LITE version
-sed -i '' 's/ENABLE_COPILOT=true/ENABLE_COPILOT=false/g' .env.lite
-sed -i '' 's/ENABLE_REFERRALS=true/ENABLE_REFERRALS=false/g' .env.lite
-sed -i '' 's/VITE_ENABLE_COPILOT=true/VITE_ENABLE_COPILOT=false/g' .env.lite
-sed -i '' 's/VITE_ENABLE_REFERRALS=true/VITE_ENABLE_REFERRALS=false/g' .env.lite
+# Then fill in real values in .env.lite / .env.pro (recommended: edit .env.pro first, then copy shared credentials into .env.lite)
 ```
 
 ## Switching Between Versions
@@ -120,19 +105,14 @@ pnpm dev
 
 ## Package-Level Configuration
 
-Each package can override root environment variables with its own `.env` files:
+Some packages use their own `.env` files (frontend), while others load the root `.env` (backend).
 
 ### Backend (api-gateway)
 
-```
-packages/api-gateway/
-├── .env.example        # Template (committed)
-├── .env.lite.example   # LITE template (committed)
-├── .env.pro.example    # PRO template (committed)
-├── .env.lite           # Personal LITE config (gitignored)
-├── .env.pro            # Personal PRO config (gitignored)
-└── .env                # Active config (gitignored)
-```
+The API gateway loads environment variables from the **repo root** `.env` by default:
+
+- Source: `packages/api-gateway/src/config/index.ts`
+- Template reference: `packages/api-gateway/.env.example` (for docs/visibility)
 
 ### Frontend (web)
 
@@ -186,14 +166,13 @@ These are protected by `.gitignore`:
 
 2. **Copy templates**
    ```bash
-   # Root
-   cp .env.example .env
+   # Root profiles (server-side / docker / api-gateway)
+   cp .env.pro.example .env.pro
+   cp .env.lite.example .env.lite
 
-   # Backend
-   cp packages/api-gateway/.env.example packages/api-gateway/.env
-
-   # Frontend
-   cp apps/web/.env.example apps/web/.env
+   # Frontend profiles (VITE_* variables)
+   cp apps/web/.env.pro.example apps/web/.env.pro
+   cp apps/web/.env.lite.example apps/web/.env.lite
    ```
 
 3. **Get credentials from team**
@@ -201,20 +180,12 @@ These are protected by `.gitignore`:
    - Or use team's credential management system (1Password, etc.)
 
 4. **Fill in credentials**
-   - Edit all `.env` files with real values
+   - Edit `.env.pro`, `.env.lite`, `apps/web/.env.pro`, and `apps/web/.env.lite` with real values
    - Never commit these files
 
-5. **Create LITE/PRO versions** (optional)
-   ```bash
-   # Root
-   cp .env .env.lite && cp .env .env.pro
-
-   # Edit .env.lite to disable copilot/referrals
-   sed -i '' 's/ENABLE_COPILOT=true/ENABLE_COPILOT=false/g' .env.lite
-   sed -i '' 's/ENABLE_REFERRALS=true/ENABLE_REFERRALS=false/g' .env.lite
-   sed -i '' 's/VITE_ENABLE_COPILOT=true/VITE_ENABLE_COPILOT=false/g' .env.lite
-   sed -i '' 's/VITE_ENABLE_REFERRALS=true/VITE_ENABLE_REFERRALS=false/g' .env.lite
-   ```
+5. **Run a version**
+   - `pnpm dev:pro` (creates `.env` / `apps/web/.env` from your PRO profiles)
+   - `pnpm dev:lite` (creates `.env` / `apps/web/.env` from your LITE profiles)
 
 ### Sharing New Services/Credentials
 
@@ -267,7 +238,7 @@ Pass environment variables at runtime:
 
 ```bash
 # Docker
-docker run -e ENABLE_COPILOT=false -e ENABLE_REFERRALS=false synthstack:lite
+docker run -e ENABLE_COPILOT=true -e ENABLE_COPILOT_RAG=false -e ENABLE_AI_AGENTS=false -e ENABLE_REFERRALS=false synthstack:lite
 
 # Kubernetes ConfigMap
 apiVersion: v1
@@ -275,7 +246,9 @@ kind: ConfigMap
 metadata:
   name: synthstack-config
 data:
-  ENABLE_COPILOT: "false"
+  ENABLE_COPILOT: "true"
+  ENABLE_COPILOT_RAG: "false"
+  ENABLE_AI_AGENTS: "false"
   ENABLE_REFERRALS: "false"
 ```
 

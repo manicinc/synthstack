@@ -54,8 +54,8 @@
             v-model="edition"
             type="radio"
             :options="[
-              { label: 'PRO (Copilot + Referrals enabled)', value: 'pro' },
-              { label: 'Community (Referrals disabled)', value: 'community' }
+              { label: 'PRO (Copilot + RAG + Agents + Referrals)', value: 'pro' },
+              { label: 'LITE / Community (Basic Copilot only)', value: 'community' }
             ]"
           />
         </div>
@@ -512,7 +512,7 @@
                 Generated environment files
               </div>
               <div class="text-caption text-grey-7">
-                These are rendered from the repo’s <code>.env.example</code> templates with your values applied.
+                These are rendered from the repo’s <code>.env.*.example</code> templates with your values applied.
               </div>
             </div>
             <div class="row q-gutter-sm">
@@ -617,7 +617,11 @@ import { useQuasar } from 'quasar'
 import projectConfig from '@/config/project-config'
 
 import rootEnvTemplate from '../../../../../.env.example?raw'
+import rootEnvLiteTemplate from '../../../../../.env.lite.example?raw'
+import rootEnvProTemplate from '../../../../../.env.pro.example?raw'
 import webEnvTemplate from '../../../.env.example?raw'
+import webEnvLiteTemplate from '../../../.env.lite.example?raw'
+import webEnvProTemplate from '../../../.env.pro.example?raw'
 import apiEnvTemplate from '../../../../../packages/api-gateway/.env.example?raw'
 
 defineEmits<{
@@ -685,12 +689,30 @@ const values = reactive<Record<string, string>>({
 })
 
 watch(edition, (next) => {
-  const enabled = next === 'pro'
-  values.ENABLE_COPILOT = enabled ? 'true' : 'true'
-  values.ENABLE_REFERRALS = enabled ? 'true' : 'false'
-  values.VITE_ENABLE_COPILOT = enabled ? 'true' : 'true'
-  values.VITE_ENABLE_REFERRALS = enabled ? 'true' : 'false'
+  const isPro = next === 'pro'
+
+  // Backend flags (api-gateway + server-side feature gating)
+  values.ENABLE_COPILOT = 'true'
+  values.ENABLE_COPILOT_RAG = isPro ? 'true' : 'false'
+  values.ENABLE_AI_AGENTS = isPro ? 'true' : 'false'
+  values.ENABLE_REFERRALS = isPro ? 'true' : 'false'
+
+  // Frontend flags (apps/web)
+  values.VITE_ENABLE_COPILOT = 'true'
+  values.VITE_ENABLE_COPILOT_RAG = isPro ? 'true' : 'false'
+  values.VITE_ENABLE_AI_AGENTS = isPro ? 'true' : 'false'
+  values.VITE_ENABLE_REFERRALS = isPro ? 'true' : 'false'
 }, { immediate: true })
+
+const activeTemplates = computed(() => {
+  const isPro = edition.value === 'pro'
+
+  return {
+    root: isPro ? rootEnvProTemplate : rootEnvLiteTemplate,
+    web: isPro ? webEnvProTemplate : webEnvLiteTemplate,
+    api: apiEnvTemplate,
+  }
+})
 
 function envQuote(value: string): string {
   if (value === '') return ''
@@ -698,9 +720,9 @@ function envQuote(value: string): string {
   if (!needsQuotes) return value
   const escaped = value
     .replace(/\\/g, '\\\\')
-    .replace(/\"/g, '\\"')
+    .replace(/"/g, '\\"')
     .replace(/\n/g, '\\n')
-  return `\"${escaped}\"`
+  return `"${escaped}"`
 }
 
 function applyEnvTemplate(template: string, overrides: Record<string, string>): string {
@@ -728,8 +750,12 @@ const rendered = computed(() => {
     VITE_STRIPE_PUBLISHABLE_KEY: values.VITE_STRIPE_PUBLISHABLE_KEY || values.STRIPE_PUBLISHABLE_KEY,
   }
 
-  const root = applyEnvTemplate(rootEnvTemplate, normalized)
-  const web = applyEnvTemplate(webEnvTemplate, normalized)
+  const rootTemplateToUse = activeTemplates.value.root || rootEnvTemplate
+  const root = applyEnvTemplate(rootTemplateToUse, normalized)
+
+  const webTemplateToUse = activeTemplates.value.web || webEnvTemplate
+  const web = applyEnvTemplate(webTemplateToUse, normalized)
+
   const api = applyEnvTemplate(apiEnvTemplate, normalized)
 
   return { root, web, api }
@@ -852,4 +878,3 @@ function downloadCurrent() {
   font-size: 12px;
 }
 </style>
-
