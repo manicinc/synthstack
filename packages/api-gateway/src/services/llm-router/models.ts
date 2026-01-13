@@ -77,6 +77,22 @@ export const OPENAI_MODELS: ModelConfig[] = [
     supportsJsonMode: true,
     priority: 2,
   },
+  // Premium tier
+  {
+    id: 'gpt-5.2',
+    name: 'GPT-5.2',
+    provider: 'openai',
+    tier: 'premium',
+    inputCostPer1kTokens: 0.00175,
+    outputCostPer1kTokens: 0.014,
+    maxContextTokens: 400000,
+    maxOutputTokens: 128000,
+    supportsStreaming: true,
+    supportsTools: true,
+    supportsVision: true,
+    supportsJsonMode: true,
+    priority: 0,
+  },
   // Premium tier (o1 models)
   {
     id: 'o1',
@@ -447,5 +463,4 @@ export class ModelRegistry {
 
 // Singleton instance
 export const modelRegistry = new ModelRegistry();
-
 
