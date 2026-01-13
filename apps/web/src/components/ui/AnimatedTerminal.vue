@@ -222,9 +222,9 @@ let showcaseFrame: number | null = null;
 let showcaseInterval: ReturnType<typeof setInterval> | null = null;
 let collapseFrame: number | null = null;
 
-// Emit for demo link
+// Emit for setup wizard link
 const emit = defineEmits<{
-  (e: 'open-demo'): void;
+  (e: 'open-branding-wizard'): void;
 }>();
 
 // Minimize/collapse animation - void eating itself effect
@@ -300,11 +300,9 @@ function closeTerminal() {
   minimizeTerminal();
 }
 
-// Handle maximize/demo click
-function openDemo() {
-  emit('open-demo');
-  // Navigate to app dashboard
-  window.location.href = '/app';
+// Open the branding wizard (hero interactive setup)
+function openBrandingWizard() {
+  emit('open-branding-wizard');
 }
 
 // Initialize user state
@@ -1169,8 +1167,8 @@ onUnmounted(() => {
           </span>
           <span
             class="dot green"
-            title="Open Demo"
-            @click="openDemo"
+            title="Open Branding Wizard"
+            @click="openBrandingWizard"
           >
             <span class="dot-icon">+</span>
           </span>
@@ -1191,8 +1189,8 @@ onUnmounted(() => {
           >─</span>
           <span
             class="control maximize-btn"
-            title="Open Demo"
-            @click="openDemo"
+            title="Open Branding Wizard"
+            @click="openBrandingWizard"
           >□</span>
           <span class="control close-btn">×</span>
         </div>

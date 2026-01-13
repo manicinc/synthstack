@@ -124,6 +124,13 @@ export default configure(function (ctx) {
           hmr: false
         };
 
+        // Allow imports from the monorepo root (e.g., config.json, shared templates)
+        viteConf.server.fs = viteConf.server.fs || {};
+        viteConf.server.fs.allow = [
+          ...(viteConf.server.fs.allow || []),
+          path.resolve(__dirname, '../../..')
+        ];
+
         // Externalize Capacitor plugins for SPA/web and Electron builds
         // They're only available in Capacitor mode
         if (!ctx.mode.capacitor) {

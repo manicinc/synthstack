@@ -199,6 +199,40 @@
             out of the platform.
           </p>
 
+          <q-banner
+            dense
+            rounded
+            class="bg-blue-1 text-blue-10 q-mb-lg"
+          >
+            <template #avatar>
+              <q-icon
+                name="palette"
+                color="blue-8"
+              />
+            </template>
+            <div class="text-body2">
+              <strong>Rebrand fast:</strong> Generate a complete <code>config.json</code> with the Branding Wizard.
+            </div>
+            <template #action>
+              <div class="row items-center q-gutter-sm">
+                <q-btn
+                  flat
+                  dense
+                  color="blue-10"
+                  label="Branding"
+                  to="/setup/branding"
+                />
+                <q-btn
+                  flat
+                  dense
+                  color="blue-10"
+                  label="Env Setup"
+                  to="/setup/env"
+                />
+              </div>
+            </template>
+          </q-banner>
+
           <div class="quick-links">
             <router-link
               v-for="link in quickLinks"

@@ -208,6 +208,15 @@ const landingRoutes: RouteRecordRaw[] = [
         }
       },
       {
+        path: 'setup/env',
+        name: 'setup-env',
+        component: () => import('pages/setup/EnvironmentWizardPage.vue'),
+        meta: {
+          title: 'Environment Setup Wizard',
+          description: 'Generate .env files for self-hosting SynthStack using the repo templates.'
+        }
+      },
+      {
         path: 'news',
         name: 'news',
         component: () => import('pages/NewsPage.vue'),

@@ -54,14 +54,14 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import { useBranding } from '@/composables/useBranding'
 
 const router = useRouter()
+const { github } = useBranding()
 
 const edition = (import.meta.env.VITE_SYNTHSTACK_EDITION as string | undefined) || 'community'
 const isCommunityBuild = edition.toLowerCase() === 'community'
-const githubUrl = isCommunityBuild
-  ? 'https://github.com/manicinc/synthstack'
-  : 'https://github.com/manicinc/synthstack-pro'
+const githubUrl = isCommunityBuild ? github.communityRepoUrl : github.proRepoUrl
 
 const resources = [
   {
@@ -70,6 +70,20 @@ const resources = [
     icon: 'menu_book',
     color: 'blue',
     url: '/docs'
+  },
+  {
+    title: 'Branding Wizard',
+    description: 'Export a complete config.json for your brand',
+    icon: 'palette',
+    color: 'indigo',
+    url: '/setup/branding'
+  },
+  {
+    title: 'Environment Setup',
+    description: 'Generate .env files for self-hosting',
+    icon: 'tune',
+    color: 'deep-orange',
+    url: '/setup/env'
   },
   {
     title: 'Blog',

@@ -17,6 +17,11 @@ This guide walks you through rebranding SynthStack for your own SaaS product. Wh
 
 ## Quick Start
 
+You can also use the in-app setup wizards:
+
+- Branding Wizard: `/setup/branding`
+- Environment Setup Wizard: `/setup/env`
+
 For a basic rebrand, you only need to update **2 files**:
 
 ### Step 1: Edit `config.json`

@@ -144,9 +144,11 @@
         role="img"
         aria-label="SynthStack visualization"
       >
-        <AnimatedTerminal />
+        <AnimatedTerminal @open-branding-wizard="brandingWizardOpen = true" />
       </div>
     </div>
+
+    <BrandingWizardDialog v-model="brandingWizardOpen" />
   </section>
 </template>
 
@@ -156,6 +158,7 @@ import { useI18n } from 'vue-i18n'
 import { useVisualEditing } from '@/composables/useVisualEditing'
 import type { Page } from '@/composables/usePages'
 import AnimatedTerminal from '@/components/ui/AnimatedTerminal.vue'
+import BrandingWizardDialog from '@/components/branding/BrandingWizardDialog.vue'
 import AnimatedBox from '@/components/ui/AnimatedBox.vue'
 import AutonomousText from './AutonomousText.vue'
 // COMMUNITY: HeroDAGVisualization removed (PRO feature)
@@ -200,6 +203,8 @@ const props = withDefaults(defineProps<Props>(), {
   promoStats: null,
   checkoutLoading: false
 })
+
+const brandingWizardOpen = ref(false)
 
 const emit = defineEmits<{
   (e: 'checkout'): void
@@ -787,5 +792,3 @@ onMounted(async () => {
   color: var(--text-primary) !important;
 }
 </style>
-
-
