@@ -72,6 +72,12 @@ const ALL_DOCS_NAVIGATION: DocNavItem[] = [
         file: 'VERSIONS.md'
       },
       {
+        title: 'Edition Matrix (Community vs Pro)',
+        slug: 'edition-matrix',
+        source: 'markdown',
+        file: 'EDITION_MATRIX.md'
+      },
+      {
         title: 'Branding & Theming',
         slug: 'branding-theming',
         source: 'markdown',
