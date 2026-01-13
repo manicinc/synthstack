@@ -178,6 +178,18 @@ const ALL_DOCS_NAVIGATION: DocNavItem[] = [
         file: 'DEPLOYMENT_PROVIDERS.md'
       },
       {
+        title: 'AWS EC2 Deployment',
+        slug: 'deployment-aws-ec2',
+        source: 'markdown',
+        file: 'deployment/providers/AWS_EC2.md'
+      },
+      {
+        title: 'GCP Compute Engine Deployment',
+        slug: 'deployment-gcp-compute-engine',
+        source: 'markdown',
+        file: 'deployment/providers/GCP_COMPUTE_ENGINE.md'
+      },
+      {
         title: 'Self Hosting Guide',
         slug: 'self-hosting',
         source: 'markdown',

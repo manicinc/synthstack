@@ -119,6 +119,8 @@ All providers that offer:
 
 ### AWS EC2
 
+📘 Full walkthrough: [AWS EC2 Deployment](./deployment/providers/AWS_EC2.md)
+
 **Cost:** ~$30-40/month (t3.medium) | Can vary with usage
 
 **Performance:** ⭐⭐⭐⭐⭐ Enterprise-grade, best for scaling
@@ -182,6 +184,8 @@ ssh -i ~/.ssh/synthstack-ec2.pem ubuntu@YOUR_EC2_IP
 ---
 
 ### Google Cloud Platform (GCP) Compute Engine
+
+📘 Full walkthrough: [GCP Compute Engine Deployment](./deployment/providers/GCP_COMPUTE_ENGINE.md)
 
 **Cost:** ~$24-49/month (e2-medium to e2-standard-2)
 
@@ -738,14 +742,13 @@ gh secret set DEPLOYMENT_PROVIDER -b "hetzner"  # or new provider
 
 ```bash
 # Push to trigger GitHub Actions deployment
-git push origin main
+git push origin master
 
-# Or manually deploy
-ssh root@NEW_SERVER_IP
+# Or manually deploy on the server
+ssh deploy@NEW_SERVER_IP
 cd /opt/synthstack
-git pull
-docker-compose down
-docker-compose up -d
+docker compose -f deploy/docker-compose.yml pull
+docker compose -f deploy/docker-compose.yml up -d --remove-orphans
 ```
 
 ### 5. Restore Database
@@ -758,7 +761,7 @@ scp backup.sql root@NEW_SERVER_IP:/tmp/
 ssh root@NEW_SERVER_IP
 
 # Restore database
-cat /tmp/backup.sql | docker exec -i printverse-postgres psql -U synthstack synthstack
+cat /tmp/backup.sql | docker exec -i synthstack-postgres psql -U synthstack synthstack
 
 # Restore uploads (if applicable)
 tar -xzf /tmp/uploads.tar.gz -C /opt/synthstack/

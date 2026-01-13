@@ -1,267 +1,112 @@
 # SynthStack Deployment Guide
 
-## Quick Start: Deploy to Linode (or any VPS)
+SynthStack production deployment is **provider-agnostic**: any Ubuntu server with SSH access works (Linode, DigitalOcean, AWS EC2, GCP Compute Engine, Hetzner, etc.).
 
-### Prerequisites
-- ✅ Linode server created (IP: 50.116.40.126)
-- ✅ SSH key added to GitHub secrets
-- ✅ Local .env files configured
+This repository’s production deployment uses:
 
----
+- **Production compose:** `deploy/docker-compose.yml`
+- **Runtime env file:** `deploy/.env` (gitignored — copy from `deploy/.env.example`)
+- **Manual deploy helper:** `./deploy-with-env.sh` (uploads env + deploy config + web build)
+- **CI/CD deploy:** GitHub Actions (push to `master`) — deploys artifacts/config but does **not** upload secrets/env
 
-## Option 1: One-Command Deployment (Recommended)
+## Provider Guides
 
-Deploy everything (code + .env files) from your local machine:
+- [Deployment Providers Overview](./DEPLOYMENT_PROVIDERS.md)
+- [AWS EC2 Deployment](./deployment/providers/AWS_EC2.md)
+- [GCP Compute Engine Deployment](./deployment/providers/GCP_COMPUTE_ENGINE.md)
+
+## Deployment Model (How It Works)
+
+- **Web frontend** is deployed as static files to `/var/www/synthstack` and served by an Nginx container.
+- **API + services** run via Docker Compose and read runtime configuration from `/opt/synthstack/deploy/.env`.
+- **No AWS/GCP-specific env vars** are required — those providers only change how you provision the VM/networking.
+
+## 1) One-Time Server Bootstrap
+
+On your server (Ubuntu 22.04/24.04), you need:
+
+- Docker + Docker Compose v2 (`docker compose`)
+- An SSH user that can run Docker and write to:
+  - `/opt/synthstack`
+  - `/var/www/synthstack`
+- Firewall open for:
+  - `80/tcp` and `443/tcp`
+  - `22/tcp` (SSH)
+
+Example bootstrap (recommended `deploy` user):
 
 ```bash
+curl -fsSL https://get.docker.com | sudo sh
+
+sudo adduser deploy
+sudo usermod -aG docker deploy
+
+sudo mkdir -p /opt/synthstack /var/www/synthstack
+sudo chown -R deploy:deploy /opt/synthstack /var/www/synthstack
+```
+
+## 2) Configure Runtime Environment (`deploy/.env`)
+
+On your machine:
+
+```bash
+cp deploy/.env.example deploy/.env
+# Edit deploy/.env
+```
+
+Upload it to the server (first deploy + whenever env changes):
+
+```bash
+export REMOTE_HOST_PRODUCTION=YOUR_SERVER_IP
+export REMOTE_USER=deploy
+export SSH_KEY=~/.ssh/id_ed25519
+
 ./deploy-with-env.sh
 ```
 
-This script:
-1. ✅ Checks for required .env files
-2. ✅ Uploads .env files to server via SCP
-3. ✅ Deploys code to server via rsync
-4. ✅ Installs Docker + Docker Compose (if needed)
-5. ✅ Starts all services
+This uploads:
 
-**When to use:** First deployment or when .env files change
+- `deploy/.env` → `/opt/synthstack/deploy/.env`
+- `deploy/` → `/opt/synthstack/deploy/`
+- web build (if present) → `/var/www/synthstack/`
 
----
+> If your GHCR images are private, `deploy-with-env.sh` will attempt `docker login ghcr.io` using `GH_PAT` from `/opt/synthstack/deploy/.env` and `GHCR_USERNAME` (defaults to `manicinc`).
 
-## Option 2: GitHub Actions Auto-Deploy
+## 3) CI/CD Deploy (GitHub Actions)
 
-Push to main branch → auto-deploys to server (code only, not .env)
+GitHub Actions deploys on push to `master` and assumes `/opt/synthstack/deploy/.env` already exists on the server.
 
-### First-Time Setup:
+Required repo secrets:
 
-**1. Upload .env files once:**
+- `REMOTE_SSH_KEY`
+- `REMOTE_USER`
+- `REMOTE_HOST_PRODUCTION`
+- `GH_PAT` (for GHCR pulls)
+
+Full reference:
+
+- [GitHub Secrets (CI/CD)](./deployment/GITHUB_SECRETS.md)
+
+## 4) Verify and Operate
+
+On the server:
+
 ```bash
-# From your local machine
-./deploy-with-env.sh
+cd /opt/synthstack
+docker compose -f deploy/docker-compose.yml ps
+docker compose -f deploy/docker-compose.yml logs -f --tail=200
 ```
-
-**2. GitHub Secrets (already configured):**
-- `REMOTE_SSH_KEY` - SSH private key
-- `REMOTE_USER` - root
-- `REMOTE_HOST_PRODUCTION` - 50.116.40.126
-
-**3. Push code:**
-```bash
-git add .
-git commit -m "Deploy to production"
-git push origin main
-```
-
-GitHub Actions will automatically:
-- SSH into your server
-- Pull latest code
-- Restart Docker containers
-- ✅ .env files remain untouched on server
-
-**When to use:** Code changes (daily workflow)
-
----
-
-## Environment Variables
-
-### Required .env Files:
-
-1. **`apps/web/.env`** - Frontend configuration
-2. **`packages/api-gateway/.env`** - API configuration
-3. **`services/directus/.env`** - CMS configuration
-
-### Where are they stored?
-
-| Location | Purpose | When Created |
-|----------|---------|--------------|
-| **Local** | Development | You create from .env.example |
-| **Server** | Production | Uploaded via `deploy-with-env.sh` |
-| **GitHub Secrets** | Deployment Connection | Manual setup (done) |
-
-**Important:** GitHub Secrets only store **connection details** (SSH key, host, user), NOT your app secrets. App secrets live in .env files on the server.
-
----
-
-## Deployment Workflows
-
-### Scenario 1: First Deployment
-```bash
-# 1. Configure local .env files
-cp apps/web/.env.example apps/web/.env
-cp packages/api-gateway/.env.example packages/api-gateway/.env
-cp services/directus/.env.example services/directus/.env
-
-# 2. Fill in values (Stripe keys, API keys, etc.)
-# Edit each .env file
-
-# 3. Deploy everything
-./deploy-with-env.sh
-```
-
-### Scenario 2: Code Update (Daily)
-```bash
-# Option A: Auto-deploy via GitHub Actions
-git push origin main  # Auto-deploys
-
-# Option B: Manual deploy (faster, no GitHub Actions)
-./deploy-with-env.sh
-```
-
-### Scenario 3: .env Update
-```bash
-# Update local .env files, then:
-./deploy-with-env.sh
-```
-
----
-
-## Server Access
-
-### SSH into server:
-```bash
-ssh root@50.116.40.126
-```
-
-### View logs:
-```bash
-ssh root@50.116.40.126 'cd /opt/synthstack && docker-compose logs -f'
-```
-
-### Restart services:
-```bash
-ssh root@50.116.40.126 'cd /opt/synthstack && docker-compose restart'
-```
-
-### Check status:
-```bash
-ssh root@50.116.40.126 'cd /opt/synthstack && docker-compose ps'
-```
-
----
 
 ## Troubleshooting
 
-### ❌ "Missing .env files" error
-```bash
-# Create from examples:
-cp apps/web/.env.example apps/web/.env
-# Fill in values, then deploy again
-```
+- **`/opt/synthstack/deploy/.env not found` in CI/CD:** run `./deploy-with-env.sh` once (or create the file manually).
+- **SSH blocked during CI/CD:** if you locked `22/tcp` to your laptop IP, GitHub-hosted runners won’t connect. Allow SSH from GitHub Actions IPs, use a self-hosted runner, or temporarily open `22/tcp`.
+- **Docker permission denied:** ensure your SSH user is in the `docker` group and re-login.
+- **GHCR unauthorized:** ensure `GH_PAT` has `read:packages`, and the server is logged in to GHCR (CI does this automatically).
 
-### ❌ SSH connection refused
-```bash
-# Check SSH key permissions:
-chmod 600 ~/.ssh/id_ed25519
-```
+## Related Documentation
 
-### ❌ Docker not installed on server
-```bash
-# deploy-with-env.sh auto-installs Docker
-# Or manually:
-ssh root@50.116.40.126
-curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
-```
+- [Deployment Quick Start](./DEPLOYMENT_QUICK_START.md)
+- [Operations Guide](./OPERATIONS_GUIDE.md)
+- [Cloudflare Integration](./CLOUDFLARE_INTEGRATION.md)
 
-### ❌ Services not starting
-```bash
-# Check logs:
-ssh root@50.116.40.126 'cd /opt/synthstack && docker-compose logs'
-```
-
----
-
-## Security Best Practices
-
-✅ **DO:**
-- Keep .env files gitignored (never commit)
-- Rotate SSH keys after sharing in chat/screenshots
-- Use strong database passwords
-- Enable firewall on server (ports 22, 80, 443 only)
-
-❌ **DON'T:**
-- Commit .env files to git
-- Share API keys in public channels
-- Use default passwords in production
-- Leave port 3000, 8055 open to internet (use Traefik proxy)
-
----
-
-## Next Steps
-
-After first deployment:
-
-1. **Configure DNS:**
-   - Point `synthstack.app` → `50.116.40.126`
-   - Point `api.synthstack.app` → `50.116.40.126`
-   - Point `admin.synthstack.app` → `50.116.40.126`
-
-2. **Enable SSL:**
-   - Traefik auto-obtains Let's Encrypt certificates
-   - Requires DNS to be configured first
-
-3. **Set up monitoring:**
-   - Add health check pings
-   - Configure uptime monitoring
-
-4. **Database backups:**
-   - Enable Linode backups ($7.20/month)
-   - Or configure automated PostgreSQL dumps
-
----
-
-## Architecture
-
-```
-Your Computer          GitHub          Linode Server
-    │                    │                   │
-    │  git push          │                   │
-    ├───────────────────>│                   │
-    │                    │  SSH + rsync      │
-    │                    ├──────────────────>│
-    │                    │                   │
-    │  ./deploy-with-env.sh                  │
-    ├───────────────────────────────────────>│
-    │    (SCP .env + rsync code)             │
-    │                                         │
-    │                                    Docker
-    │                                 ┌────────────┐
-    │                                 │ Traefik    │
-    │                                 │ Frontend   │
-    │                                 │ API        │
-    │                                 │ Directus   │
-    │                                 │ PostgreSQL │
-    │                                 │ Redis      │
-    │                                 └────────────┘
-```
-
----
-
-## Deployment Checklist
-
-### Pre-Deployment
-- [ ] Server provisioned (Linode, DigitalOcean, AWS, etc.)
-- [ ] SSH key generated and added to server
-- [ ] GitHub secrets configured (REMOTE_SSH_KEY, REMOTE_USER, REMOTE_HOST_PRODUCTION)
-- [ ] Local .env files created and configured
-- [ ] DNS configured (if using custom domain)
-
-### First Deployment
-- [ ] Run `./deploy-with-env.sh`
-- [ ] Verify services running: `ssh root@IP 'docker-compose ps'`
-- [ ] Test frontend: `http://IP`
-- [ ] Test API: `http://IP:3000/health`
-- [ ] Test Directus: `http://IP:8055`
-
-### Ongoing Deployments
-- [ ] Code changes: `git push origin main` (auto-deploys via GitHub Actions)
-- [ ] .env changes: `./deploy-with-env.sh`
-- [ ] Monitor logs: `ssh root@IP 'docker-compose logs -f'`
-
----
-
-## Support
-
-- **Documentation:** [docs/DEPLOYMENT_PROVIDERS.md](docs/DEPLOYMENT_PROVIDERS.md)
-- **GitHub Issues:** https://github.com/your-repo/synthstack/issues
-- **Discord:** (coming soon)

@@ -101,10 +101,11 @@ docker compose -f docker-compose.django.yml up -d
 2. **Configure Secrets:** Add these GitHub secrets:
    - `REMOTE_SSH_KEY` - Your SSH private key
    - `REMOTE_HOST_PRODUCTION` - Server IP address
-   - `REMOTE_USER` - SSH user (usually `root`)
+   - `REMOTE_USER` - SSH user (recommend `deploy`)
    - `GH_PAT` - GitHub token with `read:packages` scope ([create here](https://github.com/settings/tokens))
-3. **Deploy:** `./deploy-with-env.sh` or push to `main` for auto-deploy
-4. **Done!** Your SaaS is live
+3. **Create Production Env:** `cp deploy/.env.example deploy/.env` (fill in values)
+4. **Deploy:** `./deploy-with-env.sh` (first deploy / env changes) or push to `master` for auto-deploy
+5. **Done!** Your SaaS is live
 
 **Deployment Methods:**
 - ✅ **Automated:** Push to GitHub → auto-deploys via GitHub Actions

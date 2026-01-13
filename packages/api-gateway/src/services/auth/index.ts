@@ -108,11 +108,10 @@ export class AuthService {
           supabase_enabled,
           local_enabled,
           directus_enabled,
-          allow_guest_mode,
-          require_email_verification,
-          session_duration_hours,
-          max_failed_attempts,
-          lockout_duration_minutes
+          local_require_email_verification,
+          local_session_duration_hours,
+          local_max_failed_login_attempts,
+          local_lockout_duration_minutes
         FROM auth_provider_config
         LIMIT 1
       `);
@@ -124,11 +123,12 @@ export class AuthService {
           supabaseEnabled: row.supabase_enabled,
           localEnabled: row.local_enabled,
           directusEnabled: row.directus_enabled,
-          allowGuestMode: row.allow_guest_mode,
-          requireEmailVerification: row.require_email_verification,
-          sessionDurationHours: row.session_duration_hours,
-          maxFailedAttempts: row.max_failed_attempts,
-          lockoutDurationMinutes: row.lockout_duration_minutes,
+          // Guest mode is currently treated as always-on (no DB column in default migrations yet)
+          allowGuestMode: true,
+          requireEmailVerification: row.local_require_email_verification,
+          sessionDurationHours: row.local_session_duration_hours,
+          maxFailedAttempts: row.local_max_failed_login_attempts,
+          lockoutDurationMinutes: row.local_lockout_duration_minutes,
         };
       } else {
         // Default config

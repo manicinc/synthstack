@@ -34,10 +34,17 @@ SynthStack implements a **flexible authentication system** that supports multipl
 - **Provider Abstraction** - Switch auth providers via database config (no code changes)
 - **Enterprise Security** - Argon2id password hashing (65536 memory cost)
 - **JWT Sessions** - Access tokens (1h) + refresh tokens (7d) with rotation
-- **OAuth Support** - Google, GitHub, Discord, Microsoft social login
+- **OAuth Support (Supabase)** - Google, GitHub, Discord, Microsoft social login
+- **Local Auth (Self-Hosted)** - Email/password today; OAuth coming soon
 - **Account Protection** - Lockout after failed attempts, email verification
 - **Session Management** - Token families detect reuse attacks
 - **Audit Trail** - Login history, IP tracking, device identification
+
+### Start Here (Wizard)
+
+- [Auth Provider Wizard](./guides/AUTH_PROVIDER_WIZARD.md) - Pick Supabase vs Local
+- [Supabase Auth Setup](./guides/SUPABASE_AUTH_SETUP.md) - Recommended path (OAuth)
+- [Local Auth Setup](./guides/LOCAL_AUTH_SETUP.md) - Fully self-hosted (no OAuth yet)
 
 ---
 
@@ -85,11 +92,17 @@ SET
   supabase_enabled = true;
 ```
 
-### 5. Configure OAuth Providers in Supabase
+### 5. Configure Redirect URLs + OAuth Providers (Optional)
 
-1. Go to **Authentication → Providers** in Supabase dashboard
-2. Enable desired providers (Google, GitHub, Discord, etc.)
-3. Add redirect URL: `https://yourdomain.com/auth/callback`
+1. In Supabase: **Authentication → URL Configuration**
+   - Site URL: `https://yourdomain.com`
+   - Redirect URLs: include `https://yourdomain.com/**` and `http://localhost:3050/**`
+2. In Supabase: **Authentication → Providers**
+   - Enable Google/GitHub/etc and paste client ID/secret
+
+Guides:
+- [Supabase Auth Setup (Wizard)](./guides/SUPABASE_AUTH_SETUP.md)
+- [OAuth Setup (Supabase)](./guides/OAUTH_SETUP.md)
 
 **Done!** Your app now uses Supabase authentication.
 
@@ -117,27 +130,6 @@ Copy the output (e.g., `x3H7k9mP2vR5wQ8sL1nC4bF6tY0jU9iA3gD5hK7mN2q=`)
 JWT_SECRET=x3H7k9mP2vR5wQ8sL1nC4bF6tY0jU9iA3gD5hK7mN2q=
 DATABASE_URL=postgresql://user:password@localhost:5432/synthstack
 
-# Email Configuration (for password reset & verification emails)
-# Option A: Resend API (recommended)
-EMAIL_PROVIDER=resend
-RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-# Option B: SMTP (alternative)
-# EMAIL_PROVIDER=smtp
-# SMTP_HOST=smtp.example.com
-# SMTP_PORT=587
-# SMTP_USER=your-smtp-user
-# SMTP_PASS=your-smtp-password
-# EMAIL_FROM=noreply@yourdomain.com
-
-# OAuth Providers (optional)
-GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-GITHUB_CLIENT_ID=your-github-client-id
-GITHUB_CLIENT_SECRET=your-github-client-secret
-DISCORD_CLIENT_ID=your-discord-client-id
-DISCORD_CLIENT_SECRET=your-discord-client-secret
-
 # Optional: Remove Supabase vars if not using
 # SUPABASE_URL=...
 # SUPABASE_ANON_KEY=...
@@ -153,12 +145,12 @@ DISCORD_CLIENT_SECRET=your-discord-client-secret
 
 ### 3. Apply Migration
 
-The local auth tables are automatically created via migration `070_local_auth.sql`. If not yet applied:
+Local auth tables are created by `services/directus/migrations/070_local_auth.sql`.
+
+If you need to apply it manually:
 
 ```bash
-# Run migrations
-cd services/directus
-npm run migrate
+docker compose exec -T postgres psql -U "${DB_USER:-synthstack}" -d "${DB_DATABASE:-synthstack}" < services/directus/migrations/070_local_auth.sql
 ```
 
 ### 4. Enable Local Auth Provider
@@ -173,37 +165,15 @@ SET
   supabase_enabled = false;
 ```
 
-### 5. (Optional) Configure OAuth Providers
+### 5. Email Verification + Password Resets
 
-Local auth now has **full OAuth support** for Google, GitHub, Discord, and Apple. OAuth credentials are configured via environment variables (see step 2).
+Local auth can send verification/reset emails when your email provider is configured. If no email provider is configured, tokens are logged in the API output for development.
 
-Enable OAuth providers in the database:
+**Note:** OAuth/social login is not implemented for local auth yet.
 
-```sql
-UPDATE auth_provider_config
-SET
-  oauth_google_enabled = true,
-  oauth_github_enabled = true,
-  oauth_discord_enabled = true;
-```
+Next: [Local Auth Setup (Wizard)](./guides/LOCAL_AUTH_SETUP.md)
 
-See [OAuth Setup](#oauth-setup) for detailed instructions on creating OAuth apps.
-
-### 6. (Optional) Require Email Verification
-
-To require users to verify their email before signing in:
-
-```sql
-UPDATE auth_provider_config
-SET require_email_verification = true;
-```
-
-When enabled:
-- New users receive a verification email on signup
-- Sign-in fails with `EMAIL_NOT_VERIFIED` error until verified
-- Users can request a new verification email
-
-**Done!** Your app now uses local PostgreSQL authentication with full feature parity.
+**Done!** Your app now uses local PostgreSQL authentication.
 
 ---
 
@@ -478,124 +448,23 @@ SET
 
 ## OAuth Setup
 
-### Google OAuth
+OAuth is supported when using the **Supabase auth provider** (`active_provider = 'supabase'`).
 
-#### 1. Create OAuth App
+High-level steps:
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com)
-2. Create a new project or select existing
-3. Navigate to **APIs & Services → OAuth consent screen**
-4. Configure consent screen (External or Internal)
-5. Go to **Credentials → Create Credentials → OAuth 2.0 Client ID**
-6. Application type: **Web application**
-7. Authorized redirect URIs:
-   ```
-   https://api.synthstack.app/api/v1/auth/oauth/callback
-   http://localhost:3001/api/v1/auth/oauth/callback (development)
-   ```
-8. Click **Create** and copy **Client ID** and **Client Secret**
+1. Create an OAuth app in Google/GitHub/Discord/etc.
+2. Set the OAuth app callback/redirect URL to your Supabase callback:
+   - `https://<YOUR_SUPABASE_PROJECT_REF>.supabase.co/auth/v1/callback`
+3. In Supabase: **Authentication → Providers**
+   - Enable the provider and paste the client ID/secret
+4. In Supabase: **Authentication → URL Configuration**
+   - Set Site URL and Redirect URLs (include your production domain + `http://localhost:3050/**`)
 
-#### 2. Configure in SynthStack
+Guides:
+- Supabase social login docs: https://supabase.com/docs/guides/auth/social-login
+- SynthStack guide: [OAuth Setup (Supabase)](./guides/OAUTH_SETUP.md)
 
-**Database:**
-```sql
-UPDATE auth_provider_config
-SET
-  oauth_google_enabled = true,
-  oauth_google_client_id = '123456789-abcdef.apps.googleusercontent.com';
-```
-
-**Environment Variables** (`packages/api-gateway/.env`):
-```bash
-OAUTH_GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxxxxxxxxxxx
-```
-
----
-
-### GitHub OAuth
-
-#### 1. Create OAuth App
-
-1. Go to [GitHub Developer Settings](https://github.com/settings/developers)
-2. Click **New OAuth App**
-3. Fill in details:
-   - **Application name:** SynthStack
-   - **Homepage URL:** `https://synthstack.app`
-   - **Authorization callback URL:** `https://api.synthstack.app/api/v1/auth/oauth/callback`
-4. Click **Register application**
-5. Copy **Client ID**
-6. Generate a **Client Secret**
-
-#### 2. Configure in SynthStack
-
-**Database:**
-```sql
-UPDATE auth_provider_config
-SET
-  oauth_github_enabled = true,
-  oauth_github_client_id = 'Ov23lixxxxxxxxxxxxx';
-```
-
-**Environment Variables:**
-```bash
-OAUTH_GITHUB_CLIENT_SECRET=github_pat_xxxxxxxxxxxxx
-```
-
----
-
-### Discord OAuth
-
-#### 1. Create OAuth App
-
-1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
-2. Click **New Application**
-3. Navigate to **OAuth2 → General**
-4. Copy **Client ID**
-5. Reset **Client Secret** and copy it
-6. Add redirect: `https://api.synthstack.app/api/v1/auth/oauth/callback`
-
-#### 2. Configure in SynthStack
-
-**Database:**
-```sql
-UPDATE auth_provider_config
-SET
-  oauth_discord_enabled = true,
-  oauth_discord_client_id = '123456789012345678';
-```
-
-**Environment Variables:**
-```bash
-OAUTH_DISCORD_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxxx
-```
-
----
-
-### Microsoft OAuth
-
-#### 1. Create OAuth App
-
-1. Go to [Azure Portal](https://portal.azure.com)
-2. Navigate to **Azure Active Directory → App registrations**
-3. Click **New registration**
-4. Set redirect URI: `https://api.synthstack.app/api/v1/auth/oauth/callback`
-5. Copy **Application (client) ID**
-6. Go to **Certificates & secrets → New client secret**
-
-#### 2. Configure in SynthStack
-
-**Database:**
-```sql
-UPDATE auth_provider_config
-SET
-  oauth_microsoft_enabled = true,
-  oauth_microsoft_client_id = '12345678-1234-1234-1234-123456789012';
-```
-
-**Environment Variables:**
-```bash
-OAUTH_MICROSOFT_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxxx
-```
+**Note:** Local PostgreSQL auth does **not** support OAuth yet.
 
 ---
 
@@ -947,19 +816,19 @@ curl https://api.synthstack.app/api/v1/auth/me \
 
 | Aspect | Supabase Auth | Local PostgreSQL Auth |
 |--------|---------------|----------------------|
-| **Setup Complexity** | ⭐⭐⭐⭐⭐ Easy (5 min) | ⭐⭐⭐⭐ Easy (10 min) |
+| **Setup Complexity** | ⭐⭐⭐⭐⭐ Easy (5 min) | ⭐⭐⭐ Moderate (15 min) |
 | **External Dependencies** | Yes (Supabase service) | None |
-| **OAuth Providers** | Built-in (Google, GitHub, Discord, Apple) | Built-in (Google, GitHub, Discord, Apple) |
+| **OAuth Providers** | Built-in (Google, GitHub, Discord, Apple) | Not supported yet (coming soon) |
 | **Cost** | $0-25/month (free: 50k users, 2GB DB) | $0 (included in server) |
+| **Backups (Auth Data)** | Managed by Supabase (plan-dependent) | You manage Postgres backups |
 | **Data Sovereignty** | Hosted by Supabase | Full control |
 | **Scalability** | Auto-scaling | Manual (database scaling) |
-| **Email Templates** | Built-in, customizable | Built-in (password reset, verification, welcome) |
+| **Email Templates** | Built-in, customizable | Custom implementation |
 | **Admin Dashboard** | Supabase UI | Custom/SQL queries |
 | **MFA Support** | Built-in | Prepared (not implemented) |
-| **Audit Logs** | Built-in | Built-in (auth_events table) |
+| **Audit Logs** | Built-in | Custom implementation |
 | **Password Hashing** | bcrypt | Argon2id (stronger, recommended) |
 | **Session Management** | Supabase manages | Full control + refresh token rotation |
-| **Account Lockout** | No | Yes (configurable, default 5 attempts) |
 | **Migration Effort** | None (default) | Update config + env vars |
 | **Lock-in Risk** | Vendor lock-in | No lock-in |
 
@@ -978,9 +847,8 @@ curl https://api.synthstack.app/api/v1/auth/me \
 ✅ **No external dependencies** - Zero external API calls for auth
 ✅ **Full data control** - Data sovereignty requirements
 ✅ **Cost optimization** - High user count (>50k users)
-✅ **Custom auth logic** - Need full control over auth flow
+✅ **Email/password is enough** - OAuth for local auth is coming later
 ✅ **No vendor lock-in** - Own the entire auth stack
-✅ **Stronger security** - Argon2id hashing + account lockout
 ✅ **Full feature parity** - OAuth, email verification, password reset
 
 ---

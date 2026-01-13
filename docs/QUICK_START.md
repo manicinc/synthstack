@@ -268,7 +268,7 @@ docker compose ps
 ```bash
 # Via GitHub CLI (https://cli.github.com/)
 gh secret set REMOTE_SSH_KEY < ~/.ssh/id_ed25519_your_server
-gh secret set REMOTE_USER -b "root"
+gh secret set REMOTE_USER -b "deploy"  # or root if your provider enables root SSH
 gh secret set REMOTE_HOST_PRODUCTION -b "YOUR_SERVER_IP"
 
 # REQUIRED: GitHub PAT for Docker image pulls
@@ -276,7 +276,7 @@ gh secret set REMOTE_HOST_PRODUCTION -b "YOUR_SERVER_IP"
 gh secret set GH_PAT -b "ghp_your_token_here"
 ```
 
-Then push to `main` branch - GitHub Actions auto-deploys!
+Make sure `/opt/synthstack/deploy/.env` exists on the server (run `./deploy-with-env.sh` once), then push to `master` — GitHub Actions auto-deploys!
 
 ### Learn More
 - **[Full Documentation](./README.md)** - Complete setup guide

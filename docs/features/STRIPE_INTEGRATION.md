@@ -377,7 +377,7 @@ SynthStack supports one-time lifetime license purchases with automatic GitHub re
 1. Welcome email with GitHub username submission link
 2. Automated GitHub organization invitation
 3. Read access to the private `manicinc/synthstack-pro` repository
-4. Lifetime updates via `git pull origin main`
+4. Lifetime updates via `git pull origin master`
 
 ### Architecture
 
@@ -736,7 +736,6 @@ For common issues (invitation not received, changed username, etc.), see the int
 - API docs: Swagger UI at `/docs`, OpenAPI at `/openapi.json` and `/openapi.yaml`
 - Admin CMS: `docs/ADMIN_CMS.md`
 - Pricing/plan docs: see `README.md` and this file for env mapping
-
 
 
 

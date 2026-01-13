@@ -6,6 +6,15 @@ Required secrets and variables for the SynthStack CI/CD pipeline.
 
 Add these in **Settings → Secrets and variables → Actions → Secrets**
 
+## Runtime Configuration vs CI/CD Secrets
+
+SynthStack’s default production deploy reads **runtime secrets** from:
+
+- Local: `deploy/.env` (copy from `deploy/.env.example`)
+- Server: `/opt/synthstack/deploy/.env`
+
+GitHub Actions secrets are primarily for **connecting to the server** (`REMOTE_*`) and pulling images (`GH_PAT`).
+
 ### Deployment Configuration
 
 Deploy to any VPS provider: Linode, DigitalOcean, AWS EC2, Vultr, Hetzner, or any server with SSH access.
@@ -17,7 +26,7 @@ Deploy to any VPS provider: Linode, DigitalOcean, AWS EC2, Vultr, Hetzner, or an
 | `REMOTE_HOST_PRODUCTION` | Production server IP or hostname | `172.105.34.567` or `example.com` |
 | `REMOTE_HOST_STAGING` | Staging server IP or hostname (optional) | `172.105.78.910` or `staging.example.com` |
 | `GH_PAT` | **GitHub Personal Access Token** (required for Docker image pulls) | `ghp_xxxxxxxxxxxx` |
-| `DEPLOYMENT_PROVIDER` | Cloud provider name (optional) | `linode`, `digitalocean`, `aws`, `vultr` |
+| `DEPLOYMENT_PROVIDER` | Cloud provider name (optional) | `linode`, `digitalocean`, `aws`, `gcp`, `vultr` |
 
 #### ⚠️ GH_PAT (Required)
 
@@ -34,7 +43,8 @@ Without this, deployments will fail with "unauthorized" when pulling images.
 
 - **Linode:** User: `root`, Port: `22`, Host: IP from dashboard
 - **DigitalOcean:** User: `root` or created user, Port: `22`, Host: Droplet IP
-- **AWS EC2:** User: `ubuntu` (Ubuntu AMI) or `ec2-user` (Amazon Linux), Port: `22`, Host: Instance public IP
+- **AWS EC2:** User: `deploy` (recommended) or `ubuntu` (Ubuntu AMI), Port: `22`, Host: Instance public IP
+- **GCP Compute Engine:** User: `deploy` (recommended), Port: `22`, Host: VM external IP
 - **Vultr:** User: `root`, Port: `22`, Host: Server IP
 - **Hetzner:** User: `root`, Port: `22`, Host: Server IP
 
@@ -56,7 +66,7 @@ Choose your auth provider:
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key | Supabase Auth |
 | `JWT_SECRET` | JWT signing secret | Local PostgreSQL Auth |
 
-**Note:** See [Authentication Documentation](docs/AUTHENTICATION.md) for setup guides.
+**Note:** See [Authentication Documentation](../AUTHENTICATION.md) for setup guides.
 
 ### Payment Processing
 
@@ -257,9 +267,26 @@ gh secret set GH_PAT -b "ghp_your_token_here"  # Required for Docker pulls
 
 # Set secrets
 gh secret set REMOTE_SSH_KEY < ~/.ssh/your-ec2-keypair.pem
-gh secret set REMOTE_USER -b "ubuntu"  # or ec2-user for Amazon Linux
+gh secret set REMOTE_USER -b "deploy"  # recommended (or ubuntu/ec2-user if configured)
 gh secret set REMOTE_HOST_PRODUCTION -b "YOUR_EC2_PUBLIC_IP"
 gh secret set DEPLOYMENT_PROVIDER -b "aws"
+gh secret set GH_PAT -b "ghp_your_token_here"  # Required for Docker pulls
+```
+
+### GCP Compute Engine
+
+```bash
+# Generate SSH key
+ssh-keygen -t ed25519 -C "gcp-deployment" -f ~/.ssh/id_ed25519_gcp
+
+# Add public key to your VM (Compute Engine → VM → Edit → SSH Keys)
+# Format: deploy:ssh-ed25519 AAAA... your-email@example.com
+
+# Set secrets
+gh secret set REMOTE_SSH_KEY < ~/.ssh/id_ed25519_gcp
+gh secret set REMOTE_USER -b "deploy"
+gh secret set REMOTE_HOST_PRODUCTION -b "YOUR_GCP_VM_EXTERNAL_IP"
+gh secret set DEPLOYMENT_PROVIDER -b "gcp"
 gh secret set GH_PAT -b "ghp_your_token_here"  # Required for Docker pulls
 ```
 
@@ -356,6 +383,6 @@ The local docker-compose uses these environment variables.
 
 ## Related Documentation
 
-- [Authentication Setup](docs/AUTHENTICATION.md)
-- [Deployment Providers Guide](docs/DEPLOYMENT_PROVIDERS.md)
-- [Self-Hosting Guide](docs/SELF_HOSTING.md)
+- [Authentication Setup](../AUTHENTICATION.md)
+- [Deployment Providers Guide](../DEPLOYMENT_PROVIDERS.md)
+- [Self-Hosting Guide](../SELF_HOSTING.md)

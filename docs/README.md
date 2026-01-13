@@ -53,6 +53,8 @@ Welcome to the SynthStack documentation hub. Find everything you need to build, 
 
 - [Self-Hosting Guide](./SELF_HOSTING.md) - Deploy on your own infrastructure
 - [Deployment Providers](./DEPLOYMENT_PROVIDERS.md) - Linode, DigitalOcean, AWS, etc.
+- [AWS EC2 Deployment](./deployment/providers/AWS_EC2.md) - Full walkthrough
+- [GCP Compute Engine Deployment](./deployment/providers/GCP_COMPUTE_ENGINE.md) - Full walkthrough
 - [Cloudflare Integration](./CLOUDFLARE_INTEGRATION.md) - DNS, SSL, CDN, R2 storage, Tunnel
 - [Cross-Platform](./CROSS_PLATFORM.md) - Mobile and desktop builds
 - [GitHub Secrets](./deployment/GITHUB_SECRETS.md) - CI/CD configuration
