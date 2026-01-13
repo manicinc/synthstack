@@ -9,8 +9,8 @@
     "pricing": "Tarifs",
     "dashboard": "Tableau de Bord",
     "generate": "Générer",
-    "printers": "Imprimantes",
-    "filaments": "Filaments",
+    "printers": "Templates",
+    "filaments": "Intégrations",
     "profiles": "Profils",
     "myProfiles": "Mes Profils",
     "history": "Historique",
@@ -22,8 +22,8 @@
   },
   "landing": {
     "hero": {
-      "title": "Des Impressions Parfaites, À Chaque Fois",
-      "subtitle": "Téléchargez votre STL. Obtenez des paramètres optimisés par IA. Exportez vers n'importe quel slicer.",
+      "title": "Votre Agence dans une Boîte",
+      "subtitle": "Boilerplate SaaS IA-native et multi-plateforme. Branding, déploiement, livraison plus rapide.",
       "cta": "Accès Early Bird - 149$",
       "secondaryCta": "Voir sur GitHub",
       "promoWithStats": "Limité à {max} licences à vie • {remaining} restantes • Économisez {discount}",
@@ -157,45 +157,45 @@
       "title": "Pourquoi SynthStack ?",
       "subtitle": "Livrez plus vite avec le développement assisté par IA.",
       "stlAnalysis": {
-        "title": "Analyse STL Intelligente",
-        "description": "Notre IA examine la géométrie de votre modèle, détectant les surplombs, les parois fines et les orientations d'impression optimales."
+        "title": "Assistant de Configuration",
+        "description": "Configurez le branding, les clés et le déploiement en quelques minutes avec des wizards guidés et des templates prêts pour la production."
       },
       "aiSettings": {
-        "title": "Paramètres Générés par IA",
-        "description": "Obtenez des paramètres optimisés basés sur votre imprimante, filament et caractéristiques spécifiques du modèle."
+        "title": "Co-Fondateurs IA",
+        "description": "Des agents spécialisés avec RAG qui connaissent vos docs, votre CMS et vos projets. Automatisez des tâches réelles avec validation."
       },
       "multiSlicer": {
-        "title": "Exportez Partout",
-        "description": "Téléchargez des profils prêts à l'emploi pour OrcaSlicer, PrusaSlicer, Cura et plus."
+        "title": "Multi-Plateforme",
+        "description": "Web, iOS, Android, Desktop et PWA depuis une seule base de code avec Quasar."
       },
       "community": {
-        "title": "Validé par la Communauté",
-        "description": "Partagez des profils, voyez les taux de réussite et construisez sur ce qui fonctionne."
+        "title": "Open Source + Pro",
+        "description": "Édition Community pour démarrer gratuitement et Pro pour des fonctionnalités avancées, support et mises à jour."
       }
     },
     "howItWorks": {
       "title": "Comment Ça Marche",
       "step1": {
-        "title": "Téléchargez Votre STL",
-        "description": "Glissez-déposez votre modèle 3D pour une analyse instantanée"
+        "title": "Utilisez le Template",
+        "description": "Créez votre repo depuis le template et lancez le stack localement en quelques minutes."
       },
       "step2": {
-        "title": "Sélectionnez Votre Configuration",
-        "description": "Choisissez votre imprimante et filament dans notre base de données"
+        "title": "Configurez Branding et .env",
+        "description": "Générez `config.json` et les fichiers `.env` avec les wizards intégrés."
       },
       "step3": {
-        "title": "Générez les Paramètres",
-        "description": "L'IA crée des paramètres optimisés pour votre impression spécifique"
+        "title": "Construisez et Automatisez",
+        "description": "Créez des projets, des workflows et des agents ; connectez vos intégrations."
       },
       "step4": {
-        "title": "Exportez et Imprimez",
-        "description": "Téléchargez pour votre slicer et commencez à imprimer"
+        "title": "Déployez",
+        "description": "Déployez avec Docker et CI/CD, itérez vite et scalez quand nécessaire."
       }
     },
     "stats": {
       "profiles": "Profils Générés",
-      "printers": "Imprimantes Supportées",
-      "successRate": "Taux de Réussite"
+      "printers": "Intégrations",
+      "successRate": "Prêt pour la Production"
     },
     "featuresGrid": {
       "badge": "Tout Ce Dont Vous Avez Besoin",
@@ -342,36 +342,36 @@
     "quickActions": {
       "title": "Actions Rapides",
       "newGeneration": "Nouvelle Génération",
-      "browsePrinters": "Parcourir les Imprimantes",
+      "browsePrinters": "Parcourir les Templates",
       "viewProfiles": "Voir les Profils"
     },
     "recentGenerations": {
       "title": "Générations Récentes",
-      "empty": "Pas encore de générations. Commencez par télécharger un STL !"
+      "empty": "Pas encore de générations. Commencez avec un prompt."
     }
   },
   "generate": {
-    "title": "Générer les Paramètres d'Impression",
+    "title": "Générer du Contenu",
     "upload": {
-      "title": "Télécharger STL",
-      "dragDrop": "Glissez-déposez votre fichier STL ici",
+      "title": "Écrire un Prompt",
+      "dragDrop": "Décrivez ce que vous voulez générer",
       "or": "ou",
       "browse": "Parcourir les Fichiers",
       "maxSize": "Taille maximale : 50 Mo"
     },
     "analysis": {
-      "title": "Analyse du Modèle",
+      "title": "Options",
       "dimensions": "Dimensions",
       "volume": "Volume",
       "faces": "Faces",
       "overhangs": "Surplombs",
       "thinWalls": "Parois Fines",
-      "difficulty": "Difficulté d'Impression"
+      "difficulty": "Complexité"
     },
     "settings": {
-      "title": "Paramètres",
-      "printer": "Sélectionner l'Imprimante",
-      "filament": "Sélectionner le Filament",
+      "title": "Configuration",
+      "printer": "Sélectionner un Template",
+      "filament": "Sélectionner un Canal",
       "quality": "Préréglage de Qualité",
       "priorities": "Priorités",
       "speed": "Vitesse",
@@ -379,10 +379,10 @@
       "material": "Utilisation de Matériau"
     },
     "result": {
-      "title": "Paramètres Générés",
+      "title": "Résultat Généré",
       "confidence": "Confiance",
       "export": "Exporter",
-      "save": "Sauvegarder le Profil",
+      "save": "Sauvegarder",
       "regenerate": "Régénérer"
     }
   },
