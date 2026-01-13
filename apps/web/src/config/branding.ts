@@ -17,87 +17,15 @@
  * console.log(branding.name) // 'SynthStack' or your custom name
  */
 
+import { projectConfig } from '@/config/project-config'
+
 // ============================================
 // Default Configuration (from config.json)
 // ============================================
-// These defaults match the values in config.json at the project root.
-// Edit these values or use environment variables to customize.
+// These defaults are loaded from config.json at the project root.
+// Edit config.json or use environment variables (VITE_*) to customize.
 
-const DEFAULT_CONFIG = {
-  app: {
-    name: 'SynthStack',
-    tagline: 'Your AI Co-Founders',
-    description: 'AI-native, cross-platform SaaS boilerplate built with Vue Quasar. Ships for web, iOS, Android, desktop, and PWA from a single codebase.',
-    fullDescription: 'Meet your AI co-founders: 6 specialized agents (Researcher, Marketer, Developer, SEO Writer, Designer, General Assistant) with deep system integration, automatic RAG, proactive suggestions, and actionable capabilities like GitHub PRs, blog posts, and marketing content.',
-    domain: 'synthstack.app',
-  },
-  branding: {
-    logo: {
-      light: '/logo/synthstack-logo.svg',
-      dark: '/logo/synthstack-logo-dark.svg',
-      mark: '/logo/synthstack-mark.svg',
-      markDark: '/logo/synthstack-mark-dark.svg',
-    },
-    favicon: {
-      default: '/favicon.svg',
-      dark: '/favicon-dark.svg',
-      apple: '/icons/icon-192x192.png',
-    },
-    colors: {
-      primary: '#6366F1',
-      accent: '#00D4AA',
-      theme: '#6366F1',
-      background: '#0D0D0D',
-    },
-    og: {
-      image: '/og-image.svg',
-      type: 'website',
-    },
-  },
-  company: {
-    name: 'SynthStack',
-    legalName: 'Manic Inc.',
-    founded: '2024',
-    location: null,
-  },
-  contact: {
-    support: 'team@manic.agency',
-    sales: 'team@manic.agency',
-    general: 'team@manic.agency',
-    noreply: 'noreply@manic.agency',
-  },
-  social: {
-    github: 'https://github.com/manicinc/synthstack',
-    twitter: 'https://twitter.com/synthstack',
-    discord: 'https://discord.gg/synthstack',
-    linkedin: null,
-    youtube: null,
-  },
-  links: {
-    docs: '/docs',
-    changelog: '/changelog',
-    roadmap: '/roadmap',
-    status: null,
-  },
-  legal: {
-    privacy: '/privacy',
-    terms: '/terms',
-    cookies: '/cookies',
-    security: '/security',
-    gdpr: '/gdpr',
-  },
-  demo: {
-    enabled: true,
-    email: 'demo@synthstack.app',
-    password: 'DemoUser2024!',
-  },
-  features: {
-    copilot: false,
-    referrals: false,
-    analytics: true,
-    i18n: true,
-  },
-}
+const DEFAULT_CONFIG = projectConfig
 
 // ============================================
 // Types
@@ -154,6 +82,16 @@ export interface BrandingConfig {
     discord?: string
     linkedin?: string
     youtube?: string
+  }
+
+  /** GitHub org/repo defaults (used across docs + onboarding) */
+  github: {
+    orgName: string
+    proRepoName: string
+    communityRepoName: string
+    teamSlug?: string
+    proRepoUrl: string
+    communityRepoUrl: string
   }
 
   /** External links */
@@ -228,6 +166,10 @@ export interface BrandingConfig {
 // Config Loading with Environment Overrides
 // ============================================
 
+const githubOrgName = import.meta.env.VITE_GITHUB_ORG || DEFAULT_CONFIG.github.orgName
+const githubProRepoName = import.meta.env.VITE_GITHUB_PRO_REPO || DEFAULT_CONFIG.github.proRepoName
+const githubCommunityRepoName = import.meta.env.VITE_GITHUB_COMMUNITY_REPO || DEFAULT_CONFIG.github.communityRepoName
+
 /**
  * Branding configuration with environment variable overrides.
  *
@@ -278,6 +220,16 @@ export const branding: BrandingConfig = {
     discord: import.meta.env.VITE_SOCIAL_DISCORD || DEFAULT_CONFIG.social.discord || undefined,
     linkedin: import.meta.env.VITE_SOCIAL_LINKEDIN || DEFAULT_CONFIG.social.linkedin || undefined,
     youtube: import.meta.env.VITE_SOCIAL_YOUTUBE || DEFAULT_CONFIG.social.youtube || undefined,
+  },
+
+  // GitHub org/repo defaults
+  github: {
+    orgName: githubOrgName,
+    proRepoName: githubProRepoName,
+    communityRepoName: githubCommunityRepoName,
+    teamSlug: import.meta.env.VITE_GITHUB_TEAM_SLUG || DEFAULT_CONFIG.github.teamSlug || undefined,
+    proRepoUrl: `https://github.com/${githubOrgName}/${githubProRepoName}`,
+    communityRepoUrl: `https://github.com/${githubOrgName}/${githubCommunityRepoName}`,
   },
 
   // External Links
