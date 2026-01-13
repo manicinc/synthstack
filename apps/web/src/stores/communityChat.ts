@@ -43,6 +43,7 @@ export interface CommunityChatSettings {
 const MODEL_OPTIONS: Array<{ label: string; value: string; tier: ModelTier }> = [
   { label: 'GPT-4o Mini', value: 'gpt-4o-mini', tier: 'cheap' },
   { label: 'GPT-4o', value: 'gpt-4o', tier: 'standard' },
+  { label: 'GPT-5.2', value: 'gpt-5.2', tier: 'premium' },
   { label: 'GPT-4 Turbo', value: 'gpt-4-turbo', tier: 'standard' },
   { label: 'GPT-3.5 Turbo', value: 'gpt-3.5-turbo', tier: 'cheap' },
 ]
@@ -68,6 +69,7 @@ function deriveTierFromModel(model: string): ModelTier {
   const option = MODEL_OPTIONS.find((m) => m.value === model)
   if (option) return option.tier
   // Best-effort fallback
+  if (model.startsWith('gpt-5')) return 'premium'
   if (model.startsWith('o1')) return 'premium'
   if (model.includes('4')) return 'standard'
   return 'cheap'

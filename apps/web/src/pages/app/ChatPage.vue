@@ -198,7 +198,7 @@
           <div class="chat-composer q-pa-md">
             <div class="composer-meta row items-center justify-between q-mb-sm">
               <div class="text-caption text-grey-7">
-                Model: <span class="text-weight-medium">{{ settings.model }}</span>
+                Model: <span class="text-weight-medium">{{ currentModelLabel }}</span>
                 <span class="dot">•</span>
                 Temp: <span class="text-weight-medium">{{ settings.temperature }}</span>
                 <span class="dot">•</span>
@@ -539,10 +539,21 @@ const localModel = ref(settings.value.model)
 const localTemperature = ref(settings.value.temperature)
 const localMaxTokens = ref(settings.value.maxTokens)
 
+const tierLabels: Record<string, string> = {
+  cheap: 'Fast',
+  standard: 'Balanced',
+  premium: 'Best',
+}
+
 const modelOptions = MODEL_OPTIONS.map((m) => ({
-  label: `${m.label} (${m.tier})`,
+  label: `${m.label} (${tierLabels[m.tier] || m.tier})`,
   value: m.value,
 }))
+
+const currentModelLabel = computed(() => {
+  const found = MODEL_OPTIONS.find((m) => m.value === settings.value.model)
+  return found?.label || settings.value.model
+})
 
 function syncLocalSettings() {
   localModel.value = settings.value.model
