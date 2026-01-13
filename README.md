@@ -115,7 +115,7 @@ docker compose -f docker-compose.django.yml up -d
 
 - **📱 Cross-Platform** - Vue Quasar builds web, iOS, Android, desktop (Electron), and PWA from one codebase
 - **🤖 AI Copilot** - Built-in chat assistant with RAG, streaming, and markdown support ([Guide](./docs/features/COPILOT.md))
-- **📝 Directus CMS** - Models your Postgres DB exactly - manage blog, products, users, and custom content
+- **📝 Directus CMS** - Headless CMS with WYSIWYG editor, custom extensions, models your Postgres DB - manage blog, products, users, and custom content
 - **🔐 Flexible Authentication** - Choose between Supabase (managed) or Local PostgreSQL (self-hosted). Both support OAuth, JWT, and RBAC
 - **💳 Stripe Billing** - Subscriptions, lifetime licenses, one-time payments, usage-based pricing
 - **📧 Email System** - Mailgun/SendGrid for transactional emails, newsletters, and marketing automation
@@ -208,6 +208,58 @@ This site **dogfoods its own stack** - everything you see running on [synthstack
 # Static admin token for development
 Authorization: Bearer synthstack-static-admin-token-2024
 ```
+
+### 📝 Directus CMS Details
+
+Directus is the **headless CMS** that powers content management, blog, products, and user-facing content. It automatically models your PostgreSQL database and provides:
+
+**Core Features:**
+- **WYSIWYG Rich Text Editor** - Tiptap-based editor with formatting, images, links
+- **Media Library** - File uploads, image transformations, asset management
+- **Content Modeling** - Create custom collections/fields that sync to PostgreSQL
+- **Built-in Roles/Permissions** - Granular access control for content editors
+- **REST & GraphQL APIs** - Access content from any client
+
+**Custom Extensions Included:**
+- Blog post management with SEO fields
+- Product catalog with pricing tiers
+- Theme configuration with light/dark variants
+- Newsletter/email template management
+- FAQ and documentation pages
+
+**Admin vs Client Dashboard:**
+- **Directus Admin** (`/admin`) - Full CMS for content editors, blog authors, product managers
+- **Client Dashboard** - User-facing app with admin features for users with `ADMIN_EMAIL`
+
+### 👑 Admin Users
+
+Admin users have elevated permissions in both Directus and the client-facing dashboard.
+
+**Configuration (`.env`):**
+```bash
+# Admin email - same user gets admin in Directus + client dashboard
+ADMIN_EMAIL=admin@yourdomain.com
+
+# Directus admin credentials
+DIRECTUS_ADMIN_EMAIL=admin@yourdomain.com
+DIRECTUS_ADMIN_PASSWORD=your-secure-password
+```
+
+**Admin Capabilities:**
+| Feature | Directus Admin | Client Dashboard Admin |
+|---------|----------------|------------------------|
+| Content editing | ✅ Full CMS access | ❌ View only |
+| User management | ✅ Directus users | ✅ App users |
+| Analytics/reports | ✅ Directus insights | ✅ Admin page |
+| System settings | ✅ Full control | ❌ Limited |
+| Billing/subscriptions | ❌ | ✅ Manage |
+
+**Client Dashboard Admin Page:**
+Users matching `ADMIN_EMAIL` see an "Admin" page in the dashboard with:
+- User analytics and metrics
+- System health monitoring
+- Credit/usage management
+- Moderation tools
 
 ### Database (PostgreSQL)
 
