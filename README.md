@@ -8,48 +8,49 @@ AI-native, cross-platform SaaS boilerplate built with Vue Quasar. Ships for web,
 
 ![SynthStack](apps/web/public/og-image.svg)
 
-## Choose Your Stack
+## Choose Your Backend
 
-SynthStack is **TypeScript-first** with **full feature parity** - Python services are completely optional and only needed for edge cases.
+SynthStack offers **three equivalent backend options** - choose based on your team's preference:
 
-### Option A: TypeScript-Only (Recommended)
+### Option A: TypeScript (NestJS) - Community & Pro
 
-Full-stack TypeScript with complete AI capabilities. Perfect for 99% of use cases.
+TypeScript backend with complete API capabilities. Default for the Community Edition.
 
 ```bash
-# Complete AI-ready stack - no Python required
+# TypeScript backend (Community default)
 pnpm install && docker compose up -d && pnpm dev:web
 ```
 
-**What you get:**
-- Full Vue/Quasar frontend with cross-platform (iOS, Android, Desktop, PWA)
-- Fastify API Gateway with auth, billing, agents, workflows
-- **Complete AI/ML via `@synthstack/ts-ml-service`:**
-  - RAG/embeddings (OpenAI, Anthropic, OpenRouter)
-  - Vector search (Qdrant)
-  - AI agents and orchestration
-  - Document processing
-  - All cloud LLM integrations
+### Option B: Python FastAPI - Pro Edition 🔒
 
-### Option B: Python Services (Pro Edition Only 🔒)
+> ⚠️ **Note:** Python backends are available in [SynthStack Pro](https://github.com/manicinc/synthstack-pro) only.
 
-> ⚠️ **Note:** Python ML services are available in [SynthStack Pro](https://github.com/manicinc/synthstack-pro) only.
-
-Add Python services only when you need:
-- **Custom model training/fine-tuning** (PyTorch, HuggingFace)
-- **Local/self-hosted models** (Ollama, vLLM, LocalAI)
-- **Specialized ML pipelines** (scikit-learn, custom preprocessing)
+High-performance async Python backend. Drop-in replacement for TypeScript.
 
 ```bash
-# TypeScript + Python ML services (Pro Edition only)
-docker compose -f docker-compose.full.yml up -d
+# FastAPI backend (Pro Edition)
+docker compose -f docker-compose.fastapi.yml up -d
 ```
 
-**Python backends available in Pro:**
-- **FastAPI** (`ml-service`) - High-performance async, production default
-- **Django** (`django-ml-service`) - Batteries-included, great for Django teams
+### Option C: Python Django - Pro Edition 🔒
 
-> 💡 **Community Edition** uses `ts-ml-service` (TypeScript) which provides full AI capabilities without Python.
+Batteries-included Python backend. Drop-in replacement for TypeScript.
+
+```bash
+# Django backend (Pro Edition)
+docker compose -f docker-compose.django.yml up -d
+```
+
+**All backends provide identical functionality:**
+- Full Vue/Quasar frontend with cross-platform (iOS, Android, Desktop, PWA)
+- API Gateway with auth, billing, agents, workflows
+- RAG/embeddings (OpenAI, Anthropic, OpenRouter)
+- Vector search (Qdrant)
+- AI agents and orchestration
+- Document processing
+- All cloud LLM integrations
+
+> 💡 **Community Edition** uses TypeScript (NestJS). **Pro Edition** adds Python (FastAPI, Django) as alternative backends.
 
 **[Architecture Decision Guide](./docs/ARCHITECTURE_DECISION.md)** | **[TypeScript Quick Start](./docs/QUICKSTART_TYPESCRIPT.md)** | **[Full AI Quick Start](./docs/QUICKSTART_FULL_AI.md)**
 
