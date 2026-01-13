@@ -13,6 +13,7 @@ import { ComplexityModule } from './complexity/complexity.module';
 import { TranscriptionModule } from './transcription/transcription.module';
 import { AnalysisModule } from './analysis/analysis.module';
 import { HealthModule } from './health/health.module';
+import { GenerationModule } from './generation/generation.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { HealthModule } from './health/health.module';
     ComplexityModule,
     TranscriptionModule,
     AnalysisModule,
+    GenerationModule,
     HealthModule,
   ],
 })
