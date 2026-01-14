@@ -1911,6 +1911,11 @@ html[data-light-safe="1"] body.body--light {
       -webkit-text-fill-color: currentColor !important;
       animation: none !important;
     }
+
+    // Disable backdrop-filter effects in light-safe mode (can cause flicker on Chrome).
+    * {
+      backdrop-filter: none !important;
+    }
   }
 
   // CrossPlatformShowcase: avoid reveal flicker (opacity 0 -> 1).
