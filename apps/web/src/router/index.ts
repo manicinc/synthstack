@@ -55,6 +55,8 @@ export default function createAppRouter(ssrContext?: any) {
           if (shortLocale !== 'en') {
             return next({
               path: `/${shortLocale}`,
+              query: to.query,
+              hash: to.hash,
               replace: true
             });
           }
@@ -136,4 +138,3 @@ export default function createAppRouter(ssrContext?: any) {
 }
 
 export { routes };
-

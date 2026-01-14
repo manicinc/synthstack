@@ -24,6 +24,24 @@ const API_BASE = getApiBaseUrl()
 // have been observed to flicker in Chrome; a few "flashy" presets are excluded.
 const LIGHT_MODE_FLASHY_PRESETS = new Set(['brutalist', 'cyberpunk', 'terminal'])
 
+type LightSafeOverride = 'force' | 'disable' | null
+
+function getLightSafeOverride(): LightSafeOverride {
+  if (typeof window === 'undefined') return null
+  try {
+    const params = new URLSearchParams(window.location.search)
+    const value = params.get('lightSafe')
+    if (value === null) return null
+
+    const normalized = value.trim().toLowerCase()
+    if (normalized === '' || ['1', 'true', 'on', 'yes'].includes(normalized)) return 'force'
+    if (['0', 'false', 'off', 'no'].includes(normalized)) return 'disable'
+    return 'force'
+  } catch {
+    return null
+  }
+}
+
 const THEME_DEBUG_SELECTORS: Record<string, string> = {
   app: '#q-app',
   layout: '.q-layout',
@@ -263,6 +281,17 @@ export const useThemeStore = defineStore('theme', () => {
 
   /** Whether dark mode is active */
   const isDark = computed(() => resolvedMode.value === 'dark')
+
+  /** Whether the landing page light-safe mode is enabled */
+  const isLightSafe = computed(() => {
+    if (resolvedMode.value !== 'light') return false
+
+    const override = getLightSafeOverride()
+    if (override === 'force') return true
+    if (override === 'disable') return false
+
+    return !LIGHT_MODE_FLASHY_PRESETS.has(currentPresetSlug.value)
+  })
 
   /** Current theme slug (alias for preset slug) */
   const themeSlug = computed(() => currentPresetSlug.value)
@@ -523,7 +552,7 @@ export const useThemeStore = defineStore('theme', () => {
       const isDarkMode = resolvedMode.value === 'dark'
       const expectedPreset = preset.slug
       const expectedMode = isDarkMode ? 'dark' : 'light'
-      const expectedLightSafe = !isDarkMode && !LIGHT_MODE_FLASHY_PRESETS.has(expectedPreset)
+      const expectedLightSafe = isLightSafe.value
 
       // Avoid redundant re-application when the DOM already matches the desired state.
       const bodyOk =
@@ -574,7 +603,7 @@ export const useThemeStore = defineStore('theme', () => {
       root.setAttribute('data-preset', preset.slug)
 
       // Light mode "safe" mode flag (used for CSS guardrails on landing page)
-      const lightSafe = !isDarkMode && !LIGHT_MODE_FLASHY_PRESETS.has(preset.slug)
+      const lightSafe = isLightSafe.value
       if (lightSafe) root.setAttribute('data-light-safe', '1')
       else root.removeAttribute('data-light-safe')
 
@@ -778,6 +807,7 @@ export const useThemeStore = defineStore('theme', () => {
     currentTheme,
     colorMode,
     resolvedMode,
+    isLightSafe,
     presets,
     customThemes,
     settings,

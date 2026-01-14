@@ -26,10 +26,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const themeStore = useThemeStore();
-const allowFlashyLightPresets = new Set(['brutalist', 'cyberpunk', 'terminal']);
-const isCalmLightMode = computed(() =>
-  !themeStore.isDark && !allowFlashyLightPresets.has(themeStore.currentPresetSlug)
-);
+const isCalmLightMode = computed(() => themeStore.isLightSafe);
 
 // Alien terminal characters
 const ALIEN_CHARS = '░▒▓█◢◣◤◥⬡⬢╔╗╚╝═║▲▼◀▶◉◎●⟨⟩⟪⟫⌬⌭⌮∆∇⊕⊖⊗λΣΩπ∞≋≈01';
