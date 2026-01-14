@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useThemeStore } from '@/stores/theme'
 
 const themeStore = useThemeStore()
@@ -95,37 +95,6 @@ function startAnimation() {
   timeouts.push(t3)
 }
 
-// Force visibility in light mode via JavaScript
-const forceLightModeVisibility = () => {
-  if (themeStore.isDark || !textRef.value) return
-  
-  const el = textRef.value
-  const textContent = el.querySelector('.text-content') as HTMLElement
-  const textGlow = el.querySelector('.text-glow') as HTMLElement
-  
-  if (textContent) {
-    textContent.style.setProperty('opacity', '1', 'important')
-    textContent.style.setProperty('clip-path', 'inset(0 0% 0 0)', 'important')
-    textContent.style.setProperty('visibility', 'visible', 'important')
-    // Use SOLID color in light mode - gradient text can render inconsistently and appear invisible
-    textContent.style.setProperty('background', 'none', 'important')
-    textContent.style.setProperty('-webkit-text-fill-color', '#0d9488', 'important')
-    textContent.style.setProperty('color', '#0d9488', 'important')
-  }
-  
-  if (textGlow) {
-    // Hide glow layer in light mode - blur can look like flicker on white backgrounds
-    textGlow.style.setProperty('display', 'none', 'important')
-  }
-}
-
-// Watch for theme changes
-watch(() => themeStore.isDark, (isDark) => {
-  if (!isDark) {
-    forceLightModeVisibility()
-  }
-}, { immediate: true })
-
 onMounted(() => {
   // Check reduced motion preference
   if (typeof window !== 'undefined') {
@@ -140,11 +109,6 @@ onMounted(() => {
 
     // Start animation
     startAnimation()
-    
-    // Force light mode visibility
-    if (!themeStore.isDark) {
-      forceLightModeVisibility()
-    }
 
     onUnmounted(() => {
       mediaQuery.removeEventListener('change', handler)

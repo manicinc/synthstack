@@ -1,4 +1,6 @@
-import rawConfig from '../../../../../config.json'
+import rawConfigString from '../../../../config.json?raw'
+
+const rawConfig = JSON.parse(rawConfigString)
 
 export interface ProjectConfig {
   app: {

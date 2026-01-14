@@ -8,6 +8,7 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { getAuthService, AuthError, AuthErrorCode } from '../services/auth/index.js';
 import type { AuthProvider, OAuthProvider } from '../services/auth/types.js';
+import { config as envConfig } from '../config/index.js';
 
 // Import centralized types (FastifyRequest augmentation is in types/request.ts)
 import '../types/request.js';
@@ -447,20 +448,22 @@ export default async function authRoutes(fastify: FastifyInstance) {
    * Get available auth providers
    */
   fastify.get('/providers', async (_request, _reply) => {
-    const config = authService.getConfig();
+    const providerConfig = authService.getConfig();
+    const supabaseConfigured = Boolean(envConfig.supabaseUrl && envConfig.supabaseServiceRoleKey);
+    const defaultProvider: AuthProvider = supabaseConfigured ? 'supabase' : 'local';
 
     return {
       success: true,
       data: {
-        activeProvider: config?.activeProvider || 'supabase',
+        activeProvider: providerConfig?.activeProvider || defaultProvider,
         providers: {
-          supabase: config?.supabaseEnabled ?? true,
-          local: config?.localEnabled ?? false,
-          directus: config?.directusEnabled ?? false,
+          supabase: providerConfig?.supabaseEnabled ?? supabaseConfigured,
+          local: providerConfig?.localEnabled ?? !supabaseConfigured,
+          directus: providerConfig?.directusEnabled ?? false,
         },
         features: {
-          guestMode: config?.allowGuestMode ?? true,
-          emailVerification: config?.requireEmailVerification ?? false,
+          guestMode: providerConfig?.allowGuestMode ?? true,
+          emailVerification: providerConfig?.requireEmailVerification ?? false,
         },
       },
     };

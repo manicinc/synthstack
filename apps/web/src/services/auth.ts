@@ -4,7 +4,7 @@
  * Provides a unified interface for Supabase, Local PostgreSQL, and Directus auth
  */
 
-import { supabase } from 'src/boot/supabase'
+import { supabase, hasSupabaseCredentials } from 'src/boot/supabase'
 import { apiClient } from './api'
 import { devLog, devWarn, devError, logError } from '@/utils/devLogger'
 
@@ -71,29 +71,47 @@ export interface SignInCredentials {
 
 class AuthService {
   private config: AuthConfig | null = null
-  private activeProvider: AuthProvider = 'supabase'
+  private activeProvider: AuthProvider = hasSupabaseCredentials ? 'supabase' : 'local'
   private session: AuthSession | null = null
 
   /**
    * Initialize auth service - fetch config from server
    */
   async initialize(): Promise<void> {
+    const defaultProvider: AuthProvider = hasSupabaseCredentials ? 'supabase' : 'local'
+
     try {
       const response = await apiClient.get<{ success: boolean; data: AuthConfig }>('/api/v1/auth/providers')
       if (response.data.success) {
         this.config = response.data.data
-        this.activeProvider = this.config.activeProvider
       }
     } catch (error) {
-      // Default to Supabase if can't reach server
       devWarn('[AuthService] Could not fetch auth config, using defaults')
-      this.config = {
-        activeProvider: 'supabase',
-        providers: { supabase: true, local: false, directus: false },
-        features: { guestMode: true, emailVerification: false }
-      }
-      this.activeProvider = 'supabase'
     }
+
+    // Default config when the API is unreachable (or returns an invalid payload).
+    if (!this.config) {
+      this.config = {
+        activeProvider: defaultProvider,
+        providers: {
+          supabase: hasSupabaseCredentials,
+          local: !hasSupabaseCredentials,
+          directus: false,
+        },
+        features: { guestMode: true, emailVerification: false },
+      }
+    }
+
+    // Client-side constraint: Supabase cannot be used without frontend credentials.
+    if (!hasSupabaseCredentials) {
+      this.config.providers.supabase = false
+      this.config.providers.local = true
+      if (this.config.activeProvider === 'supabase') {
+        this.config.activeProvider = 'local'
+      }
+    }
+
+    this.activeProvider = this.config.activeProvider
   }
 
   /**

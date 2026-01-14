@@ -20,7 +20,6 @@ export * from './directus'
 
 // Existing components (Community Edition)
 export { default as AgentCard } from './AgentCard.vue'
-export { default as AgentShowcase } from './AgentShowcase.vue'
 export { default as AutonomousText } from './AutonomousText.vue'
 export { default as BackendCard } from './BackendCard.vue'
 export { default as BackendOptionsSection } from './BackendOptionsSection.vue'

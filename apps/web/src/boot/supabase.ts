@@ -8,6 +8,8 @@ import { devLog, devWarn, devError, logError } from '@/utils/devLogger';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
+export const hasSupabaseCredentials = Boolean(supabaseUrl && supabaseAnonKey);
+
 // Create a mock supabase client for development without credentials
 const createMockClient = (): SupabaseClient => {
   return {
@@ -29,7 +31,7 @@ const createMockClient = (): SupabaseClient => {
 };
 
 // Create Supabase client (or mock if not configured)
-export const supabase = supabaseUrl && supabaseAnonKey
+export const supabase = hasSupabaseCredentials
   ? createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: true,
@@ -40,7 +42,7 @@ export const supabase = supabaseUrl && supabaseAnonKey
   : createMockClient();
 
 // Log warning if using mock client
-if (!supabaseUrl || !supabaseAnonKey) {
+if (!hasSupabaseCredentials) {
   devWarn('[Supabase] No credentials configured. Using mock client for development.');
 }
 

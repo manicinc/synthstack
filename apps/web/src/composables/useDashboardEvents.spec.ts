@@ -115,7 +115,6 @@ describe('useDashboardEvents', { timeout: 15000 }, () => {
         updateCredits: vi.fn(),
         handleStatsUpdate: vi.fn(),
         refreshOverview: vi.fn(),
-        refreshOverview: vi.fn(),
       }),
     }))
 
@@ -378,4 +377,3 @@ describe('useDashboardEventsGlobal', () => {
     expect(instance1).toBe(instance2)
   })
 })
-
