@@ -16,7 +16,11 @@ function readFlagFromQuery(namespace: DebugNamespace): boolean {
   if (typeof window === 'undefined') return false
   const params = new URLSearchParams(window.location.search)
 
-  if (params.get('debug') === '1') return true
+  const debug = params.get('debug')
+  if (debug !== null) {
+    const normalized = debug.trim().toLowerCase()
+    if (!['0', 'false', 'off', 'no'].includes(normalized)) return true
+  }
 
   const key = namespace === 'theme' ? 'debugTheme' : 'debugApi'
   if (params.get(key) === '1' || params.has(key)) return true
@@ -60,4 +64,3 @@ export function debugGroupEnd(namespace: DebugNamespace): void {
   if (!isDebugEnabled(namespace)) return
   console.groupEnd()
 }
-

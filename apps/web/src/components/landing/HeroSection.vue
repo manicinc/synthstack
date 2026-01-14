@@ -619,6 +619,15 @@ onMounted(async () => {
   color: var(--text-primary) !important;
 }
 
+:global(html[data-light-safe="1"] body.body--light) .hero-title .title-line-1 .word .gradient-word {
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+  color: var(--text-primary) !important;
+  animation: none !important;
+}
+
 :global(.body--light) .hero-title .title-line-2 strong {
   color: var(--text-secondary) !important;
   -webkit-text-fill-color: var(--text-secondary) !important;
@@ -629,6 +638,14 @@ onMounted(async () => {
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
+}
+
+:global(html[data-light-safe="1"] body.body--light) .hero-title .title-line-2.colorized strong {
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: var(--text-secondary) !important;
+  color: var(--text-secondary) !important;
 }
 
 :global(.body--light) .demo-btn {

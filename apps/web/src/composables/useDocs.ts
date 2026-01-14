@@ -120,7 +120,7 @@ function githubRepoBaseUrl(): string | null {
 }
 
 function githubDefaultBranch(): string {
-  return ((import.meta.env.VITE_GITHUB_DEFAULT_BRANCH as string | undefined) || 'main').trim() || 'main'
+  return ((import.meta.env.VITE_GITHUB_DEFAULT_BRANCH as string | undefined) || 'master').trim() || 'master'
 }
 
 function githubBlobBaseUrl(): string | null {

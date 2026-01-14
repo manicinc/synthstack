@@ -147,6 +147,14 @@ function trackPricingClick() {
   -webkit-text-fill-color: transparent !important;
 }
 
+:global(html[data-light-safe="1"] body.body--light) .cta-content h2 {
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+  color: var(--text-primary) !important;
+}
+
 :global(.body--light) .cta-content p {
   color: var(--text-secondary) !important;
 }
@@ -155,5 +163,4 @@ function trackPricingClick() {
   color: var(--text-primary) !important;
 }
 </style>
-
 

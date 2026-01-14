@@ -1,5 +1,6 @@
 <template>
   <router-view />
+  <RuntimeDebugOverlay />
 </template>
 
 <script setup lang="ts">
@@ -17,6 +18,7 @@
  */
 import { onMounted } from 'vue';
 import { useAuthStore } from './stores/auth';
+import RuntimeDebugOverlay from './components/debug/RuntimeDebugOverlay.vue';
 
 const authStore = useAuthStore();
 
