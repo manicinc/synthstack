@@ -130,13 +130,15 @@ export default async function billingRoutes(fastify: FastifyInstance) {
       }
 
       if (!stripeService.isConfigured()) {
-        return reply.status(500).send({ success: false, error: 'Stripe not configured' });
+        // Promo stats are informational (landing pages). Avoid hard failures / noisy 5xx.
+        return reply.send({ success: false, data: null, error: 'Stripe not configured' });
       }
 
       const stats = await stripeService.getPromoCodeStats(code);
 
       if (!stats) {
-        return reply.status(404).send({ success: false, error: 'Promo code not found' });
+        // Avoid noisy 404s on the marketing site if the code isn't provisioned yet.
+        return reply.send({ success: false, data: null, error: 'Promo code not found' });
       }
 
       return {

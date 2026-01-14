@@ -79,6 +79,7 @@ export default async function directusRoutes(fastify: FastifyInstance) {
             status: { type: 'string' },
             directusUrl: { type: 'string' },
             available: { type: 'boolean' },
+            tokenConfigured: { type: 'boolean' },
           },
         },
       },
@@ -94,12 +95,14 @@ export default async function directusRoutes(fastify: FastifyInstance) {
         status: 'ok',
         directusUrl: directusUrl.replace(/:[^:]*@/, ':***@'), // Hide credentials
         available: response.ok,
+        tokenConfigured: Boolean(directusToken),
       };
     } catch (error) {
       return {
         status: 'error',
         directusUrl: directusUrl.replace(/:[^:]*@/, ':***@'),
         available: false,
+        tokenConfigured: Boolean(directusToken),
       };
     }
   });
@@ -130,6 +133,37 @@ export default async function directusRoutes(fastify: FastifyInstance) {
       request.query as Record<string, string>
     ).toString();
 
+    // Build headers for upstream request
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    // Forward authorization header from request, or use server token
+    const authHeader = request.headers.authorization;
+    const authMode: 'forwarded' | 'server' | 'none' =
+      authHeader ? 'forwarded' : directusToken ? 'server' : 'none';
+
+    // Always expose which auth mode was used (no secrets).
+    reply.header('X-Directus-Auth', authMode);
+
+    if (authHeader) {
+      // Forward user's auth token
+      headers['Authorization'] = authHeader;
+    } else if (directusToken) {
+      // Use server-side token for public requests
+      headers['Authorization'] = `Bearer ${directusToken}`;
+    } else if (isCacheablePath(path, method)) {
+      // Avoid noisy 401s on public marketing content when token isn't configured.
+      return reply.send({
+        data: [],
+        meta: {},
+        error: {
+          code: 'DIRECTUS_TOKEN_MISSING',
+          message: 'Directus token is not configured on the API gateway',
+        },
+      });
+    }
+
     // Build target URL
     const targetUrl = queryString
       ? `${directusUrl}/${path}?${queryString}`
@@ -151,21 +185,6 @@ export default async function directusRoutes(fastify: FastifyInstance) {
         }
         return cached.data;
       }
-    }
-
-    // Build headers for upstream request
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-
-    // Forward authorization header from request, or use server token
-    const authHeader = request.headers.authorization;
-    if (authHeader) {
-      // Forward user's auth token
-      headers['Authorization'] = authHeader;
-    } else if (directusToken) {
-      // Use server-side token for public requests
-      headers['Authorization'] = `Bearer ${directusToken}`;
     }
 
     // Forward relevant headers
