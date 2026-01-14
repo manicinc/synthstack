@@ -1,12 +1,13 @@
-# Local PostgreSQL Auth Setup
+# Local PostgreSQL Auth Setup (Wizard)
 
 Use this guide if you want **fully self-hosted authentication** (no Supabase dependency).
 
-> **Auto-Detection**: SynthStack automatically uses local PostgreSQL auth when Supabase environment variables are not configured. No manual setup required!
+> **Auto-Detection**: As of v1.x, SynthStack automatically uses local PostgreSQL auth when Supabase environment variables are not configured. No manual setup required!
 
 ## What You'll Get
 
 - Email/password auth
+- OAuth/social login (Google, GitHub, Discord) - same as Supabase
 - Argon2id password hashing
 - API-issued JWT access + refresh tokens
 - Email verification + password reset flows (requires email provider for real delivery)

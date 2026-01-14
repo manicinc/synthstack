@@ -34,8 +34,8 @@ SynthStack implements a **flexible authentication system** that supports multipl
 - **Provider Abstraction** - Switch auth providers via database config (no code changes)
 - **Enterprise Security** - Argon2id password hashing (65536 memory cost)
 - **JWT Sessions** - Access tokens (1h) + refresh tokens (7d) with rotation
-- **OAuth Support (Supabase)** - Google, GitHub, Discord, Microsoft social login
-- **Local Auth (Self-Hosted)** - Email/password today; OAuth coming soon
+- **OAuth Support** - Google, GitHub, Discord, Microsoft social login (both Supabase and Local)
+- **Auto-Detection** - Automatically uses local auth when Supabase is not configured
 - **Account Protection** - Lockout after failed attempts, email verification
 - **Session Management** - Token families detect reuse attacks
 - **Audit Trail** - Login history, IP tracking, device identification
@@ -44,7 +44,7 @@ SynthStack implements a **flexible authentication system** that supports multipl
 
 - [Auth Provider Wizard](./guides/AUTH_PROVIDER_WIZARD.md) - Pick Supabase vs Local
 - [Supabase Auth Setup](./guides/SUPABASE_AUTH_SETUP.md) - Recommended path (OAuth)
-- [Local Auth Setup](./guides/LOCAL_AUTH_SETUP.md) - Fully self-hosted (no OAuth yet)
+- [Local Auth Setup](./guides/LOCAL_AUTH_SETUP.md) - Fully self-hosted (OAuth supported)
 
 ---
 
@@ -173,7 +173,7 @@ SET
 
 Local auth can send verification/reset emails when your email provider is configured. If no email provider is configured, tokens are logged in the API output for development.
 
-**Note:** OAuth/social login is not implemented for local auth yet.
+OAuth is supported for local auth via the service layer. Configure OAuth providers normally.
 
 Next: [Local Auth Setup (Wizard)](./guides/LOCAL_AUTH_SETUP.md)
 
@@ -468,7 +468,7 @@ Guides:
 - Supabase social login docs: https://supabase.com/docs/guides/auth/social-login
 - SynthStack guide: [OAuth Setup (Supabase)](./guides/OAUTH_SETUP.md)
 
-**Note:** Local PostgreSQL auth does **not** support OAuth yet.
+OAuth is supported for **both Supabase and Local auth providers** via the service layer.
 
 ---
 
@@ -831,8 +831,8 @@ curl https://api.synthstack.app/api/v1/auth/me \
 | **Admin Dashboard** | Supabase UI | Custom/SQL queries |
 | **MFA Support** | Built-in | Prepared (not implemented) |
 | **Audit Logs** | Built-in | Custom implementation |
-| **Password Hashing** | bcrypt | Argon2id (stronger, recommended) |
-| **Session Management** | Supabase manages | Full control + refresh token rotation |
+| **Password Hashing** | bcrypt | Argon2id (stronger) |
+| **Session Management** | Supabase manages | Full control |
 | **Migration Effort** | None (default) | Update config + env vars |
 | **Lock-in Risk** | Vendor lock-in | No lock-in |
 
@@ -848,12 +848,11 @@ curl https://api.synthstack.app/api/v1/auth/me \
 ### When to Use Local PostgreSQL
 
 ✅ **Self-hosted requirement** - Must run on your infrastructure
-✅ **No external dependencies** - Zero external API calls for auth
+✅ **No external dependencies** - Can't rely on third-party services
 ✅ **Full data control** - Data sovereignty requirements
 ✅ **Cost optimization** - High user count (>50k users)
 ✅ **Email/password is enough** - OAuth for local auth is coming later
-✅ **No vendor lock-in** - Own the entire auth stack
-✅ **Full feature parity** - OAuth, email verification, password reset
+✅ **No vendor lock-in** - Want to own the entire stack
 
 ---
 
