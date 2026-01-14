@@ -136,6 +136,7 @@ export type AuthEventType =
   | 'password_reset_complete'
   | 'password_change'
   | 'email_verified'
+  | 'verification_email_resent'
   | 'account_locked'
   | 'account_unlocked'
   | 'oauth_connect'

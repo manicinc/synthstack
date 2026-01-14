@@ -23,6 +23,7 @@ import {
   AuthErrorCode,
   JWTPayload,
 } from '../types.js';
+import type { AuthEmailService } from '../auth-email.service.js';
 
 export interface LocalProviderOptions {
   jwtSecret: string;
@@ -32,6 +33,14 @@ export interface LocalProviderOptions {
   baseUrl?: string;
   maxFailedAttempts?: number;
   lockoutDurationMinutes?: number;
+  /** Optional email service for sending auth emails */
+  authEmailService?: AuthEmailService;
+  /** URL for email verification page */
+  verifyEmailUrl?: string;
+  /** URL for password reset page */
+  resetPasswordUrl?: string;
+  /** Require email verification before sign in (default: false) */
+  requireEmailVerification?: boolean;
 }
 
 /**
@@ -46,6 +55,10 @@ export class LocalAuthProvider implements IAuthProvider {
   private baseUrl: string;
   private maxFailedAttempts: number;
   private lockoutDurationMinutes: number;
+  private authEmailService?: AuthEmailService;
+  private verifyEmailUrl: string;
+  private resetPasswordUrl: string;
+  private requireEmailVerification: boolean;
 
   constructor(options: LocalProviderOptions) {
     if (!options.jwtSecret) {
@@ -59,6 +72,10 @@ export class LocalAuthProvider implements IAuthProvider {
     this.baseUrl = options.baseUrl || 'http://localhost:3000';
     this.maxFailedAttempts = options.maxFailedAttempts || 5;
     this.lockoutDurationMinutes = options.lockoutDurationMinutes || 30;
+    this.authEmailService = options.authEmailService;
+    this.verifyEmailUrl = options.verifyEmailUrl || `${this.baseUrl}/auth/verify-email`;
+    this.resetPasswordUrl = options.resetPasswordUrl || `${this.baseUrl}/auth/reset-password`;
+    this.requireEmailVerification = options.requireEmailVerification ?? false;
   }
 
   /**
@@ -90,6 +107,11 @@ export class LocalAuthProvider implements IAuthProvider {
       parallelism: 4,
     });
 
+    // Generate email verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationTokenHash = this.hashToken(verificationToken);
+    const verificationExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
     const client = await this.pool.connect();
     try {
       await client.query('BEGIN');
@@ -104,14 +126,32 @@ export class LocalAuthProvider implements IAuthProvider {
 
       const user = userResult.rows[0];
 
-      // Create local auth credentials
+      // Create local auth credentials with verification token
       await client.query(
-        `INSERT INTO local_auth_credentials (user_id, password_hash, email_verified, created_at, updated_at)
-         VALUES ($1, $2, $3, NOW(), NOW())`,
-        [user.id, passwordHash, false]
+        `INSERT INTO local_auth_credentials (
+          user_id, password_hash, email_verified,
+          email_verification_token, email_verification_expires,
+          created_at, updated_at
+        ) VALUES ($1, $2, $3, $4, $5, NOW(), NOW())`,
+        [user.id, passwordHash, false, verificationTokenHash, verificationExpiresAt]
       );
 
       await client.query('COMMIT');
+
+      // Send verification email (async, don't block signup)
+      if (this.authEmailService?.isConfigured()) {
+        this.authEmailService.sendVerificationEmail(
+          data.email,
+          verificationToken,
+          this.verifyEmailUrl
+        ).catch(err => {
+          console.error('Failed to send verification email:', err);
+        });
+      } else {
+        // Fallback: log token for development
+        console.log(`Email verification token for ${data.email}: ${verificationToken}`);
+        console.log(`Verify URL: ${this.verifyEmailUrl}?token=${verificationToken}`);
+      }
 
       // Generate tokens
       const session = await this.createSession(user);
@@ -180,6 +220,15 @@ export class LocalAuthProvider implements IAuthProvider {
         AuthErrorCode.INVALID_CREDENTIALS,
         'Invalid email or password',
         401
+      );
+    }
+
+    // Check email verification if required
+    if (this.requireEmailVerification && !user.email_verified) {
+      throw new AuthError(
+        AuthErrorCode.EMAIL_NOT_VERIFIED,
+        'Please verify your email address before signing in',
+        403
       );
     }
 
@@ -405,10 +454,19 @@ export class LocalAuthProvider implements IAuthProvider {
       [tokenHash, expiresAt, user.id]
     );
 
-    // TODO: Send email with reset link
-    // For now, log the token (in production, this would be sent via email)
-    console.log(`Password reset token for ${request.email}: ${resetToken}`);
-    console.log(`Reset URL: ${request.redirectUrl || this.baseUrl}/auth/reset-password?token=${resetToken}`);
+    // Send password reset email
+    const resetUrl = request.redirectUrl || this.resetPasswordUrl;
+    if (this.authEmailService?.isConfigured()) {
+      await this.authEmailService.sendPasswordResetEmail(
+        request.email,
+        resetToken,
+        resetUrl
+      );
+    } else {
+      // Fallback: log token for development
+      console.log(`Password reset token for ${request.email}: ${resetToken}`);
+      console.log(`Reset URL: ${resetUrl}?token=${resetToken}`);
+    }
   }
 
   /**
@@ -532,6 +590,16 @@ export class LocalAuthProvider implements IAuthProvider {
       throw new AuthError(AuthErrorCode.USER_NOT_FOUND, 'User not found', 404);
     }
 
+    // Send welcome email (async, don't block verification)
+    if (this.authEmailService?.isConfigured()) {
+      this.authEmailService.sendWelcomeEmail(
+        user.email,
+        user.displayName || user.email.split('@')[0]
+      ).catch(err => {
+        console.error('Failed to send welcome email:', err);
+      });
+    }
+
     return user;
   }
 
@@ -565,8 +633,18 @@ export class LocalAuthProvider implements IAuthProvider {
       [tokenHash, expiresAt, user.id]
     );
 
-    // TODO: Send verification email
-    console.log(`Email verification token for ${email}: ${verificationToken}`);
+    // Send verification email
+    if (this.authEmailService?.isConfigured()) {
+      await this.authEmailService.sendVerificationEmail(
+        email,
+        verificationToken,
+        this.verifyEmailUrl
+      );
+    } else {
+      // Fallback: log token for development
+      console.log(`Email verification token for ${email}: ${verificationToken}`);
+      console.log(`Verify URL: ${this.verifyEmailUrl}?token=${verificationToken}`);
+    }
   }
 
   /**
