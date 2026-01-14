@@ -1892,6 +1892,44 @@ body.body--light {
   }
 }
 
+// ============================================
+// Light Safe Mode (Landing)
+// Prevent light-mode flicker in calm presets by avoiding transparent-fill gradients
+// and forcing key top-of-landing reveal elements visible.
+// Enabled via html[data-light-safe="1"] set by the theme store.
+// ============================================
+
+html[data-light-safe="1"] body.body--light {
+  // Prefer solid text in light mode to avoid intermittent transparent rendering in Chrome.
+  .landing-page {
+    .gradient-text,
+    .gradient-word,
+    .colorized strong {
+      background: none !important;
+      -webkit-background-clip: initial !important;
+      background-clip: initial !important;
+      -webkit-text-fill-color: currentColor !important;
+      animation: none !important;
+    }
+  }
+
+  // CrossPlatformShowcase: avoid reveal flicker (opacity 0 -> 1).
+  .cross-platform-section {
+    .badge,
+    .iphone-showcase,
+    .showcase-content {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
+  // Hero DAG labels: never start hidden.
+  .hero-dag-visualization .node-label {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+}
+
 
 // ============================================
 // Electron macOS - Traffic Light Area
