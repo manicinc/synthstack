@@ -131,11 +131,18 @@ export class AuthService {
           lockoutDurationMinutes: row.local_lockout_duration_minutes,
         };
       } else {
-        // Default config
+        // Default config - auto-detect based on environment
+        // If Supabase is not configured, automatically use local PostgreSQL auth
+        const supabaseConfigured = Boolean(config.supabaseUrl && config.supabaseServiceRoleKey);
+
+        if (!supabaseConfigured) {
+          this.fastify.log.info('📦 Supabase not configured - using local PostgreSQL auth');
+        }
+
         this.providerConfig = {
-          activeProvider: 'supabase',
-          supabaseEnabled: true,
-          localEnabled: false,
+          activeProvider: supabaseConfigured ? 'supabase' : 'local',
+          supabaseEnabled: supabaseConfigured,
+          localEnabled: true, // Always enable local as fallback
           directusEnabled: false,
           allowGuestMode: true,
           requireEmailVerification: false,
@@ -145,12 +152,13 @@ export class AuthService {
         };
       }
     } catch (error) {
-      // Table might not exist yet, use defaults
-      this.fastify.log.warn('Auth config table not found, using defaults');
+      // Table might not exist yet, use env-based defaults
+      const supabaseConfigured = Boolean(config.supabaseUrl && config.supabaseServiceRoleKey);
+      this.fastify.log.warn(`Auth config table not found, using ${supabaseConfigured ? 'Supabase' : 'local PostgreSQL'} auth`);
       this.providerConfig = {
-        activeProvider: 'supabase',
-        supabaseEnabled: true,
-        localEnabled: false,
+        activeProvider: supabaseConfigured ? 'supabase' : 'local',
+        supabaseEnabled: supabaseConfigured,
+        localEnabled: true,
         directusEnabled: false,
         allowGuestMode: true,
         requireEmailVerification: false,
