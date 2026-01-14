@@ -62,6 +62,8 @@ import { useRouter } from 'vue-router'
 import { usePages, type Page } from '@/composables/usePages'
 import { useSeo } from '@/composables/useSeo'
 import { logError } from '@/utils/devLogger'
+import { API_BASE_URL } from '@/utils/apiUrl'
+import { debugWarn } from '@/utils/debug'
 import { analyticsEvents, adConversions } from '@/boot/analytics'
 
 // Landing section components
@@ -98,24 +100,33 @@ const promoStats = ref<{
   discount: string;
 } | null>(null)
 
-const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3003'
+const apiUrl = API_BASE_URL
 const promoCode = import.meta.env.VITE_STRIPE_LIFETIME_PROMO_CODE || 'EARLYSYNTH'
 
 async function fetchPromoStats() {
   try {
     const response = await fetch(`${apiUrl}/api/v1/billing/promo-stats?code=${promoCode}`)
-    if (response.ok) {
-      const data = await response.json()
-      if (data.success && data.data) {
-        promoStats.value = {
-          maxRedemptions: data.data.maxRedemptions,
-          remaining: data.data.remaining,
-          discount: data.data.discount
-        }
+    if (!response.ok) {
+      debugWarn('api', 'promo-stats request failed', {
+        url: `${apiUrl}/api/v1/billing/promo-stats`,
+        status: response.status,
+      })
+      return
+    }
+
+    const data = await response.json()
+    if (data.success && data.data) {
+      promoStats.value = {
+        maxRedemptions: data.data.maxRedemptions,
+        remaining: data.data.remaining,
+        discount: data.data.discount
       }
     }
-  } catch {
-    // Silently fail - will show static text as fallback
+  } catch (error) {
+    debugWarn('api', 'promo-stats request threw', {
+      url: `${apiUrl}/api/v1/billing/promo-stats`,
+      error: error instanceof Error ? error.message : String(error),
+    })
   }
 }
 
@@ -131,15 +142,16 @@ async function startLifetimeCheckout() {
     // Track checkout initiation
     analyticsEvents.beginCheckout('SynthStack Pro - Lifetime', 297)
 
-    const response = await fetch(`${apiUrl}/api/v1/billing/lifetime-checkout`, {
+	    const response = await fetch(`${apiUrl}/api/v1/billing/lifetime-checkout`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ promoCode })
     })
 
-    if (!response.ok) {
-      throw new Error('Failed to create checkout session')
-    }
+	    if (!response.ok) {
+	      debugWarn('api', 'lifetime-checkout request failed', { status: response.status })
+	      throw new Error('Failed to create checkout session')
+	    }
 
     const data = await response.json()
     if (data.success && data.data?.checkoutUrl) {

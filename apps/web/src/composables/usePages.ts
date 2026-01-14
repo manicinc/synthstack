@@ -4,8 +4,9 @@
  */
 
 import { ref } from 'vue'
-import { api } from '@/services/api'
+import { api, type ApiError } from '@/services/api'
 import { devLog, devWarn, devError, logError } from '@/utils/devLogger'
+import { debugWarn } from '@/utils/debug'
 
 export interface Page {
   id: number
@@ -44,6 +45,13 @@ export function usePages() {
       return page
     } catch (err) {
       error.value = err as Error
+      const apiError = err as Partial<ApiError>
+      debugWarn('api', 'fetchPage failed', {
+        slug,
+        status: apiError.status,
+        code: apiError.code,
+        message: apiError.message || (err instanceof Error ? err.message : String(err)),
+      })
       logError('Error fetching page:', err)
       return null
     } finally {
@@ -70,6 +78,12 @@ export function usePages() {
       return pages.value
     } catch (err) {
       error.value = err as Error
+      const apiError = err as Partial<ApiError>
+      debugWarn('api', 'fetchPages failed', {
+        status: apiError.status,
+        code: apiError.code,
+        message: apiError.message || (err instanceof Error ? err.message : String(err)),
+      })
       logError('Error fetching pages:', err)
       return []
     } finally {

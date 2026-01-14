@@ -61,6 +61,14 @@ vi.mock('../../services/auth/index.js', () => ({
   },
 }));
 
+// Mock the config module for deterministic tests
+vi.mock('../../config/index.js', () => ({
+  config: {
+    supabaseUrl: '',
+    supabaseServiceRoleKey: '',
+  },
+}));
+
 describe('Auth Routes', () => {
   let server: FastifyInstance;
   let mockPgQuery: ReturnType<typeof vi.fn>;
@@ -883,8 +891,9 @@ describe('Auth Routes', () => {
 
       expect(response.statusCode).toBe(200);
       const result = response.json();
-      expect(result.data.activeProvider).toBe('supabase');
-      expect(result.data.providers.supabase).toBe(true);
+      // When config is null and Supabase isn't configured, defaults to 'local'
+      expect(result.data.activeProvider).toBe('local');
+      expect(result.data.providers.local).toBe(true);
     });
   });
 

@@ -11,6 +11,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { devWarn, logError } from '@/utils/devLogger'
+import { debugGroupCollapsed, debugGroupEnd, debugLog, debugWarn, isDebugEnabled } from '@/utils/debug'
 import type { Theme, ColorMode, ThemePreset, SiteThemeSettings, ThemeCategory } from '@/types/theme'
 import { DEFAULT_THEME, presetToTheme } from '@/types/theme'
 import { themePresetsList, getPresetBySlug, getDefaultPreset } from '@/config/themePresets'
@@ -18,6 +19,202 @@ import { getApiBaseUrl } from '@/utils/apiUrl'
 
 const STORAGE_KEY = 'synthstack-theme'
 const API_BASE = getApiBaseUrl()
+
+const THEME_DEBUG_SELECTORS: Record<string, string> = {
+  app: '#q-app',
+  layout: '.q-layout',
+  page: '[data-testid="landing-page"]',
+  hero: '[data-testid="hero-section"]',
+  header: '.site-header',
+}
+
+let themeDebugToolsInstalled = false
+let themeDebugObserver: MutationObserver | null = null
+let themeDebugSamplerInterval: number | null = null
+let originalSetProperty: typeof CSSStyleDeclaration.prototype.setProperty | null = null
+let originalRemoveProperty: typeof CSSStyleDeclaration.prototype.removeProperty | null = null
+
+function installThemeDebugTools(): void {
+  if (themeDebugToolsInstalled) return
+  if (typeof window === 'undefined' || typeof document === 'undefined') return
+  if (!isDebugEnabled('theme')) return
+
+  themeDebugToolsInstalled = true
+
+  debugLog('theme', 'theme debug enabled', {
+    href: window.location.href,
+    userAgent: navigator.userAgent,
+  })
+
+  // Observe class/style/attributes on html/body to detect unexpected toggles.
+  try {
+    themeDebugObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type !== 'attributes') continue
+
+        const target = mutation.target as Element
+        const targetLabel =
+          target === document.body ? 'body' : target === document.documentElement ? 'html' : 'other'
+        const attr = mutation.attributeName || '(unknown)'
+
+        const nextValue =
+          attr === 'class' ? target.className : target.getAttribute(attr) || target.getAttribute(attr) || ''
+
+        debugLog('theme', 'dom attribute change', {
+          target: targetLabel,
+          attribute: attr,
+          oldValue: mutation.oldValue,
+          newValue: nextValue,
+        })
+      }
+    })
+
+    themeDebugObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeOldValue: true,
+      attributeFilter: ['class', 'style', 'data-theme', 'data-preset'],
+    })
+
+    themeDebugObserver.observe(document.body, {
+      attributes: true,
+      attributeOldValue: true,
+      attributeFilter: ['class', 'style'],
+    })
+  } catch (e) {
+    debugWarn('theme', 'failed to install MutationObserver', e)
+  }
+
+  // Patch style.setProperty/removeProperty to catch code forcing opacity/display on body/html.
+  try {
+    if (!originalSetProperty) {
+      originalSetProperty = CSSStyleDeclaration.prototype.setProperty
+      originalRemoveProperty = CSSStyleDeclaration.prototype.removeProperty
+
+      const interestingProps = new Set([
+        'opacity',
+        'display',
+        'visibility',
+        'clip-path',
+        '-webkit-text-fill-color',
+      ])
+
+      CSSStyleDeclaration.prototype.setProperty = function (
+        name: string,
+        value: string | null,
+        priority?: string
+      ): void {
+        try {
+          const isBody = typeof document !== 'undefined' && this === document.body?.style
+          const isHtml = typeof document !== 'undefined' && this === document.documentElement?.style
+          if ((isBody || isHtml) && interestingProps.has(name) && isDebugEnabled('theme')) {
+            debugWarn('theme', 'style.setProperty', {
+              target: isBody ? 'body' : 'html',
+              name,
+              value,
+              priority,
+              stack: new Error().stack,
+            })
+          }
+        } catch {
+          // Ignore debug failures
+        }
+        return originalSetProperty!.call(this, name, value ?? '', priority)
+      }
+
+      CSSStyleDeclaration.prototype.removeProperty = function (name: string): string {
+        try {
+          const isBody = typeof document !== 'undefined' && this === document.body?.style
+          const isHtml = typeof document !== 'undefined' && this === document.documentElement?.style
+          if ((isBody || isHtml) && interestingProps.has(name) && isDebugEnabled('theme')) {
+            debugWarn('theme', 'style.removeProperty', {
+              target: isBody ? 'body' : 'html',
+              name,
+              stack: new Error().stack,
+            })
+          }
+        } catch {
+          // Ignore debug failures
+        }
+        return originalRemoveProperty!.call(this, name)
+      }
+    }
+  } catch (e) {
+    debugWarn('theme', 'failed to patch CSSStyleDeclaration', e)
+  }
+
+  // Lightweight sampler to detect visibility/opacity flicker.
+  try {
+    const last = new Map<string, string>()
+    const lastBad = new Map<string, boolean>()
+
+    themeDebugSamplerInterval = window.setInterval(() => {
+      if (!isDebugEnabled('theme')) return
+
+      for (const [name, selector] of Object.entries(THEME_DEBUG_SELECTORS)) {
+        const el = document.querySelector(selector)
+        if (!el) continue
+
+        const cs = window.getComputedStyle(el)
+        const signature = `${cs.display}|${cs.visibility}|${cs.opacity}`
+        const key = `${name}:${selector}`
+
+        const prev = last.get(key)
+        if (prev !== signature) {
+          last.set(key, signature)
+          debugLog('theme', 'sample change', {
+            name,
+            selector,
+            display: cs.display,
+            visibility: cs.visibility,
+            opacity: cs.opacity,
+            bodyClass: document.body.className,
+            htmlClass: document.documentElement.className,
+            preset: document.documentElement.getAttribute('data-preset'),
+            theme: document.documentElement.getAttribute('data-theme'),
+          })
+        }
+
+        const opacity = Number.parseFloat(cs.opacity)
+        const isBad = cs.display === 'none' || cs.visibility !== 'visible' || (Number.isFinite(opacity) && opacity < 0.2)
+        if (lastBad.get(key) !== isBad) {
+          lastBad.set(key, isBad)
+          if (isBad) {
+            debugWarn('theme', 'visibility drop detected', {
+              name,
+              selector,
+              display: cs.display,
+              visibility: cs.visibility,
+              opacity: cs.opacity,
+              bodyClass: document.body.className,
+              bodyStyle: document.body.getAttribute('style') || '',
+              htmlClass: document.documentElement.className,
+              htmlStyle: document.documentElement.getAttribute('style') || '',
+            })
+          }
+        }
+      }
+    }, 250)
+  } catch (e) {
+    debugWarn('theme', 'failed to install sampler', e)
+  }
+
+  // Expose a small handle for manual inspection.
+  try {
+    const globalObj = window as unknown as { __SYNTHSTACK_DEBUG__?: any }
+    globalObj.__SYNTHSTACK_DEBUG__ = globalObj.__SYNTHSTACK_DEBUG__ || {}
+    globalObj.__SYNTHSTACK_DEBUG__.theme = {
+      stop: () => {
+        themeDebugObserver?.disconnect()
+        themeDebugObserver = null
+        if (themeDebugSamplerInterval) window.clearInterval(themeDebugSamplerInterval)
+        themeDebugSamplerInterval = null
+        debugLog('theme', 'theme debug stopped')
+      },
+    }
+  } catch {
+    // ignore
+  }
+}
 
 export const useThemeStore = defineStore('theme', () => {
   // ============================================
@@ -119,6 +316,8 @@ export const useThemeStore = defineStore('theme', () => {
   async function initialize() {
     if (typeof window === 'undefined') return
 
+    installThemeDebugTools()
+
     // Load saved preferences first
     loadSavedPreferences()
 
@@ -126,7 +325,7 @@ export const useThemeStore = defineStore('theme', () => {
     resolveColorMode()
 
     // Apply theme immediately with saved/default
-    applyTheme()
+    applyTheme('initialize')
 
     // Then fetch custom themes from API (non-blocking)
     fetchCustomThemes().catch(logError)
@@ -137,7 +336,7 @@ export const useThemeStore = defineStore('theme', () => {
       mediaQuery.addEventListener('change', (e) => {
         if (colorMode.value === 'system') {
           resolvedMode.value = e.matches ? 'dark' : 'light'
-          applyTheme()
+          applyTheme('system-change')
         }
       })
     }
@@ -203,6 +402,10 @@ export const useThemeStore = defineStore('theme', () => {
     } else {
       resolvedMode.value = colorMode.value
     }
+
+    if (isDebugEnabled('theme')) {
+      debugLog('theme', 'resolved color mode', { colorMode: colorMode.value, resolvedMode: resolvedMode.value })
+    }
   }
 
   /**
@@ -245,7 +448,8 @@ export const useThemeStore = defineStore('theme', () => {
     // Update current theme
     currentTheme.value = presetToTheme(currentPreset.value)
 
-    applyTheme()
+    if (isDebugEnabled('theme')) debugLog('theme', 'setPreset', { presetSlug: currentPresetSlug.value })
+    applyTheme('setPreset')
     savePreferences()
   }
 
@@ -265,7 +469,8 @@ export const useThemeStore = defineStore('theme', () => {
   function setColorMode(mode: ColorMode) {
     colorMode.value = mode
     resolveColorMode()
-    applyTheme()
+    if (isDebugEnabled('theme')) debugLog('theme', 'setColorMode', { colorMode: colorMode.value, resolvedMode: resolvedMode.value })
+    applyTheme('setColorMode')
     savePreferences()
   }
 
@@ -280,7 +485,8 @@ export const useThemeStore = defineStore('theme', () => {
       colorMode.value = colorMode.value === 'dark' ? 'light' : 'dark'
     }
     resolveColorMode()
-    applyTheme()
+    if (isDebugEnabled('theme')) debugLog('theme', 'toggleDarkMode', { colorMode: colorMode.value, resolvedMode: resolvedMode.value })
+    applyTheme('toggleDarkMode')
     savePreferences()
   }
 
@@ -294,13 +500,15 @@ export const useThemeStore = defineStore('theme', () => {
   /**
    * Apply current theme to DOM
    */
-  function applyTheme() {
+  function applyTheme(reason: string = 'unknown') {
     if (typeof document === 'undefined') return
 
     try {
       const root = document.documentElement
       const body = document.body
       const preset = currentPreset.value
+
+      installThemeDebugTools()
 
       // Safety check - ensure preset exists
       if (!preset) {
@@ -309,6 +517,41 @@ export const useThemeStore = defineStore('theme', () => {
       }
 
       const isDarkMode = resolvedMode.value === 'dark'
+      const expectedPreset = preset.slug
+      const expectedMode = isDarkMode ? 'dark' : 'light'
+
+      // Avoid redundant re-application when the DOM already matches the desired state.
+      const bodyOk =
+        body.classList.contains('body--dark') === isDarkMode &&
+        body.classList.contains('body--light') === !isDarkMode
+      const rootOk =
+        root.classList.contains('dark') === isDarkMode &&
+        root.classList.contains('light') === !isDarkMode &&
+        root.getAttribute('data-preset') === expectedPreset &&
+        root.getAttribute('data-theme') === expectedPreset
+
+      if (bodyOk && rootOk) {
+        if (isDebugEnabled('theme')) {
+          debugLog('theme', 'applyTheme skipped (already applied)', {
+            reason,
+            preset: expectedPreset,
+            mode: expectedMode,
+          })
+        }
+        return
+      }
+
+      if (isDebugEnabled('theme')) {
+        debugGroupCollapsed('theme', 'applyTheme', { reason, preset: expectedPreset, mode: expectedMode })
+        debugLog('theme', 'before', {
+          bodyClass: body.className,
+          bodyStyle: body.getAttribute('style') || '',
+          htmlClass: root.className,
+          htmlStyle: root.getAttribute('style') || '',
+          dataPreset: root.getAttribute('data-preset'),
+          dataTheme: root.getAttribute('data-theme'),
+        })
+      }
 
       // Update current theme ref
       currentTheme.value = presetToTheme(preset)
@@ -345,6 +588,18 @@ export const useThemeStore = defineStore('theme', () => {
         if (metaTheme) {
           metaTheme.setAttribute('content', bgColor)
         }
+      }
+
+      if (isDebugEnabled('theme')) {
+        debugLog('theme', 'after', {
+          bodyClass: body.className,
+          bodyStyle: body.getAttribute('style') || '',
+          htmlClass: root.className,
+          htmlStyle: root.getAttribute('style') || '',
+          dataPreset: root.getAttribute('data-preset'),
+          dataTheme: root.getAttribute('data-theme'),
+        })
+        debugGroupEnd('theme')
       }
     } catch (error) {
       devWarn('Error applying theme:', error)
