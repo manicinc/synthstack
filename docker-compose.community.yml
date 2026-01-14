@@ -92,7 +92,7 @@ services:
       ADMIN_TOKEN: ${DIRECTUS_ADMIN_TOKEN:-synthstack-static-admin-token-2024}
 
       # CORS
-      PUBLIC_URL: ${DIRECTUS_PUBLIC_URL:-http://localhost:8056}
+      PUBLIC_URL: ${DIRECTUS_PUBLIC_URL:-http://localhost:8099}
       CORS_ENABLED: "true"
       CORS_ORIGIN: "http://localhost:3000,http://localhost:3003,http://localhost:5174"
 
@@ -215,7 +215,7 @@ services:
 
       # API URLs
       VITE_API_URL: http://localhost:3003
-      VITE_DIRECTUS_URL: http://localhost:8056
+      VITE_DIRECTUS_URL: http://localhost:8099
 
       # Supabase
       VITE_SUPABASE_URL: ${SUPABASE_URL}
