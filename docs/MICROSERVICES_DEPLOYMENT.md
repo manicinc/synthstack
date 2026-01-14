@@ -308,7 +308,7 @@ CORS_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
 # API Keys
 OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
-STRIPE_SECRET_KEY=sk_live_...
+STRIPE_SECRET_KEY=YOUR_STRIPE_SECRET_KEY
 ```
 
 ```bash
@@ -571,7 +571,7 @@ stringData:
   REDIS_URL: "redis://elasticache.amazonaws.com:6379"
   OPENAI_API_KEY: "sk-..."
   ANTHROPIC_API_KEY: "sk-ant-..."
-  STRIPE_SECRET_KEY: "sk_live_..."
+  STRIPE_SECRET_KEY: "YOUR_STRIPE_SECRET_KEY"
 EOF
 
 # 4. Create API Gateway deployment
@@ -748,7 +748,7 @@ VITE_API_URL=https://api.yourdomain.com
 VITE_DIRECTUS_URL=https://cms.yourdomain.com
 VITE_ENABLE_COPILOT=true
 VITE_ENABLE_REFERRALS=true
-VITE_STRIPE_PUBLISHABLE_KEY=pk_live_...
+VITE_STRIPE_PUBLISHABLE_KEY=YOUR_STRIPE_PUBLISHABLE_KEY
 ```
 
 #### API Gateway (Fastify)
@@ -776,7 +776,7 @@ QDRANT_URL=https://qdrant.yourdomain.com:6333
 # API Keys
 OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
-STRIPE_SECRET_KEY=sk_live_...
+STRIPE_SECRET_KEY=YOUR_STRIPE_SECRET_KEY
 
 # Feature Flags
 ENABLE_COPILOT=true

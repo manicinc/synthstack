@@ -44,12 +44,12 @@ Edit `.env` and replace all placeholder values with your actual credentials:
 ```bash
 # Before (placeholders)
 OPENAI_API_KEY=sk-xxx
-STRIPE_SECRET_KEY=sk_test_xxx
+STRIPE_SECRET_KEY=YOUR_STRIPE_SECRET_KEY
 SUPABASE_URL=https://your-project.supabase.co
 
 # After (your real values)
 OPENAI_API_KEY=sk-proj-abc123...
-STRIPE_SECRET_KEY=sk_test_51R8N...
+STRIPE_SECRET_KEY=YOUR_STRIPE_SECRET_KEY
 SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 ```
 
@@ -214,7 +214,7 @@ When adding new services or credentials:
 4. **Team members update their personal configs**
    ```bash
    # Each team member updates their .env
-   echo "NEW_SERVICE_API_KEY=sk_real_value" >> .env
+   echo "NEW_SERVICE_API_KEY=example_key_value" >> .env
    ```
 
 ## CI/CD Considerations

@@ -83,7 +83,7 @@ const PII_PATTERNS: PIIPattern[] = [
   // Credentials & Secrets
   {
     name: 'api_key',
-    // Matches Stripe-style keys (sk_live_*, pk_test_*) and generic API keys (api_key_*, token_*)
+    // Matches Stripe-style keys (sk/pk + _live/_test) and generic API keys (api_key_*, token_*)
     pattern: /\b(?:sk|pk)_(?:live|test)_[a-zA-Z0-9]{20,64}\b|\b(?:api_key|api-key|token|secret|auth)_[a-zA-Z0-9]{16,64}\b/gi,
     replacement: '[API_KEY_REDACTED]',
     category: 'credential'
@@ -309,5 +309,4 @@ export function createPIIPattern(
 
 // Export default patterns for customization
 export const DEFAULT_PII_PATTERNS = PII_PATTERNS;
-
 

@@ -355,14 +355,14 @@
             v-model="values.STRIPE_PUBLISHABLE_KEY"
             label="Publishable key (STRIPE_PUBLISHABLE_KEY)"
             outlined
-            placeholder="pk_..."
+            placeholder="<stripe_publishable_key>"
           />
           <q-input
             v-model="values.STRIPE_SECRET_KEY"
             label="Secret key (STRIPE_SECRET_KEY)"
             outlined
             type="password"
-            placeholder="sk_..."
+            placeholder="<stripe_secret_key>"
           />
         </div>
 
@@ -372,7 +372,7 @@
             label="Webhook secret (STRIPE_WEBHOOK_SECRET)"
             outlined
             type="password"
-            placeholder="whsec_..."
+            placeholder="<stripe_webhook_secret>"
           />
         </div>
 
@@ -396,7 +396,7 @@
             v-model="values.VITE_STRIPE_PUBLISHABLE_KEY"
             label="Frontend publishable (VITE_STRIPE_PUBLISHABLE_KEY)"
             outlined
-            placeholder="pk_..."
+            placeholder="<stripe_publishable_key>"
           />
           <q-input
             v-model="values.STRIPE_PRICE_LIFETIME"

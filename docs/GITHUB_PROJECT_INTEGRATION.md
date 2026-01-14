@@ -41,7 +41,7 @@ Authorization: Bearer <your-auth-token>
 Content-Type: application/json
 
 {
-  "pat": "ghp_xxxxxxxxxxxxxxxxxxxx",
+  "pat": "<github_pat>",
   "repo": "owner/repository",
   "default_branch": "main",
   "sync_issues": true,

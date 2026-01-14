@@ -115,7 +115,7 @@ ML_SERVICE_URL=http://localhost:8031
 JWT_SECRET=test-secret-key-for-testing-only
 
 # Disable external services
-STRIPE_SECRET_KEY=sk_test_mock
+STRIPE_SECRET_KEY=TEST_STRIPE_SECRET_KEY
 SENDGRID_API_KEY=mock-key
 OPENAI_API_KEY=mock-key
 ```

@@ -143,7 +143,7 @@ VITE_SUPABASE_URL=your-project-url
 VITE_SUPABASE_ANON_KEY=your-anon-key
 
 # Stripe (Public Keys Only)
-VITE_STRIPE_PUBLISHABLE_KEY=pk_test_...
+VITE_STRIPE_PUBLISHABLE_KEY=YOUR_STRIPE_PUBLISHABLE_KEY
 
 # Feature Flags
 VITE_ENABLE_COPILOT=true
@@ -322,7 +322,7 @@ Production environment variables:
 VITE_API_URL=https://api.synthstack.app
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-production-key
-VITE_STRIPE_PUBLISHABLE_KEY=pk_live_...
+VITE_STRIPE_PUBLISHABLE_KEY=YOUR_STRIPE_PUBLISHABLE_KEY
 ```
 
 ### Static Hosting

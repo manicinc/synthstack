@@ -25,7 +25,7 @@ Deploy to any VPS provider: Linode, DigitalOcean, AWS EC2, Vultr, Hetzner, or an
 | `REMOTE_USER` | SSH username on remote server | `root`, `deploy`, `ubuntu`, `ec2-user` |
 | `REMOTE_HOST_PRODUCTION` | Production server IP or hostname | `172.105.34.567` or `example.com` |
 | `REMOTE_HOST_STAGING` | Staging server IP or hostname (optional) | `172.105.78.910` or `staging.example.com` |
-| `GH_PAT` | **GitHub Personal Access Token** (required for Docker image pulls) | `ghp_xxxxxxxxxxxx` |
+| `GH_PAT` | **GitHub Personal Access Token** (required for Docker image pulls) | `<github_pat>` |
 | `DEPLOYMENT_PROVIDER` | Cloud provider name (optional) | `linode`, `digitalocean`, `aws`, `gcp`, `vultr` |
 
 #### ⚠️ GH_PAT (Required)
@@ -72,9 +72,9 @@ Choose your auth provider:
 
 | Secret | Description | Example |
 |--------|-------------|---------|
-| `STRIPE_SECRET_KEY` | Stripe secret API key | `sk_live_...` or `sk_test_...` |
-| `STRIPE_PUBLISHABLE_KEY` | Stripe publishable key | `pk_live_...` or `pk_test_...` |
-| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret | `whsec_...` |
+| `STRIPE_SECRET_KEY` | Stripe secret API key | `<stripe_secret_key>` |
+| `STRIPE_PUBLISHABLE_KEY` | Stripe publishable key | `<stripe_publishable_key>` |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret | `<stripe_webhook_secret>` |
 
 ### AI/ML Services
 
@@ -144,7 +144,7 @@ These are non-sensitive configuration values.
 |----------|-------------|---------|
 | `VITE_API_URL` | Public API URL | `https://api.synthstack.app` |
 | `VITE_SUPABASE_URL` | Supabase project URL (if using Supabase) | `https://xxx.supabase.co` |
-| `VITE_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key | `pk_live_...` or `pk_test_...` |
+| `VITE_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key | `<stripe_publishable_key>` |
 | `DOMAIN` | Main domain | `synthstack.app` |
 
 ---
@@ -218,7 +218,7 @@ gh secret set SLACK_WEBHOOK_URL
 # Set variables
 gh variable set VITE_API_URL -b "https://api.synthstack.app"
 gh variable set VITE_SUPABASE_URL -b "https://xxx.supabase.co"  # If using Supabase
-gh variable set VITE_STRIPE_PUBLISHABLE_KEY -b "pk_live_xxx"
+gh variable set VITE_STRIPE_PUBLISHABLE_KEY -b "<stripe_publishable_key>"
 gh variable set DOMAIN -b "synthstack.app"
 ```
 

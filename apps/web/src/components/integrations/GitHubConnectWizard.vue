@@ -59,7 +59,7 @@
             <q-input
               v-model="pat"
               label="Personal Access Token"
-              placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+              placeholder="<github_pat>"
               :type="showPat ? 'text' : 'password'"
               outlined
               class="q-mb-md"

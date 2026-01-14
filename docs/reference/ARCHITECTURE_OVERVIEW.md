@@ -625,7 +625,7 @@ For maximum quality and extensibility, follow this approach for each new feature
   - IP whitelisting (optional)
 - Security:
   - Hash keys (never store plaintext)
-  - Prefix for identification (pk_live_, pk_test_)
+  - Prefix for identification (e.g., pk + _live/_test)
   - Scope-based permissions
 - Admin UI:
   - API key management page

@@ -53,9 +53,9 @@ Current API env vars and tiers:
 
 ```bash
 # Stripe
-STRIPE_SECRET_KEY=sk_live_...
-STRIPE_PUBLISHABLE_KEY=pk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_SECRET_KEY=YOUR_STRIPE_SECRET_KEY
+STRIPE_PUBLISHABLE_KEY=YOUR_STRIPE_PUBLISHABLE_KEY
+STRIPE_WEBHOOK_SECRET=YOUR_STRIPE_WEBHOOK_SECRET
 
 # Stripe Price IDs - Monthly (used by API Gateway)
 STRIPE_PRICE_MAKER=price_1SmoJoCBrYnyjAOOrEyKLXgz
@@ -73,7 +73,7 @@ STRIPE_PROMO_EARLYSYNTH=EARLYSYNTH
 
 # GitHub Organization Management (for lifetime license buyers)
 GITHUB_ORG_NAME=manicinc
-GH_PAT=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  # PAT with admin:org + repo scopes
+GH_PAT=YOUR_GITHUB_PAT  # PAT with admin:org + repo scopes
 GITHUB_TEAM_SLUG=synthstack-pro
 GITHUB_PRO_REPO=manicinc/synthstack-pro
 
@@ -83,7 +83,7 @@ SUPABASE_ANON_KEY=eyJ...
 SUPABASE_SERVICE_KEY=eyJ...
 
 # Frontend
-VITE_STRIPE_PUBLISHABLE_KEY=pk_live_...
+VITE_STRIPE_PUBLISHABLE_KEY=YOUR_STRIPE_PUBLISHABLE_KEY
 VITE_SUPABASE_URL=https://xxx.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJ...
 ```
@@ -736,6 +736,4 @@ For common issues (invitation not received, changed username, etc.), see the int
 - API docs: Swagger UI at `/docs`, OpenAPI at `/openapi.json` and `/openapi.yaml`
 - Admin CMS: `docs/ADMIN_CMS.md`
 - Pricing/plan docs: see `README.md` and this file for env mapping
-
-
 
