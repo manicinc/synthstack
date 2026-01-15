@@ -795,13 +795,19 @@ body.body--light {
   visibility: visible !important;
   clip-path: none !important;
 
-  // ===========================================
-  // GLOBAL TEXT COLOR RESET
-  // Ensure ALL text defaults to theme colors by setting -webkit-text-fill-color
-  // to currentColor. This prevents inheritance from dark mode styles.
-  // ===========================================
-  * {
-    -webkit-text-fill-color: currentColor;
+  // Gradient text utilities (light mode)
+  // Avoid transparent-fill gradients in light mode (Chrome can repaint as invisible).
+  .gradient-text,
+  .gradient-word,
+  .gradient-text-primary,
+  .gradient-text-secondary,
+  .gradient-text-animated,
+  .text-gradient {
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    background-clip: initial !important;
+    -webkit-text-fill-color: currentColor !important;
+    animation: none !important;
   }
 
   // ===========================================
