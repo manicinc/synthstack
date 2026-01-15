@@ -113,6 +113,8 @@
               label="Primary color (hex)"
               outlined
               placeholder="#6366F1"
+              :rules="hexColorRules"
+              lazy-rules
             />
             <div class="swatch" :style="{ background: form.branding.colors.primary }" />
           </div>
@@ -123,6 +125,8 @@
               label="Accent color (hex)"
               outlined
               placeholder="#00D4AA"
+              :rules="hexColorRules"
+              lazy-rules
             />
             <div class="swatch" :style="{ background: form.branding.colors.accent }" />
           </div>
@@ -134,12 +138,16 @@
             label="Theme color (browser UI)"
             outlined
             placeholder="#6366F1"
+            :rules="hexColorRules"
+            lazy-rules
           />
           <q-input
             v-model="form.branding.colors.background"
             label="Background color"
             outlined
             placeholder="#0D0D0D"
+            :rules="hexColorRules"
+            lazy-rules
           />
         </div>
 
@@ -196,18 +204,24 @@
             label="Support email"
             outlined
             placeholder="support@acme.com"
+            :rules="emailRules"
+            lazy-rules
           />
           <q-input
             v-model="form.contact.sales"
             label="Sales email"
             outlined
             placeholder="sales@acme.com"
+            :rules="emailRules"
+            lazy-rules
           />
           <q-input
             v-model="form.contact.general"
             label="General email"
             outlined
             placeholder="hello@acme.com"
+            :rules="emailRules"
+            lazy-rules
           />
         </div>
 
@@ -217,18 +231,24 @@
             label="GitHub URL"
             outlined
             placeholder="https://github.com/acme/acmestack"
+            :rules="urlRules"
+            lazy-rules
           />
           <q-input
             v-model="form.social.discord"
             label="Discord invite URL"
             outlined
             placeholder="https://discord.gg/..."
+            :rules="urlRules"
+            lazy-rules
           />
           <q-input
             v-model="form.social.twitter"
             label="X / Twitter URL"
             outlined
             placeholder="https://x.com/acme"
+            :rules="urlRules"
+            lazy-rules
           />
         </div>
 
@@ -486,6 +506,19 @@ defineEmits<{
 
 const $q = useQuasar()
 const step = ref(1)
+
+// Validation rules
+const emailRules = [
+  (v: string) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Enter a valid email address'
+]
+
+const hexColorRules = [
+  (v: string) => !v || /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(v) || 'Enter a valid hex color (e.g. #6366F1)'
+]
+
+const urlRules = [
+  (v: string) => !v || /^https?:\/\/.+/.test(v) || 'Enter a valid URL starting with http:// or https://'
+]
 
 const form = ref<ProjectConfig>(cloneConfig(projectConfig))
 

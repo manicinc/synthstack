@@ -4,7 +4,7 @@
         "tagline": "Your AI Co-Founders",
         "description": "AI-native, cross-platform SaaS boilerplate built with Vue Quasar. Ships for web, iOS, Android, desktop, and PWA from a single codebase.",
         "fullDescription": "Meet your AI co-founders: 6 specialized agents (Researcher, Marketer, Developer, SEO Writer, Designer, General Assistant) with deep system integration, automatic RAG, proactive suggestions, and actionable capabilities like GitHub PRs, blog posts, and marketing content.",
-        "domain": "synthstack.app",
+        "domain": "your-domain.com",
         "version": "1.0.0"
     },
     "branding": {
@@ -31,21 +31,30 @@
         }
     },
     "company": {
-        "name": "SynthStack",
-        "legalName": "Manic Inc.",
+        "name": "Your Company",
+        "legalName": "Your Company LLC",
         "founded": "2024",
-        "location": null
+        "location": {
+            "address": "123 Main Street, Suite 100",
+            "city": "Your City",
+            "state": "ST",
+            "zip": "00000",
+            "country": "USA"
+        },
+        "phone": "(000) 000-0000",
+        "parentCompany": null
     },
     "contact": {
-        "support": "team@manic.agency",
-        "sales": "team@manic.agency",
-        "general": "team@manic.agency",
-        "noreply": "noreply@manic.agency"
+        "support": "support@your-domain.com",
+        "sales": "sales@your-domain.com",
+        "general": "hello@your-domain.com",
+        "noreply": "noreply@your-domain.com",
+        "phone": "(000) 000-0000"
     },
     "social": {
-        "github": "https://github.com/manicinc/synthstack",
-        "twitter": "https://twitter.com/synthstack",
-        "discord": "https://discord.gg/synthstack",
+        "github": "https://github.com/your-org/your-repo",
+        "twitter": null,
+        "discord": null,
         "linkedin": null,
         "youtube": null
     },
@@ -63,9 +72,9 @@
         "gdpr": "/gdpr"
     },
     "demo": {
-        "enabled": true,
-        "email": "demo@synthstack.app",
-        "password": "DemoUser2024!"
+        "enabled": false,
+        "email": "demo@your-domain.com",
+        "password": "ChangeMe123!"
     },
     "infrastructure": {
         "containerPrefix": "synthstack",
@@ -87,10 +96,10 @@
         }
     },
     "github": {
-        "orgName": "manicinc",
-        "proRepoName": "synthstack-pro",
-        "communityRepoName": "synthstack",
-        "teamSlug": "synthstack-pro"
+        "orgName": "your-org",
+        "proRepoName": "your-repo",
+        "communityRepoName": "your-repo",
+        "teamSlug": null
     },
     "features": {
         "copilot": false,

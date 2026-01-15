@@ -241,13 +241,12 @@
             </div>
 
             <div v-else>
-              <div class="row q-mb-md">
+              <div class="row items-center q-mb-md q-gutter-sm">
                 <q-btn
                   flat
                   dense
                   color="primary"
                   label="Select All"
-                  class="q-mr-sm"
                   @click="selectAllRepos"
                 />
                 <q-btn
@@ -258,12 +257,28 @@
                   @click="deselectAllRepos"
                 />
                 <q-space />
+                <q-select
+                  v-model="sortBy"
+                  :options="sortOptions"
+                  dense
+                  outlined
+                  emit-value
+                  map-options
+                  style="width: 140px"
+                >
+                  <template #prepend>
+                    <q-icon
+                      name="sort"
+                      size="sm"
+                    />
+                  </template>
+                </q-select>
                 <q-input
                   v-model="repoFilter"
                   dense
                   outlined
                   placeholder="Filter repos..."
-                  style="width: 200px"
+                  style="width: 180px"
                 >
                   <template #prepend>
                     <q-icon
@@ -272,6 +287,13 @@
                     />
                   </template>
                 </q-input>
+              </div>
+
+              <div
+                v-if="repoFilter && filteredRepos.length !== repos.length"
+                class="text-caption text-grey-7 q-mb-sm"
+              >
+                Showing {{ filteredRepos.length }} of {{ repos.length }} repositories
               </div>
 
               <q-scroll-area style="height: 250px">
@@ -500,17 +522,46 @@ const loadingRepos = ref(false);
 const repos = ref<GitHubRepo[]>([]);
 const selectedRepos = ref<string[]>([]);
 const repoFilter = ref('');
+const sortBy = ref<'name' | 'name-desc' | 'private'>('name');
+
+const sortOptions = [
+  { label: 'Name (A-Z)', value: 'name' },
+  { label: 'Name (Z-A)', value: 'name-desc' },
+  { label: 'Private First', value: 'private' },
+];
 
 // Step 4 - Saving
 const saving = ref(false);
 
 const filteredRepos = computed(() => {
-  if (!repoFilter.value) return repos.value;
-  const filter = repoFilter.value.toLowerCase();
-  return repos.value.filter((r) =>
-    r.full_name.toLowerCase().includes(filter) ||
-    r.name.toLowerCase().includes(filter)
-  );
+  let result = [...repos.value];
+
+  // Apply filter
+  if (repoFilter.value) {
+    const filter = repoFilter.value.toLowerCase();
+    result = result.filter((r) =>
+      r.full_name.toLowerCase().includes(filter) ||
+      r.name.toLowerCase().includes(filter)
+    );
+  }
+
+  // Apply sorting
+  result.sort((a, b) => {
+    switch (sortBy.value) {
+      case 'name':
+        return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+      case 'name-desc':
+        return b.name.toLowerCase().localeCompare(a.name.toLowerCase());
+      case 'private':
+        // Private first, then by name
+        if (a.private !== b.private) return a.private ? -1 : 1;
+        return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+      default:
+        return 0;
+    }
+  });
+
+  return result;
 });
 
 // Reset wizard when opened/closed

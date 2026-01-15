@@ -28,7 +28,9 @@ const COMPLETED_KEY = 'synthstack-onboarding-completed';
 
 export function useOnboarding() {
   const router = useRouter();
-  const totalSteps = 9;
+  // COMMUNITY: 5 steps (WelcomeStep, ProfileStep, SubscriptionStep, ResourcesStep, CompletionStep)
+  // PRO has 9 steps (includes WorkflowStep, CopilotStep, etc.)
+  const totalSteps = 5;
 
   // Load state from localStorage
   const loadState = (): OnboardingState => {

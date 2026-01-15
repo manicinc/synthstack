@@ -76,104 +76,136 @@
         icon="settings"
         :done="step > 2"
       >
-        <div class="text-subtitle2 text-weight-bold q-mb-sm">
-          Database (Docker / self-hosted)
-        </div>
-        <div class="grid-3">
-          <q-input
-            v-model="values.DB_DATABASE"
-            label="DB name (DB_DATABASE)"
-            outlined
-            :placeholder="projectConfig.infrastructure.databaseName"
-          />
-          <q-input
-            v-model="values.DB_USER"
-            label="DB user (DB_USER)"
-            outlined
-            :placeholder="projectConfig.infrastructure.databaseName"
-          />
-          <q-input
-            v-model="values.DB_PASSWORD"
-            label="DB password (DB_PASSWORD)"
-            outlined
-            type="password"
-            placeholder="(set a strong password)"
-          />
-        </div>
+        <q-list class="config-sections">
+          <q-expansion-item
+            v-model="expandedSections.database"
+            icon="storage"
+            label="Database (Docker / self-hosted)"
+            header-class="text-weight-bold"
+            expand-separator
+          >
+            <q-card>
+              <q-card-section>
+                <div class="grid-3">
+                  <q-input
+                    v-model="values.DB_DATABASE"
+                    label="DB name (DB_DATABASE)"
+                    outlined
+                    :placeholder="projectConfig.infrastructure.databaseName"
+                  />
+                  <q-input
+                    v-model="values.DB_USER"
+                    label="DB user (DB_USER)"
+                    outlined
+                    :placeholder="projectConfig.infrastructure.databaseName"
+                  />
+                  <q-input
+                    v-model="values.DB_PASSWORD"
+                    label="DB password (DB_PASSWORD)"
+                    outlined
+                    type="password"
+                    placeholder="(set a strong password)"
+                  />
+                </div>
+              </q-card-section>
+            </q-card>
+          </q-expansion-item>
 
-        <q-separator class="q-my-md" />
+          <q-expansion-item
+            v-model="expandedSections.directus"
+            icon="dashboard"
+            label="Directus (CMS)"
+            header-class="text-weight-bold"
+            expand-separator
+          >
+            <q-card>
+              <q-card-section>
+                <div class="grid-2">
+                  <q-input
+                    v-model="values.DIRECTUS_KEY"
+                    label="DIRECTUS_KEY"
+                    outlined
+                    type="password"
+                    placeholder="(generate 32-byte hex)"
+                  />
+                  <q-input
+                    v-model="values.DIRECTUS_SECRET"
+                    label="DIRECTUS_SECRET"
+                    outlined
+                    type="password"
+                    placeholder="(generate 32-byte hex)"
+                  />
+                </div>
 
-        <div class="text-subtitle2 text-weight-bold q-mb-sm">
-          Directus (CMS)
-        </div>
-        <div class="grid-2">
-          <q-input
-            v-model="values.DIRECTUS_KEY"
-            label="DIRECTUS_KEY"
-            outlined
-            type="password"
-            placeholder="(generate 32-byte hex)"
-          />
-          <q-input
-            v-model="values.DIRECTUS_SECRET"
-            label="DIRECTUS_SECRET"
-            outlined
-            type="password"
-            placeholder="(generate 32-byte hex)"
-          />
-        </div>
+                <div class="grid-3 q-mt-md">
+                  <q-input
+                    v-model="values.DIRECTUS_ADMIN_EMAIL"
+                    label="Admin email (DIRECTUS_ADMIN_EMAIL)"
+                    outlined
+                    :placeholder="projectConfig.contact.support"
+                    :rules="emailRules"
+                    lazy-rules
+                  />
+                  <q-input
+                    v-model="values.DIRECTUS_ADMIN_PASSWORD"
+                    label="Admin password (DIRECTUS_ADMIN_PASSWORD)"
+                    outlined
+                    type="password"
+                    placeholder="(set a strong password)"
+                  />
+                  <q-input
+                    v-model="values.DIRECTUS_ADMIN_TOKEN"
+                    label="Admin token (DIRECTUS_ADMIN_TOKEN)"
+                    outlined
+                    type="password"
+                    placeholder="(used by API gateway)"
+                  />
+                </div>
 
-        <div class="grid-3 q-mt-md">
-          <q-input
-            v-model="values.DIRECTUS_ADMIN_EMAIL"
-            label="Admin email (DIRECTUS_ADMIN_EMAIL)"
-            outlined
-            :placeholder="projectConfig.contact.support"
-          />
-          <q-input
-            v-model="values.DIRECTUS_ADMIN_PASSWORD"
-            label="Admin password (DIRECTUS_ADMIN_PASSWORD)"
-            outlined
-            type="password"
-            placeholder="(set a strong password)"
-          />
-          <q-input
-            v-model="values.DIRECTUS_ADMIN_TOKEN"
-            label="Admin token (DIRECTUS_ADMIN_TOKEN)"
-            outlined
-            type="password"
-            placeholder="(used by API gateway)"
-          />
-        </div>
+                <div class="grid-2 q-mt-md">
+                  <q-input
+                    v-model="values.DIRECTUS_PUBLIC_URL"
+                    label="Public URL (DIRECTUS_PUBLIC_URL)"
+                    outlined
+                    placeholder="https://admin.yourapp.com"
+                    :rules="urlRules"
+                    lazy-rules
+                  />
+                  <q-input
+                    v-model="values.DIRECTUS_TOKEN"
+                    label="API token (DIRECTUS_TOKEN)"
+                    outlined
+                    type="password"
+                    placeholder="(Directus API token)"
+                  />
+                </div>
+              </q-card-section>
+            </q-card>
+          </q-expansion-item>
 
-        <div class="grid-2 q-mt-md">
-          <q-input
-            v-model="values.DIRECTUS_PUBLIC_URL"
-            label="Public URL (DIRECTUS_PUBLIC_URL)"
-            outlined
-            placeholder="https://admin.yourapp.com"
-          />
-          <q-input
-            v-model="values.DIRECTUS_TOKEN"
-            label="API token (DIRECTUS_TOKEN)"
-            outlined
-            type="password"
-            placeholder="(Directus API token)"
-          />
-        </div>
-
-        <q-separator class="q-my-md" />
-
-        <div class="text-subtitle2 text-weight-bold q-mb-sm">
-          Encryption
-        </div>
-        <q-input
-          v-model="values.ENCRYPTION_KEY"
-          label="ENCRYPTION_KEY"
-          outlined
-          type="password"
-          placeholder="(64-char hex; crypto.randomBytes(32))"
-        />
+          <q-expansion-item
+            v-model="expandedSections.encryption"
+            icon="vpn_key"
+            label="Encryption"
+            header-class="text-weight-bold"
+            expand-separator
+          >
+            <q-card>
+              <q-card-section>
+                <q-input
+                  v-model="values.ENCRYPTION_KEY"
+                  label="ENCRYPTION_KEY"
+                  outlined
+                  type="password"
+                  placeholder="(64-char hex; crypto.randomBytes(32))"
+                />
+                <div class="text-caption text-grey-7 q-mt-sm">
+                  Generate with: <code>node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"</code>
+                </div>
+              </q-card-section>
+            </q-card>
+          </q-expansion-item>
+        </q-list>
 
         <q-stepper-navigation class="row items-center q-mt-md">
           <q-btn
@@ -208,6 +240,8 @@
             label="Frontend URL (VITE_APP_URL)"
             outlined
             placeholder="https://yourapp.com"
+            :rules="urlRules"
+            lazy-rules
           />
         </div>
 
@@ -217,12 +251,16 @@
             label="API URL (VITE_API_URL)"
             outlined
             placeholder="https://api.yourapp.com"
+            :rules="urlRules"
+            lazy-rules
           />
           <q-input
             v-model="values.VITE_DIRECTUS_URL"
             label="Directus URL (VITE_DIRECTUS_URL)"
             outlined
             placeholder="https://admin.yourapp.com"
+            :rules="urlRules"
+            lazy-rules
           />
         </div>
 
@@ -232,12 +270,16 @@
             label="Frontend URL (FRONTEND_URL)"
             outlined
             placeholder="https://yourapp.com"
+            :rules="urlRules"
+            lazy-rules
           />
           <q-input
             v-model="values.APP_URL"
             label="App URL (APP_URL)"
             outlined
             placeholder="https://yourapp.com"
+            :rules="urlRules"
+            lazy-rules
           />
         </div>
 
@@ -247,12 +289,16 @@
             label="Directus URL (DIRECTUS_URL)"
             outlined
             placeholder="https://admin.yourapp.com"
+            :rules="urlRules"
+            lazy-rules
           />
           <q-input
             v-model="values.ML_SERVICE_URL"
             label="ML service URL (ML_SERVICE_URL)"
             outlined
             placeholder="http://localhost:8001"
+            :rules="urlRules"
+            lazy-rules
           />
         </div>
 
@@ -633,6 +679,22 @@ const step = ref(1)
 const activeEnv = ref<'root' | 'web' | 'api'>('root')
 const edition = ref<'pro' | 'community'>('community')
 
+// Collapsible sections state
+const expandedSections = reactive({
+  database: true,
+  directus: false,
+  encryption: false,
+})
+
+// Validation rules
+const urlRules = [
+  (v: string) => !v || /^https?:\/\/.+/.test(v) || 'Enter a valid URL starting with http:// or https://'
+]
+
+const emailRules = [
+  (v: string) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Enter a valid email address'
+]
+
 const values = reactive<Record<string, string>>({
   // Database
   DB_DATABASE: projectConfig.infrastructure.databaseName,
@@ -866,6 +928,23 @@ function downloadCurrent() {
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
+  }
+}
+
+.config-sections {
+  border-radius: 12px;
+  border: 1px solid var(--color-border, rgba(0, 0, 0, 0.12));
+  overflow: hidden;
+
+  .q-expansion-item {
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--color-border, rgba(0, 0, 0, 0.12));
+    }
+  }
+
+  .q-card {
+    box-shadow: none;
+    border-radius: 0;
   }
 }
 
