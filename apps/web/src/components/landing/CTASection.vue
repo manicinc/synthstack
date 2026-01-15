@@ -141,13 +141,6 @@ function trackPricingClick() {
 }
 
 :global(.body--light) .cta-content h2 {
-  background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary) 100%) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-}
-
-:global(html[data-light-safe="1"] body.body--light) .cta-content h2 {
   background: none !important;
   -webkit-background-clip: initial !important;
   background-clip: initial !important;
@@ -163,4 +156,3 @@ function trackPricingClick() {
   color: var(--text-primary) !important;
 }
 </style>
-

@@ -1893,14 +1893,12 @@ body.body--light {
 }
 
 // ============================================
-// Light Safe Mode (Landing)
-// Prevent light-mode flicker in calm presets by avoiding transparent-fill gradients
-// and forcing key top-of-landing reveal elements visible.
-// Enabled via html[data-light-safe="1"] set by the theme store.
+// Landing Page Light Mode Stability
+// Avoid transparent-fill gradients and heavy backdrop-filter effects in light mode
+// (Chrome can intermittently render transparent text as invisible).
 // ============================================
 
-html[data-light-safe="1"] body.body--light {
-  // Prefer solid text in light mode to avoid intermittent transparent rendering in Chrome.
+body.body--light {
   .landing-page {
     .gradient-text,
     .gradient-word,
@@ -1912,26 +1910,9 @@ html[data-light-safe="1"] body.body--light {
       animation: none !important;
     }
 
-    // Disable backdrop-filter effects in light-safe mode (can cause flicker on Chrome).
     * {
       backdrop-filter: none !important;
     }
-  }
-
-  // CrossPlatformShowcase: avoid reveal flicker (opacity 0 -> 1).
-  .cross-platform-section {
-    .badge,
-    .iphone-showcase,
-    .showcase-content {
-      opacity: 1 !important;
-      transform: none !important;
-    }
-  }
-
-  // Hero DAG labels: never start hidden.
-  .hero-dag-visualization .node-label {
-    opacity: 1 !important;
-    animation: none !important;
   }
 }
 

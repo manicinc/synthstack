@@ -15,7 +15,6 @@
     </div>
     <div class="grid">
       <div><span class="label">Theme</span>{{ themeStore.themeSlug }} ({{ themeStore.resolvedMode }})</div>
-      <div><span class="label">LightSafe</span>{{ lightSafe }}</div>
       <div><span class="label">API</span>{{ apiBaseUrl }}</div>
       <div><span class="label">URL</span>{{ href }}</div>
     </div>
@@ -39,11 +38,6 @@ const href = computed(() => {
   return window.location.href
 })
 
-const lightSafe = computed(() => {
-  if (typeof document === 'undefined') return 'n/a'
-  return document.documentElement.getAttribute('data-light-safe') === '1' ? '1' : '0'
-})
-
 const pillText = computed(() => {
   const parts: string[] = []
   if (isDebugEnabled('theme')) parts.push('theme')
@@ -58,7 +52,6 @@ async function copyDiagnostics() {
     theme: themeStore.themeSlug,
     colorMode: themeStore.colorMode,
     resolvedMode: themeStore.resolvedMode,
-    lightSafe: lightSafe.value,
     bodyClass: typeof document === 'undefined' ? '' : document.body.className,
     htmlClass: typeof document === 'undefined' ? '' : document.documentElement.className,
   }

@@ -619,7 +619,7 @@ onMounted(async () => {
   color: var(--text-primary) !important;
 }
 
-:global(html[data-light-safe="1"] body.body--light) .hero-title .title-line-1 .word .gradient-word {
+:global(.body--light) .hero-title .title-line-1 .word .gradient-word {
   background: none !important;
   -webkit-background-clip: initial !important;
   background-clip: initial !important;
@@ -634,13 +634,6 @@ onMounted(async () => {
 }
 
 :global(.body--light) .hero-title .title-line-2.colorized strong {
-  background: linear-gradient(135deg, #0d9488 0%, #00d4aa 100%) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-}
-
-:global(html[data-light-safe="1"] body.body--light) .hero-title .title-line-2.colorized strong {
   background: none !important;
   -webkit-background-clip: initial !important;
   background-clip: initial !important;

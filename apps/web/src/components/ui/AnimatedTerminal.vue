@@ -26,7 +26,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const themeStore = useThemeStore();
-const isCalmLightMode = computed(() => themeStore.isLightSafe);
+const isCalmLightMode = computed(() => !themeStore.isDark);
 
 // Alien terminal characters
 const ALIEN_CHARS = '░▒▓█◢◣◤◥⬡⬢╔╗╚╝═║▲▼◀▶◉◎●⟨⟩⟪⟫⌬⌭⌮∆∇⊕⊖⊗λΣΩπ∞≋≈01';

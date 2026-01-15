@@ -20,28 +20,6 @@ import { getApiBaseUrl } from '@/utils/apiUrl'
 const STORAGE_KEY = 'synthstack-theme'
 const API_BASE = getApiBaseUrl()
 
-// Light mode "safe" mode is enabled for presets that use light backgrounds and
-// have been observed to flicker in Chrome; a few "flashy" presets are excluded.
-const LIGHT_MODE_FLASHY_PRESETS = new Set(['brutalist', 'cyberpunk', 'terminal'])
-
-type LightSafeOverride = 'force' | 'disable' | null
-
-function getLightSafeOverride(): LightSafeOverride {
-  if (typeof window === 'undefined') return null
-  try {
-    const params = new URLSearchParams(window.location.search)
-    const value = params.get('lightSafe')
-    if (value === null) return null
-
-    const normalized = value.trim().toLowerCase()
-    if (normalized === '' || ['1', 'true', 'on', 'yes'].includes(normalized)) return 'force'
-    if (['0', 'false', 'off', 'no'].includes(normalized)) return 'disable'
-    return 'force'
-  } catch {
-    return null
-  }
-}
-
 const THEME_DEBUG_SELECTORS: Record<string, string> = {
   app: '#q-app',
   layout: '.q-layout',
@@ -281,17 +259,6 @@ export const useThemeStore = defineStore('theme', () => {
 
   /** Whether dark mode is active */
   const isDark = computed(() => resolvedMode.value === 'dark')
-
-  /** Whether the landing page light-safe mode is enabled */
-  const isLightSafe = computed(() => {
-    if (resolvedMode.value !== 'light') return false
-
-    const override = getLightSafeOverride()
-    if (override === 'force') return true
-    if (override === 'disable') return false
-
-    return !LIGHT_MODE_FLASHY_PRESETS.has(currentPresetSlug.value)
-  })
 
   /** Current theme slug (alias for preset slug) */
   const themeSlug = computed(() => currentPresetSlug.value)
@@ -552,7 +519,6 @@ export const useThemeStore = defineStore('theme', () => {
       const isDarkMode = resolvedMode.value === 'dark'
       const expectedPreset = preset.slug
       const expectedMode = isDarkMode ? 'dark' : 'light'
-      const expectedLightSafe = isLightSafe.value
 
       // Avoid redundant re-application when the DOM already matches the desired state.
       const bodyOk =
@@ -562,8 +528,7 @@ export const useThemeStore = defineStore('theme', () => {
         root.classList.contains('dark') === isDarkMode &&
         root.classList.contains('light') === !isDarkMode &&
         root.getAttribute('data-preset') === expectedPreset &&
-        root.getAttribute('data-theme') === expectedPreset &&
-        (expectedLightSafe ? root.getAttribute('data-light-safe') === '1' : !root.hasAttribute('data-light-safe'))
+        root.getAttribute('data-theme') === expectedPreset
 
       if (bodyOk && rootOk) {
         if (isDebugEnabled('theme')) {
@@ -601,11 +566,6 @@ export const useThemeStore = defineStore('theme', () => {
       // Set theme/preset class
       root.setAttribute('data-theme', preset.slug)
       root.setAttribute('data-preset', preset.slug)
-
-      // Light mode "safe" mode flag (used for CSS guardrails on landing page)
-      const lightSafe = isLightSafe.value
-      if (lightSafe) root.setAttribute('data-light-safe', '1')
-      else root.removeAttribute('data-light-safe')
 
       // Generate and apply CSS variables
       const vars = generateCSSVariables(preset, isDarkMode)
@@ -807,7 +767,6 @@ export const useThemeStore = defineStore('theme', () => {
     currentTheme,
     colorMode,
     resolvedMode,
-    isLightSafe,
     presets,
     customThemes,
     settings,
