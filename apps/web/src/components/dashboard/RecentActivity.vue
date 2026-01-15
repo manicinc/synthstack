@@ -123,14 +123,7 @@ const getStatusLabel = (status?: ActivityItem['status']) => {
             Latest executions and events
           </p>
         </div>
-        <q-btn
-          flat
-          dense
-          color="primary"
-          label="View All"
-          to="/app/workflows/logs"
-          aria-label="View all activity"
-        />
+        <!-- COMMUNITY: View All removed - workflows route not available -->
       </div>
 
       <!-- Loading state -->
@@ -258,7 +251,7 @@ const getStatusLabel = (status?: ActivityItem['status']) => {
           aria-hidden="true"
         />
         <p class="empty-text">No recent activity</p>
-        <p class="empty-subtext">Start running workflows to see activity here</p>
+        <p class="empty-subtext">Start using the app to see activity here</p>
       </div>
     </q-card-section>
   </q-card>

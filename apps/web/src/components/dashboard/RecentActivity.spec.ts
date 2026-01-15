@@ -138,7 +138,7 @@ describe('RecentActivity Component', () => {
     expect(wrapper.find('.card-subtitle').text()).toContain('Latest executions and events')
   })
 
-  it('should render "View All" button', () => {
+  it('should not render "View All" button (Community edition)', () => {
     const wrapper = mount(RecentActivity, {
       props: {
         activities: mockActivities,
@@ -150,8 +150,9 @@ describe('RecentActivity Component', () => {
       },
     })
 
-    const viewAllBtn = wrapper.find('.q-btn')
-    expect(viewAllBtn.exists()).toBe(true)
+    // COMMUNITY: View All button removed - workflows route not available
+    const viewAllBtn = wrapper.find('.q-btn[to="/app/workflows/logs"]')
+    expect(viewAllBtn.exists()).toBe(false)
   })
 
   it('should display activity titles', () => {

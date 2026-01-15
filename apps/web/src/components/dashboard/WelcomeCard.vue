@@ -100,7 +100,7 @@ const userInitials = computed(() => {
         <!-- Text content -->
         <div class="welcome-text">
           <h2>{{ getGreeting }}, {{ firstName || 'there' }}! 👋</h2>
-          <p>Here's what's happening with your workflows today.</p>
+          <p>Here's what's happening with your projects today.</p>
         </div>
       </div>
 
