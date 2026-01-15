@@ -3,11 +3,14 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Install pnpm
+RUN npm install -g pnpm
+
 # Copy package files
 COPY package.json ./
 
-# Install dependencies with npm (avoids pnpm symlink issues in Docker)
-RUN npm install --legacy-peer-deps
+# Install dependencies with pnpm
+RUN pnpm install
 
 # Copy source code
 COPY . .
@@ -16,4 +19,4 @@ COPY . .
 EXPOSE 3050
 
 # Start development server
-CMD ["npm", "run", "dev"]
+CMD ["pnpm", "dev"]

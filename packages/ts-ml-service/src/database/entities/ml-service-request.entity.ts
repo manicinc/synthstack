@@ -69,7 +69,7 @@ export class MLServiceRequest {
   @Column({ name: 'user_agent', type: 'text', nullable: true })
   userAgent: string | null;
 
-  @Column({ name: 'request_id', length: 255, nullable: true })
+  @Column({ name: 'request_id', type: 'varchar', length: 255, nullable: true })
   requestId: string | null;
 
   // Timestamps

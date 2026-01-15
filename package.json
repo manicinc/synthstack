@@ -49,6 +49,8 @@
   },
   "packageManager": "pnpm@9.1.0",
   "dependencies": {
+    "@fastify/static": "^9.0.0",
+    "@sentry/node": "^10.32.1",
     "argon2": "^0.44.0",
     "electron": "28.3.3"
   }

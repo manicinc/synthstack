@@ -112,8 +112,8 @@ export class GenerationService {
 
     return {
       id: uuidv4(),
-      image_url: response.data[0]?.url || '',
-      revised_prompt: response.data[0]?.revised_prompt,
+      image_url: response.data?.[0]?.url || '',
+      revised_prompt: response.data?.[0]?.revised_prompt,
       size: dto.size || '1024x1024',
       processing_time_ms: processingTime,
     };

@@ -34,7 +34,7 @@ export class MLServiceCache {
   @Column({ length: 255 })
   endpoint: string;
 
-  @Column({ name: 'service_name', length: 50, nullable: true })
+  @Column({ name: 'service_name', type: 'varchar', length: 50, nullable: true })
   serviceName: 'fastapi' | 'django' | 'nestjs' | null;
 
   // Cached Response

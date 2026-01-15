@@ -317,8 +317,8 @@ services:
   # ============================================
   api-gateway:
     build:
-      context: ./packages/api-gateway
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: packages/api-gateway/Dockerfile.dev
     container_name: ${CONTAINER_PREFIX:-synthstack}-api
     ports:
       - "3003:3003"
@@ -361,9 +361,11 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
     volumes:
-      - ./packages/api-gateway:/app
-      - ./docs:/docs:ro
+      - ./packages/api-gateway:/app/packages/api-gateway
+      - ./packages/types:/app/packages/types
       - /app/node_modules
+      - /app/packages/api-gateway/node_modules
+      - ./docs:/docs:ro
     depends_on:
       directus:
         condition: service_healthy
@@ -450,6 +452,7 @@ services:
       VITE_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
     volumes:
       - ./apps/web:/app
+      - ./config.json:/config.json
       - web_node_modules:/app/node_modules
     command: [ "sh", "-c", "pnpm install --shamefully-hoist && pnpm dev" ]
     depends_on:

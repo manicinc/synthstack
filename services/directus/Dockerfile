@@ -7,10 +7,13 @@ RUN apk add --no-cache python3 make g++ git
 # Build all Directus extensions into dist/
 COPY extensions ./extensions
 RUN set -e; \
-  find ./extensions -type d -name node_modules -prune -o -type f -name package.json -print | while read -r pkg; do \
-    dir="$$(dirname "$$pkg")"; \
-    echo "Building Directus extension: $$dir"; \
-    cd "$$dir"; \
+  find ./extensions -type d -name node_modules -prune -o -type f -name package.json -print > packages.txt; \
+  cat packages.txt; \
+  while read -r pkg; do \
+    echo "PKG: $pkg"; \
+    dir="$(dirname "$pkg")"; \
+    echo "Building Directus extension: $dir"; \
+    cd "$dir"; \
     if [ -f package-lock.json ]; then \
       npm ci --no-audit --no-fund; \
     else \
@@ -18,7 +21,8 @@ RUN set -e; \
     fi; \
     npm run build; \
     cd /build; \
-  done; \
+  done < packages.txt; \
+  rm packages.txt; \
   find ./extensions -type d -name node_modules -prune -exec rm -rf '{}' +;
 
 FROM directus/directus:11.3.5

@@ -9,14 +9,14 @@ WORKDIR /app
 COPY package*.json ./
 COPY pnpm-lock.yaml* ./
 
-# Install pnpm and dependencies
-RUN npm install -g pnpm && pnpm install --frozen-lockfile
+# Install dependencies with npm
+RUN npm install
 
 # Copy source code
 COPY . .
 
 # Build the application
-RUN pnpm build
+RUN npm run build
 
 # Expose port 8001
 EXPOSE 8001

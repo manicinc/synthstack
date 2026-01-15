@@ -118,11 +118,11 @@ export class DatabaseService {
       // Try to find existing usage record
       const existing = await this.usageRepository.findOne({
         where: {
-          userId: params.userId,
-          organizationId: params.organizationId,
+          userId: (params.userId || null) as any, // TypeORM strict null check workaround
+          organizationId: (params.organizationId || null) as any,
           date: usageDate,
           serviceName: this.serviceName,
-          endpointCategory,
+          endpointCategory: endpointCategory as any,
         },
       });
 
@@ -131,7 +131,7 @@ export class DatabaseService {
         existing.totalRequests += 1;
         existing.totalCredits += params.credits;
         existing.totalDurationMs = (
-          BigInt(existing.totalDurationMs) + BigInt(params.durationMs)
+          BigInt(existing.totalDurationMs) + BigInt(Math.floor(params.durationMs))
         ).toString();
         if (params.success) {
           existing.successCount += 1;
@@ -150,10 +150,10 @@ export class DatabaseService {
           endpointCategory,
           totalRequests: 1,
           totalCredits: params.credits,
-          totalDurationMs: params.durationMs.toString(),
+          totalDurationMs: Math.floor(params.durationMs).toString(),
           successCount: params.success ? 1 : 0,
           errorCount: params.success ? 0 : 1,
-        });
+        } as any); // TypeORM DeepPartial workaround
 
         await this.usageRepository.save(usage);
       }

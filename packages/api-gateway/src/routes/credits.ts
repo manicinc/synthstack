@@ -14,7 +14,8 @@ import {
   isExecutionFree,
   PREMIUM_NODES,
 } from '../services/credits/workflow-cost.js';
-import { getNodeRedService } from '../services/nodered/index.js';
+// Node-RED service removed in Community Edition
+// import { getNodeRedService } from '../services/nodered/index.js';
 
 interface DeductBody {
   user_id: string;
@@ -505,31 +506,14 @@ export default async function creditsRoutes(fastify: FastifyInstance) {
       );
       const executionsToday = parseInt(todayResult.rows[0]?.count || '0', 10);
 
-      // Get workflow credit stats
-      let nodeRedService;
-      try {
-        nodeRedService = getNodeRedService();
-      } catch {
-        // Node-RED service not available
-        return {
-          success: true,
-          data: {
-            totalCreditsUsed: 0,
-            freeExecutions: 0,
-            paidExecutions: 0,
-            avgCreditsPerExecution: 0,
-            executionsToday,
-            freeExecutionsRemaining: getFreeExecutionsRemaining(tier, executionsToday),
-          },
-        };
-      }
-
-      const stats = await nodeRedService.getWorkflowCreditStats(organizationId);
-
+      // Node-RED service disabled in Community Edition
       return {
         success: true,
         data: {
-          ...stats,
+          totalCreditsUsed: 0,
+          freeExecutions: 0,
+          paidExecutions: 0,
+          avgCreditsPerExecution: 0,
           executionsToday,
           freeExecutionsRemaining: getFreeExecutionsRemaining(tier, executionsToday),
         },
@@ -565,79 +549,7 @@ export default async function creditsRoutes(fastify: FastifyInstance) {
       },
     },
   }, async (request: any, reply) => {
-    try {
-      const userId = request.user.id;
-      const { organizationId, flowId } = request.body;
-
-      // Get user tier and credits
-      const userResult = await fastify.pg.query(
-        'SELECT subscription_tier, credits_remaining FROM app_users WHERE id = $1',
-        [userId]
-      );
-
-      if (userResult.rows.length === 0) {
-        return reply.status(404).send({ success: false, error: 'User not found' });
-      }
-
-      const tier = userResult.rows[0].subscription_tier || 'free';
-      const creditsRemaining = userResult.rows[0].credits_remaining || 0;
-
-      // Get Node-RED service
-      let nodeRedService;
-      try {
-        nodeRedService = getNodeRedService();
-      } catch {
-        return reply.status(503).send({ success: false, error: 'Workflow service not available' });
-      }
-
-      // Load flow to get node information
-      const flows = await nodeRedService.loadTenantFlows(organizationId);
-      const nodesInFlow = (flows as any[]).filter(
-        (f) => f.z === flowId && f.type !== 'tab'
-      );
-
-      if (nodesInFlow.length === 0) {
-        return reply.status(404).send({ success: false, error: 'Flow not found or empty' });
-      }
-
-      const nodeTypes = nodesInFlow.map((n: any) => n.type);
-
-      // Get today's execution count
-      const todayStart = new Date();
-      todayStart.setUTCHours(0, 0, 0, 0);
-
-      const executionCountResult = await fastify.pg.query<{ count: string }>(
-        `SELECT COUNT(*) as count FROM nodered_execution_logs 
-         WHERE organization_id = $1 AND started_at >= $2`,
-        [organizationId, todayStart.toISOString()]
-      );
-      const executionsToday = parseInt(executionCountResult.rows[0]?.count || '0', 10);
-
-      // Check if this would be a free execution
-      const isFreeExecution = isExecutionFree(tier, executionsToday);
-
-      // Estimate cost
-      const estimate = estimateWorkflowCost(
-        nodesInFlow.length,
-        nodeTypes,
-        tier,
-        creditsRemaining
-      );
-
-      return {
-        success: true,
-        data: {
-          estimate,
-          isFreeExecution,
-          freeExecutionsRemaining: getFreeExecutionsRemaining(tier, executionsToday),
-          nodeCount: nodesInFlow.length,
-          premiumNodeCount: nodeTypes.filter((t: string) => PREMIUM_NODES[t] > 0).length,
-        },
-      };
-    } catch (error) {
-      fastify.log.error(error);
-      return reply.status(500).send({ success: false, error: 'Failed to estimate workflow cost' });
-    }
+    return reply.status(503).send({ success: false, error: 'Workflow service not available in Community Edition' });
   });
 
   /**
