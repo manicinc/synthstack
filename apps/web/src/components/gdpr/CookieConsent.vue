@@ -47,7 +47,7 @@
                 Customize
               </button> or
               <router-link to="/privacy">
-                learn more
+                read our Privacy Policy
               </router-link>.
             </p>
           </div>
@@ -1236,6 +1236,176 @@ declare global {
     svg {
       width: 20px;
       height: 20px;
+    }
+  }
+}
+
+// ===========================================
+// LIGHT MODE - Complete override
+// ===========================================
+:global(.body--light) {
+  .cookie-banner {
+    background: rgba(255, 255, 255, 0.95);
+    border-top-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  .banner-text p {
+    color: rgba(0, 0, 0, 0.75);
+  }
+
+  .btn-reject {
+    border-color: rgba(0, 0, 0, 0.2);
+    color: rgba(0, 0, 0, 0.6);
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+      border-color: rgba(0, 0, 0, 0.3);
+      color: rgba(0, 0, 0, 0.8);
+    }
+  }
+
+  .cookie-modal-overlay {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .cookie-modal {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-header {
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+
+    .header-title {
+      h2 {
+        color: rgba(0, 0, 0, 0.9);
+      }
+
+      p {
+        color: rgba(0, 0, 0, 0.6);
+      }
+    }
+
+    .close-btn {
+      background: rgba(0, 0, 0, 0.05);
+      border-color: rgba(0, 0, 0, 0.1);
+      color: rgba(0, 0, 0, 0.5);
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.1);
+        color: rgba(0, 0, 0, 0.8);
+      }
+    }
+  }
+
+  .privacy-summary {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(99, 102, 241, 0.08) 100%);
+    border-color: rgba(59, 130, 246, 0.15);
+
+    .summary-text {
+      h4 {
+        color: rgba(0, 0, 0, 0.9);
+      }
+
+      p {
+        color: rgba(0, 0, 0, 0.6);
+      }
+    }
+  }
+
+  .category-card {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.08);
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.04);
+      border-color: rgba(0, 0, 0, 0.12);
+    }
+
+    &.essential {
+      background: rgba(16, 185, 129, 0.06);
+      border-color: rgba(16, 185, 129, 0.15);
+    }
+  }
+
+  .category-info {
+    h3 {
+      color: rgba(0, 0, 0, 0.9);
+    }
+
+    p {
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  .toggle-details {
+    color: rgba(0, 0, 0, 0.5);
+
+    &:hover {
+      color: rgba(0, 0, 0, 0.7);
+    }
+  }
+
+  .category-details {
+    p {
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  .cookie-list {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.06);
+  }
+
+  .cookie-item {
+    border-bottom-color: rgba(0, 0, 0, 0.06);
+
+    .cookie-name {
+      color: rgba(0, 0, 0, 0.85);
+    }
+
+    .cookie-desc {
+      color: rgba(0, 0, 0, 0.55);
+    }
+  }
+
+  .modal-footer {
+    background: rgba(0, 0, 0, 0.02);
+    border-top-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .footer-links a {
+    color: rgba(0, 0, 0, 0.5);
+
+    &:hover {
+      color: rgba(0, 0, 0, 0.75);
+    }
+  }
+
+  .btn-reject-all {
+    border-color: rgba(0, 0, 0, 0.2);
+    color: rgba(0, 0, 0, 0.6);
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+      border-color: rgba(0, 0, 0, 0.3);
+      color: rgba(0, 0, 0, 0.8);
+    }
+  }
+
+  .cookie-settings-fab {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      background: #ffffff;
+      border-color: rgba(0, 0, 0, 0.15);
+      color: rgba(0, 0, 0, 0.8);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
     }
   }
 }

@@ -7,7 +7,7 @@
     <!-- Add Comment -->
     <div class="row q-mb-lg q-gutter-x-md">
       <q-avatar>
-        <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+        <img src="https://cdn.quasar.dev/img/boy-avatar.png" alt="User avatar">
       </q-avatar>
       <div class="col">
         <q-input
@@ -42,7 +42,7 @@
       >
         <div class="col-auto">
           <q-avatar size="md">
-            <img :src="comment.userAvatar || 'https://cdn.quasar.dev/img/boy-avatar.png'">
+            <img :src="comment.userAvatar || 'https://cdn.quasar.dev/img/boy-avatar.png'" :alt="comment.userName + ' avatar'">
           </q-avatar>
         </div>
         <div class="col">

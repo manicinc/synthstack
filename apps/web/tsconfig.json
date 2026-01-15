@@ -19,7 +19,7 @@
       "@/*": ["./src/*"],
       "src/*": ["./src/*"]
     },
-    "types": ["vite/client"]
+    "types": ["vite/client", "@playwright/test"]
   },
   "include": [
     "src",

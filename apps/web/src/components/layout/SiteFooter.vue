@@ -95,8 +95,9 @@
             target="_blank"
             rel="noopener"
             class="with-icon"
+            aria-label="Follow us on GitHub"
           >
-            <span class="icon">◆</span>GitHub
+            <span class="icon" aria-hidden="true">◆</span>GitHub
           </a>
           <a
             v-if="social.twitter"
