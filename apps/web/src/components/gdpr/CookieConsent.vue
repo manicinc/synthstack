@@ -1240,21 +1240,22 @@ declare global {
   }
 }
 
-// ===========================================
-// LIGHT MODE - Complete override
-// ===========================================
-:global(.body--light) {
+</style>
+
+<!-- Unscoped light mode styles - needed because :global() in scoped blocks doesn't cascade to nested selectors -->
+<style lang="scss">
+.body--light {
   .cookie-banner {
-    background: rgba(255, 255, 255, 0.95);
-    border-top-color: rgba(0, 0, 0, 0.1);
-    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.98) !important;
+    border-top-color: rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1) !important;
   }
 
   .banner-text p {
-    color: rgba(0, 0, 0, 0.75);
+    color: rgba(0, 0, 0, 0.75) !important;
   }
 
-  .btn-reject {
+  .banner-content .btn-reject {
     border-color: rgba(0, 0, 0, 0.2);
     color: rgba(0, 0, 0, 0.6);
 
@@ -1266,146 +1267,148 @@ declare global {
   }
 
   .cookie-modal-overlay {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.5) !important;
   }
 
   .cookie-modal {
-    background: #ffffff;
-    border-color: rgba(0, 0, 0, 0.1);
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2) !important;
   }
 
   .modal-header {
-    border-bottom-color: rgba(0, 0, 0, 0.08);
+    border-bottom-color: rgba(0, 0, 0, 0.08) !important;
 
     .header-title {
       h2 {
-        color: rgba(0, 0, 0, 0.9);
+        color: rgba(0, 0, 0, 0.9) !important;
       }
 
       p {
-        color: rgba(0, 0, 0, 0.6);
+        color: rgba(0, 0, 0, 0.6) !important;
       }
     }
 
     .close-btn {
-      background: rgba(0, 0, 0, 0.05);
-      border-color: rgba(0, 0, 0, 0.1);
-      color: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.05) !important;
+      border-color: rgba(0, 0, 0, 0.1) !important;
+      color: rgba(0, 0, 0, 0.5) !important;
 
       &:hover {
-        background: rgba(0, 0, 0, 0.1);
-        color: rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, 0.1) !important;
+        color: rgba(0, 0, 0, 0.8) !important;
       }
     }
   }
 
   .privacy-summary {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(99, 102, 241, 0.08) 100%);
-    border-color: rgba(59, 130, 246, 0.15);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(99, 102, 241, 0.08) 100%) !important;
+    border-color: rgba(59, 130, 246, 0.15) !important;
 
     .summary-text {
       h4 {
-        color: rgba(0, 0, 0, 0.9);
+        color: rgba(0, 0, 0, 0.9) !important;
       }
 
       p {
-        color: rgba(0, 0, 0, 0.6);
+        color: rgba(0, 0, 0, 0.6) !important;
       }
     }
   }
 
   .category-card {
-    background: rgba(0, 0, 0, 0.02);
-    border-color: rgba(0, 0, 0, 0.08);
+    background: rgba(0, 0, 0, 0.02) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
 
     &:hover {
-      background: rgba(0, 0, 0, 0.04);
-      border-color: rgba(0, 0, 0, 0.12);
+      background: rgba(0, 0, 0, 0.04) !important;
+      border-color: rgba(0, 0, 0, 0.12) !important;
     }
 
     &.essential {
-      background: rgba(16, 185, 129, 0.06);
-      border-color: rgba(16, 185, 129, 0.15);
+      background: rgba(16, 185, 129, 0.06) !important;
+      border-color: rgba(16, 185, 129, 0.15) !important;
     }
   }
 
   .category-info {
-    h3 {
-      color: rgba(0, 0, 0, 0.9);
-    }
-
-    p {
-      color: rgba(0, 0, 0, 0.6);
+    h4 {
+      color: rgba(0, 0, 0, 0.9) !important;
     }
   }
 
-  .toggle-details {
-    color: rgba(0, 0, 0, 0.5);
+  .category-description {
+    color: rgba(0, 0, 0, 0.6) !important;
+  }
+
+  .expand-details {
+    color: rgba(0, 0, 0, 0.5) !important;
 
     &:hover {
-      color: rgba(0, 0, 0, 0.7);
+      color: rgba(0, 0, 0, 0.7) !important;
     }
   }
 
   .category-details {
-    p {
-      color: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.03) !important;
+
+    ul li {
+      color: rgba(0, 0, 0, 0.6) !important;
+
+      strong {
+        color: rgba(0, 0, 0, 0.8) !important;
+      }
+    }
+
+    .privacy-note {
+      border-top-color: rgba(0, 0, 0, 0.08) !important;
+      color: rgba(0, 0, 0, 0.5) !important;
     }
   }
 
-  .cookie-list {
-    background: rgba(0, 0, 0, 0.03);
-    border-color: rgba(0, 0, 0, 0.06);
+  .category-icon {
+    background: rgba(0, 0, 0, 0.05) !important;
   }
 
-  .cookie-item {
-    border-bottom-color: rgba(0, 0, 0, 0.06);
-
-    .cookie-name {
-      color: rgba(0, 0, 0, 0.85);
-    }
-
-    .cookie-desc {
-      color: rgba(0, 0, 0, 0.55);
-    }
+  .toggle .slider {
+    background: rgba(0, 0, 0, 0.15) !important;
   }
 
   .modal-footer {
-    background: rgba(0, 0, 0, 0.02);
-    border-top-color: rgba(0, 0, 0, 0.08);
+    background: rgba(0, 0, 0, 0.02) !important;
+    border-top-color: rgba(0, 0, 0, 0.08) !important;
   }
 
   .footer-links a {
-    color: rgba(0, 0, 0, 0.5);
+    color: rgba(0, 0, 0, 0.5) !important;
 
     &:hover {
-      color: rgba(0, 0, 0, 0.75);
+      color: rgba(0, 0, 0, 0.75) !important;
     }
   }
 
   .btn-reject-all {
-    border-color: rgba(0, 0, 0, 0.2);
-    color: rgba(0, 0, 0, 0.6);
+    border-color: rgba(0, 0, 0, 0.2) !important;
+    color: rgba(0, 0, 0, 0.6) !important;
 
     &:hover {
-      background: rgba(0, 0, 0, 0.05);
-      border-color: rgba(0, 0, 0, 0.3);
-      color: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.05) !important;
+      border-color: rgba(0, 0, 0, 0.3) !important;
+      color: rgba(0, 0, 0, 0.8) !important;
     }
   }
 
   .cookie-settings-fab {
-    background: rgba(255, 255, 255, 0.9);
-    border-color: rgba(0, 0, 0, 0.1);
-    color: rgba(0, 0, 0, 0.5);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    color: rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
 
     &:hover {
-      background: #ffffff;
-      border-color: rgba(0, 0, 0, 0.15);
-      color: rgba(0, 0, 0, 0.8);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      background: #ffffff !important;
+      border-color: rgba(0, 0, 0, 0.15) !important;
+      color: rgba(0, 0, 0, 0.8) !important;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
     }
   }
 }

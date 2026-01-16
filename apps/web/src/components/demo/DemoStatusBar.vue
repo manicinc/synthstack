@@ -356,4 +356,69 @@ function goToAuth() {
     display: none;
   }
 }
+
+</style>
+
+<!-- Unscoped light mode styles - needed because :global() in scoped blocks doesn't cascade to nested selectors -->
+<style lang="scss">
+.body--light {
+  .demo-status-bar {
+    background: linear-gradient(90deg, #f8fafc 0%, #f1f5f9 100%) !important;
+    border-bottom-color: rgba(251, 191, 36, 0.3) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .demo-status-content {
+    .demo-badge {
+      background: rgba(251, 191, 36, 0.12);
+      border-color: rgba(251, 191, 36, 0.35);
+      color: #b45309;
+    }
+
+    .status-item {
+      color: rgba(0, 0, 0, 0.8);
+
+      .label {
+        color: rgba(0, 0, 0, 0.55);
+      }
+
+      .value {
+        &.positive {
+          color: #059669;
+        }
+
+        &.warning {
+          color: #d97706;
+        }
+
+        &.negative {
+          color: #dc2626;
+        }
+      }
+
+      &.referral {
+        background: rgba(16, 185, 129, 0.08);
+      }
+
+      &.warning {
+        background: rgba(245, 158, 11, 0.08);
+      }
+    }
+
+    .close-btn {
+      color: rgba(0, 0, 0, 0.5) !important;
+
+      &:hover {
+        color: rgba(0, 0, 0, 0.8) !important;
+      }
+    }
+  }
+
+  // Quasar q-btn text colors in light mode
+  .demo-status-bar .q-btn {
+    &[class*="flat"] {
+      color: rgba(0, 0, 0, 0.7) !important;
+    }
+  }
+}
 </style>
