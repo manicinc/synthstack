@@ -1,73 +1,131 @@
 <template>
   <q-page class="account-page q-pa-md">
-    <div
-      class="text-h4 text-primary q-mb-lg"
-      style="font-family: var(--font-mono, 'JetBrains Mono'), monospace"
-    >
-      Account Settings
+    <div class="row items-center q-mb-lg">
+      <div
+        class="text-h4 text-primary"
+        style="font-family: var(--font-mono, 'JetBrains Mono'), monospace"
+      >
+        Account
+      </div>
+      <q-space />
     </div>
 
-    <div class="row q-col-gutter-lg">
+    <div
+      v-if="!user"
+      class="row justify-center q-pa-xl"
+    >
+      <q-spinner-dots
+        size="42px"
+        color="primary"
+      />
+    </div>
+
+    <div
+      v-else
+      class="row q-col-gutter-lg"
+    >
       <div class="col-12 col-md-4">
-        <!-- Profile Card -->
+        <!-- Profile -->
         <q-card
           flat
           bordered
           class="settings-card"
         >
-          <q-card-section class="text-center">
-            <q-avatar
-              size="100px"
-              class="q-mb-md"
-            >
-              <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+          <q-card-section class="row items-center no-wrap">
+            <q-avatar size="56px">
+              <img
+                v-if="user.avatarUrl"
+                :src="user.avatarUrl"
+                alt="Account avatar"
+              >
+              <div v-else class="text-weight-bold">
+                {{ userInitials }}
+              </div>
             </q-avatar>
-            <div class="text-h6">
-              John Doe
+            <div class="q-ml-md">
+              <div class="text-subtitle1 text-weight-medium">
+                {{ user.name || user.username }}
+              </div>
+              <div class="text-caption text-grey-6">
+                {{ user.email }}
+              </div>
             </div>
-            <div class="text-subtitle2 text-grey-5">
-              Maker Tier
-            </div>
+            <q-space />
             <q-btn
               flat
-              color="primary"
-              label="Change Avatar"
-              size="sm"
-              class="q-mt-sm"
-            />
+              dense
+              icon="refresh"
+              @click="refreshAccount"
+            >
+              <q-tooltip>Refresh</q-tooltip>
+            </q-btn>
+          </q-card-section>
+
+          <q-card-section class="q-pt-none">
+            <div class="row items-center q-gutter-xs">
+              <q-chip
+                dense
+                color="primary"
+                text-color="white"
+                icon="workspace_premium"
+              >
+                {{ planLabel }}
+              </q-chip>
+              <q-chip
+                v-if="user.isGuest"
+                dense
+                color="grey-7"
+                text-color="white"
+                icon="person_outline"
+              >
+                Guest
+              </q-chip>
+              <q-chip
+                v-else
+                dense
+                :color="user.emailVerified ? 'positive' : 'warning'"
+                text-color="white"
+                :icon="user.emailVerified ? 'verified' : 'mark_email_unread'"
+              >
+                {{ user.emailVerified ? 'Email verified' : 'Email not verified' }}
+              </q-chip>
+            </div>
           </q-card-section>
         </q-card>
 
-        <!-- Subscription Status -->
+        <!-- Usage -->
         <q-card
           flat
           bordered
           class="settings-card q-mt-md"
         >
           <q-card-section>
-            <div class="text-subtitle2 text-grey-5 q-mb-sm">
-              Current Plan
+            <div class="text-subtitle2 text-grey-6 q-mb-sm">
+              Credits
             </div>
             <div class="text-h5 text-primary">
-              Maker
+              {{ user.credits }}
             </div>
-            <div class="q-mt-sm">
+            <div
+              v-if="stats"
+              class="q-mt-md"
+            >
+              <div class="row justify-between text-caption text-grey-6">
+                <span>Generations this month</span>
+                <span>{{ stats.generationsThisMonth }} / {{ stats.generationsLimit }}</span>
+              </div>
               <q-linear-progress
-                :value="0.4"
+                :value="stats.generationsLimit > 0 ? Math.min(1, stats.generationsThisMonth / stats.generationsLimit) : 0"
                 color="primary"
                 class="q-mt-sm"
               />
-              <div class="row justify-between text-caption text-grey-5 q-mt-xs">
-                <span>12 / 30 Credits Used</span>
-                <span>Resets in 14 days</span>
-              </div>
             </div>
           </q-card-section>
           <q-card-actions>
             <q-btn
               outline
               color="primary"
-              label="Upgrade Plan"
+              label="Manage Subscription"
               class="full-width"
               to="/app/subscription"
             />
@@ -91,16 +149,16 @@
             narrow-indicator
           >
             <q-tab
-              name="general"
-              label="General"
+              name="profile"
+              label="Profile"
+            />
+            <q-tab
+              name="projects"
+              label="Projects"
             />
             <q-tab
               name="appearance"
               label="Appearance"
-            />
-            <q-tab
-              name="notifications"
-              label="Notifications"
             />
           </q-tabs>
 
@@ -111,209 +169,144 @@
             animated
             class="bg-transparent"
           >
-            <!-- General Settings -->
-            <q-tab-panel name="general">
+            <q-tab-panel name="profile">
               <div class="q-gutter-y-md">
                 <q-input
-                  v-model="name"
+                  v-model="profileForm.name"
                   outlined
-                  label="Display Name"
+                  label="Display name"
                 />
                 <q-input
-                  v-model="email"
+                  v-model="profileForm.avatarUrl"
                   outlined
-                  label="Email Address"
+                  label="Avatar URL (optional)"
+                />
+                <q-input
+                  :model-value="user.email"
+                  outlined
+                  label="Email"
                   readonly
                 />
-                
-                <div class="row justify-end q-mt-lg">
-                  <q-btn
-                    color="primary"
-                    label="Save Changes"
-                  />
-                </div>
-              </div>
-            </q-tab-panel>
-
-            <!-- Appearance / Theme Settings -->
-            <q-tab-panel name="appearance">
-              <div class="appearance-settings">
-                <div class="section-intro q-mb-lg">
-                  <div class="text-h6">
-                    Theme & Appearance
-                  </div>
-                  <p class="text-grey-5 q-mb-none">
-                    Customize how SynthStack looks. Choose a theme preset and toggle between light and dark mode independently.
-                  </p>
-                </div>
-
-                <ThemeSwitcher
-                  :show-preset-selector="true"
-                  :show-categories="true"
-                  :show-premium-upsell="true"
-                  @upgrade="goToUpgrade"
+                <q-input
+                  :model-value="createdAtLabel"
+                  outlined
+                  label="Joined"
+                  readonly
                 />
 
-                <!-- Current Theme Preview -->
-                <div class="theme-preview-section q-mt-xl">
-                  <div class="text-subtitle1 text-weight-medium q-mb-md">
-                    <q-icon
-                      name="preview"
-                      class="q-mr-sm"
-                    />
-                    Current Theme: {{ currentPreset?.name }}
-                  </div>
-                  
-                  <div class="preview-card">
-                    <div class="preview-header">
-                      <div
-                        class="preview-dot"
-                        style="background: #ef4444"
-                      />
-                      <div
-                        class="preview-dot"
-                        style="background: #eab308"
-                      />
-                      <div
-                        class="preview-dot"
-                        style="background: #22c55e"
-                      />
-                    </div>
-                    <div class="preview-content">
-                      <div class="preview-sidebar">
-                        <div class="preview-nav-item active" />
-                        <div class="preview-nav-item" />
-                        <div class="preview-nav-item" />
-                      </div>
-                      <div class="preview-main">
-                        <div class="preview-title" />
-                        <div class="preview-text" />
-                        <div class="preview-text short" />
-                        <div class="preview-buttons">
-                          <div class="preview-btn primary" />
-                          <div class="preview-btn secondary" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div class="row justify-end">
+                  <q-btn
+                    color="primary"
+                    label="Save"
+                    :loading="savingProfile"
+                    :disable="user.isGuest"
+                    @click="saveProfile"
+                  />
                 </div>
 
-                <!-- Additional Appearance Options -->
-                <div class="additional-options q-mt-xl">
-                  <div class="text-subtitle1 text-weight-medium q-mb-md">
-                    <q-icon
-                      name="tune"
-                      class="q-mr-sm"
-                    />
-                    Additional Options
+                <q-banner
+                  v-if="user.isGuest"
+                  class="bg-grey-2 text-grey-10"
+                  rounded
+                  dense
+                >
+                  <template #avatar>
+                    <q-icon name="info" color="grey-8" />
+                  </template>
+                  <div class="text-body2">
+                    Guest profiles are local-only. Create an account to save your profile.
                   </div>
-
-                  <q-list
-                    bordered
-                    class="rounded-borders"
-                  >
-                    <q-item
-                      v-ripple
-                      tag="label"
-                    >
-                      <q-item-section>
-                        <q-item-label>Reduce Motion</q-item-label>
-                        <q-item-label caption>
-                          Minimize animations for accessibility
-                        </q-item-label>
-                      </q-item-section>
-                      <q-item-section side>
-                        <q-toggle
-                          v-model="reduceMotion"
-                          color="primary"
-                        />
-                      </q-item-section>
-                    </q-item>
-
-                    <q-item
-                      v-ripple
-                      tag="label"
-                    >
-                      <q-item-section>
-                        <q-item-label>High Contrast</q-item-label>
-                        <q-item-label caption>
-                          Increase contrast for better visibility
-                        </q-item-label>
-                      </q-item-section>
-                      <q-item-section side>
-                        <q-toggle
-                          v-model="highContrast"
-                          color="primary"
-                        />
-                      </q-item-section>
-                    </q-item>
-
-                    <q-item
-                      v-ripple
-                      tag="label"
-                    >
-                      <q-item-section>
-                        <q-item-label>Compact Mode</q-item-label>
-                        <q-item-label caption>
-                          Reduce spacing for more content density
-                        </q-item-label>
-                      </q-item-section>
-                      <q-item-section side>
-                        <q-toggle
-                          v-model="compactMode"
-                          color="primary"
-                        />
-                      </q-item-section>
-                    </q-item>
-                  </q-list>
-                </div>
+                </q-banner>
               </div>
             </q-tab-panel>
 
-            <!-- Notifications -->
-            <q-tab-panel name="notifications">
-              <q-list>
+            <q-tab-panel name="projects">
+              <div class="row items-center q-mb-md">
+                <div class="text-subtitle1 text-weight-medium">
+                  Projects you have access to
+                </div>
+                <q-space />
+                <q-btn
+                  outline
+                  color="primary"
+                  label="Open Projects"
+                  to="/app/projects"
+                />
+              </div>
+
+              <div
+                v-if="projectsStore.loading.projects"
+                class="row justify-center q-pa-lg"
+              >
+                <q-spinner-dots
+                  size="32px"
+                  color="primary"
+                />
+              </div>
+
+              <q-list
+                v-else
+                bordered
+                separator
+                class="rounded-borders"
+              >
                 <q-item
-                  v-ripple
-                  tag="label"
+                  v-for="p in projectsStore.projects"
+                  :key="p.id"
+                  clickable
+                  @click="openProject(p.id)"
                 >
                   <q-item-section>
-                    <q-item-label>Email Notifications</q-item-label>
+                    <q-item-label>{{ p.name }}</q-item-label>
                     <q-item-label caption>
-                      Receive updates about your generations
+                      {{ p.description || 'No description' }}
                     </q-item-label>
                   </q-item-section>
-                  <q-item-section
-                    side
-                    top
-                  >
-                    <q-toggle
-                      v-model="notifications.email"
-                      color="primary"
-                    />
-                  </q-item-section>
-                </q-item>
-                <q-item
-                  v-ripple
-                  tag="label"
-                >
-                  <q-item-section>
-                    <q-item-label>Marketing Updates</q-item-label>
-                    <q-item-label caption>
-                      Receive news about features and promotions
-                    </q-item-label>
-                  </q-item-section>
-                  <q-item-section
-                    side
-                    top
-                  >
-                    <q-toggle
-                      v-model="notifications.marketing"
-                      color="primary"
-                    />
+                  <q-item-section side>
+                    <div class="row items-center q-gutter-xs">
+                      <q-badge
+                        outline
+                        :color="statusColor(p.status)"
+                        class="text-capitalize"
+                      >
+                        {{ p.status }}
+                      </q-badge>
+                      <q-badge
+                        outline
+                        :color="projectAccess(p).color"
+                      >
+                        {{ projectAccess(p).label }}
+                      </q-badge>
+                      <q-badge
+                        v-if="p.isSystem"
+                        outline
+                        color="deep-purple"
+                        text-color="white"
+                      >
+                        Example
+                      </q-badge>
+                    </div>
                   </q-item-section>
                 </q-item>
               </q-list>
+            </q-tab-panel>
+
+            <q-tab-panel name="appearance">
+              <div class="section-intro q-mb-lg">
+                <div class="text-subtitle1 text-weight-medium">
+                  Theme & Appearance
+                </div>
+                <div class="text-caption text-grey-6">
+                  Customize how SynthStack looks.
+                </div>
+              </div>
+
+              <ThemeSwitcher
+                :show-preset-selector="true"
+                :show-categories="true"
+                :show-premium-upsell="true"
+                @upgrade="goToUpgrade"
+              />
             </q-tab-panel>
           </q-tab-panels>
         </q-card>
@@ -323,36 +316,138 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { useThemeStore } from '@/stores/theme'
-import ThemeSwitcher from '@/components/ui/ThemeSwitcher.vue'
+import { useQuasar } from 'quasar'
 import { analyticsEvents } from '@/boot/analytics'
+import { useAuthStore } from '@/stores/auth'
+import { useProjectsStore } from '@/stores/projects'
+import type { Project, ProjectStatus } from '@/services/api'
+import ThemeSwitcher from '@/components/ui/ThemeSwitcher.vue'
 
+const $q = useQuasar()
 const router = useRouter()
-const themeStore = useThemeStore()
+const authStore = useAuthStore()
+const projectsStore = useProjectsStore()
 
-const tab = ref('general')
-const name = ref('John Doe')
-const email = ref('john@example.com')
+const tab = ref<'profile' | 'projects' | 'appearance'>('profile')
+const savingProfile = ref(false)
 
-// Appearance settings
-const reduceMotion = ref(false)
-const highContrast = ref(false)
-const compactMode = ref(false)
+const user = computed(() => authStore.user)
+const stats = computed(() => authStore.stats)
 
-const currentPreset = computed(() => themeStore.currentPreset)
-
-const notifications = ref({
-  email: true,
-  marketing: false
+const profileForm = reactive({
+  name: '',
+  avatarUrl: '',
 })
 
+watch(user, (u) => {
+  profileForm.name = u?.name || u?.username || ''
+  profileForm.avatarUrl = u?.avatarUrl || ''
+}, { immediate: true })
+
+const planLabel = computed(() => {
+  const plan = user.value?.plan || 'free'
+  if (plan === 'maker') return 'Maker'
+  if (plan === 'pro') return 'Pro'
+  return 'Free'
+})
+
+const createdAtLabel = computed(() => {
+  const createdAt = user.value?.createdAt
+  if (!createdAt) return ''
+  try {
+    return new Date(createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+  } catch {
+    return createdAt
+  }
+})
+
+const userInitials = computed(() => {
+  const base = (user.value?.name || user.value?.username || user.value?.email || '').trim()
+  if (!base) return '?'
+  const parts = base.split(/\s+/).filter(Boolean)
+  const first = parts[0]?.[0] || ''
+  const second = parts.length > 1 ? (parts[1]?.[0] || '') : (parts[0]?.[1] || '')
+  return (first + second).toUpperCase()
+})
+
+function statusColor(status: ProjectStatus): string {
+  switch (status) {
+    case 'active': return 'primary'
+    case 'completed': return 'positive'
+    case 'archived': return 'grey'
+    default: return 'grey'
+  }
+}
+
+function projectAccess(project: Project): { label: string; color: string } {
+  const currentUserId = user.value?.id
+  const isPlatformAdmin = user.value?.isAdmin === true
+  const isOwner = Boolean(currentUserId && project.ownerId && project.ownerId === currentUserId)
+  const role = (project.memberRole || '').toLowerCase()
+
+  const label = isOwner
+    ? 'Owner'
+    : isPlatformAdmin
+      ? 'Admin'
+      : role === 'admin'
+        ? 'Admin'
+        : role === 'member'
+          ? 'Edit'
+          : 'View'
+
+  const color =
+    label === 'Owner' ? 'positive'
+      : label === 'Admin' ? 'primary'
+        : label === 'Edit' ? 'info'
+          : 'grey'
+
+  return { label, color }
+}
+
+function openProject(projectId: string) {
+  router.push({ name: 'project-detail', params: { id: projectId } })
+}
+
+async function refreshAccount() {
+  try {
+    await authStore.fetchUser()
+    await projectsStore.fetchProjects(undefined, 1)
+    $q.notify({ type: 'positive', message: 'Account refreshed' })
+  } catch {
+    $q.notify({ type: 'negative', message: 'Failed to refresh' })
+  }
+}
+
+async function saveProfile() {
+  if (!user.value || user.value.isGuest) return
+  savingProfile.value = true
+  try {
+    await authStore.updateProfile({
+      name: profileForm.name || undefined,
+      avatarUrl: profileForm.avatarUrl || undefined,
+    })
+    $q.notify({ type: 'positive', message: 'Saved' })
+  } catch (err: any) {
+    $q.notify({ type: 'negative', message: err?.message || 'Failed to save' })
+  } finally {
+    savingProfile.value = false
+  }
+}
+
 function goToUpgrade() {
-  // Track upgrade CTA click
   analyticsEvents.selectPlan('upgrade', 0)
   router.push('/app/subscription')
 }
+
+onMounted(async () => {
+  try {
+    await projectsStore.fetchProjects(undefined, 1)
+  } catch {
+    // ignore
+  }
+})
 </script>
 
 <style lang="scss" scoped>
@@ -364,133 +459,5 @@ function goToUpgrade() {
 .settings-card {
   background: var(--bg-elevated);
   border-color: var(--border-default);
-}
-
-.appearance-settings {
-  max-width: 800px;
-}
-
-.section-intro {
-  p {
-    font-size: 0.875rem;
-    line-height: 1.6;
-  }
-}
-
-// Theme Preview Card
-.theme-preview-section {
-  padding-top: 16px;
-  border-top: 1px solid var(--border-subtle);
-}
-
-.preview-card {
-  background: var(--bg-muted);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-
-.preview-header {
-  display: flex;
-  gap: 6px;
-  padding: 10px 12px;
-  background: var(--bg-subtle);
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.preview-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-
-.preview-content {
-  display: flex;
-  min-height: 160px;
-}
-
-.preview-sidebar {
-  width: 60px;
-  padding: 12px 8px;
-  background: var(--bg-subtle);
-  border-right: 1px solid var(--border-subtle);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.preview-nav-item {
-  height: 8px;
-  background: var(--border-default);
-  border-radius: var(--radius-sm);
-
-  &.active {
-    background: var(--color-primary);
-  }
-}
-
-.preview-main {
-  flex: 1;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.preview-title {
-  width: 60%;
-  height: 16px;
-  background: var(--text-primary);
-  opacity: 0.8;
-  border-radius: var(--radius-sm);
-}
-
-.preview-text {
-  width: 90%;
-  height: 8px;
-  background: var(--text-secondary);
-  opacity: 0.5;
-  border-radius: var(--radius-sm);
-
-  &.short {
-    width: 70%;
-  }
-}
-
-.preview-buttons {
-  display: flex;
-  gap: 8px;
-  margin-top: auto;
-}
-
-.preview-btn {
-  height: 24px;
-  border-radius: var(--radius-md);
-
-  &.primary {
-    width: 80px;
-    background: var(--color-primary);
-  }
-
-  &.secondary {
-    width: 60px;
-    background: var(--border-default);
-  }
-}
-
-.additional-options {
-  padding-top: 16px;
-  border-top: 1px solid var(--border-subtle);
-
-  .q-list {
-    background: var(--bg-muted);
-  }
-}
-
-// Responsive
-@media (max-width: 600px) {
-  .preview-sidebar {
-    width: 40px;
-  }
 }
 </style>

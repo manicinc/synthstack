@@ -12,6 +12,7 @@
 import axios from 'axios'
 import type { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios'
 import { useAuthStore } from '@/stores/auth'
+import { useRateLimitStore } from '@/stores/rateLimit'
 import { devLog, devWarn, devError, logError } from '@/utils/devLogger'
 
 /** Base API URL from environment */
@@ -86,11 +87,52 @@ function createApiClient(): AxiosInstance {
 
       // Transform error
       const responseData = error.response?.data as any
+      const responseError = responseData?.error
+
+      const nestedMessage =
+        typeof responseError === 'string'
+          ? responseError
+          : responseError && typeof responseError === 'object'
+            ? responseError.message || responseError.error
+            : undefined
+
+      const nestedCode =
+        responseError && typeof responseError === 'object'
+          ? responseError.code
+          : undefined
+
+      const headers = (error.response?.headers || {}) as Record<string, any>
+      const rateLimitDetails: Record<string, unknown> = {}
+      if (headers['x-ratelimit-limit'] !== undefined) rateLimitDetails.limit = Number(headers['x-ratelimit-limit'])
+      if (headers['x-ratelimit-remaining'] !== undefined) rateLimitDetails.remaining = Number(headers['x-ratelimit-remaining'])
+      if (headers['x-ratelimit-reset'] !== undefined) rateLimitDetails.reset = Number(headers['x-ratelimit-reset'])
+      if (headers['retry-after'] !== undefined) rateLimitDetails.retryAfter = Number(headers['retry-after'])
+
+      const details =
+        responseData?.details
+          ?? (responseError && typeof responseError === 'object' ? responseError : undefined)
+
       const apiError: ApiError = {
-        message: responseData?.message || responseData?.error || error.message || 'An error occurred',
-        code: responseData?.code || 'UNKNOWN_ERROR',
+        message: responseData?.message || nestedMessage || error.message || 'An error occurred',
+        code: responseData?.code || nestedCode || 'UNKNOWN_ERROR',
         status: error.response?.status || 500,
-        details: responseData?.details
+        details: Object.keys(rateLimitDetails).length > 0
+          ? { ...(details || {}), rateLimit: rateLimitDetails }
+          : details
+      }
+
+      try {
+        if (Object.keys(rateLimitDetails).length > 0) {
+          const rateLimitStore = useRateLimitStore()
+          const method = String(error.config?.method || 'GET').toUpperCase()
+          const url = String(error.config?.url || '')
+          rateLimitStore.record(rateLimitDetails as any, {
+            status: apiError.status,
+            endpoint: url ? `${method} ${url}` : method,
+          })
+        }
+      } catch {
+        // Avoid breaking error handling if Pinia is not initialized.
       }
 
       return Promise.reject(apiError)
@@ -569,7 +611,9 @@ export interface User {
   subscription_tier?: string
   credits: number
   createdAt: string
+  emailVerified?: boolean
   isGuest?: boolean
+  isAdmin?: boolean
 }
 
 export interface UserStats {

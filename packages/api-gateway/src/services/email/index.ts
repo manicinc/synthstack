@@ -35,7 +35,8 @@ export const EMAIL_TEMPLATES = {
   CREDIT_LOW: 'credit-low',
   CREDIT_PURCHASED: 'credit-purchased',
   DEMO_CREDIT_LOW: 'demo-credit-low',
-  MODERATION_WARNING: 'moderation-warning',
+  // Note: template slug is 'moderation-action' (see migrations/005_email_system.sql)
+  MODERATION_WARNING: 'moderation-action',
   ADMIN_REPORT: 'admin-report',
   GENERATION_COMPLETE: 'generation-complete',
   WEEKLY_SUMMARY: 'weekly-summary',

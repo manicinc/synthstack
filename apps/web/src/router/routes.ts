@@ -275,6 +275,12 @@ const authRoutes: RouteRecordRaw[] = [
         name: 'reset-password',
         component: () => import('pages/auth/ResetPasswordPage.vue'),
         meta: { title: 'Reset Password' }
+      },
+      {
+        path: 'verify-email',
+        name: 'verify-email',
+        component: () => import('pages/auth/VerifyEmailPage.vue'),
+        meta: { title: 'Verify Email' }
       }
     ]
   }

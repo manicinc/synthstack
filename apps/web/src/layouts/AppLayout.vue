@@ -10,6 +10,8 @@
     <!-- Demo Status Bar (at very top for demo users) -->
     <DemoStatusBar />
 
+    <RateLimitBanner />
+
     <SiteHeader />
 
     <!-- Mobile Sidebar Toggle Button (only on mobile app routes) -->
@@ -433,6 +435,7 @@ import SiteFooter from '@/components/layout/SiteFooter.vue'
 import SiteHeader from '@/components/layout/SiteHeader.vue'
 // COMMUNITY: CopilotWidget and ExpandableAIWidget removed (PRO feature)
 import DemoStatusBar from '@/components/demo/DemoStatusBar.vue'
+import RateLimitBanner from '@/components/system/RateLimitBanner.vue'
 import ScrollToTop from '@/components/ui/ScrollToTop.vue'
 import CelebrationOverlay from '@/components/gamification/CelebrationOverlay.vue'
 import ElectronTitleBar from '@/components/layout/ElectronTitleBar.vue'

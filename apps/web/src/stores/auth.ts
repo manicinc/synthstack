@@ -167,7 +167,8 @@ export const useAuthStore = defineStore('auth', () => {
           username: authUser.value.displayName || authUser.value.email.split('@')[0],
           plan: 'free',
           credits: 5,
-          createdAt: authUser.value.createdAt || new Date().toISOString()
+          createdAt: authUser.value.createdAt || new Date().toISOString(),
+          emailVerified: false,
         }
 
         // Set Sentry user context for fallback
@@ -410,6 +411,7 @@ export const useAuthStore = defineStore('auth', () => {
       plan: 'free',
       credits: 3, // Limited credits for guests
       createdAt: new Date().toISOString(),
+      emailVerified: false,
       isGuest: true
     }
 

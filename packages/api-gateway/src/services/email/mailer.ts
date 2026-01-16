@@ -272,7 +272,8 @@ export class EmailService {
         const rendered = await this.renderTemplate(template, options.templateData || {});
         html = rendered.html;
         text = rendered.text;
-        subject = rendered.subject;
+        // Allow explicit subject override when using templates (useful for A/B tests or context-specific subjects)
+        subject = options.subject || rendered.subject;
         templateId = template.id;
       }
 

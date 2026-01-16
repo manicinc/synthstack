@@ -278,6 +278,7 @@ configureMarked()
  */
 function extractHeadings(markdown: string): DocHeading[] {
   const headings: DocHeading[] = []
+  if (!markdown) return headings
   const lines = markdown.split('\n')
 
   for (const line of lines) {
@@ -367,16 +368,16 @@ export function useDocs() {
         `/docs/${encodeURIComponent(filename)}`
       )
 
-	      if (!response) {
-	        throw new Error('Document not found')
-	      }
+        if (!response) {
+          throw new Error('Document not found')
+        }
 
-	      const sourceFilename = response.filename || filename
-	      const content = response.content
-	      const html = renderMarkdown(content, { filename: sourceFilename })
-	      const headings = extractHeadings(content)
-	      const title = extractTitle(content)
-	      const slug = sourceFilename.replace(/\.md$/i, '').toLowerCase().replace(/[_/]/g, '-')
+        const sourceFilename = response.filename || filename
+        const content = response.content || ''
+        const html = renderMarkdown(content, { filename: sourceFilename })
+        const headings = extractHeadings(content)
+        const title = extractTitle(content)
+        const slug = sourceFilename.replace(/\.md$/i, '').toLowerCase().replace(/[_/]/g, '-')
 
       const doc: DocContent = {
         title,
