@@ -7,22 +7,13 @@
     <!-- Electron Title Bar (macOS only) -->
     <ElectronTitleBar />
 
+    <!-- Site Header -->
+    <SiteHeader />
+
     <!-- Main Content -->
     <q-page-container>
       <q-page class="auth-page">
         <div class="auth-container">
-          <!-- Logo -->
-          <router-link
-            to="/"
-            class="auth-logo"
-          >
-            <img
-              src="/logo/synthstack-mark.svg"
-              alt="SynthStack"
-            >
-            <span>SynthStack</span>
-          </router-link>
-
           <!-- Auth Form Card -->
           <div class="auth-card">
             <router-view v-slot="{ Component }">
@@ -62,6 +53,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import SiteHeader from 'components/layout/SiteHeader.vue'
 import SiteFooter from 'components/layout/SiteFooter.vue'
 import ElectronTitleBar from '@/components/layout/ElectronTitleBar.vue'
 
@@ -87,8 +79,9 @@ const isElectronMac = computed(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: calc(100vh - 64px); // Account for header
   padding: var(--space-8);
+  padding-top: calc(var(--space-8) + 64px); // Extra top padding for fixed header
   position: relative;
 }
 
@@ -100,25 +93,6 @@ const isElectronMac = computed(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.auth-logo {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  text-decoration: none;
-  margin-bottom: var(--space-8);
-
-  img {
-    height: 40px;
-  }
-
-  span {
-    font-family: var(--font-display);
-    font-size: var(--text-xl);
-    font-weight: 700;
-    color: var(--color-text-primary);
-  }
 }
 
 .auth-card {
