@@ -8,7 +8,7 @@
  * @example
  * ```ts
  * const { get, post, loading, error } = useApi()
- * const printers = await get('/printers')
+ * const workflows = await get('/workflows')
  * ```
  */
 
@@ -124,23 +124,23 @@ export function useApi() {
     config?: AxiosRequestConfig
   ): Promise<T | null> => {
     loading.value = true
-	    error.value = null
+    error.value = null
 
-	    try {
-	      const response = await client[method]<unknown>(url, method === 'get' ? config : data, config)
+    try {
+      const response = await client[method]<unknown>(url, method === 'get' ? config : data, config)
 
-	      // Support both API response styles:
-	      // - Wrapped: { data: T, ... }
-	      // - Direct: T
-	      const payload = (response as any)?.data
-	      if (payload && typeof payload === 'object' && 'data' in payload) {
-	        return (payload as { data: T }).data
-	      }
-	      return payload as T
-	    } catch (err) {
-	      const axiosError = err as AxiosError<ApiError>
-	      error.value = axiosError.response?.data || { 
-	        message: axiosError.message || 'An unexpected error occurred' 
+      // Support both API response styles:
+      // - Wrapped: { data: T, ... }
+      // - Direct: T
+      const payload = (response as any)?.data
+      if (payload && typeof payload === 'object' && 'data' in payload) {
+        return (payload as { data: T }).data
+      }
+      return payload as T
+    } catch (err) {
+      const axiosError = err as AxiosError<ApiError>
+      error.value = axiosError.response?.data || {
+        message: axiosError.message || 'An unexpected error occurred'
       }
       return null
     } finally {
@@ -225,4 +225,3 @@ export function useApi() {
 }
 
 export default useApi
-

@@ -5,7 +5,7 @@
  */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { getStripeService, TIER_CONFIG, type SubscriptionTier } from '../services/stripe.js';
+import { getStripeService, TIER_CONFIG, getTierConfigForUser, type SubscriptionTier } from '../services/stripe.js';
 
 // ============================================
 // TYPES
@@ -243,7 +243,7 @@ export default async function billingRoutes(fastify: FastifyInstance) {
       }
 
       const user = result.rows[0];
-      const tierConfig = TIER_CONFIG[user.subscription_tier as SubscriptionTier] || TIER_CONFIG.free;
+      const tierConfig = getTierConfigForUser(user.subscription_tier);
 
       // Get subscription details from Stripe if available
       let stripeSubscription = null;
@@ -308,7 +308,7 @@ export default async function billingRoutes(fastify: FastifyInstance) {
         type: 'object',
         required: ['tier'],
         properties: {
-          tier: { type: 'string', enum: ['maker', 'pro', 'unlimited'] },
+          tier: { type: 'string', enum: ['maker', 'pro', 'agency'] },
           isYearly: { type: 'boolean', default: false },
           promoCode: { type: 'string' },
         },
@@ -422,7 +422,7 @@ export default async function billingRoutes(fastify: FastifyInstance) {
         type: 'object',
         required: ['newTier'],
         properties: {
-          newTier: { type: 'string', enum: ['free', 'maker', 'pro', 'unlimited'] },
+          newTier: { type: 'string', enum: ['free', 'maker', 'pro', 'agency'] },
           isYearly: { type: 'boolean' },
         },
       },

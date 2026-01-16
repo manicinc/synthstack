@@ -18,9 +18,9 @@
  * const { setPageSeo, setArticleSeo, setProductSeo } = useSeo()
  * 
  * setPageSeo({
- *   title: 'Best 3D Printer Settings | SynthStack',
- *   description: 'Generate optimized slicer profiles...',
- *   keywords: ['3d printing', 'slicer settings']
+ *   title: 'AI-Native SaaS Boilerplate | SynthStack',
+ *   description: 'AI-native, cross-platform SaaS boilerplate with Directus, Stripe billing, and AI copilots.',
+ *   keywords: ['AI SaaS boilerplate', 'Vue Quasar', 'Directus CMS', 'Stripe billing']
  * })
  * ```
  */
@@ -68,7 +68,7 @@ const WEBSITE_SCHEMA = {
   '@id': `${BASE_URL}/#website`,
   url: BASE_URL,
   name: 'SynthStack',
-  description: 'AI-powered 3D printing profile generator for Cura, PrusaSlicer, OrcaSlicer, and more',
+  description: 'AI-native, cross-platform SaaS boilerplate with billing, CMS, workflows, and AI agents.',
   publisher: { '@id': `${BASE_URL}/#organization` },
   potentialAction: {
     '@type': 'SearchAction',
@@ -331,7 +331,7 @@ export function useSeo() {
   }
   
   /**
-   * Sets SEO for product pages (printers, filaments)
+   * Sets SEO for product pages (workflows, agents)
    */
   function setProductSeo(options: ProductSeoOptions) {
     setPageSeo({ ...options, ogType: 'product' })
@@ -470,87 +470,55 @@ export function useSeo() {
 }
 
 /**
- * 3D Printing focused keywords for SEO optimization
+ * SynthStack-focused keywords for SEO optimization
  * Use these throughout content for domain authority
  */
-export const PRINTING_KEYWORDS = {
-  // Primary keywords (high volume)
+export const SYNTHSTACK_KEYWORDS = {
   primary: [
-    '3d printing',
-    '3d printer',
-    'slicer settings',
-    'print profile',
-    'fdm printing',
-    'resin printing'
+    'AI SaaS boilerplate',
+    'cross-platform SaaS',
+    'Vue Quasar boilerplate',
+    'Directus CMS',
+    'Stripe billing',
+    'AI agents',
   ],
-  // Slicer keywords
-  slicers: [
-    'cura settings',
-    'cura profile',
-    'prusaslicer settings',
-    'prusaslicer profile',
-    'orcaslicer settings',
-    'orcaslicer profile',
-    'bambu studio settings',
-    'simplify3d profile',
-    'ideamaker settings'
+  stack: [
+    'Vue 3 Quasar',
+    'TypeScript SaaS template',
+    'Fastify API gateway',
+    'Postgres CMS',
+    'Docker Compose SaaS',
+    'Supabase auth',
   ],
-  // Printer brands
-  printers: [
-    'prusa mk4',
-    'prusa mini',
-    'bambu lab x1',
-    'bambu lab p1p',
-    'bambu lab a1',
-    'creality ender 3',
-    'creality k1',
-    'voron 2.4',
-    'voron trident',
-    'elegoo neptune',
-    'anycubic kobra'
+  ai: [
+    'RAG pipeline',
+    'vector search',
+    'Qdrant',
+    'OpenAI integration',
+    'Anthropic integration',
+    'multi-agent orchestration',
   ],
-  // Filament types
-  filaments: [
-    'pla filament',
-    'petg filament',
-    'abs filament',
-    'tpu filament',
-    'nylon filament',
-    'asa filament',
-    'pla settings',
-    'petg settings',
-    'abs settings'
+  workflows: [
+    'workflow automation',
+    'Node-RED workflows',
+    'visual workflow builder',
+    'webhooks',
+    'background jobs',
+    'cron jobs',
   ],
-  // Settings keywords
-  settings: [
-    'layer height',
-    'print speed',
-    'nozzle temperature',
-    'bed temperature',
-    'retraction settings',
-    'infill percentage',
-    'support settings',
-    'first layer settings'
+  marketing: [
+    'SaaS onboarding',
+    'referral program',
+    'subscription management',
+    'customer portal',
+    'white-label SaaS',
   ],
-  // Problem-solving keywords
-  problems: [
-    'stringing fix',
-    'warping solution',
-    'bed adhesion',
-    'print quality',
-    'layer adhesion',
-    'overhangs printing',
-    'bridging settings'
-  ],
-  // Long-tail keywords
   longTail: [
-    'best cura settings for ender 3',
-    'pla temperature settings',
-    'petg print speed',
-    'how to improve print quality',
-    'best infill pattern',
-    'support settings for overhangs',
-    'first layer not sticking',
-    'how to prevent warping'
-  ]
+    'how to build a SaaS with Vue and Quasar',
+    'Directus CMS with Postgres',
+    'Stripe subscriptions with webhooks',
+    'self host a SaaS boilerplate',
+    'AI copilot with RAG',
+    'multi-agent strategy debates',
+  ],
 }

@@ -102,10 +102,6 @@
               name="notifications"
               label="Notifications"
             />
-            <q-tab
-              name="printers"
-              label="My Printers"
-            />
           </q-tabs>
 
           <q-separator />
@@ -128,15 +124,6 @@
                   outlined
                   label="Email Address"
                   readonly
-                />
-                <div class="text-h6 q-mt-lg">
-                  Preferences
-                </div>
-                <q-select
-                  v-model="units"
-                  outlined
-                  :options="['Metric (mm)', 'Imperial (in)']"
-                  label="Units"
                 />
                 
                 <div class="row justify-end q-mt-lg">
@@ -328,20 +315,6 @@
                 </q-item>
               </q-list>
             </q-tab-panel>
-
-            <!-- Printers -->
-            <q-tab-panel name="printers">
-              <div class="text-grey-5 q-mb-md">
-                Default printers for quick selection
-              </div>
-              <!-- TODO: List user's saved printers -->
-              <q-btn
-                outline
-                color="primary"
-                icon="add"
-                label="Add Default Printer"
-              />
-            </q-tab-panel>
           </q-tab-panels>
         </q-card>
       </div>
@@ -362,7 +335,6 @@ const themeStore = useThemeStore()
 const tab = ref('general')
 const name = ref('John Doe')
 const email = ref('john@example.com')
-const units = ref('Metric (mm)')
 
 // Appearance settings
 const reduceMotion = ref(false)

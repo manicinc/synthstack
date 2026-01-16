@@ -23,11 +23,6 @@ import { FEATURES } from '@/config/features';
 const APP_MODE = process.env.APP_MODE || 'full';
 const isAppOnlyMode = APP_MODE === 'app';
 
-// Debug: Log feature flags at module load time
-console.log('[Routes] Module loaded - APP_MODE:', APP_MODE);
-console.log('[Routes] FEATURES.COPILOT:', FEATURES.COPILOT);
-console.log('[Routes] FEATURES.REFERRALS:', FEATURES.REFERRALS);
-
 // =========================================
 // Landing/Marketing Pages (Web only)
 // =========================================
@@ -162,7 +157,7 @@ const landingRoutes: RouteRecordRaw[] = [
         component: () => import('pages/FAQPage.vue'),
         meta: {
           title: 'FAQ',
-          description: 'Frequently asked questions about SynthStack 3D printing profile generator.'
+          description: 'Frequently asked questions about SynthStack.'
         }
       },
       {
@@ -240,121 +235,10 @@ const landingRoutes: RouteRecordRaw[] = [
         component: () => import('pages/CompanyPage.vue'),
         meta: {
           title: 'Company',
-          description: 'Learn about SynthStack, the AI-powered 3D printing profile generator company.'
+          description: 'Learn about SynthStack and our mission to accelerate software development.'
         }
       },
       // COMMUNITY: Referral routes removed - not available in Community Edition
-
-      // =========================================
-      // SEO: Guides & Tutorials
-      // =========================================
-      {
-        path: 'guides',
-        name: 'guides',
-        component: () => import('pages/GuidesPage.vue'),
-        meta: { 
-          title: '3D Printing Guides & Tutorials',
-          description: 'Learn 3D printing with comprehensive guides on slicer settings, filament guides, troubleshooting, and printer calibration.'
-        }
-      },
-      {
-        path: 'guides/layer-height-explained',
-        name: 'guide-layer-height',
-        component: () => import('pages/guides/LayerHeightGuide.vue'),
-        meta: { 
-          title: 'Layer Height Guide - Choose the Right Resolution',
-          description: 'Complete guide to layer height in 3D printing. Learn when to use 0.1mm, 0.2mm, 0.3mm.'
-        }
-      },
-      {
-        path: 'guides/retraction-settings-guide',
-        name: 'guide-retraction',
-        component: () => import('pages/guides/RetractionGuide.vue'),
-        meta: { 
-          title: 'Retraction Settings Guide - Fix Stringing Forever',
-          description: 'Master retraction settings to eliminate stringing and oozing in your 3D prints.'
-        }
-      },
-      {
-        path: 'guides/pla-vs-petg-vs-abs',
-        name: 'guide-filaments',
-        component: () => import('pages/guides/PLAvsABSvsPETG.vue'),
-        meta: { 
-          title: 'PLA vs PETG vs ABS: Complete Filament Comparison',
-          description: 'Compare PLA, PETG, and ABS filaments for strength, temperature, and ease of printing.'
-        }
-      },
-      {
-        path: 'guides/:slug',
-        name: 'guide-detail',
-        component: () => import('pages/GuideDetailPage.vue'),
-        meta: { 
-          title: 'Guide',
-          description: ''
-        }
-      },
-
-      // =========================================
-      // SEO: Slicer-Specific Pages
-      // =========================================
-      {
-        path: 'slicers/cura',
-        name: 'slicer-cura',
-        component: () => import('pages/slicers/CuraPage.vue'),
-        meta: { 
-          title: 'Cura Settings Generator',
-          description: 'Generate optimized Ultimaker Cura slicer settings with AI. Perfect profiles for PLA, PETG, ABS on any printer.'
-        }
-      },
-      {
-        path: 'slicers/prusaslicer',
-        name: 'slicer-prusaslicer',
-        component: () => import('pages/slicers/PrusaSlicerPage.vue'),
-        meta: { 
-          title: 'PrusaSlicer Settings Generator',
-          description: 'Generate optimized PrusaSlicer settings with AI. Perfect profiles for Prusa MK4, Voron, and compatible printers.'
-        }
-      },
-      {
-        path: 'slicers/orcaslicer',
-        name: 'slicer-orcaslicer',
-        component: () => import('pages/slicers/OrcaSlicerPage.vue'),
-        meta: { 
-          title: 'OrcaSlicer Settings Generator',
-          description: 'Generate optimized OrcaSlicer settings with AI. Perfect profiles for Bambu Lab, Voron, and any Klipper printer.'
-        }
-      },
-      {
-        path: 'slicers/bambu-studio',
-        name: 'slicer-bambu-studio',
-        component: () => import('pages/slicers/BambuStudioPage.vue'),
-        meta: { 
-          title: 'Bambu Studio Settings Generator',
-          description: 'Generate optimized Bambu Studio settings for X1 Carbon, P1P, P1S, and A1 printers.'
-        }
-      },
-
-      // =========================================
-      // SEO: Public Community Profiles
-      // =========================================
-      {
-        path: 'profiles',
-        name: 'public-profiles',
-        component: () => import('pages/ProfilesPage.vue'),
-        meta: { 
-          title: 'Community Slicer Profiles',
-          description: 'Browse and download community-shared slicer profiles. Find settings for your printer and filament.'
-        }
-      },
-      {
-        path: 'profiles/:id',
-        name: 'public-profile-detail',
-        component: () => import('pages/ProfileDetailPage.vue'),
-        meta: { 
-          title: 'Profile',
-          description: ''
-        }
-      }
     ]
   },
 
@@ -411,7 +295,7 @@ const appRoutes: RouteRecordRaw[] = [
         component: () => import('pages/CatalogPage.vue'),
         meta: {
           title: 'Public Catalog',
-          description: 'Browse public AI generations, shared models, and scraped printer/filament data.'
+          description: 'Browse community templates, presets, and reusable integrations.'
         }
       }
     ]
@@ -462,30 +346,6 @@ const appRoutes: RouteRecordRaw[] = [
         name: 'project-detail',
         component: () => import('pages/app/ProjectDetailPage.vue'),
         meta: { title: 'Project Details' }
-      },
-      {
-        path: 'profiles',
-        name: 'profiles',
-        component: () => import('pages/app/ProfilesPage.vue'),
-        meta: { title: 'Community Profiles' }
-      },
-      {
-        path: 'profiles/:id',
-        name: 'profile-detail',
-        component: () => import('pages/app/ProfileDetailPage.vue'),
-        meta: { title: 'Profile Details' }
-      },
-      {
-        path: 'my-profiles',
-        name: 'my-profiles',
-        component: () => import('pages/app/MyProfilesPage.vue'),
-        meta: { title: 'My Profiles' }
-      },
-      {
-        path: 'history',
-        name: 'history',
-        component: () => import('pages/app/HistoryPage.vue'),
-        meta: { title: 'Generation History' }
       },
       {
         path: 'onboarding',
@@ -641,55 +501,10 @@ const communityRoutes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'community',
-        component: () => import('pages/community/CommunityHub.vue'),
+        redirect: '/catalog',
         meta: {
-          title: 'Community Models - Open Source Art Program',
-          description: 'Browse and share community 3D models. Join our Open Source Art Program to earn recognition and tips.'
-        }
-      },
-      {
-        path: 'upload',
-        name: 'community-upload',
-        component: () => import('pages/community/UploadWizard.vue'),
-        meta: {
-          title: 'Upload Your Model',
-          description: 'Share your 3D model with the community. Full copyright and license controls.'
-        }
-      },
-      {
-        path: 'models/:id',
-        name: 'community-model',
-        component: () => import('pages/community/ModelDetailPage.vue'),
-        meta: { title: 'Community Model' }
-      },
-      {
-        path: 'creators',
-        name: 'community-creators',
-        component: () => import('pages/community/CreatorsPage.vue'),
-        meta: {
-          title: 'Community Creators',
-          description: 'Discover talented 3D model creators in our community.'
-        }
-      },
-      {
-        path: 'creators/:id',
-        name: 'community-creator',
-        component: () => import('pages/community/CreatorProfilePage.vue'),
-        meta: { title: 'Creator Profile' }
-      },
-      {
-        path: 'my-uploads',
-        name: 'my-uploads',
-        component: () => import('pages/community/MyUploadsPage.vue'),
-        meta: { title: 'My Uploads' }
-      },
-      {
-        path: 'guidelines',
-        name: 'community-guidelines',
-        component: () => import('pages/community/GuidelinesPage.vue'),
-        meta: {
-          title: 'Community Guidelines',
-          description: 'Our community guidelines for sharing 3D models.'
+          title: 'Community',
+          description: 'Browse community templates, presets, and resources.'
         }
       }
     ]

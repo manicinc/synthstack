@@ -6,7 +6,7 @@
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import fp from 'fastify-plugin';
-import { TIER_CONFIG, SubscriptionTier } from '../services/stripe.js';
+import { SubscriptionTier, normalizeSubscriptionTier } from '../services/stripe.js';
 
 // ============================================
 // TYPES
@@ -56,15 +56,9 @@ export const TIER_RATE_LIMITS: Record<SubscriptionTier, EndpointLimits> = {
     auth: 15,
   },
   agency: {
-    general: 80,
-    generation: 50,
-    upload: 40,
-    auth: 20,
-  },
-  unlimited: {
     general: 100,
     generation: 60,
-    upload: 50,
+    upload: 40,
     auth: 20,
   },
 };
@@ -197,7 +191,7 @@ async function rateLimitTierPlugin(
     limitType: keyof EndpointLimits = 'general'
   ): Promise<{ allowed: boolean; remaining: number; resetAt: number; limit: number }> => {
     const user = (request as any).user;
-    const tier: SubscriptionTier = user?.subscription_tier || 'free';
+    const tier: SubscriptionTier = normalizeSubscriptionTier(user?.subscription_tier);
     const limits = TIER_RATE_LIMITS[tier];
     const limit = limits[limitType];
 

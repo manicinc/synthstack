@@ -5,19 +5,19 @@
 <div style="background: #f8f9fa; padding: 24px; border-radius: 8px; margin: 24px 0;">
   <h2 style="margin-top: 0;">Your Plan Benefits:</h2>
   <ul style="line-height: 2;">
-    <li><strong><%= creditsPerDay %> generations per day</strong></li>
-    <li>Priority AI processing</li>
-    <li>Advanced slicer exports</li>
-    <li>Community profile creation</li>
+    <li><strong><%= creditsPerDay %> AI credits per day</strong></li>
+    <li>Priority processing</li>
+    <li>Projects + workspace</li>
+    <li>Workflows (automation)</li>
     <li>Email support</li>
-    <% if (planName === 'Pro' || planName === 'Unlimited') { %>
+    <% if (planName === 'Pro' || planName === 'Agency') { %>
+    <li>AI agents + Strategy Debates</li>
     <li>API access</li>
-    <li>Batch processing</li>
     <li>Priority support</li>
     <% } %>
-    <% if (planName === 'Unlimited') { %>
-    <li>Team sharing (up to 5 members)</li>
-    <li>White-label exports</li>
+    <% if (planName === 'Agency') { %>
+    <li>Team collaboration</li>
+    <li>White-labeling + custom branding</li>
     <li>Dedicated support</li>
     <% } %>
   </ul>

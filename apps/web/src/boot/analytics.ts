@@ -94,23 +94,6 @@ export const analyticsEvents = {
     })
   },
 
-  // Generation Events (legacy support)
-  generateProfile: (printer: string, filament: string, slicer: string) => {
-    trackEvent('generate_profile', {
-      printer,
-      filament,
-      slicer,
-      event_category: 'engagement'
-    })
-  },
-
-  downloadProfile: (slicer: string) => {
-    trackEvent('download_profile', {
-      slicer,
-      event_category: 'engagement'
-    })
-  },
-
   uploadModel: (fileType: string, fileSize: number) => {
     trackEvent('upload_model', {
       file_type: fileType,

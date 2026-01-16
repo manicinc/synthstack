@@ -132,31 +132,5 @@ collections:
     schema:
       name: copilot_indexed_documents
 
-  - collection: printers
-    meta:
-      collection: printers
-      icon: print
-      note: 3D Printers catalog
-      hidden: true
-      singleton: false
-      color: "#9CA3AF"
-      accountability: all
-      collapse: open
-    schema:
-      name: printers
-
-  - collection: filaments
-    meta:
-      collection: filaments
-      icon: layers
-      note: 3D Printing filaments
-      hidden: true
-      singleton: false
-      color: "#9CA3AF"
-      accountability: all
-      collapse: open
-    schema:
-      name: filaments
-
 fields: []
 relations: []

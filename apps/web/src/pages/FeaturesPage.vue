@@ -4,7 +4,7 @@
       <div class="container">
         <h1>Features</h1>
         <p class="subtitle">
-          Everything you need to optimize your 3D prints.
+          Everything you need to ship AI-native SaaS — web, mobile, desktop, and PWA — from one codebase.
         </p>
       </div>
     </section>
@@ -14,47 +14,47 @@
         <div class="feature-row">
           <div class="feature-content">
             <div class="feature-badge">
-              Analysis
+              Platform
             </div>
-            <h2>Smart STL Analysis</h2>
-            <p>Our analysis engine examines your 3D model using advanced geometry algorithms:</p>
+            <h2>Cross-Platform from One Codebase</h2>
+            <p>Build once and ship everywhere with Vue 3 + Quasar:</p>
             <ul>
               <li>
                 <q-icon
                   name="check"
                   color="positive"
-                /> Overhang detection (>45°)
+                /> Web + PWA + iOS (Capacitor) + Android + Desktop (Electron)
               </li>
               <li>
                 <q-icon
                   name="check"
                   color="positive"
-                /> Thin wall warnings (&lt;0.8mm)
+                /> Design system, theming, and dark mode out of the box
               </li>
               <li>
                 <q-icon
                   name="check"
                   color="positive"
-                /> Optimal orientation suggestions
+                /> Multi-language (i18n) ready with locale routing
               </li>
               <li>
                 <q-icon
                   name="check"
                   color="positive"
-                /> Complexity scoring
+                /> Strong defaults for accessibility + performance
               </li>
               <li>
                 <q-icon
                   name="check"
                   color="positive"
-                /> Print time estimation
+                /> Testing + CI patterns included
               </li>
             </ul>
           </div>
           <div class="feature-visual">
             <div class="visual-box">
               <q-icon
-                name="view_in_ar"
+                name="devices"
                 size="64px"
               />
             </div>
@@ -66,38 +66,38 @@
             <div class="feature-badge">
               AI
             </div>
-            <h2>AI-Generated Settings</h2>
-            <p>Powered by Claude and GPT-4, our AI considers:</p>
+            <h2>AI Copilot + Agents</h2>
+            <p>Ship production-grade AI features with sensible defaults:</p>
             <ul>
               <li>
                 <q-icon
                   name="check"
                   color="positive"
-                /> Your specific printer capabilities
+                /> Streaming Copilot UI with tool calling
               </li>
               <li>
                 <q-icon
                   name="check"
                   color="positive"
-                /> Filament temperature ranges
+                /> Optional RAG with vector search (Qdrant)
               </li>
               <li>
                 <q-icon
                   name="check"
                   color="positive"
-                /> Model geometry requirements
+                /> Multi-provider LLM support (OpenAI, Anthropic, OpenRouter)
               </li>
               <li>
                 <q-icon
                   name="check"
                   color="positive"
-                /> Manufacturer recommendations
+                /> Agent orchestration + workflow automation
               </li>
               <li>
                 <q-icon
                   name="check"
                   color="positive"
-                /> Community validated data
+                /> BYOK-friendly secrets and encryption patterns
               </li>
             </ul>
           </div>
@@ -114,41 +114,41 @@
         <div class="feature-row">
           <div class="feature-content">
             <div class="feature-badge">
-              Export
+              Billing
             </div>
-            <h2>Multi-Slicer Export</h2>
-            <p>Export optimized profiles to your favorite slicer:</p>
+            <h2>Stripe Subscriptions + Lifetime Licensing</h2>
+            <p>Monetize on day one with production-ready billing flows:</p>
             <ul>
               <li>
                 <q-icon
                   name="check"
                   color="positive"
-                /> OrcaSlicer (.json)
+                /> Subscriptions, one-time payments, and promo codes
               </li>
               <li>
                 <q-icon
                   name="check"
                   color="positive"
-                /> PrusaSlicer (.ini)
+                /> Webhooks + customer portal + invoice history
               </li>
               <li>
                 <q-icon
                   name="check"
                   color="positive"
-                /> Cura (.curaprofile)
+                /> Credits / usage metering patterns
               </li>
               <li>
                 <q-icon
                   name="check"
                   color="positive"
-                /> FlashPrint (.fcfg)
+                /> Optional referrals program (toggleable)
               </li>
             </ul>
           </div>
           <div class="feature-visual">
             <div class="visual-box">
               <q-icon
-                name="download"
+                name="payments"
                 size="64px"
               />
             </div>
@@ -158,41 +158,91 @@
         <div class="feature-row reverse">
           <div class="feature-content">
             <div class="feature-badge">
-              Community
+              Content
             </div>
-            <h2>Community Profiles</h2>
-            <p>Learn from the community:</p>
+            <h2>Directus CMS + Visual Editing</h2>
+            <p>Manage content and product data without reinventing an admin UI:</p>
             <ul>
               <li>
                 <q-icon
                   name="check"
                   color="positive"
-                /> Browse successful print profiles
+                /> Directus models your Postgres schema
               </li>
               <li>
                 <q-icon
                   name="check"
                   color="positive"
-                /> Vote on what works
+                /> On-site visual editor for landing pages and docs
               </li>
               <li>
                 <q-icon
                   name="check"
                   color="positive"
-                /> Share your optimizations
+                /> Blog + docs + changelog patterns included
               </li>
               <li>
                 <q-icon
                   name="check"
                   color="positive"
-                /> Track success rates
+                /> Self-hostable with Docker (or swap providers)
               </li>
             </ul>
           </div>
           <div class="feature-visual">
             <div class="visual-box">
               <q-icon
-                name="groups"
+                name="article"
+                size="64px"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-row">
+          <div class="feature-content">
+            <div class="feature-badge">
+              Strategy
+            </div>
+            <h2>Multi-Agent Strategy Debates</h2>
+            <p>Make better decisions with AI-powered strategic analysis:</p>
+            <ul>
+              <li>
+                <q-icon
+                  name="check"
+                  color="positive"
+                /> 6 specialized agents debate from different perspectives
+              </li>
+              <li>
+                <q-icon
+                  name="check"
+                  color="positive"
+                /> Decision briefs with executive summaries
+              </li>
+              <li>
+                <q-icon
+                  name="check"
+                  color="positive"
+                /> Risk matrix and implementation timelines
+              </li>
+              <li>
+                <q-icon
+                  name="check"
+                  color="positive"
+                /> Developer Bot for GitHub PR generation
+              </li>
+              <li>
+                <q-icon
+                  name="check"
+                  color="positive"
+                /> Tiered pricing: Light, Standard, and Full debates
+              </li>
+            </ul>
+          </div>
+          <div class="feature-visual">
+            <div class="visual-box">
+              <q-icon
+                name="forum"
                 size="64px"
               />
             </div>
@@ -204,13 +254,13 @@
     <section class="cta-section section">
       <div class="container">
         <div class="cta-card">
-          <h2>Ready to optimize?</h2>
-          <p>Start with 2 free generations daily. No credit card required.</p>
+          <h2>Ready to ship?</h2>
+          <p>Rebrand in minutes, run the setup wizard, and deploy anywhere.</p>
           <q-btn
             unelevated
             color="primary"
             size="lg"
-            label="Get Started Free"
+            label="Get Started"
             @click="$router.push('/auth/register')"
           />
         </div>
@@ -345,4 +395,3 @@
   }
 }
 </style>
-

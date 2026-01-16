@@ -34,13 +34,13 @@ import demoAuthPlugin from './middleware/demoAuth.js';
 // Routes
 import authRoutes from './routes/auth.js';
 import projectsRoutes from './routes/projects.js';
-import profilesRoutes from './routes/profiles.js';
 import creditsRoutes from './routes/credits.js';
 import generationRoutes from './routes/generation.js';
 import chatRoutes from './routes/chat.js';
 import webhooksRoutes from './routes/webhooks.js';
 import subscriptionRoutes from './routes/subscriptions.js';
 import communityRoutes from './routes/community.js';
+import usersRoutes from './routes/users.js';
 import adminSyncRoutes from './routes/admin-sync.js';
 import billingRoutes from './routes/billing.js';
 import workerRoutes from './routes/workers.js';
@@ -349,11 +349,11 @@ async function registerRoutes(app: FastifyInstance, options: AppOptions): Promis
   // Core routes
   await app.register(authRoutes, { prefix: '/api/v1/auth' });
   await app.register(projectsRoutes, { prefix: '/api/v1/projects' });
-  await app.register(profilesRoutes, { prefix: '/api/v1/profiles' });
   await app.register(creditsRoutes, { prefix: '/api/v1/credits' });
   await app.register(generationRoutes, { prefix: '/api/v1/generation' });
   await app.register(chatRoutes, { prefix: '/api/v1/chat' });
   await app.register(communityRoutes, { prefix: '/api/v1' });
+  await app.register(usersRoutes, { prefix: '/api/v1/users' });
 
   // Billing routes require Stripe (skip in test mode when skipServices is true)
   if (!options.skipServices) {

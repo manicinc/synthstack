@@ -9,10 +9,10 @@
     "pricing": "料金",
     "dashboard": "ダッシュボード",
     "generate": "生成",
-    "printers": "プリンター",
-    "filaments": "フィラメント",
-    "profiles": "プロファイル",
-    "myProfiles": "マイプロファイル",
+    "textGeneration": "テキスト生成",
+    "imageGeneration": "画像生成",
+    "copilot": "AIコパイロット",
+    "workflows": "ワークフロー",
     "history": "履歴",
     "account": "アカウント",
     "subscription": "サブスクリプション",
@@ -22,12 +22,21 @@
   },
   "landing": {
     "hero": {
-      "title": "毎回完璧なプリント",
-      "subtitle": "STLをアップロード。AI最適化設定を取得。どんなスライサーにもエクスポート。",
+      "title": "AIによるコンテンツ生成",
+      "subtitle": "パワフルなAIでテキスト、画像などを生成。シンプルなクレジットシステム。",
       "cta": "アーリーバードアクセス - $149",
       "secondaryCta": "GitHubで見る",
       "promoWithStats": "ライフタイムライセンス {max} 件限定 • 残り {remaining} 件 • {discount} お得",
-      "promoDefault": "ライフタイムライセンス 150 件限定 • $100 お得（通常 $249）"
+      "promoDefault": "ライフタイムライセンス 150 件限定 • $100 お得（通常 $249）",
+      "badge": {
+        "title": "ウェブ上で最も美しいQuasar UX",
+        "subtitle": "完全なテーマ設定とカスタマイズが組み込まれています"
+      },
+      "checkout": {
+        "access": "プライベートGitHubリポジトリへの即時アクセス",
+        "updates": "生涯アップデート",
+        "fees": "月額料金なし"
+      }
     },
     "tech": {
       "label": "モダンで実績のあるテクノロジーで構築"
@@ -79,7 +88,7 @@
       "pro": {
         "badge": "最も人気",
         "name": "Pro",
-        "price": "$297",
+        "price": "$149",
         "period": "ライフタイム",
         "description": "完全なAI Co-Founders体験",
         "features": {
@@ -142,7 +151,7 @@
         },
         "subscription": {
           "question": "サブスクリプションオプションはありますか？",
-          "answer": "ライフタイム（$297一回払い）と月額サブスクリプションプランの両方を提供しています。テストモードでは$0の料金ですべてを試すことができます。エンタープライズチームはカスタム価格についてお問い合わせください。"
+          "answer": "ライフタイム（$149一回払い）と月額サブスクリプションプランの両方を提供しています。テストモードでは$0の料金ですべてを試すことができます。エンタープライズチームはカスタム価格についてお問い合わせください。"
         }
       }
     },
@@ -151,51 +160,51 @@
       "subtitle": "AIスーパーパワーを備えたフルスタックSaaSボイラープレート。10倍速くリリース。",
       "primary": "無料で始める",
       "secondary": "Proにアップグレード",
-      "note": "コミュニティライセンスコア · Pro: $297 ライフタイム · 紹介リワード利用可能"
+      "note": "コミュニティライセンスコア · Lifetime ライセンス: $149 Early Bird · Cloud プランは $9.99/月〜"
     },
     "features": {
       "title": "なぜSynthStack？",
       "subtitle": "AI搭載開発でより速くリリース。",
-      "stlAnalysis": {
-        "title": "スマートSTL分析",
-        "description": "AIがモデルの形状を検査し、オーバーハング、薄い壁、最適なプリント方向を検出します。"
+      "textGeneration": {
+        "title": "テキスト生成",
+        "description": "GPT モデルとカスタム可能なプリセットで、記事、メール、ドキュメントなどを生成。"
       },
-      "aiSettings": {
-        "title": "AI生成設定",
-        "description": "お使いのプリンター、フィラメント、モデル特性に基づいた最適化パラメーターを取得できます。"
+      "imageGeneration": {
+        "title": "画像生成",
+        "description": "DALL·E で魅力的なビジュアルを作成。複数のスタイル、サイズ、品質オプションに対応。"
       },
-      "multiSlicer": {
+      "aiCopilot": {
+        "title": "AI Copilot",
+        "description": "アイデア出し、解説、コンテンツ改善のために AI とチャット。"
+      },
+      "exportFormats": {
         "title": "どこへでもエクスポート",
-        "description": "OrcaSlicer、PrusaSlicer、Curaなど用の即使用可能なプロファイルをダウンロード。"
-      },
-      "community": {
-        "title": "コミュニティ検証済み",
-        "description": "プロファイルを共有し、成功率を確認し、効果的な方法を基に構築。"
+        "description": "Markdown、HTML、PDF、またはプレーンテキストでダウンロード。"
       }
     },
     "howItWorks": {
       "title": "使い方",
       "step1": {
-        "title": "STLをアップロード",
-        "description": "3Dモデルをドラッグ＆ドロップして即座に分析"
+        "title": "生成タイプを選ぶ",
+        "description": "テキスト、画像、またはチャットから選択"
       },
       "step2": {
-        "title": "セットアップを選択",
-        "description": "データベースからプリンターとフィラメントを選択"
+        "title": "プリセットを選ぶ",
+        "description": "厳選されたプリセットを選ぶか設定をカスタマイズ"
       },
       "step3": {
-        "title": "設定を生成",
-        "description": "AIがお使いのプリント用に最適化されたパラメーターを作成"
+        "title": "プロンプトを入力",
+        "description": "生成したい内容を説明"
       },
       "step4": {
-        "title": "エクスポート＆プリント",
-        "description": "スライサー用にダウンロードしてプリント開始"
+        "title": "生成してエクスポート",
+        "description": "すぐに結果を得て、好みの形式でエクスポート"
       }
     },
     "stats": {
-      "profiles": "生成されたプロファイル",
-      "printers": "対応プリンター",
-      "successRate": "成功率"
+      "generations": "作成された生成数",
+      "users": "アクティブユーザー",
+      "satisfaction": "満足度"
     },
     "featuresGrid": {
       "badge": "必要なものすべて",
@@ -309,7 +318,7 @@
     },
     "register": {
       "title": "アカウント作成",
-      "subtitle": "プリントの最適化を始めましょう",
+      "subtitle": "次のプロジェクトを構築し始めましょう",
       "name": "表示名",
       "email": "メールアドレス",
       "password": "パスワード",
@@ -341,49 +350,56 @@
     },
     "quickActions": {
       "title": "クイックアクション",
-      "newGeneration": "新規生成",
-      "browsePrinters": "プリンターを閲覧",
-      "viewProfiles": "プロファイルを表示"
+      "textGeneration": "テキスト生成",
+      "imageGeneration": "画像生成",
+      "viewWorkflows": "ワークフローを表示"
     },
     "recentGenerations": {
       "title": "最近の生成",
-      "empty": "まだ生成がありません。STLのアップロードから始めましょう！"
+      "empty": "まだ生成がありません。テキストや画像を作成して始めましょう！"
     }
   },
   "generate": {
-    "title": "プリント設定を生成",
-    "upload": {
-      "title": "STLアップロード",
-      "dragDrop": "STLファイルをここにドラッグ＆ドロップ",
-      "or": "または",
-      "browse": "ファイルを選択",
-      "maxSize": "最大ファイルサイズ：50MB"
+    "title": "AI 生成",
+    "text": {
+      "title": "テキスト生成",
+      "prompt": "プロンプトを入力",
+      "promptPlaceholder": "生成したい内容を説明...",
+      "systemPrompt": "システムプロンプト（任意）",
+      "preset": "プリセットを選択",
+      "model": "モデル",
+      "maxTokens": "最大トークン",
+      "temperature": "温度",
+      "generate": "生成",
+      "generating": "生成中..."
     },
-    "analysis": {
-      "title": "モデル分析",
-      "dimensions": "寸法",
-      "volume": "体積",
-      "faces": "面数",
-      "overhangs": "オーバーハング",
-      "thinWalls": "薄い壁",
-      "difficulty": "プリント難易度"
-    },
-    "settings": {
-      "title": "設定",
-      "printer": "プリンターを選択",
-      "filament": "フィラメントを選択",
-      "quality": "品質プリセット",
-      "priorities": "優先度",
-      "speed": "速度",
-      "strength": "強度",
-      "material": "材料使用量"
+    "image": {
+      "title": "画像生成",
+      "prompt": "画像を説明",
+      "promptPlaceholder": "夕暮れの未来都市...",
+      "style": "スタイルプリセット",
+      "size": "サイズ",
+      "quality": "品質",
+      "generate": "生成",
+      "generating": "生成中..."
     },
     "result": {
-      "title": "生成された設定",
-      "confidence": "信頼度",
+      "title": "生成されたコンテンツ",
       "export": "エクスポート",
-      "save": "プロファイルを保存",
-      "regenerate": "再生成"
+      "copy": "コピー",
+      "download": "ダウンロード",
+      "regenerate": "再生成",
+      "creditsUsed": "使用クレジット"
+    },
+    "presets": {
+      "blogPost": "ブログ記事",
+      "emailDraft": "メール下書き",
+      "codeDocs": "コードドキュメント",
+      "creativeStory": "創作ストーリー",
+      "productDesc": "商品説明",
+      "meetingSummary": "会議要約",
+      "technicalExplanation": "技術解説",
+      "socialMedia": "SNS投稿"
     }
   },
   "pricing": {

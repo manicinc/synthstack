@@ -12,7 +12,9 @@ import { config } from '../config/index.js';
 // TYPES & INTERFACES
 // ============================================
 
-export type SubscriptionTier = 'free' | 'maker' | 'pro' | 'agency' | 'unlimited';
+// Note: Subscription tiers for Stripe subscriptions (customer-facing).
+// Agency is the top plan; there is no "unlimited" subscription tier.
+export type SubscriptionTier = 'free' | 'maker' | 'pro' | 'agency';
 
 export interface TierConfig {
   name: string;
@@ -66,7 +68,7 @@ export const TIER_CONFIG: Record<SubscriptionTier, TierConfig> = {
     rateLimitPerMinute: 10,
     rateLimitGeneration: 3,
     maxFileSize: 10 * 1024 * 1024,
-    features: ['Basic STL analysis', 'Community profiles (view only)', '10 generations per day'],
+    features: ['AI content generator', 'Starter templates', '10 credits per day'],
     // Workflows disabled for free tier
     workflowCreditMultiplier: 2.0,
     freeWorkflowExecutionsPerDay: 0,
@@ -79,7 +81,14 @@ export const TIER_CONFIG: Record<SubscriptionTier, TierConfig> = {
     rateLimitPerMinute: 30,
     rateLimitGeneration: 15,
     maxFileSize: 50 * 1024 * 1024,
-    features: ['Advanced STL analysis', 'Community profile creation', '30 generations per day', 'Slicer exports', 'Email support', '5 free workflow executions/day'],
+    features: [
+      'Projects + private workspace',
+      'Workflows (basic automation)',
+      '30 credits per day',
+      'API access',
+      'Email support',
+      '5 free workflow executions/day',
+    ],
     stripePriceIdMonthly: config.stripe.prices.maker,
     stripePriceIdYearly: process.env.STRIPE_PRICE_MAKER_YEARLY,
     // Basic workflow access
@@ -94,7 +103,16 @@ export const TIER_CONFIG: Record<SubscriptionTier, TierConfig> = {
     rateLimitPerMinute: 60,
     rateLimitGeneration: 30,
     maxFileSize: 200 * 1024 * 1024,
-    features: ['Everything in Maker', '100 generations per day', 'Priority AI processing', 'Batch processing', 'API access', 'Priority support', '20 free workflow executions/day'],
+    features: [
+      'Everything in Maker',
+      'AI agents + Strategy Debates',
+      'RAG Copilot (knowledge base)',
+      '100 credits per day',
+      'Priority processing',
+      'API access',
+      'Priority support',
+      '20 free workflow executions/day',
+    ],
     stripePriceIdMonthly: config.stripe.prices.pro,
     stripePriceIdYearly: process.env.STRIPE_PRICE_PRO_YEARLY,
     // Full workflow access at base cost
@@ -109,7 +127,15 @@ export const TIER_CONFIG: Record<SubscriptionTier, TierConfig> = {
     rateLimitPerMinute: 100,
     rateLimitGeneration: 60,
     maxFileSize: 500 * 1024 * 1024,
-    features: ['Everything in Pro', '500 credits/day', 'Team sharing', 'Custom profiles', 'White-label exports', 'Dedicated support', '100 free workflow executions/day', '25% workflow discount'],
+    features: [
+      'Everything in Pro',
+      '500 credits/day',
+      'Team collaboration',
+      'White-labeling + custom branding',
+      'Dedicated support',
+      '100 free workflow executions/day',
+      '25% workflow discount',
+    ],
     stripePriceIdMonthly: config.stripe.prices.agency,
     stripePriceIdYearly: process.env.STRIPE_PRICE_AGENCY_YEARLY,
     // Premium workflow access with discount
@@ -117,23 +143,9 @@ export const TIER_CONFIG: Record<SubscriptionTier, TierConfig> = {
     freeWorkflowExecutionsPerDay: 100,
     workflowsEnabled: true,
   },
-  unlimited: {
-    name: 'unlimited',
-    displayName: 'Unlimited',
-    creditsPerDay: 999999,
-    rateLimitPerMinute: 1000,
-    rateLimitGeneration: 500,
-    maxFileSize: 1024 * 1024 * 1024,
-    features: ['Everything in Agency', 'Unlimited generations', 'Unlimited workflow executions', 'Enterprise support', 'Custom integrations'],
-    stripePriceIdMonthly: (config.stripe.prices as any).unlimited,
-    stripePriceIdYearly: process.env.STRIPE_PRICE_UNLIMITED_YEARLY,
-    workflowCreditMultiplier: 0.5,
-    freeWorkflowExecutionsPerDay: 999999,
-    workflowsEnabled: true,
-  },
 };
 
-// Extended tier config for additional tiers (lifetime, enterprise, unlimited)
+// Extended tier config for additional tiers (non-subscription tiers)
 export const EXTENDED_TIER_CONFIG: Record<string, Partial<TierConfig>> = {
   lifetime: {
     workflowCreditMultiplier: 0.8,
@@ -145,12 +157,47 @@ export const EXTENDED_TIER_CONFIG: Record<string, Partial<TierConfig>> = {
     freeWorkflowExecutionsPerDay: 500,
     workflowsEnabled: true,
   },
+  // Backwards-compatibility alias: old installs may still have `unlimited` stored.
+  // Treat it as `agency` (high limits, not actually unlimited).
   unlimited: {
-    workflowCreditMultiplier: 0.5,
-    freeWorkflowExecutionsPerDay: 999999,
+    workflowCreditMultiplier: 0.75,
+    freeWorkflowExecutionsPerDay: 100,
     workflowsEnabled: true,
   },
 };
+
+/**
+ * Normalize a raw stored tier to a supported subscription tier.
+ *
+ * - `unlimited` (legacy) → `agency`
+ * - `enterprise` (non-subscription) → `agency` for feature/rate-limit config lookups
+ * - `lifetime` (non-subscription) → `pro` for feature/rate-limit config lookups
+ */
+export function normalizeSubscriptionTier(tier: string | null | undefined): SubscriptionTier {
+  const raw = (tier || 'free').toLowerCase();
+  if (raw === 'unlimited') return 'agency';
+  if (raw === 'enterprise') return 'agency';
+  if (raw === 'lifetime') return 'pro';
+  if (raw === 'free' || raw === 'maker' || raw === 'pro' || raw === 'agency') return raw;
+  return 'free';
+}
+
+/**
+ * Get the TierConfig for a raw stored tier (handles legacy/extended tiers).
+ */
+export function getTierConfigForUser(tier: string | null | undefined): TierConfig {
+  return TIER_CONFIG[normalizeSubscriptionTier(tier)];
+}
+
+/**
+ * Get the daily AI credits limit for a raw stored tier.
+ * Enterprise is treated as unlimited (Infinity).
+ */
+export function getAICreditsPerDayForTier(tier: string | null | undefined): number {
+  const raw = (tier || 'free').toLowerCase();
+  if (raw === 'enterprise') return Infinity;
+  return getTierConfigForUser(raw).creditsPerDay;
+}
 
 /**
  * Get workflow config for any tier (including extended tiers)
@@ -559,9 +606,10 @@ export class StripeService {
   async createLifetimeLicenseCheckout(email?: string, promoCode?: string): Promise<{ url: string; sessionId: string } | null> {
     if (!this.stripe) return null;
 
-    const priceId = process.env.STRIPE_PRICE_LIFETIME;
+    // Use lifetime Pro price from config (preferred), fallback to env var for backwards compat
+    const priceId = config.stripe.prices.lifetimePro || process.env.STRIPE_PRICE_LIFETIME;
     if (!priceId) {
-      this.fastify.log.error('STRIPE_PRICE_LIFETIME not configured');
+      this.fastify.log.error('STRIPE_PRICE_LIFETIME_PRO not configured');
       return null;
     }
 

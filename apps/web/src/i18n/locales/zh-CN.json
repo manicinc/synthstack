@@ -9,10 +9,10 @@
     "pricing": "定价",
     "dashboard": "控制面板",
     "generate": "生成",
-    "printers": "打印机",
-    "filaments": "耗材",
-    "profiles": "配置文件",
-    "myProfiles": "我的配置",
+    "textGeneration": "文本生成",
+    "imageGeneration": "图像生成",
+    "copilot": "AI助手",
+    "workflows": "工作流",
     "history": "历史记录",
     "account": "账户",
     "subscription": "订阅",
@@ -22,12 +22,21 @@
   },
   "landing": {
     "hero": {
-      "title": "每次都是完美打印",
-      "subtitle": "上传您的STL文件。获取AI优化设置。导出到任何切片软件。",
+      "title": "AI驱动的内容生成",
+      "subtitle": "使用强大的AI生成文本、图像等。简单的积分系统。",
       "cta": "早鸟优惠 - $149",
       "secondaryCta": "在GitHub上查看",
       "promoWithStats": "限量 {max} 份终身许可证 • 剩余 {remaining} 份 • 节省 {discount}",
-      "promoDefault": "限量 150 份终身许可证 • 节省 $100（原价 $249）"
+      "promoDefault": "限量 150 份终身许可证 • 节省 $100（原价 $249）",
+      "badge": {
+        "title": "网络上最美观的Quasar用户体验",
+        "subtitle": "内置完整主题和定制"
+      },
+      "checkout": {
+        "access": "即时访问私有GitHub仓库",
+        "updates": "终身更新",
+        "fees": "无月费"
+      }
     },
     "tech": {
       "label": "采用现代、久经考验的技术构建"
@@ -79,7 +88,7 @@
       "pro": {
         "badge": "最受欢迎",
         "name": "Pro",
-        "price": "$297",
+        "price": "$149",
         "period": "终身",
         "description": "完整的AI Co-Founders体验",
         "features": {
@@ -142,7 +151,7 @@
         },
         "subscription": {
           "question": "有订阅选项吗？",
-          "answer": "我们提供终身（$297一次性）和月度订阅计划。测试模式让您以$0费用试用所有功能。企业团队可以联系我们获取定制价格。"
+          "answer": "我们提供终身（$149一次性）和月度订阅计划。测试模式让您以$0费用试用所有功能。企业团队可以联系我们获取定制价格。"
         }
       }
     },
@@ -151,51 +160,51 @@
       "subtitle": "具有AI超能力的全栈SaaS模板。10倍速度发布。",
       "primary": "免费开始",
       "secondary": "升级到Pro",
-      "note": "社区许可核心 · Pro: $297 终身 · 推荐奖励可用"
+      "note": "社区许可核心 · 终身许可：$149 Early Bird · 云计划从 $9.99/月起"
     },
     "features": {
       "title": "为什么选择SynthStack？",
       "subtitle": "使用AI驱动的开发更快发布。",
-      "stlAnalysis": {
-        "title": "智能STL分析",
-        "description": "我们的AI检查您模型的几何形状，检测悬垂、薄壁和最佳打印方向。"
+      "textGeneration": {
+        "title": "文本生成",
+        "description": "使用 GPT 模型和可自定义的预设生成博客、邮件、文档等内容。"
       },
-      "aiSettings": {
-        "title": "AI生成设置",
-        "description": "根据您特定的打印机、耗材和模型特征获取优化参数。"
+      "imageGeneration": {
+        "title": "图像生成",
+        "description": "使用 DALL·E 创建惊艳视觉效果。支持多种风格、尺寸与质量选项。"
       },
-      "multiSlicer": {
+      "aiCopilot": {
+        "title": "AI Copilot",
+        "description": "与 AI 聊天进行头脑风暴、获取解释并改进内容。"
+      },
+      "exportFormats": {
         "title": "随处导出",
-        "description": "下载适用于OrcaSlicer、PrusaSlicer、Cura等的即用配置文件。"
-      },
-      "community": {
-        "title": "社区验证",
-        "description": "分享配置文件，查看成功率，建立在有效方案之上。"
+        "description": "将生成内容下载为 Markdown、HTML、PDF 或纯文本。"
       }
     },
     "howItWorks": {
       "title": "工作原理",
       "step1": {
-        "title": "上传您的STL",
-        "description": "拖放您的3D模型进行即时分析"
+        "title": "选择生成类型",
+        "description": "根据需求选择文本、图像或聊天"
       },
       "step2": {
-        "title": "选择您的设置",
-        "description": "从我们的数据库中选择您的打印机和耗材"
+        "title": "选择预设",
+        "description": "选择精选预设或自定义设置"
       },
       "step3": {
-        "title": "生成设置",
-        "description": "AI为您的特定打印创建优化参数"
+        "title": "输入提示词",
+        "description": "描述你想生成的内容"
       },
       "step4": {
-        "title": "导出并打印",
-        "description": "下载到您的切片软件并开始打印"
+        "title": "生成并导出",
+        "description": "立即获得结果并导出为你偏好的格式"
       }
     },
     "stats": {
-      "profiles": "已生成配置",
-      "printers": "支持的打印机",
-      "successRate": "成功率"
+      "generations": "已创建生成",
+      "users": "活跃用户",
+      "satisfaction": "满意度"
     },
     "featuresGrid": {
       "badge": "您需要的一切",
@@ -309,7 +318,7 @@
     },
     "register": {
       "title": "创建账户",
-      "subtitle": "开始优化您的打印",
+      "subtitle": "开始构建您的下一个项目",
       "name": "显示名称",
       "email": "邮箱",
       "password": "密码",
@@ -341,49 +350,56 @@
     },
     "quickActions": {
       "title": "快捷操作",
-      "newGeneration": "新建生成",
-      "browsePrinters": "浏览打印机",
-      "viewProfiles": "查看配置"
+      "textGeneration": "文本生成",
+      "imageGeneration": "图像生成",
+      "viewWorkflows": "查看工作流"
     },
     "recentGenerations": {
       "title": "最近生成",
-      "empty": "暂无生成记录。从上传STL开始吧！"
+      "empty": "暂无生成记录。从创建文本或图像开始吧！"
     }
   },
   "generate": {
-    "title": "生成打印设置",
-    "upload": {
-      "title": "上传STL",
-      "dragDrop": "将您的STL文件拖放到此处",
-      "or": "或",
-      "browse": "浏览文件",
-      "maxSize": "最大文件大小：50MB"
+    "title": "AI 生成",
+    "text": {
+      "title": "文本生成",
+      "prompt": "输入提示词",
+      "promptPlaceholder": "描述你想生成的内容...",
+      "systemPrompt": "系统提示词（可选）",
+      "preset": "选择预设",
+      "model": "模型",
+      "maxTokens": "最大 Tokens",
+      "temperature": "温度",
+      "generate": "生成",
+      "generating": "生成中..."
     },
-    "analysis": {
-      "title": "模型分析",
-      "dimensions": "尺寸",
-      "volume": "体积",
-      "faces": "面数",
-      "overhangs": "悬垂",
-      "thinWalls": "薄壁",
-      "difficulty": "打印难度"
-    },
-    "settings": {
-      "title": "设置",
-      "printer": "选择打印机",
-      "filament": "选择耗材",
-      "quality": "质量预设",
-      "priorities": "优先级",
-      "speed": "速度",
-      "strength": "强度",
-      "material": "材料用量"
+    "image": {
+      "title": "图像生成",
+      "prompt": "描述你的图像",
+      "promptPlaceholder": "夕阳下的未来城市...",
+      "style": "风格预设",
+      "size": "尺寸",
+      "quality": "质量",
+      "generate": "生成",
+      "generating": "生成中..."
     },
     "result": {
-      "title": "生成的设置",
-      "confidence": "置信度",
+      "title": "生成内容",
       "export": "导出",
-      "save": "保存配置",
-      "regenerate": "重新生成"
+      "copy": "复制",
+      "download": "下载",
+      "regenerate": "重新生成",
+      "creditsUsed": "消耗额度"
+    },
+    "presets": {
+      "blogPost": "博客文章",
+      "emailDraft": "邮件草稿",
+      "codeDocs": "代码文档",
+      "creativeStory": "创意故事",
+      "productDesc": "产品描述",
+      "meetingSummary": "会议总结",
+      "technicalExplanation": "技术解释",
+      "socialMedia": "社交媒体帖子"
     }
   },
   "pricing": {

@@ -12,7 +12,7 @@
         </div>
         <h1>Join the SynthStack Team</h1>
         <p class="subtitle">
-          Help us revolutionize 3D printing with AI. We're looking for passionate 
+          Help us revolutionize AI development with AI. We're looking for passionate 
           makers, engineers, and creators to join our mission.
         </p>
       </div>
@@ -47,7 +47,7 @@
               size="32px"
             />
             <h3>Maker Culture</h3>
-            <p>We're makers ourselves. Free filament and equipment budgets included.</p>
+            <p>We're makers ourselves. Free agents and equipment budgets included.</p>
           </div>
           <div class="perk-card">
             <q-icon
@@ -155,7 +155,7 @@ const openPositions = [
   },
   {
     id: 2,
-    title: 'ML Engineer - 3D Geometry',
+    title: 'ML Engineer - RAG & Agents',
     location: 'Remote',
     type: 'Full-time',
     department: 'AI/ML'
@@ -173,11 +173,11 @@ const openPositions = [
 onMounted(() => {
   setPageSeo({
     title: 'Careers - Join the SynthStack Team | SynthStack',
-    description: 'Join SynthStack and help revolutionize 3D printing with AI. View open positions in engineering, ML, design, and marketing. Remote-first culture.',
+    description: 'Join SynthStack and help revolutionize AI development with AI. View open positions in engineering, ML, design, and marketing. Remote-first culture.',
     keywords: [
       'synthstack careers',
       'synthstack jobs',
-      '3d printing jobs',
+      'AI development jobs',
       'ai ml jobs',
       'remote engineering jobs',
       'startup jobs'
@@ -393,7 +393,6 @@ onMounted(() => {
   }
 }
 </style>
-
 
 
 

@@ -27,7 +27,7 @@ export const lifetimeWelcomeTemplate = (data: {
         </ul>
       </div>
 
-      <div style="background: #6366F1; color: white; padding: 30px; border-radius: 8px; text-align: center; margin-bottom: 30px;">
+      <div style="background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); color: white; padding: 30px; border-radius: 8px; text-align: center; margin-bottom: 30px;">
         <h2 style="margin-top: 0;">NEXT STEP: Get Repository Access</h2>
         <p style="margin-bottom: 20px;">Submit your GitHub username to receive instant access</p>
         <a href="${data.licenseAccessUrl}" style="display: inline-block; background: white; color: #6366F1; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">

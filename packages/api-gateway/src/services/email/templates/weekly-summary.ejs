@@ -9,7 +9,7 @@
     <tr>
       <td style="text-align: center; padding: 16px;">
         <p style="font-size: 36px; font-weight: 700; margin: 0;"><%= generationsThisWeek %></p>
-        <p style="opacity: 0.9; margin: 4px 0 0;">Profiles Generated</p>
+        <p style="opacity: 0.9; margin: 4px 0 0;">Generations</p>
       </td>
       <td style="text-align: center; padding: 16px;">
         <p style="font-size: 36px; font-weight: 700; margin: 0;"><%= creditsUsed %></p>
@@ -19,12 +19,12 @@
   </table>
 </div>
 
-<h2>Your Most Popular Profiles:</h2>
+<h2>Your Most Popular Items:</h2>
 <% topProfiles.forEach(function(profile, index){ %>
   <div style="background: #f8f9fa; padding: 16px; border-radius: 8px; margin: 12px 0;">
     <p style="margin: 0;"><strong><%= index + 1 %>. <%= profile.name %></strong></p>
     <p style="margin: 4px 0 0; font-size: 14px; color: #666;">
-      👍 <%= profile.votes %> votes • <%= profile.printer %> • <%= profile.filament %>
+      👍 <%= profile.votes %> votes
     </p>
   </div>
 <% }); %>

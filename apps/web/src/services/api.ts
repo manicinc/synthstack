@@ -557,79 +557,6 @@ export const projects = {
   }
 }
 
-// --- Community Profiles ---
-
-/**
- * Community profile shared by users
- */
-export interface CommunityProfile {
-  id: string
-  name: string
-  description: string
-  author: {
-    id: string
-    username: string
-    avatarUrl?: string
-  }
-  votes: number
-  downloads: number
-  commentsCount: number
-  tags: string[]
-  isPublic: boolean
-  createdAt: string
-  updatedAt: string
-}
-
-/**
- * Comment on a community profile
- */
-export interface ProfileComment {
-  id: string
-  author: {
-    id: string
-    username: string
-    avatarUrl?: string
-  }
-  content: string
-  createdAt: string
-}
-
-/**
- * Profiles API endpoints
- */
-export const profiles = {
-  list: (params?: {
-    page?: number
-    sort?: 'popular' | 'recent' | 'downloads'
-  }) => get<CommunityProfile[]>('/api/v1/profiles', { params }),
-
-  get: (id: string) =>
-    get<CommunityProfile>(`/api/v1/profiles/${id}`),
-
-  create: (data: Partial<CommunityProfile>) =>
-    post<CommunityProfile>('/api/v1/profiles', data),
-
-  update: (id: string, data: Partial<CommunityProfile>) =>
-    patch<CommunityProfile>(`/api/v1/profiles/${id}`, data),
-
-  delete: (id: string) =>
-    del<void>(`/api/v1/profiles/${id}`),
-
-  vote: (id: string, direction: 'up' | 'down') =>
-    post<{ votes: number }>(`/api/v1/profiles/${id}/vote`, { direction }),
-
-  comments: {
-    list: (profileId: string) =>
-      get<ProfileComment[]>(`/api/v1/profiles/${profileId}/comments`),
-
-    create: (profileId: string, content: string) =>
-      post<ProfileComment>(`/api/v1/profiles/${profileId}/comments`, { content }),
-
-    delete: (profileId: string, commentId: string) =>
-      del<void>(`/api/v1/profiles/${profileId}/comments/${commentId}`)
-  }
-}
-
 // --- User / Account ---
 
 export interface User {
@@ -652,72 +579,6 @@ export interface UserStats {
   profilesDownloaded: number
 }
 
-/** Generated profile history entry */
-export interface GeneratedProfile {
-  id: string
-  name: string
-  createdAt: string
-  type?: string
-  downloadUrl?: string
-  slicer?: string
-  printer?: string
-  filament?: string
-  settings?: Record<string, unknown>
-  estimatedPrintTime?: number
-  estimatedFilamentUsage?: number
-}
-
-/** Analysis result from file upload */
-export interface AnalysisResult {
-  id: string
-  status?: 'pending' | 'processing' | 'completed' | 'failed'
-  filename?: string
-  fileSize?: number
-  dimensions?: { x: number; y: number; z: number }
-  volume?: number
-  surfaceArea?: number
-  triangleCount?: number
-  isManifold?: boolean
-  hasOverhangs?: boolean
-  maxOverhangAngle?: number
-  hasThinWalls?: boolean
-  minWallThickness?: number
-  hasBridges?: boolean
-  maxBridgeLength?: number
-  complexity?: string
-  recommendedLayerHeight?: number
-  estimatedPrintTime?: number
-  data?: Record<string, unknown>
-}
-
-/** Generation request parameters */
-export interface GenerationRequest {
-  analysisId: string
-  printerId?: string
-  filamentId?: string
-  printer?: string
-  filament?: string
-  slicer?: string
-  quality?: string
-  priority?: string
-  customSettings?: Record<string, unknown>
-  settings?: Record<string, unknown>
-}
-
-/** Analysis API */
-export const analysis = {
-  upload: (file: File, _onProgress?: (progress: number) => void) =>
-    post<AnalysisResult>('/api/v1/analysis/upload', { file })
-}
-
-/** Generation API */
-export const generation = {
-  create: (request: GenerationRequest) =>
-    post<GeneratedProfile>('/api/v1/generation', request),
-  download: (id: string) =>
-    get<{ url: string }>(`/api/v1/generation/${id}/download`)
-}
-
 export const users = {
   me: () =>
     get<User>('/api/v1/users/me'),
@@ -727,9 +588,6 @@ export const users = {
   
   update: (data: Partial<User>) =>
     patch<User>('/api/v1/users/me', data),
-  
-  history: (params?: { page?: number }) =>
-    get<GeneratedProfile[]>('/api/v1/users/me/history', { params })
 }
 
 // --- Credits / Subscription ---
@@ -1064,4 +922,3 @@ export default {
   patch,
   del
 }
-

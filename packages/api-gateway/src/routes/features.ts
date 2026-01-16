@@ -7,15 +7,38 @@
 
 import { FastifyPluginAsync } from 'fastify';
 
-// Tier hierarchy for comparison
-const TIER_ORDER: Record<string, number> = {
+type FeatureTier = 'community' | 'subscriber' | 'premium' | 'lifetime';
+
+// Tier hierarchy for comparison (feature-tier naming, not Stripe plan tiers)
+const TIER_ORDER: Record<FeatureTier, number> = {
   community: 0,
   subscriber: 1,
   premium: 2,
   lifetime: 3,
 };
 
-function tierMeetsRequirement(userTier: string, requiredTier: string): boolean {
+function normalizeFeatureTier(rawTier: string | null | undefined): FeatureTier {
+  const raw = (rawTier || '').trim().toLowerCase();
+
+  // Feature-tier names (internal + DB)
+  if (raw === 'community' || raw === 'subscriber' || raw === 'premium' || raw === 'lifetime') {
+    return raw;
+  }
+
+  // Subscription tiers (Stripe / app_users.subscription_tier)
+  if (raw === 'free') return 'community';
+  if (raw === 'maker') return 'subscriber';
+  if (raw === 'pro' || raw === 'agency') return 'premium';
+
+  // Extended / legacy tiers
+  if (raw === 'enterprise') return 'lifetime';
+  if (raw === 'unlimited') return 'premium';
+
+  // Unknown/empty defaults to community
+  return 'community';
+}
+
+function tierMeetsRequirement(userTier: FeatureTier, requiredTier: FeatureTier): boolean {
   const userLevel = TIER_ORDER[userTier] ?? 0;
   const requiredLevel = TIER_ORDER[requiredTier] ?? 0;
   return userLevel >= requiredLevel;
@@ -37,8 +60,8 @@ const featuresRoutes: FastifyPluginAsync = async (fastify) => {
       },
     },
     async (request, reply) => {
-      const user = request.user as { id: string; subscription_tier: string };
-      const userTier = user.subscription_tier || 'community';
+      const user = request.user as { id: string; subscription_tier: string | null };
+      const userTier = normalizeFeatureTier(user.subscription_tier);
 
       // Get all enabled feature flags using the new schema
       const flagsResult = await fastify.pg.query(`
@@ -50,7 +73,7 @@ const featuresRoutes: FastifyPluginAsync = async (fastify) => {
       // Build features map
       const features: Record<string, boolean> = {};
       for (const flag of flagsResult.rows) {
-        const requiredTier = flag.min_tier || 'community';
+        const requiredTier = normalizeFeatureTier(flag.min_tier);
         const hasAccess = tierMeetsRequirement(userTier, requiredTier);
         features[flag.key] = hasAccess;
       }
@@ -122,7 +145,7 @@ const featuresRoutes: FastifyPluginAsync = async (fastify) => {
           description: f.description,
           category: f.category,
           isPremium: f.is_premium,
-          minTier: f.min_tier,
+          minTier: normalizeFeatureTier(f.min_tier),
         })),
       };
     }
@@ -186,8 +209,8 @@ const featuresRoutes: FastifyPluginAsync = async (fastify) => {
     },
     async (request, reply) => {
       const { key } = request.params as { key: string };
-      const user = request.user as { id: string; subscription_tier: string };
-      const userTier = user.subscription_tier || 'community';
+      const user = request.user as { id: string; subscription_tier: string | null };
+      const userTier = normalizeFeatureTier(user.subscription_tier);
 
       const result = await fastify.pg.query(
         `
@@ -207,7 +230,7 @@ const featuresRoutes: FastifyPluginAsync = async (fastify) => {
       }
 
       const flag = result.rows[0];
-      const requiredTier = flag.min_tier || 'community';
+      const requiredTier = normalizeFeatureTier(flag.min_tier);
       const hasAccess = tierMeetsRequirement(userTier, requiredTier);
 
       return {

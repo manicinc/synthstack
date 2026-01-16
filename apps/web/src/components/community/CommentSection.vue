@@ -66,8 +66,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { PropType } from 'vue'
-import type { Comment } from '@/stores/profiles'
 import { date } from 'quasar'
+
+interface Comment {
+  id: string
+  userId?: string
+  userName: string
+  userAvatar?: string | null
+  content: string
+  createdAt: string
+}
 
 const props = defineProps({
   comments: {
@@ -90,6 +98,5 @@ const formatDate = (isoString: string) => {
   return date.formatDate(isoString, 'MMM D, YYYY')
 }
 </script>
-
 
 

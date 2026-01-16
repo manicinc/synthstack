@@ -9,10 +9,10 @@
     "pricing": "Preise",
     "dashboard": "Dashboard",
     "generate": "Generieren",
-    "printers": "Drucker",
-    "filaments": "Filamente",
-    "profiles": "Profile",
-    "myProfiles": "Meine Profile",
+    "textGeneration": "Textgenerierung",
+    "imageGeneration": "Bildgenerierung",
+    "copilot": "KI-Copilot",
+    "workflows": "Workflows",
     "history": "Verlauf",
     "account": "Konto",
     "subscription": "Abonnement",
@@ -22,12 +22,21 @@
   },
   "landing": {
     "hero": {
-      "title": "Perfekte Drucke, Jedes Mal",
-      "subtitle": "Laden Sie Ihre STL hoch. Erhalten Sie KI-optimierte Einstellungen. Exportieren Sie zu jedem Slicer.",
+      "title": "KI-gestützte Inhaltsgenerierung",
+      "subtitle": "Generieren Sie Text, Bilder und mehr mit leistungsstarker KI. Einfaches Kreditsystem.",
       "cta": "Early Bird Zugang - $149",
       "secondaryCta": "Auf GitHub ansehen",
       "promoWithStats": "Begrenzt auf {max} Lifetime-Lizenzen • {remaining} verbleibend • Sparen Sie {discount}",
-      "promoDefault": "Begrenzt auf 150 Lifetime-Lizenzen • Sparen Sie $100 (Normal $249)"
+      "promoDefault": "Begrenzt auf 150 Lifetime-Lizenzen • Sparen Sie $100 (Normal $249)",
+      "badge": {
+        "title": "Die beste Quasar UX im Web",
+        "subtitle": "Vollständiges Theming & Anpassung integriert"
+      },
+      "checkout": {
+        "access": "Sofortiger Zugang zum privaten GitHub-Repository",
+        "updates": "Lebenslange Updates",
+        "fees": "Keine monatlichen Gebühren"
+      }
     },
     "tech": {
       "label": "Gebaut mit modernen, kampferprobten Technologien"
@@ -79,7 +88,7 @@
       "pro": {
         "badge": "Am Beliebtesten",
         "name": "Pro",
-        "price": "$297",
+        "price": "$149",
         "period": "lebenslang",
         "description": "Vollständige AI Co-Founders Erfahrung",
         "features": {
@@ -142,7 +151,7 @@
         },
         "subscription": {
           "question": "Gibt es eine Abonnement-Option?",
-          "answer": "Wir bieten sowohl Lifetime ($297 einmalig) als auch monatliche Abonnement-Pläne an. Der Testmodus ermöglicht es Ihnen, alles mit $0 Gebühren auszuprobieren. Enterprise-Teams können uns für individuelle Preise kontaktieren."
+          "answer": "Wir bieten sowohl Lifetime ($149 einmalig) als auch monatliche Abonnement-Pläne an. Der Testmodus ermöglicht es Ihnen, alles mit $0 Gebühren auszuprobieren. Enterprise-Teams können uns für individuelle Preise kontaktieren."
         }
       }
     },
@@ -151,51 +160,51 @@
       "subtitle": "Full-Stack SaaS Boilerplate mit KI-Superkräften. 10x schneller ausliefern.",
       "primary": "Kostenlos Starten",
       "secondary": "Auf Pro Upgraden",
-      "note": "Kern unter Community-Lizenz · Pro: $297 lebenslang · Empfehlungsbelohnungen verfügbar"
+      "note": "Kern unter Community-Lizenz · Lifetime-Lizenz: $149 Early Bird · Cloud-Pläne ab $9.99/Monat"
     },
     "features": {
       "title": "Warum SynthStack?",
       "subtitle": "Schneller ausliefern mit KI-gestützter Entwicklung.",
-      "stlAnalysis": {
-        "title": "Intelligente STL-Analyse",
-        "description": "Unsere KI untersucht die Geometrie Ihres Modells, erkennt Überhänge, dünne Wände und optimale Druckorientierungen."
+      "textGeneration": {
+        "title": "Textgenerierung",
+        "description": "Erstellen Sie Blogposts, E-Mails, Dokumentation und mehr mit GPT-Modellen und anpassbaren Presets."
       },
-      "aiSettings": {
-        "title": "KI-generierte Einstellungen",
-        "description": "Erhalten Sie optimierte Parameter basierend auf Ihrem spezifischen Drucker, Filament und Modelleigenschaften."
+      "imageGeneration": {
+        "title": "Bildgenerierung",
+        "description": "Erstellen Sie beeindruckende Visuals mit DALL·E. Mehrere Stile, Größen und Qualitätsoptionen."
       },
-      "multiSlicer": {
+      "aiCopilot": {
+        "title": "AI Copilot",
+        "description": "Chatten Sie mit KI zum Brainstorming, für Erklärungen und zur Verbesserung Ihrer Inhalte."
+      },
+      "exportFormats": {
         "title": "Überall Exportieren",
-        "description": "Laden Sie gebrauchsfertige Profile für OrcaSlicer, PrusaSlicer, Cura und mehr herunter."
-      },
-      "community": {
-        "title": "Von der Community Validiert",
-        "description": "Teilen Sie Profile, sehen Sie Erfolgsraten und bauen Sie auf dem auf, was funktioniert."
+        "description": "Laden Sie Inhalte als Markdown, HTML, PDF oder Klartext herunter."
       }
     },
     "howItWorks": {
       "title": "Wie Es Funktioniert",
       "step1": {
-        "title": "Laden Sie Ihre STL Hoch",
-        "description": "Ziehen Sie Ihr 3D-Modell für sofortige Analyse hierher"
+        "title": "Wählen Sie den Generierungstyp",
+        "description": "Wählen Sie Text, Bild oder Chat je nach Bedarf"
       },
       "step2": {
-        "title": "Wählen Sie Ihr Setup",
-        "description": "Wählen Sie Ihren Drucker und Filament aus unserer Datenbank"
+        "title": "Wählen Sie ein Preset",
+        "description": "Wählen Sie kuratierte Presets oder passen Sie Einstellungen an"
       },
       "step3": {
-        "title": "Generieren Sie Einstellungen",
-        "description": "KI erstellt optimierte Parameter für Ihren spezifischen Druck"
+        "title": "Geben Sie Ihren Prompt ein",
+        "description": "Beschreiben Sie, was Sie generieren möchten"
       },
       "step4": {
-        "title": "Exportieren & Drucken",
-        "description": "Laden Sie für Ihren Slicer herunter und beginnen Sie zu drucken"
+        "title": "Generieren & Exportieren",
+        "description": "Erhalten Sie Ergebnisse sofort und exportieren Sie im gewünschten Format"
       }
     },
     "stats": {
-      "profiles": "Generierte Profile",
-      "printers": "Unterstützte Drucker",
-      "successRate": "Erfolgsrate"
+      "generations": "Erstellte Generationen",
+      "users": "Aktive Nutzer",
+      "satisfaction": "Zufriedenheitsrate"
     },
     "featuresGrid": {
       "badge": "Alles Was Sie Brauchen",
@@ -309,7 +318,7 @@
     },
     "register": {
       "title": "Konto Erstellen",
-      "subtitle": "Beginnen Sie Ihre Drucke zu optimieren",
+      "subtitle": "Beginnen Sie mit dem Aufbau Ihres nächsten Projekts",
       "name": "Anzeigename",
       "email": "E-Mail",
       "password": "Passwort",
@@ -341,49 +350,56 @@
     },
     "quickActions": {
       "title": "Schnellaktionen",
-      "newGeneration": "Neue Generierung",
-      "browsePrinters": "Drucker Durchsuchen",
-      "viewProfiles": "Profile Ansehen"
+      "textGeneration": "Textgenerierung",
+      "imageGeneration": "Bildgenerierung",
+      "viewWorkflows": "Workflows Ansehen"
     },
     "recentGenerations": {
       "title": "Letzte Generierungen",
-      "empty": "Noch keine Generierungen. Beginnen Sie mit dem Hochladen einer STL!"
+      "empty": "Noch keine Generierungen. Starten Sie mit Text oder Bildern!"
     }
   },
   "generate": {
-    "title": "Druckeinstellungen Generieren",
-    "upload": {
-      "title": "STL Hochladen",
-      "dragDrop": "Ziehen Sie Ihre STL-Datei hierher",
-      "or": "oder",
-      "browse": "Dateien Durchsuchen",
-      "maxSize": "Maximale Dateigröße: 50MB"
+    "title": "KI-Generierung",
+    "text": {
+      "title": "Textgenerierung",
+      "prompt": "Prompt eingeben",
+      "promptPlaceholder": "Beschreiben Sie, was Sie generieren möchten...",
+      "systemPrompt": "System-Prompt (optional)",
+      "preset": "Preset auswählen",
+      "model": "Modell",
+      "maxTokens": "Max. Tokens",
+      "temperature": "Temperatur",
+      "generate": "Generieren",
+      "generating": "Wird generiert..."
     },
-    "analysis": {
-      "title": "Modellanalyse",
-      "dimensions": "Abmessungen",
-      "volume": "Volumen",
-      "faces": "Flächen",
-      "overhangs": "Überhänge",
-      "thinWalls": "Dünne Wände",
-      "difficulty": "Druckschwierigkeit"
-    },
-    "settings": {
-      "title": "Einstellungen",
-      "printer": "Drucker Auswählen",
-      "filament": "Filament Auswählen",
-      "quality": "Qualitätsvoreinstellung",
-      "priorities": "Prioritäten",
-      "speed": "Geschwindigkeit",
-      "strength": "Festigkeit",
-      "material": "Materialverbrauch"
+    "image": {
+      "title": "Bildgenerierung",
+      "prompt": "Beschreiben Sie Ihr Bild",
+      "promptPlaceholder": "Eine futuristische Stadt bei Sonnenuntergang...",
+      "style": "Stil-Preset",
+      "size": "Größe",
+      "quality": "Qualität",
+      "generate": "Generieren",
+      "generating": "Wird generiert..."
     },
     "result": {
-      "title": "Generierte Einstellungen",
-      "confidence": "Zuverlässigkeit",
+      "title": "Generierter Inhalt",
       "export": "Exportieren",
-      "save": "Profil Speichern",
-      "regenerate": "Neu Generieren"
+      "copy": "Kopieren",
+      "download": "Herunterladen",
+      "regenerate": "Erneut generieren",
+      "creditsUsed": "Verbrauchte Credits"
+    },
+    "presets": {
+      "blogPost": "Blogpost",
+      "emailDraft": "E-Mail-Entwurf",
+      "codeDocs": "Code-Dokumentation",
+      "creativeStory": "Kreative Geschichte",
+      "productDesc": "Produktbeschreibung",
+      "meetingSummary": "Meeting-Zusammenfassung",
+      "technicalExplanation": "Technische Erklärung",
+      "socialMedia": "Social-Media-Post"
     }
   },
   "pricing": {

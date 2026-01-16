@@ -708,6 +708,6 @@ async function handleCustomerUpdate(fastify: FastifyInstance, customer: Stripe.C
 // ============================================
 
 function getTierRank(tier: SubscriptionTier): number {
-  const ranks: Record<SubscriptionTier, number> = { free: 0, maker: 1, pro: 2, agency: 3, unlimited: 4 };
+  const ranks: Record<SubscriptionTier, number> = { free: 0, maker: 1, pro: 2, agency: 3 };
   return ranks[tier] ?? 0;
 }

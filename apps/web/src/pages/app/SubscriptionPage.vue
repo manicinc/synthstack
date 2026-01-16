@@ -189,7 +189,7 @@ const currentPlan = ref({
   id: 'pro',
   name: 'PRO',
   displayName: 'Pro Plan',
-  description: 'Perfect for enthusiasts and professionals',
+  description: 'For growing teams building with SynthStack',
   price: 19,
   limits: {
     generations: 100,
@@ -221,9 +221,9 @@ const plans = ref([
     description: 'Get started with basic features',
     popular: false,
     features: [
-      '10 generations/month',
-      '20 downloads/month',
-      'Basic slicers',
+      'Daily AI credits',
+      'Public docs + templates',
+      'Single workspace',
       'Community support'
     ]
   },
@@ -231,15 +231,15 @@ const plans = ref([
     id: 'pro',
     displayName: 'Pro',
     price: 19,
-    description: 'Perfect for enthusiasts',
+    description: 'For serious builders',
     popular: true,
     features: [
-      '100 generations/month',
-      'Unlimited downloads',
-      'All slicers',
+      'Higher daily credits',
+      'AI agents + Strategy Debates',
+      'RAG Copilot (knowledge base)',
+      'API access',
       'Priority support',
-      'Advanced settings',
-      'Profile sharing'
+      'Team collaboration'
     ]
   },
   {
@@ -249,8 +249,7 @@ const plans = ref([
     description: 'For teams and businesses',
     popular: false,
     features: [
-      'Unlimited generations',
-      'Unlimited everything',
+      'Custom limits',
       'API access',
       'Dedicated support',
       'Custom integrations',

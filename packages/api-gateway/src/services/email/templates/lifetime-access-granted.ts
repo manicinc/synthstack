@@ -14,7 +14,7 @@ export const lifetimeAccessGrantedTemplate = (data: {
         <p style="font-size: 18px; color: #333;">Your GitHub access is now active</p>
       </div>
 
-      <div style="background: #6366F1; color: white; padding: 25px; border-radius: 8px; margin: 30px 0;">
+      <div style="background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); color: white; padding: 25px; border-radius: 8px; margin: 30px 0;">
         <h2 style="margin-top: 0;">🎯 Get Started in 3 Steps:</h2>
 
         <div style="margin: 20px 0;">

@@ -102,8 +102,8 @@ Types:
 
 Examples:
 ```
-feat(generate): add support for Bambu Studio export
-fix(stl-viewer): resolve memory leak on unmount
+feat(onboarding): add env template export
+fix(auth): handle refresh token rotation
 docs(readme): update installation instructions
 ```
 
@@ -155,13 +155,13 @@ Add JSDoc comments to all components:
 ```vue
 <script setup lang="ts">
 /**
- * PrinterSelector.vue
+ * PresetSelector.vue
  * 
- * A searchable dropdown for selecting printers from the database.
- * Automatically syncs selection with the printers store.
+ * A searchable dropdown for selecting presets from the CMS.
+ * Automatically syncs selection with the presets store.
  * 
  * @example
- * <PrinterSelector v-model="selectedId" />
+ * <PresetSelector v-model="selectedId" />
  * 
  * @component
  */
@@ -174,13 +174,13 @@ Document all public functions:
 
 ```typescript
 /**
- * Fetches printer data from the API
+ * Fetches preset data from the API
  * 
- * @param id - The printer ID to fetch
- * @returns The printer data or null if not found
+ * @param id - The preset ID to fetch
+ * @returns The preset data or null if not found
  * @throws {ApiError} If the request fails
  */
-async function fetchPrinter(id: string): Promise<Printer | null> {
+async function fetchPreset(id: string): Promise<Preset | null> {
   // Implementation
 }
 ```
@@ -198,6 +198,5 @@ Major architectural decisions should be documented in `docs/adr/` (Architecture 
 ## License
 
 By contributing, you agree that your contributions will be licensed under the project's dual-license terms (Community License / Commercial License). See `LICENSE` and `COMMERCIAL-LICENSE.md` in the repository root.
-
 
 

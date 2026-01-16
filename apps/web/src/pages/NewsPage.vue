@@ -94,48 +94,48 @@ const totalPages = 3
 const news = ref([
   {
     id: 1,
-    month: 'Dec',
-    day: '04',
-    year: '2024',
+    month: 'Jan',
+    day: '13',
+    year: '2026',
     type: 'Feature',
-    title: 'Introducing AI Support Analysis',
-    description: 'Our new AI-powered feature automatically detects overhangs and recommends optimal support settings for your models.'
+    title: 'Strategy Debates (Multi‑Agent Roundtable) is live',
+    description: 'Run structured multi-agent debates and generate board-ready Decision Briefs with streaming progress and exports.'
   },
   {
     id: 2,
-    month: 'Nov',
-    day: '28',
-    year: '2024',
+    month: 'Jan',
+    day: '12',
+    year: '2026',
     type: 'Update',
-    title: 'Database Update: 50 New Printers Added',
-    description: 'We\'ve expanded our printer database with the latest models from Creality, Elegoo, and Anycubic.'
+    title: 'New setup wizards: Branding + Environment',
+    description: 'Generate a complete config.json and production-ready .env files from templates in minutes—no guessing required.'
   },
   {
     id: 3,
-    month: 'Nov',
+    month: 'Dec',
     day: '20',
-    year: '2024',
+    year: '2025',
     type: 'Feature',
-    title: 'OrcaSlicer Export Now Available',
-    description: 'Export your generated profiles directly to OrcaSlicer format, joining Cura, PrusaSlicer, and Bambu Studio.'
+    title: 'Post-checkout onboarding for Lifetime license buyers',
+    description: 'Submit your GitHub username and get repo access via an automated invite flow with verification and next steps.'
   },
   {
     id: 4,
-    month: 'Nov',
-    day: '15',
-    year: '2024',
-    type: 'Announcement',
-    title: 'SynthStack Beta is Live!',
-    description: 'After months of development and testing, we\'re excited to open SynthStack to everyone. Generate your first profile today!'
+    month: 'Dec',
+    day: '05',
+    year: '2025',
+    type: 'Feature',
+    title: 'Workflows & automation improvements',
+    description: 'Build repeatable automations and agent-driven workflows with better defaults, clearer limits, and safer execution.'
   },
   {
     id: 5,
     month: 'Nov',
-    day: '01',
-    year: '2024',
+    day: '18',
+    year: '2025',
     type: 'Update',
-    title: 'Performance Improvements',
-    description: 'Profile generation is now 2x faster with improved ML model inference and optimized backend infrastructure.'
+    title: 'Billing + credits polish',
+    description: 'Cleaner checkout flows, clearer credit usage, and improved customer portal navigation.'
   }
 ])
 

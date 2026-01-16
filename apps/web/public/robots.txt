@@ -12,12 +12,10 @@ Allow: /about
 Allow: /contact
 Allow: /blog
 Allow: /blog/*
-Allow: /printers
-Allow: /printers/*
-Allow: /filaments
-Allow: /filaments/*
-Allow: /profiles
-Allow: /profiles/*
+Allow: /docs
+Allow: /docs/*
+Allow: /setup
+Allow: /setup/*
 
 # Disallow private/authenticated areas
 Disallow: /app/
@@ -69,7 +67,6 @@ Disallow: /
 
 User-agent: Claude-Web
 Disallow: /
-
 
 
 

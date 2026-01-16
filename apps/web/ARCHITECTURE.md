@@ -32,15 +32,22 @@ See [Frontend Framework Choices](../../docs/FRONTEND_FRAMEWORK_CHOICES.md) for a
 ```
 apps/web/src/
 ├── boot/                 # Quasar boot files (plugins, initialization)
+│   ├── analytics.ts     # Analytics + events
+│   ├── feature-flags.ts # Feature gating
 │   ├── i18n.ts          # Internationalization setup
 │   ├── pinia.ts         # State management setup
+│   ├── sentry.ts        # Error monitoring
 │   ├── supabase.ts      # Auth client initialization
 │   └── theme.ts         # Theme management
 ├── components/          # Reusable Vue components
-│   ├── cards/          # Card components (ProfileCard, etc.)
-│   ├── community/      # Community features (VoteButtons, CommentSection)
-│   ├── forms/          # Form components (PrinterSelector, etc.)
-│   └── stl/            # STL viewer components
+│   ├── branding/       # Branding + theming UI
+│   ├── community/      # Community UI (comments, uploads)
+│   ├── landing/        # Landing page sections
+│   ├── modals/         # Global dialogs
+│   ├── projects/       # Project management UI
+│   ├── setup/          # Setup wizards (.env, branding)
+│   ├── ui/             # Design system primitives
+│   └── workflows/      # Workflow builder UI
 ├── composables/         # Vue composition functions
 │   ├── useApi.ts       # API client wrapper
 │   ├── useBreakpoint.ts # Responsive breakpoints
@@ -65,10 +72,10 @@ apps/web/src/
 │   └── routes.ts      # Route definitions
 ├── stores/             # Pinia stores
 │   ├── auth.ts        # Authentication state
-│   ├── filaments.ts   # Filaments data
-│   ├── history.ts     # Generation history
-│   ├── printers.ts    # Printers data
-│   ├── profiles.ts    # Community profiles
+│   ├── credits.ts     # Credits + usage
+│   ├── features.ts    # Feature gating
+│   ├── projects.ts    # Project management
+│   ├── workflows.ts   # Workflow builder state
 │   └── theme.ts       # Theme preferences
 └── types/              # TypeScript type definitions
 ```
@@ -213,14 +220,14 @@ onMounted(() => { ... })
 Located alongside source files with `.spec.ts` extension:
 
 ```typescript
-// stores/printers.spec.ts
+// stores/projects.spec.ts
 import { describe, it, expect } from 'vitest'
-import { usePrintersStore } from './printers'
+import { useProjectsStore } from './projects'
 
-describe('Printers Store', () => {
-  it('initializes with default printers', () => {
-    const store = usePrintersStore()
-    expect(store.printers.length).toBeGreaterThan(0)
+describe('Projects Store', () => {
+  it('initializes with an empty list', () => {
+    const store = useProjectsStore()
+    expect(store.projects.length).toBe(0)
   })
 })
 ```
@@ -262,7 +269,6 @@ pnpm --filter @synthstack/web test:watch
 ## Contributing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup and contribution guidelines.
-
 
 
 

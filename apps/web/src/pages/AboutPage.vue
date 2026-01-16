@@ -11,7 +11,7 @@
             mode: 'popover'
           }) : undefined"
         >
-          {{ page?.title || 'About SynthStack' }}
+          {{ page?.title || `About ${branding.name}` }}
         </h1>
         <p
           :data-directus="page ? editableAttr({
@@ -21,7 +21,7 @@
             mode: 'popover'
           }) : undefined"
         >
-          {{ page?.description || 'Building the future of AI-powered development.' }}
+          {{ page?.description || branding.description }}
         </p>
       </div>
     </section>
@@ -32,9 +32,9 @@
         <div class="catalog-copy">
           <h2>Public Catalog</h2>
           <p>
-            We maintain a public catalog of community models, ready-to-use generation presets,
-            and scraped printer/filament specs. It keeps our recommendations transparent and
-            makes it easy to jump into the generator with trusted starting points.
+            We maintain a public catalog of templates, workflow presets, and community resources.
+            It keeps examples transparent and makes it easy to jump into SynthStack with trusted
+            starting points.
           </p>
           <div class="catalog-actions">
             <q-btn
@@ -54,8 +54,8 @@
           <div class="badge">
             Open data
           </div>
-          <h3>Models, presets, specs</h3>
-          <p>CC-licensed where possible. Directus/Supabase ready for enterprise.</p>
+          <h3>Templates, presets, examples</h3>
+          <p>Curated building blocks you can adapt to your own product.</p>
         </div>
       </div>
     </section>
@@ -67,15 +67,14 @@
           <div class="mission-text">
             <h2>Our Mission</h2>
             <p>
-              We believe every maker deserves perfect prints without the frustration
-              of endless calibration and failed attempts. SynthStack uses cutting-edge
-              AI to analyze your models and generate optimized slicer profiles that
-              work the first time.
+              We believe every builder deserves leverage — without weeks of wiring up the same
+              integrations, billing, and AI scaffolding. SynthStack helps teams ship AI-native
+              SaaS faster with a proven cross-platform foundation and deeply integrated agents.
             </p>
             <p>
-              Founded in 2024 by a team of 3D printing enthusiasts and machine learning
-              engineers, we've helped generate over 50,000 successful print profiles
-              for makers around the world.
+              Founded in 2024 by a team of product engineers and AI practitioners, SynthStack is
+              designed to be rebranded, extended, and deployed anywhere — from side projects to
+              client work to production SaaS.
             </p>
           </div>
           <div class="mission-image">
@@ -102,7 +101,7 @@
               <q-icon name="auto_awesome" />
             </div>
             <h3>Innovation First</h3>
-            <p>We push the boundaries of what's possible with AI-powered print optimization.</p>
+            <p>We push the boundaries of what's possible with agentic, AI-first product development.</p>
           </div>
           <div class="value-card">
             <div class="value-icon">
@@ -123,7 +122,7 @@
               <q-icon name="all_inclusive" />
             </div>
             <h3>Accessibility</h3>
-            <p>3D printing should be for everyone, not just experts. We lower the barrier.</p>
+            <p>AI development should be for everyone, not just experts. We lower the barrier.</p>
           </div>
         </div>
       </div>
@@ -166,12 +165,12 @@
           <div class="team-member">
             <div class="member-avatar">
               <q-icon
-                name="print"
+                name="psychology"
                 size="48px"
               />
             </div>
-            <h4>3D Printing Experts</h4>
-            <p>Makers with years of hands-on experience and knowledge</p>
+            <h4>AI + Product</h4>
+            <p>Builders focused on agentic UX, RAG, automation, and shipping real products</p>
           </div>
         </div>
       </div>
@@ -182,20 +181,20 @@
       <div class="section-container">
         <div class="stats-grid">
           <div class="stat">
-            <span class="stat-value">50K+</span>
-            <span class="stat-label">Profiles Generated</span>
+            <span class="stat-value">5</span>
+            <span class="stat-label">Platforms shipped</span>
           </div>
           <div class="stat">
-            <span class="stat-value">300+</span>
-            <span class="stat-label">Supported Printers</span>
+            <span class="stat-value">6</span>
+            <span class="stat-label">AI co-founders</span>
           </div>
           <div class="stat">
-            <span class="stat-value">500+</span>
-            <span class="stat-label">Filaments Database</span>
+            <span class="stat-value">3</span>
+            <span class="stat-label">Backend options</span>
           </div>
           <div class="stat">
-            <span class="stat-value">85%</span>
-            <span class="stat-label">First-Print Success</span>
+            <span class="stat-value">1500+</span>
+            <span class="stat-label">Tests included</span>
           </div>
         </div>
       </div>
@@ -228,6 +227,7 @@
 import { ref, onMounted } from 'vue'
 import { usePages, type Page } from '@/composables/usePages'
 import { useVisualEditing } from '@/composables/useVisualEditing'
+import { branding } from '@/config/branding'
 
 const { fetchPage } = usePages()
 const { editableAttr } = useVisualEditing()

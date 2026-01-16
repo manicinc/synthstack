@@ -222,7 +222,7 @@ function getTierFromPriceId(priceId: string): string {
   if (priceId === config.stripe.prices.maker) return 'maker';
   if (priceId === config.stripe.prices.pro) return 'pro';
   if (priceId === config.stripe.prices.agency) return 'agency';
-  if (priceId === (config.stripe.prices as any).unlimited) return 'unlimited';
+  // Legacy: old installs may still have an "unlimited" Stripe price. Treat as Agency.
+  if (priceId === process.env.STRIPE_PRICE_UNLIMITED || priceId === process.env.STRIPE_PRICE_UNLIMITED_YEARLY) return 'agency';
   return 'free';
 }
-

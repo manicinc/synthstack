@@ -288,8 +288,8 @@
   100% { transform: translateX(100%); }
 }
 
-// 3D Printing Themed Animations
-@keyframes printLayer {
+// Layered UI Animations
+@keyframes revealVertical {
   0% {
     height: 0;
     opacity: 0;
@@ -303,7 +303,7 @@
   }
 }
 
-@keyframes nozzleMove {
+@keyframes sweepPath {
   0% { transform: translateX(0); }
   25% { transform: translateX(100%); }
   50% { transform: translateX(100%) translateY(10px); }
@@ -311,12 +311,12 @@
   100% { transform: translateX(0) translateY(20px); }
 }
 
-@keyframes extrudeFilament {
+@keyframes drawStroke {
   0% { stroke-dashoffset: 100; }
   100% { stroke-dashoffset: 0; }
 }
 
-@keyframes layerStack {
+@keyframes stackReveal {
   0% {
     transform: translateY(20px) scaleY(0);
     opacity: 0;
@@ -421,8 +421,8 @@
   background-size: 200% 100%;
 }
 
-// 3D Print Animations
-.animate-print-layer { animation: layerStack 0.3s var(--ease-out) forwards; }
+// Layered Animations
+.animate-stack-reveal { animation: stackReveal 0.3s var(--ease-out) forwards; }
 
 // Delay Utilities
 .delay-75 { animation-delay: 75ms; }

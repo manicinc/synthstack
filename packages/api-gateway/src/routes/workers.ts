@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { TIER_CONFIG, SubscriptionTier } from '../services/stripe.js';
+import { TIER_CONFIG } from '../services/stripe.js';
 
 export default async function workerRoutes(fastify: FastifyInstance) {
   const verifyWorkerAuth = async (request: any, reply: any) => {
@@ -11,10 +11,16 @@ export default async function workerRoutes(fastify: FastifyInstance) {
   };
 
   fastify.post('/reset-credits', { preHandler: [verifyWorkerAuth], schema: { tags: ['Workers'] } }, async (request, reply) => {
-    const results = { free: 0, maker: 0, pro: 0, unlimited: 0, total: 0, errors: 0 };
+    const results = { free: 0, maker: 0, pro: 0, agency: 0, total: 0, errors: 0 };
     for (const [tier, config] of Object.entries(TIER_CONFIG)) {
       const creditsToGrant = config.creditsPerDay === Infinity ? 999999 : config.creditsPerDay;
-      const usersResult = await fastify.pg.query('SELECT id, credits_remaining FROM app_users WHERE subscription_tier = $1 AND subscription_status = $2 AND (credits_reset_at IS NULL OR credits_reset_at < DATE_TRUNC($3, NOW()))', [tier, 'active', 'day']);
+      const usersResult = await fastify.pg.query(
+        `SELECT id, credits_remaining FROM app_users
+         WHERE (subscription_tier = $1 OR ($1 = 'agency' AND subscription_tier = 'unlimited'))
+           AND subscription_status = $2
+           AND (credits_reset_at IS NULL OR credits_reset_at < DATE_TRUNC($3, NOW()))`,
+        [tier, 'active', 'day']
+      );
       for (const user of usersResult.rows) {
         try {
           await fastify.pg.query('UPDATE app_users SET credits_remaining = $1, credits_reset_at = NOW() WHERE id = $2', [creditsToGrant, user.id]);

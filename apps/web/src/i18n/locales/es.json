@@ -7,12 +7,28 @@
     "home": "Inicio",
     "features": "Características",
     "pricing": "Precios",
+    "docs": "Docs",
+    "resources": "Recursos",
+    "documentation": "Documentación",
+    "blog": "Blog",
+    "community": "Comunidad",
+    "about": "Nosotros",
+    "contact": "Contacto",
+    "github": "GitHub",
+    "discord": "Discord",
+    "examples": "Ejemplos",
+    "admin": "Admin",
+    "adminPanel": "Panel de Admin",
+    "menu": "Menú",
+    "signIn": "Iniciar Sesión",
+    "getStarted": "Comenzar",
+    "getStartedFree": "Comenzar Gratis",
     "dashboard": "Panel",
     "generate": "Generar",
-    "printers": "Impresoras",
-    "filaments": "Filamentos",
-    "profiles": "Perfiles",
-    "myProfiles": "Mis Perfiles",
+    "textGeneration": "Generación de Texto",
+    "imageGeneration": "Generación de Imágenes",
+    "copilot": "Copiloto IA",
+    "workflows": "Flujos de Trabajo",
     "history": "Historial",
     "account": "Cuenta",
     "subscription": "Suscripción",
@@ -22,12 +38,21 @@
   },
   "landing": {
     "hero": {
-      "title": "Impresiones Perfectas, Siempre",
-      "subtitle": "Sube tu STL. Obtén configuraciones optimizadas por IA. Exporta a cualquier slicer.",
+      "title": "Generación de Contenido con IA",
+      "subtitle": "Genera texto, imágenes y más con IA potente. Sistema simple basado en créditos.",
       "cta": "Acceso Early Bird - $149",
       "secondaryCta": "Ver en GitHub",
       "promoWithStats": "Limitado a {max} licencias de por vida • {remaining} restantes • Ahorra {discount}",
-      "promoDefault": "Limitado a 150 licencias de por vida • Ahorra $100 (Regular $249)"
+      "promoDefault": "Limitado a 150 licencias de por vida • Ahorra $100 (Regular $249)",
+      "badge": {
+        "title": "La Mejor UX de Quasar en la Web",
+        "subtitle": "Sistema de Temas y Personalización Completo"
+      },
+      "checkout": {
+        "access": "Acceso instantáneo al repositorio privado de GitHub",
+        "updates": "Actualizaciones de por vida",
+        "fees": "Sin cuotas mensuales"
+      }
     },
     "tech": {
       "label": "Construido con tecnologías modernas y probadas en batalla"
@@ -79,7 +104,7 @@
       "pro": {
         "badge": "Más Popular",
         "name": "Pro",
-        "price": "$297",
+        "price": "$149",
         "period": "de por vida",
         "description": "Experiencia completa AI Co-Founders",
         "features": {
@@ -88,6 +113,7 @@
           "github": "Automatización de PR en GitHub",
           "suggestions": "Sugerencias proactivas",
           "rag": "Base de conocimientos RAG",
+          "seoAudit": "Auditoría y optimización SEO con IA",
           "templates": "Todas las plantillas de prompts",
           "support": "Soporte prioritario",
           "updates": "Actualizaciones de por vida"
@@ -107,7 +133,9 @@
           "sla": "Garantías SLA",
           "onPremise": "Despliegue on-premise",
           "integrations": "Integraciones personalizadas",
-          "teamTraining": "Capacitación del equipo"
+          "teamTraining": "Capacitación del equipo",
+          "customAgents": "Agentes de IA personalizados",
+          "deployment": "Despliegue dedicado"
         },
         "cta": "Contactar Ventas"
       }
@@ -142,7 +170,11 @@
         },
         "subscription": {
           "question": "¿Hay opción de suscripción?",
-          "answer": "Ofrecemos planes de por vida ($297 único) y suscripción mensual. El modo de prueba te permite probar todo con $0 de cargos. Equipos empresariales pueden contactarnos para precios personalizados."
+          "answer": "Ofrecemos planes de por vida ($149 único) y suscripción mensual. El modo de prueba te permite probar todo con $0 de cargos. Equipos empresariales pueden contactarnos para precios personalizados."
+        },
+        "byok": {
+          "question": "¿Qué es BYOK (Trae Tus Propias Claves)?",
+          "answer": "BYOK permite a usuarios Premium y de por vida usar sus propias claves API de OpenAI y Anthropic en lugar de consumir créditos de SynthStack. Esto puede ahorrar dinero a escala, evitar límites de tasa y proporcionar uso ilimitado de IA. Tus claves se cifran y almacenan de forma segura."
         }
       }
     },
@@ -151,51 +183,51 @@
       "subtitle": "Boilerplate SaaS full-stack con superpoderes de IA. Lanza 10x más rápido.",
       "primary": "Comenzar Gratis",
       "secondary": "Actualizar a Pro",
-      "note": "Núcleo bajo Licencia Comunitaria · Pro: $297 de por vida · Recompensas por referidos disponibles"
+      "note": "Núcleo bajo Licencia Comunitaria · Licencia de por vida: $149 Early Bird · Planes cloud desde $9.99/mes"
     },
     "features": {
       "title": "¿Por Qué SynthStack?",
       "subtitle": "Lanza más rápido con desarrollo impulsado por IA.",
-      "stlAnalysis": {
-        "title": "Análisis Inteligente de STL",
-        "description": "Nuestra IA examina la geometría de tu modelo, detectando voladizos, paredes delgadas y orientaciones óptimas de impresión."
+      "textGeneration": {
+        "title": "Generación de Texto",
+        "description": "Genera posts, emails, documentación y más usando modelos GPT con presets personalizables."
       },
-      "aiSettings": {
-        "title": "Configuraciones Generadas por IA",
-        "description": "Obtén parámetros optimizados basados en tu impresora, filamento y características específicas del modelo."
+      "imageGeneration": {
+        "title": "Generación de Imágenes",
+        "description": "Crea visuales increíbles con DALL·E. Múltiples estilos, tamaños y opciones de calidad."
       },
-      "multiSlicer": {
+      "aiCopilot": {
+        "title": "AI Copilot",
+        "description": "Chatea con IA para idear, obtener explicaciones y mejorar tu contenido."
+      },
+      "exportFormats": {
         "title": "Exporta a Cualquier Lugar",
-        "description": "Descarga perfiles listos para usar en OrcaSlicer, PrusaSlicer, Cura y más."
-      },
-      "community": {
-        "title": "Validado por la Comunidad",
-        "description": "Comparte perfiles, ve tasas de éxito y construye sobre lo que funciona."
+        "description": "Descarga el contenido como Markdown, HTML, PDF o texto plano."
       }
     },
     "howItWorks": {
       "title": "Cómo Funciona",
       "step1": {
-        "title": "Sube Tu STL",
-        "description": "Arrastra y suelta tu modelo 3D para análisis instantáneo"
+        "title": "Elige el Tipo de Generación",
+        "description": "Selecciona texto, imagen o chat según tus necesidades"
       },
       "step2": {
-        "title": "Selecciona Tu Configuración",
-        "description": "Elige tu impresora y filamento de nuestra base de datos"
+        "title": "Selecciona un Preset",
+        "description": "Elige presets curados o personaliza los ajustes"
       },
       "step3": {
-        "title": "Genera Configuraciones",
-        "description": "La IA crea parámetros optimizados para tu impresión específica"
+        "title": "Escribe tu Prompt",
+        "description": "Describe lo que quieres generar"
       },
       "step4": {
-        "title": "Exporta e Imprime",
-        "description": "Descarga para tu slicer y comienza a imprimir"
+        "title": "Genera y Exporta",
+        "description": "Obtén resultados al instante y exporta en tu formato preferido"
       }
     },
     "stats": {
-      "profiles": "Perfiles Generados",
-      "printers": "Impresoras Soportadas",
-      "successRate": "Tasa de Éxito"
+      "generations": "Generaciones Creadas",
+      "users": "Usuarios Activos",
+      "satisfaction": "Tasa de Satisfacción"
     },
     "featuresGrid": {
       "badge": "Todo lo que Necesitas",
@@ -309,7 +341,7 @@
     },
     "register": {
       "title": "Crear Cuenta",
-      "subtitle": "Comienza a optimizar tus impresiones",
+      "subtitle": "Empieza a construir tu próximo proyecto",
       "name": "Nombre para Mostrar",
       "email": "Correo Electrónico",
       "password": "Contraseña",
@@ -341,49 +373,56 @@
     },
     "quickActions": {
       "title": "Acciones Rápidas",
-      "newGeneration": "Nueva Generación",
-      "browsePrinters": "Explorar Impresoras",
-      "viewProfiles": "Ver Perfiles"
+      "textGeneration": "Generación de Texto",
+      "imageGeneration": "Generación de Imágenes",
+      "viewWorkflows": "Ver Workflows"
     },
     "recentGenerations": {
       "title": "Generaciones Recientes",
-      "empty": "Sin generaciones aún. ¡Comienza subiendo un STL!"
+      "empty": "Sin generaciones aún. ¡Comienza creando texto o imágenes!"
     }
   },
   "generate": {
-    "title": "Generar Configuraciones de Impresión",
-    "upload": {
-      "title": "Subir STL",
-      "dragDrop": "Arrastra y suelta tu archivo STL aquí",
-      "or": "o",
-      "browse": "Explorar Archivos",
-      "maxSize": "Tamaño máximo: 50MB"
+    "title": "Generación con IA",
+    "text": {
+      "title": "Generación de Texto",
+      "prompt": "Introduce tu prompt",
+      "promptPlaceholder": "Describe lo que quieres generar...",
+      "systemPrompt": "Prompt del Sistema (opcional)",
+      "preset": "Seleccionar Preset",
+      "model": "Modelo",
+      "maxTokens": "Máx. Tokens",
+      "temperature": "Temperatura",
+      "generate": "Generar",
+      "generating": "Generando..."
     },
-    "analysis": {
-      "title": "Análisis del Modelo",
-      "dimensions": "Dimensiones",
-      "volume": "Volumen",
-      "faces": "Caras",
-      "overhangs": "Voladizos",
-      "thinWalls": "Paredes Delgadas",
-      "difficulty": "Dificultad de Impresión"
-    },
-    "settings": {
-      "title": "Configuraciones",
-      "printer": "Seleccionar Impresora",
-      "filament": "Seleccionar Filamento",
-      "quality": "Preset de Calidad",
-      "priorities": "Prioridades",
-      "speed": "Velocidad",
-      "strength": "Resistencia",
-      "material": "Uso de Material"
+    "image": {
+      "title": "Generación de Imágenes",
+      "prompt": "Describe tu imagen",
+      "promptPlaceholder": "Una ciudad futurista al atardecer...",
+      "style": "Preset de Estilo",
+      "size": "Tamaño",
+      "quality": "Calidad",
+      "generate": "Generar",
+      "generating": "Generando..."
     },
     "result": {
-      "title": "Configuraciones Generadas",
-      "confidence": "Confianza",
+      "title": "Contenido Generado",
       "export": "Exportar",
-      "save": "Guardar Perfil",
-      "regenerate": "Regenerar"
+      "copy": "Copiar",
+      "download": "Descargar",
+      "regenerate": "Regenerar",
+      "creditsUsed": "Créditos Usados"
+    },
+    "presets": {
+      "blogPost": "Publicación de Blog",
+      "emailDraft": "Borrador de Email",
+      "codeDocs": "Documentación de Código",
+      "creativeStory": "Historia Creativa",
+      "productDesc": "Descripción de Producto",
+      "meetingSummary": "Resumen de Reunión",
+      "technicalExplanation": "Explicación Técnica",
+      "socialMedia": "Post para Redes Sociales"
     }
   },
   "pricing": {

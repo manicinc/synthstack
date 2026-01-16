@@ -739,7 +739,7 @@ async function addTeamMember() {
   // Check if user exists in the system
   checkingUser.value = true
   try {
-    const response = await fetch(`/api/v1/profiles/check?email=${encodeURIComponent(newMemberEmail.value)}`)
+    const response = await fetch(`/api/v1/users/check?email=${encodeURIComponent(newMemberEmail.value)}`)
     const data = await response.json()
 
     if (data.exists) {

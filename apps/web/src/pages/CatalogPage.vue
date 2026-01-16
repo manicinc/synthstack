@@ -5,10 +5,10 @@
         <p class="eyebrow">
           Open Catalog
         </p>
-        <h1 data-testid="catalog-title">Public presets, models, and scraped data in one place.</h1>
+        <h1 data-testid="catalog-title">Public templates, presets, and resources in one place.</h1>
         <p class="lede">
-          Browse community models, ready-to-use generation presets, and our scraped printer/filament data.
-          Everything is tagged, licensed, and ready to drop into your next print.
+          Browse community templates, ready-to-use presets, and curated reference data.
+          Everything is tagged, licensed, and ready to drop into your next project.
         </p>
         <div class="hero-actions">
           <q-btn
@@ -46,10 +46,10 @@
               Preset
             </div>
             <div class="stack-title">
-              PETG Tough Parts
+              Stripe Billing Starter
             </div>
             <div class="stack-meta">
-              PrusaSlicer • MK4 • PETG
+              Stripe • Webhooks • Customer portal
             </div>
           </div>
           <div class="stack-card secondary">
@@ -57,21 +57,21 @@
               Community
             </div>
             <div class="stack-title">
-              Articulated Dragon
+              Landing Page Pack
             </div>
             <div class="stack-meta">
-              CC-BY-SA • 890 downloads
+              MIT • 890 downloads
             </div>
           </div>
           <div class="stack-card tertiary">
             <div class="stack-badge">
-              Scraped
+              Reference
             </div>
             <div class="stack-title">
-              Bambu P1P
+              Supabase Auth
             </div>
             <div class="stack-meta">
-              Build: 256×256×256
+              OAuth • RLS • JWT
             </div>
           </div>
         </div>
@@ -97,7 +97,7 @@
           standout="bg-secondary text-white"
           dense
           clearable
-          placeholder="Search titles, tags, printers…"
+          placeholder="Search titles, tags, templates…"
           class="filter-input"
           filled
           data-testid="catalog-search"
@@ -231,8 +231,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useCommunityStore } from '@/stores/community'
-// import { usePrintersStore } from '@/stores/printers' // Removed in migration 026
-// import { useFilamentsStore } from '@/stores/filaments' // Removed in migration 026
 import { useSeo } from '@/composables/useSeo'
 
 type SourceType = 'community' | 'preset' | 'scraped'
@@ -254,13 +252,11 @@ interface CatalogItem {
 
 const { setPageSeo } = useSeo()
 setPageSeo({
-  title: 'Public Catalog - Models, Presets, Scraped Data',
-  description: 'Browse community models, ready-to-use presets, and scraped printer/filament data in one catalog.'
+  title: 'Public Catalog - Templates, Presets, Resources',
+  description: 'Browse community templates, ready-to-use presets, and curated reference resources in one catalog.'
 })
 
 const communityStore = useCommunityStore()
-// const printersStore = usePrintersStore() // Removed in migration 026
-// const filamentsStore = useFilamentsStore() // Removed in migration 026
 
 const activeTab = ref<'models' | 'configs' | 'scraped'>('models')
 const search = ref('')
@@ -269,31 +265,31 @@ const sourceFilter = ref<'all' | SourceType>('all')
 
 const presetConfigs = ref<CatalogItem[]>([
   {
-    id: 'preset-fast-pla',
-    title: 'PLA Rapid Draft',
-    subtitle: 'Bambu P1P • OrcaSlicer • Speed mode',
-    license: 'CC-BY',
+    id: 'preset-stripe-billing',
+    title: 'Stripe Billing Starter',
+    subtitle: 'Subscriptions • Webhooks • Customer portal',
+    license: 'MIT',
     source: 'preset',
-    href: '/app',
-    tags: ['draft', 'speed', '0.28mm']
+    href: '/docs',
+    tags: ['billing', 'stripe', 'saas']
   },
   {
-    id: 'preset-quality-petg',
-    title: 'PETG Tough Parts',
-    subtitle: 'Prusa MK4 • PrusaSlicer • Strength focused',
-    license: 'CC-BY-SA',
+    id: 'preset-directus-cms',
+    title: 'Directus CMS Content Model',
+    subtitle: 'Pages • Blog • Visual editing',
+    license: 'MIT',
     source: 'preset',
-    href: '/app',
-    tags: ['strength', '0.2mm', 'PETG']
+    href: '/docs',
+    tags: ['cms', 'directus', 'content']
   },
   {
-    id: 'preset-flex-tpu',
-    title: 'TPU Flexible Profile',
-    subtitle: 'Voron 2.4 • OrcaSlicer • Flex-safe',
-    license: 'CC0',
+    id: 'preset-deploy-pipeline',
+    title: 'Deployment Pipeline',
+    subtitle: 'GitHub Actions • Docker Compose • SSH deploy',
+    license: 'MIT',
     source: 'preset',
-    href: '/app',
-    tags: ['TPU', 'slow', 'flex']
+    href: '/docs',
+    tags: ['deploy', 'docker', 'ci']
   }
 ])
 
@@ -304,37 +300,15 @@ const modelCards = computed<CatalogItem[]>(() =>
     id: m.id,
     title: m.title,
     subtitle: m.author,
-    license: m.license?.toUpperCase() ?? 'CC-BY',
+    license: m.license?.toUpperCase() ?? 'MIT',
     source: 'community',
-    href: `/community/models/${m.id}`,
-    tags: m.tags?.length ? m.tags : [m.material || 'model'],
+    href: '/catalog',
+    tags: m.tags?.length ? m.tags : [m.category || 'template'],
     stats: { downloads: m.downloads, likes: m.likes }
   }))
 )
 
 const scrapedCards = computed<CatalogItem[]>(() => {
-  // Printers and filaments removed in migration 026
-  // const printerCards = (printersStore.printers || []).map((p) => ({
-  //   id: `printer-${p.id}`,
-  //   title: p.name,
-  //   subtitle: `${p.brand} • ${p.model}`,
-  //   license: 'Specs',
-  //   source: 'scraped' as const,
-  //   href: `/printers/${p.id}`,
-  //   tags: (p.features || []).slice(0, 3)
-  // }))
-
-  // const filamentCards = (filamentsStore.filaments || []).map((f) => ({
-  //   id: `filament-${f.id}`,
-  //   title: f.name,
-  //   subtitle: `${f.brand} • ${f.type}`,
-  //   license: 'Specs',
-  //   source: 'scraped' as const,
-  //   href: `/filaments/${f.id}`,
-  //   tags: [f.type, f.color].filter(Boolean) as string[]
-  // }))
-
-  // return [...printerCards, ...filamentCards]
   return []
 })
 
@@ -345,9 +319,9 @@ const tabItems = computed(() => ({
 }))
 
 const tabDefs = computed(() => [
-  { key: 'models', label: 'Models', count: tabItems.value.models.length },
-  { key: 'configs', label: 'Configs', count: tabItems.value.configs.length },
-  { key: 'scraped', label: 'Scraped Data', count: tabItems.value.scraped.length }
+  { key: 'models', label: 'Community', count: tabItems.value.models.length },
+  { key: 'configs', label: 'Presets', count: tabItems.value.configs.length },
+  { key: 'scraped', label: 'Reference', count: tabItems.value.scraped.length }
 ])
 
 const licenseOptions = computed(() =>
@@ -365,7 +339,7 @@ const sourceOptions = [
   { label: 'All sources', value: 'all' },
   { label: 'Community', value: 'community' },
   { label: 'Presets', value: 'preset' },
-  { label: 'Scraped', value: 'scraped' }
+  { label: 'Reference', value: 'scraped' }
 ]
 
 const filteredItems = computed(() => {
@@ -386,9 +360,7 @@ const filteredItems = computed(() => {
   })
 })
 
-const isLoading = computed(
-  () => communityStore.loadingModels // || printersStore.loading || filamentsStore.loading // Removed in migration 026
-)
+const isLoading = computed(() => communityStore.loadingModels)
 
 function formatNumber(num?: number) {
   if (num === undefined || num === null) return '—'
@@ -412,12 +384,12 @@ function sourceColor(source: SourceType) {
 function labelForSource(source: SourceType) {
   if (source === 'community') return 'Community'
   if (source === 'preset') return 'Preset'
-  return 'Scraped'
+  return 'Reference'
 }
 
 function ctaLabel(source: SourceType) {
   if (source === 'preset') return 'Use preset'
-  if (source === 'community') return 'View model'
+  if (source === 'community') return 'View item'
   return 'View details'
 }
 
@@ -425,8 +397,6 @@ async function loadData() {
   const tasks = [
     communityStore.fetchStats().catch(() => {}),
     communityStore.fetchModels({ limit: 12 }).catch(() => {})
-    // printersStore.fetchPrinters().catch(() => {}), // Removed in migration 026
-    // filamentsStore.fetchFilaments().catch(() => {}) // Removed in migration 026
   ]
   await Promise.all(tasks)
 }
@@ -665,4 +635,3 @@ onMounted(loadData)
   }
 }
 </style>
-

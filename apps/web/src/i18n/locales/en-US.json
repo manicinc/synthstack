@@ -7,12 +7,28 @@
     "home": "Home",
     "features": "Features",
     "pricing": "Pricing",
+    "docs": "Docs",
+    "resources": "Resources",
+    "documentation": "Documentation",
+    "blog": "Blog",
+    "community": "Community",
+    "about": "About",
+    "contact": "Contact",
+    "github": "GitHub",
+    "discord": "Discord",
+    "examples": "Examples",
+    "admin": "Admin",
+    "adminPanel": "Admin Panel",
+    "menu": "Menu",
+    "signIn": "Sign In",
+    "getStarted": "Get Started",
+    "getStartedFree": "Get Started Free",
     "dashboard": "Dashboard",
     "generate": "Generate",
-    "printers": "Printers",
-    "filaments": "Filaments",
-    "profiles": "Profiles",
-    "myProfiles": "My Profiles",
+    "textGeneration": "Text Generation",
+    "imageGeneration": "Image Generation",
+    "copilot": "AI Copilot",
+    "workflows": "Workflows",
     "history": "History",
     "account": "Account",
     "subscription": "Subscription",
@@ -22,12 +38,21 @@
   },
   "landing": {
     "hero": {
-      "title": "Perfect Prints, Every Time",
-      "subtitle": "Upload your STL. Get AI-optimized settings. Export to any slicer.",
+      "title": "AI-Powered Content Generation",
+      "subtitle": "Generate text, images, and more with powerful AI. Simple credits-based system.",
       "cta": "Get Early Bird Access - $149",
       "secondaryCta": "View on GitHub",
       "promoWithStats": "Limited to {max} lifetime licenses • {remaining} remaining • Save {discount}",
-      "promoDefault": "Limited to 150 lifetime licenses • Save $100 (Regular $249)"
+      "promoDefault": "Limited to 150 lifetime licenses • Save $100 (Regular $249)",
+      "badge": {
+        "title": "Best-Looking Quasar UX on the Web",
+        "subtitle": "Full Theming & Customization Built-In"
+      },
+      "checkout": {
+        "access": "Instant access to private GitHub repo",
+        "updates": "Lifetime updates",
+        "fees": "No monthly fees"
+      }
     },
     "tech": {
       "label": "Built with modern, battle-tested technologies"
@@ -79,7 +104,8 @@
       "pro": {
         "badge": "Most Popular",
         "name": "Pro",
-        "price": "$297",
+        "price": "$149",
+        "regularPrice": "$249",
         "period": "lifetime",
         "description": "Full AI Co-Founders experience",
         "features": {
@@ -108,7 +134,9 @@
           "sla": "SLA guarantees",
           "onPremise": "On-premise deployment",
           "integrations": "Custom integrations",
-          "teamTraining": "Team training"
+          "teamTraining": "Team training",
+          "customAgents": "Custom AI agents",
+          "deployment": "Dedicated deployment"
         },
         "cta": "Contact Sales"
       }
@@ -123,7 +151,7 @@
         },
         "included": {
           "question": "What's included in the Community Edition?",
-          "answer": "Everything you need to build and self-host a SaaS: Vue 3 + Quasar UI, Fastify API, Directus CMS, Supabase auth, Stripe billing, blog, newsletter, analytics, theming, and cross-platform builds."
+          "answer": "Everything you need to build and self-host a SaaS: Vue 3 + Quasar UI, Fastify API, Directus CMS, flexible auth (Supabase or self-hosted with OAuth), Stripe billing, blog, newsletter, analytics, theming, and cross-platform builds."
         },
         "referral": {
           "question": "How does the referral program work?",
@@ -143,11 +171,11 @@
         },
         "subscription": {
           "question": "Is there a subscription option?",
-          "answer": "We offer both lifetime ($297 one-time) and monthly subscription plans. Test mode lets you try everything with $0 charges. Enterprise teams can contact us for custom pricing."
+          "answer": "We offer both a lifetime license ($249, or $149 Early Bird with code EARLYSYNTH) for full source code access, and monthly cloud subscriptions (Maker $9.99, Pro $24.99, Agency $49.99). Test mode lets you try everything with $0 charges."
         },
         "byok": {
           "question": "What is BYOK (Bring Your Own Keys)?",
-          "answer": "BYOK allows Premium and Lifetime users to use their own API keys from OpenAI and Anthropic instead of consuming SynthStack credits. This can save money at scale, bypass rate limits, and provide unlimited AI usage. Your keys are encrypted and stored securely."
+          "answer": "BYOK allows Pro, Agency, and Lifetime users to use their own API keys from OpenAI and Anthropic instead of consuming SynthStack credits. This can save money at scale and help avoid platform credit limits (provider limits still apply). Your keys are encrypted and stored securely."
         }
       }
     },
@@ -156,51 +184,51 @@
       "subtitle": "Full-stack SaaS boilerplate with AI superpowers. Ship 10x faster.",
       "primary": "Get Started Free",
       "secondary": "Upgrade to Pro",
-      "note": "Community License core · Pro: $297 lifetime · Referral rewards available"
+      "note": "Community License core · Lifetime: $149 Early Bird · Cloud plans from $9.99/mo"
     },
     "features": {
       "title": "Why SynthStack?",
       "subtitle": "Ship faster with AI-powered development.",
-      "stlAnalysis": {
-        "title": "Smart STL Analysis",
-        "description": "Our AI examines your model's geometry, detecting overhangs, thin walls, and optimal print orientations."
+      "textGeneration": {
+        "title": "Text Generation",
+        "description": "Generate blog posts, emails, documentation, and more using GPT models with customizable presets."
       },
-      "aiSettings": {
-        "title": "AI-Generated Settings",
-        "description": "Get optimized parameters based on your specific printer, filament, and model characteristics."
+      "imageGeneration": {
+        "title": "Image Generation",
+        "description": "Create stunning visuals with DALL-E. Multiple styles, sizes, and quality options available."
       },
-      "multiSlicer": {
+      "aiCopilot": {
+        "title": "AI Copilot",
+        "description": "Chat with AI to brainstorm ideas, get explanations, and improve your content."
+      },
+      "exportFormats": {
         "title": "Export Anywhere",
-        "description": "Download ready-to-use profiles for OrcaSlicer, PrusaSlicer, Cura, and more."
-      },
-      "community": {
-        "title": "Community Validated",
-        "description": "Share profiles, see success rates, and build on what works."
+        "description": "Download generated content as Markdown, HTML, PDF, or plain text."
       }
     },
     "howItWorks": {
       "title": "How It Works",
       "step1": {
-        "title": "Upload Your STL",
-        "description": "Drag and drop your 3D model for instant analysis"
+        "title": "Choose Generation Type",
+        "description": "Select text, image, or chat based on your needs"
       },
       "step2": {
-        "title": "Select Your Setup",
-        "description": "Choose your printer and filament from our database"
+        "title": "Select a Preset",
+        "description": "Pick from curated presets or customize settings"
       },
       "step3": {
-        "title": "Generate Settings",
-        "description": "AI creates optimized parameters for your specific print"
+        "title": "Enter Your Prompt",
+        "description": "Describe what you want to generate"
       },
       "step4": {
-        "title": "Export & Print",
-        "description": "Download for your slicer and start printing"
+        "title": "Generate & Export",
+        "description": "Get results instantly and export in your preferred format"
       }
     },
     "stats": {
-      "profiles": "Profiles Generated",
-      "printers": "Printers Supported",
-      "successRate": "Success Rate"
+      "generations": "Generations Created",
+      "users": "Active Users",
+      "satisfaction": "Satisfaction Rate"
     },
     "featuresGrid": {
       "badge": "Everything You Need",
@@ -274,7 +302,7 @@
           "description": "AI-powered SEO audits with keyword research, content scoring, and optimization suggestions. Lighthouse CI integration for automated performance tracking."
         },
         "theming": {
-          "title": "Premium Theming System",
+          "title": "Pro Theming System",
           "description": "10 built-in presets with 30+ light/dark combinations. 60+ CSS variables for complete customization. Real-time switching with database persistence."
         },
         "referral": {
@@ -314,7 +342,7 @@
     },
     "register": {
       "title": "Create Account",
-      "subtitle": "Start optimizing your prints",
+      "subtitle": "Start building your next project",
       "name": "Display Name",
       "email": "Email",
       "password": "Password",
@@ -346,49 +374,56 @@
     },
     "quickActions": {
       "title": "Quick Actions",
-      "newGeneration": "New Generation",
-      "browsePrinters": "Browse Printers",
-      "viewProfiles": "View Profiles"
+      "textGeneration": "Text Generation",
+      "imageGeneration": "Image Generation",
+      "viewWorkflows": "View Workflows"
     },
     "recentGenerations": {
       "title": "Recent Generations",
-      "empty": "No generations yet. Start by uploading an STL!"
+      "empty": "No generations yet. Start by creating text or images!"
     }
   },
   "generate": {
-    "title": "Generate Print Settings",
-    "upload": {
-      "title": "Upload STL",
-      "dragDrop": "Drag and drop your STL file here",
-      "or": "or",
-      "browse": "Browse Files",
-      "maxSize": "Maximum file size: 50MB"
+    "title": "AI Generation",
+    "text": {
+      "title": "Text Generation",
+      "prompt": "Enter your prompt",
+      "promptPlaceholder": "Describe what you want to generate...",
+      "systemPrompt": "System Prompt (optional)",
+      "preset": "Select Preset",
+      "model": "Model",
+      "maxTokens": "Max Tokens",
+      "temperature": "Temperature",
+      "generate": "Generate",
+      "generating": "Generating..."
     },
-    "analysis": {
-      "title": "Model Analysis",
-      "dimensions": "Dimensions",
-      "volume": "Volume",
-      "faces": "Faces",
-      "overhangs": "Overhangs",
-      "thinWalls": "Thin Walls",
-      "difficulty": "Print Difficulty"
-    },
-    "settings": {
-      "title": "Settings",
-      "printer": "Select Printer",
-      "filament": "Select Filament",
-      "quality": "Quality Preset",
-      "priorities": "Priorities",
-      "speed": "Speed",
-      "strength": "Strength",
-      "material": "Material Usage"
+    "image": {
+      "title": "Image Generation",
+      "prompt": "Describe your image",
+      "promptPlaceholder": "A futuristic city at sunset...",
+      "style": "Style Preset",
+      "size": "Size",
+      "quality": "Quality",
+      "generate": "Generate",
+      "generating": "Generating..."
     },
     "result": {
-      "title": "Generated Settings",
-      "confidence": "Confidence",
+      "title": "Generated Content",
       "export": "Export",
-      "save": "Save Profile",
-      "regenerate": "Regenerate"
+      "copy": "Copy",
+      "download": "Download",
+      "regenerate": "Regenerate",
+      "creditsUsed": "Credits Used"
+    },
+    "presets": {
+      "blogPost": "Blog Post",
+      "emailDraft": "Email Draft",
+      "codeDocs": "Code Documentation",
+      "creativeStory": "Creative Story",
+      "productDesc": "Product Description",
+      "meetingSummary": "Meeting Summary",
+      "technicalExplanation": "Technical Explanation",
+      "socialMedia": "Social Media Post"
     }
   },
   "pricing": {
@@ -583,7 +618,7 @@
         },
         "rewardTypes": {
           "q": "What types of rewards can I earn?",
-          "a": "Rewards include: <ul><li><strong>Discount codes</strong> - Percentage off purchases</li><li><strong>Credits</strong> - Use for AI features</li><li><strong>Free months</strong> - Subscription credit</li><li><strong>Tier upgrades</strong> - Premium access</li></ul>"
+          "a": "Rewards include: <ul><li><strong>Discount codes</strong> - Percentage off purchases</li><li><strong>Credits</strong> - Use for AI features</li><li><strong>Free months</strong> - Subscription credit</li><li><strong>Tier upgrades</strong> - Pro access</li></ul>"
         },
         "claimRewards": {
           "q": "How do I claim my rewards?",

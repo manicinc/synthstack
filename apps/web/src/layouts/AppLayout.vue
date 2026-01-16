@@ -184,46 +184,6 @@
               Projects
             </q-tooltip>
           </q-item>
-
-          <q-item
-            clickable
-            :active="isProfilesRoute"
-            :to="{ name: 'profiles' }"
-          >
-            <q-item-section avatar>
-              <q-icon name="people" />
-            </q-item-section>
-            <q-item-section v-if="!appSidebarMini">
-              Profiles
-            </q-item-section>
-            <q-tooltip
-              v-if="appSidebarMini"
-              anchor="center right"
-              self="center left"
-            >
-              Profiles
-            </q-tooltip>
-          </q-item>
-
-          <q-item
-            clickable
-            :active="route.name === 'history'"
-            :to="{ name: 'history' }"
-          >
-            <q-item-section avatar>
-              <q-icon name="history" />
-            </q-item-section>
-            <q-item-section v-if="!appSidebarMini">
-              History
-            </q-item-section>
-            <q-tooltip
-              v-if="appSidebarMini"
-              anchor="center right"
-              self="center left"
-            >
-              History
-            </q-tooltip>
-          </q-item>
         </q-list>
 
         <q-separator class="q-my-sm" />
@@ -496,7 +456,6 @@ const isElectronMac = computed(() => {
   return !!electron && (electron.platform?.isMac || navigator.platform.toLowerCase().includes('mac'))
 })
 const isProjectsRoute = computed(() => route.path.startsWith('/app/projects'))
-const isProfilesRoute = computed(() => route.path.startsWith('/app/profiles') || route.path.startsWith('/app/my-profiles'))
 const selectedProjectId = computed(() => {
   if (typeof route.params.id === 'string') return route.params.id
   return projectsStore.currentProject?.id ?? null

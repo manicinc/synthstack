@@ -16,12 +16,11 @@
         </div>
         <h1>SynthStack</h1>
         <p class="tagline">
-          AI-Powered 3D Printing Profile Generator
+          Your Agency in a Box
         </p>
         <p class="description">
-          We're on a mission to make perfect 3D prints accessible to everyone.
-          From beginners to professionals, SynthStack uses artificial intelligence
-          to generate optimized slicer settings for any printer and filament combination.
+          We're building the AI-native, cross-platform SaaS stack we wish existed:
+          projects, workflows, billing, CMS, and copilots/agents that can understand your product and take action.
         </p>
       </div>
     </section>
@@ -54,7 +53,7 @@
               size="32px"
             />
             <h2>Careers</h2>
-            <p>Join our team and help shape the future of 3D printing.</p>
+            <p>Join our team and help shape the future of AI development.</p>
             <span class="link-arrow">
               <q-icon name="sym_o_arrow_forward" />
             </span>
@@ -99,7 +98,7 @@
               size="32px"
             />
             <h2>Blog</h2>
-            <p>Tutorials, guides, and tips for better 3D prints.</p>
+            <p>Tutorials, guides, and field notes for building with SynthStack.</p>
             <span class="link-arrow">
               <q-icon name="sym_o_arrow_forward" />
             </span>
@@ -217,12 +216,14 @@ const { setPageSeo, addSchema } = useSeo()
 onMounted(() => {
   setPageSeo({
     title: 'Company - About SynthStack | SynthStack',
-    description: 'Learn about SynthStack, the AI-powered 3D printing profile generator. Explore our mission, team, careers, and company news.',
+    description: 'Learn about SynthStack, the AI-native, cross-platform SaaS boilerplate. Explore our mission, careers, and product updates.',
     keywords: [
       'synthstack company',
       'about synthstack',
-      '3d printing startup',
-      'ai slicer company'
+      'AI SaaS boilerplate',
+      'cross-platform app template',
+      'Vue Quasar boilerplate',
+      'Directus CMS'
     ],
     canonicalPath: '/company',
     breadcrumbs: [
@@ -237,7 +238,7 @@ onMounted(() => {
     name: 'SynthStack',
     url: 'https://synthstack.app',
     logo: 'https://synthstack.app/logo/synthstack-logo.svg',
-    description: 'AI-powered 3D printing profile generator',
+    description: 'AI-native, cross-platform SaaS boilerplate',
     foundingDate: '2024',
     founders: [{
       '@type': 'Organization',
@@ -445,7 +446,6 @@ onMounted(() => {
   }
 }
 </style>
-
 
 
 

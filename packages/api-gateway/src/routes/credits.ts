@@ -5,8 +5,7 @@
  */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { TIER_CONFIG, SubscriptionTier, getWorkflowConfigForTier } from '../services/stripe.js';
-import { config } from '../config/index.js';
+import { getAICreditsPerDayForTier, getWorkflowConfigForTier } from '../services/stripe.js';
 import {
   calculateWorkflowCreditCost,
   estimateWorkflowCost,
@@ -59,9 +58,9 @@ export default async function creditsRoutes(fastify: FastifyInstance) {
       }
 
       const user = result.rows[0];
-      const tier = user.subscription_tier as SubscriptionTier || 'free';
-      const tierConfig = TIER_CONFIG[tier];
-      const dailyLimit = tierConfig.creditsPerDay;
+      const rawTier = (user.subscription_tier || 'free') as string;
+      const dailyLimit = getAICreditsPerDayForTier(rawTier);
+      const tierForResponse = rawTier === 'unlimited' ? 'agency' : rawTier;
 
       const todayStart = new Date();
       todayStart.setUTCHours(0, 0, 0, 0);
@@ -81,7 +80,7 @@ export default async function creditsRoutes(fastify: FastifyInstance) {
           usedToday,
           dailyLimit: dailyLimit === Infinity ? -1 : dailyLimit,
           lifetimeUsed: user.lifetime_credits_used,
-          tier,
+          tier: tierForResponse,
           resetsAt: user.credits_reset_at || getNextResetTime(),
           unlimited: dailyLimit === Infinity,
         },
@@ -240,11 +239,11 @@ export default async function creditsRoutes(fastify: FastifyInstance) {
       }
 
       const user = userResult.rows[0];
-      const tier = user.subscription_tier as SubscriptionTier;
-      const tierConfig = TIER_CONFIG[tier];
+      const rawTier = (user.subscription_tier || 'free') as string;
+      const dailyLimit = getAICreditsPerDayForTier(rawTier);
 
-      // Agency tier (500/day) has high limit - always succeeds for backward compatibility
-      if (tierConfig.creditsPerDay === Infinity || tierConfig.creditsPerDay >= 500) {
+      // Unlimited tiers (enterprise/admin) always succeed (credits are still logged for auditing).
+      if (dailyLimit === Infinity) {
         await fastify.pg.query(`
           INSERT INTO credit_transactions (user_id, type, amount, balance_before, balance_after, reference_type, reference_id, reason)
           VALUES ($1, 'generation', $2, $3, $3, $4, $5, $6)
@@ -255,7 +254,7 @@ export default async function creditsRoutes(fastify: FastifyInstance) {
           [amount, user_id]
         );
 
-        return { success: true, data: { remaining: user.credits_remaining, deducted: amount, unlimited: tierConfig.creditsPerDay === Infinity } };
+        return { success: true, data: { remaining: user.credits_remaining, deducted: amount, unlimited: true } };
       }
 
       if (user.credits_remaining < amount) {
@@ -378,15 +377,15 @@ export default async function creditsRoutes(fastify: FastifyInstance) {
       }
 
       const user = result.rows[0];
-      const tier = user.subscription_tier as SubscriptionTier;
-      const tierConfig = TIER_CONFIG[tier];
+      const rawTier = (user.subscription_tier || 'free') as string;
+      const dailyLimit = getAICreditsPerDayForTier(rawTier);
 
-      if (tierConfig.creditsPerDay === Infinity) {
+      if (dailyLimit === Infinity) {
         return { success: true, data: { available: true, remaining: user.credits_remaining, required: amount, unlimited: true } };
       }
 
       const available = user.credits_remaining >= amount;
-      return { success: true, data: { available, remaining: user.credits_remaining, required: amount, deficit: available ? 0 : amount - user.credits_remaining } };
+      return { success: true, data: { available, remaining: user.credits_remaining, required: amount, deficit: available ? 0 : amount - user.credits_remaining, unlimited: false } };
     } catch (error) {
       fastify.log.error(error);
       return reply.status(500).send({ success: false, error: 'Failed to check credits' });
@@ -629,9 +628,10 @@ export default async function creditsRoutes(fastify: FastifyInstance) {
       }
 
       const user = userResult.rows[0];
-      const tier = user.subscription_tier as SubscriptionTier || 'free';
-      const tierConfig = TIER_CONFIG[tier];
-      const workflowConfig = getWorkflowConfigForTier(tier);
+      const rawTier = (user.subscription_tier || 'free') as string;
+      const dailyLimit = getAICreditsPerDayForTier(rawTier);
+      const workflowConfig = getWorkflowConfigForTier(rawTier);
+      const tierForResponse = rawTier === 'unlimited' ? 'agency' : rawTier;
 
       const todayStart = new Date();
       todayStart.setUTCHours(0, 0, 0, 0);
@@ -692,14 +692,14 @@ export default async function creditsRoutes(fastify: FastifyInstance) {
           // Overall
           creditsRemaining: user.credits_remaining,
           lifetimeCreditsUsed: user.lifetime_credits_used,
-          tier,
+          tier: tierForResponse,
           resetsAt: user.credits_reset_at || getNextResetTime(),
 
           // AI generations
           ai: {
             creditsUsedToday: aiCreditsUsedToday,
-            dailyLimit: tierConfig.creditsPerDay === Infinity ? -1 : tierConfig.creditsPerDay,
-            unlimited: tierConfig.creditsPerDay === Infinity,
+            dailyLimit: dailyLimit === Infinity ? -1 : dailyLimit,
+            unlimited: dailyLimit === Infinity,
           },
 
           // ML Service Requests (embeddings, RAG, analysis, transcription, etc.)
@@ -715,7 +715,7 @@ export default async function creditsRoutes(fastify: FastifyInstance) {
             creditsUsedToday: workflowCreditsUsedToday,
             executionsToday: totalWorkflowExecutionsToday,
             freeExecutionsPerDay: workflowConfig.freeWorkflowExecutionsPerDay,
-            freeExecutionsRemaining: getFreeExecutionsRemaining(tier, totalWorkflowExecutionsToday),
+            freeExecutionsRemaining: getFreeExecutionsRemaining(rawTier, totalWorkflowExecutionsToday),
             creditMultiplier: workflowConfig.workflowCreditMultiplier,
           },
 

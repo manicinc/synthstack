@@ -24,7 +24,11 @@ Use our cross-platform tools to ship your next project 10x faster.</p>
   <li><a href="<%= supportUrl %>">Help Center</a> - Get support when needed</li>
 </ul>
 
-<p style="margin-top: 24px;">Your account is ready with <strong><%= creditsRemaining || 'unlimited' %> credits</strong> to get started.</p>
+<% if (creditsRemaining === null || creditsRemaining === undefined) { %>
+<p style="margin-top: 24px;">Your account is ready — you can start using AI features right away.</p>
+<% } else { %>
+<p style="margin-top: 24px;">Your account is ready with <strong><%= creditsRemaining %> credits</strong> to get started.</p>
+<% } %>
 
 <p class="text-muted" style="margin-top: 32px;">
   Questions? Just reply to this email - we're here to help!
