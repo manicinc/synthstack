@@ -48,18 +48,18 @@ describe.skipIf(!COPILOT_ENABLED)('ML Service Integration E2E', () => {
     // Create test users with different tiers
     const proUser = await createTestUser({
       email: 'pro-ml@test.com',
-      subscription_tier: 'pro',
-      credits_remaining: 1000,
+      subscriptionTier: 'pro',
+      creditsRemaining: 1000,
     });
-    proUserToken = proUser.token;
+    proUserToken = proUser.token!;
     proUserId = proUser.id;
 
     const freeUser = await createTestUser({
       email: 'free-ml@test.com',
-      subscription_tier: 'free',
-      credits_remaining: 100,
+      subscriptionTier: 'free',
+      creditsRemaining: 100,
     });
-    freeUserToken = freeUser.token;
+    freeUserToken = freeUser.token!;
     freeUserId = freeUser.id;
   });
 

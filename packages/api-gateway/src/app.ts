@@ -122,6 +122,8 @@ declare module 'fastify' {
     requireAdmin: (request: any, reply: any) => Promise<void>;
     features: {
       copilot: boolean;
+      aiAgents: boolean;
+      copilotRag: boolean;
       referrals: boolean;
     };
   }
