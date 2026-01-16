@@ -1,0 +1,14 @@
+# Icon files for Electron builds
+#
+# Required icons:
+# - icon.png (512x512 or 1024x1024 PNG for Linux)
+# - icon.icns (macOS icon bundle)
+# - icon.ico (Windows icon, 256x256)
+#
+# To generate icons:
+# 1. Create a 1024x1024 PNG source image
+# 2. Use electron-icon-maker or similar tool
+# 3. Place generated icons in this directory
+#
+# Example with electron-icon-maker:
+# npx electron-icon-maker --input=./icon-source.png --output=./icons

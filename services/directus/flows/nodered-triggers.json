@@ -1,0 +1,303 @@
+{
+  "flows": [
+    {
+      "name": "Node-RED: On Project Created",
+      "icon": "folder",
+      "color": "#6366f1",
+      "description": "Triggers Node-RED when a new project is created",
+      "status": "active",
+      "trigger": "event",
+      "accountability": "all",
+      "options": {
+        "type": "action",
+        "scope": ["items.create"],
+        "collections": ["projects"]
+      },
+      "operations": [
+        {
+          "name": "Trigger Node-RED",
+          "key": "webhook_trigger",
+          "type": "request",
+          "position_x": 19,
+          "position_y": 1,
+          "options": {
+            "url": "{{$env.API_GATEWAY_URL}}/api/wf/directus/project-created",
+            "method": "POST",
+            "headers": [
+              {
+                "header": "Authorization",
+                "value": "Bearer {{$env.NODERED_INTERNAL_TOKEN}}"
+              },
+              {
+                "header": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": "{{$last}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Node-RED: On Project Updated",
+      "icon": "folder",
+      "color": "#6366f1",
+      "description": "Triggers Node-RED when a project is updated",
+      "status": "active",
+      "trigger": "event",
+      "accountability": "all",
+      "options": {
+        "type": "action",
+        "scope": ["items.update"],
+        "collections": ["projects"]
+      },
+      "operations": [
+        {
+          "name": "Trigger Node-RED",
+          "key": "webhook_trigger",
+          "type": "request",
+          "position_x": 19,
+          "position_y": 1,
+          "options": {
+            "url": "{{$env.API_GATEWAY_URL}}/api/wf/directus/project-updated",
+            "method": "POST",
+            "headers": [
+              {
+                "header": "Authorization",
+                "value": "Bearer {{$env.NODERED_INTERNAL_TOKEN}}"
+              }
+            ],
+            "body": "{{$last}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Node-RED: On User Registered",
+      "icon": "person_add",
+      "color": "#10b981",
+      "description": "Triggers Node-RED when a new user registers",
+      "status": "active",
+      "trigger": "event",
+      "accountability": "all",
+      "options": {
+        "type": "action",
+        "scope": ["items.create"],
+        "collections": ["directus_users"]
+      },
+      "operations": [
+        {
+          "name": "Filter Internal Users",
+          "key": "filter_check",
+          "type": "condition",
+          "position_x": 19,
+          "position_y": 1,
+          "options": {
+            "filter": {
+              "$last.role": {
+                "_neq": null
+              }
+            }
+          }
+        },
+        {
+          "name": "Trigger Node-RED",
+          "key": "webhook_trigger",
+          "type": "request",
+          "position_x": 37,
+          "position_y": 1,
+          "options": {
+            "url": "{{$env.API_GATEWAY_URL}}/api/wf/directus/user-registered",
+            "method": "POST",
+            "headers": [
+              {
+                "header": "Authorization",
+                "value": "Bearer {{$env.NODERED_INTERNAL_TOKEN}}"
+              }
+            ],
+            "body": {
+              "user_id": "{{$last.key}}",
+              "email": "{{$last.payload.email}}",
+              "first_name": "{{$last.payload.first_name}}",
+              "last_name": "{{$last.payload.last_name}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Node-RED: On Subscription Changed",
+      "icon": "credit_card",
+      "color": "#f59e0b",
+      "description": "Triggers Node-RED when a subscription is created or updated",
+      "status": "active",
+      "trigger": "event",
+      "accountability": "all",
+      "options": {
+        "type": "action",
+        "scope": ["items.create", "items.update"],
+        "collections": ["subscriptions"]
+      },
+      "operations": [
+        {
+          "name": "Trigger Node-RED",
+          "key": "webhook_trigger",
+          "type": "request",
+          "position_x": 19,
+          "position_y": 1,
+          "options": {
+            "url": "{{$env.API_GATEWAY_URL}}/api/wf/directus/subscription-changed",
+            "method": "POST",
+            "headers": [
+              {
+                "header": "Authorization",
+                "value": "Bearer {{$env.NODERED_INTERNAL_TOKEN}}"
+              }
+            ],
+            "body": "{{$last}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Node-RED: On Invoice Created",
+      "icon": "receipt",
+      "color": "#ef4444",
+      "description": "Triggers Node-RED when an invoice is created",
+      "status": "active",
+      "trigger": "event",
+      "accountability": "all",
+      "options": {
+        "type": "action",
+        "scope": ["items.create"],
+        "collections": ["invoices"]
+      },
+      "operations": [
+        {
+          "name": "Trigger Node-RED",
+          "key": "webhook_trigger",
+          "type": "request",
+          "position_x": 19,
+          "position_y": 1,
+          "options": {
+            "url": "{{$env.API_GATEWAY_URL}}/api/wf/directus/invoice-created",
+            "method": "POST",
+            "headers": [
+              {
+                "header": "Authorization",
+                "value": "Bearer {{$env.NODERED_INTERNAL_TOKEN}}"
+              }
+            ],
+            "body": "{{$last}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Node-RED: On Comment Added",
+      "icon": "comment",
+      "color": "#8b5cf6",
+      "description": "Triggers Node-RED when a comment is added to a conversation",
+      "status": "active",
+      "trigger": "event",
+      "accountability": "all",
+      "options": {
+        "type": "action",
+        "scope": ["items.create"],
+        "collections": ["conversation_messages"]
+      },
+      "operations": [
+        {
+          "name": "Trigger Node-RED",
+          "key": "webhook_trigger",
+          "type": "request",
+          "position_x": 19,
+          "position_y": 1,
+          "options": {
+            "url": "{{$env.API_GATEWAY_URL}}/api/wf/directus/comment-added",
+            "method": "POST",
+            "headers": [
+              {
+                "header": "Authorization",
+                "value": "Bearer {{$env.NODERED_INTERNAL_TOKEN}}"
+              }
+            ],
+            "body": "{{$last}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Node-RED: Scheduled Daily",
+      "icon": "schedule",
+      "color": "#0ea5e9",
+      "description": "Triggers Node-RED daily for scheduled tasks",
+      "status": "active",
+      "trigger": "schedule",
+      "accountability": "all",
+      "options": {
+        "cron": "0 6 * * *"
+      },
+      "operations": [
+        {
+          "name": "Trigger Node-RED",
+          "key": "webhook_trigger",
+          "type": "request",
+          "position_x": 19,
+          "position_y": 1,
+          "options": {
+            "url": "{{$env.API_GATEWAY_URL}}/api/wf/directus/daily-schedule",
+            "method": "POST",
+            "headers": [
+              {
+                "header": "Authorization",
+                "value": "Bearer {{$env.NODERED_INTERNAL_TOKEN}}"
+              }
+            ],
+            "body": {
+              "trigger": "daily",
+              "timestamp": "{{$now}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Node-RED: Scheduled Hourly",
+      "icon": "schedule",
+      "color": "#0ea5e9",
+      "description": "Triggers Node-RED hourly for recurring tasks",
+      "status": "inactive",
+      "trigger": "schedule",
+      "accountability": "all",
+      "options": {
+        "cron": "0 * * * *"
+      },
+      "operations": [
+        {
+          "name": "Trigger Node-RED",
+          "key": "webhook_trigger",
+          "type": "request",
+          "position_x": 19,
+          "position_y": 1,
+          "options": {
+            "url": "{{$env.API_GATEWAY_URL}}/api/wf/directus/hourly-schedule",
+            "method": "POST",
+            "headers": [
+              {
+                "header": "Authorization",
+                "value": "Bearer {{$env.NODERED_INTERNAL_TOKEN}}"
+              }
+            ],
+            "body": {
+              "trigger": "hourly",
+              "timestamp": "{{$now}}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
+

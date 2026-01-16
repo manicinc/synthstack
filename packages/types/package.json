@@ -1,0 +1,60 @@
+{
+  "name": "@synthstack/types",
+  "version": "1.0.0",
+  "description": "Shared TypeScript types for SynthStack",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./api": {
+      "import": "./dist/api/index.js",
+      "types": "./dist/api/index.d.ts"
+    },
+    "./auth": {
+      "import": "./dist/auth/index.js",
+      "types": "./dist/auth/index.d.ts"
+    },
+    "./billing": {
+      "import": "./dist/billing/index.js",
+      "types": "./dist/billing/index.d.ts"
+    },
+    "./agents": {
+      "import": "./dist/agents/index.js",
+      "types": "./dist/agents/index.d.ts"
+    },
+    "./orchestration": {
+      "import": "./dist/orchestration/index.js",
+      "types": "./dist/orchestration/index.d.ts"
+    },
+    "./workflows": {
+      "import": "./dist/workflows/index.js",
+      "types": "./dist/workflows/index.d.ts"
+    },
+    "./projects": {
+      "import": "./dist/projects/index.js",
+      "types": "./dist/projects/index.d.ts"
+    },
+    "./referral": {
+      "import": "./dist/referral/index.js",
+      "types": "./dist/referral/index.d.ts"
+    },
+    "./common": {
+      "import": "./dist/common/index.js",
+      "types": "./dist/common/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist node_modules"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  }
+}

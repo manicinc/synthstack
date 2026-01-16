@@ -1,0 +1,22 @@
+{
+  "total": 1100,
+  "passed": 1065,
+  "failed": 0,
+  "skipped": 50,
+  "packages": {
+    "api-gateway": {
+      "total": 1065,
+      "passed": 1065,
+      "failed": 0,
+      "skipped": 50
+    },
+    "web": {
+      "total": 35,
+      "passed": 35,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "timestamp": "2026-01-09T21:00:00.000Z",
+  "note": "This file is auto-updated by pnpm test:count:update"
+}

@@ -1,0 +1,8 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+  # COMMUNITY: Exclude Pro-only packages (removed from community edition)
+  - '!packages/node-red-contrib-synthstack'
+  - '!packages/ml-service'
+  - '!packages/django-ml-service'
+  - '!packages/nodered-data'

@@ -1,0 +1,135 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Synth-wave gradient background -->
+    <linearGradient id="bg-synth" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a0f;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1a2e;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Brand gradients -->
+    <linearGradient id="brand-purple" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6366F1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+    </linearGradient>
+
+    <linearGradient id="brand-teal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#2DD4BF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#14B8A6;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Grid pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(99, 102, 241, 0.08)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg-synth)"/>
+
+  <!-- Grid overlay -->
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Geometric accent shapes -->
+  <g opacity="0.15">
+    <rect x="50" y="50" width="200" height="200" fill="url(#brand-purple)" transform="rotate(45 150 150)"/>
+    <rect x="950" y="380" width="180" height="180" fill="url(#brand-teal)" transform="rotate(30 1040 470)"/>
+  </g>
+
+  <!-- Content container - safe zone -->
+  <g transform="translate(100, 80)">
+
+    <!-- Logo -->
+    <g transform="translate(50, 40) scale(3)">
+      <rect x="0" y="0" width="22" height="3.5" rx="1.75" fill="#6366F1"/>
+      <rect x="0" y="0" width="3.5" height="10" rx="1.75" fill="#6366F1"/>
+      <rect x="0" y="8.5" width="22" height="3.5" rx="1.75" fill="#2DD4BF"/>
+      <rect x="18.5" y="8.5" width="3.5" height="10" rx="1.75" fill="#6366F1"/>
+      <rect x="0" y="17" width="22" height="3.5" rx="1.75" fill="#6366F1"/>
+    </g>
+
+    <!-- Title -->
+    <text x="50" y="155" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="56" font-weight="900" fill="white" letter-spacing="-1">
+      SynthStack
+    </text>
+
+    <!-- Tagline -->
+    <text x="50" y="195" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="20" font-weight="500" fill="#94A3B8">
+      Your Agency in a Box
+    </text>
+
+    <!-- Feature cards - 2 columns, 3 rows -->
+    <g transform="translate(50, 250)">
+      <!-- Row 1 -->
+      <!-- Cross-Platform -->
+      <g>
+        <rect x="0" y="0" width="260" height="60" rx="4" fill="rgba(99, 102, 241, 0.1)" stroke="url(#brand-purple)" stroke-width="1.5"/>
+        <rect x="12" y="18" width="3" height="24" rx="1.5" fill="url(#brand-purple)"/>
+        <rect x="18" y="18" width="3" height="24" rx="1.5" fill="url(#brand-purple)"/>
+        <rect x="24" y="18" width="3" height="24" rx="1.5" fill="url(#brand-purple)"/>
+        <text x="45" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="16" font-weight="600" fill="white">
+          Cross-Platform Apps
+        </text>
+      </g>
+
+      <!-- AI Co-founders -->
+      <g transform="translate(280, 0)">
+        <rect x="0" y="0" width="260" height="60" rx="4" fill="rgba(99, 102, 241, 0.1)" stroke="url(#brand-purple)" stroke-width="1.5"/>
+        <rect x="12" y="23" width="20" height="14" rx="2" fill="url(#brand-purple)"/>
+        <rect x="14" y="20" width="16" height="3" rx="1.5" fill="url(#brand-teal)"/>
+        <text x="45" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="16" font-weight="600" fill="white">
+          AI Co-founders
+        </text>
+      </g>
+
+      <!-- Row 2 -->
+      <!-- Directus CMS -->
+      <g transform="translate(0, 75)">
+        <rect x="0" y="0" width="260" height="60" rx="4" fill="rgba(45, 212, 191, 0.1)" stroke="url(#brand-teal)" stroke-width="1.5"/>
+        <rect x="12" y="20" width="20" height="4" rx="2" fill="url(#brand-teal)"/>
+        <rect x="12" y="26" width="20" height="4" rx="2" fill="url(#brand-teal)" opacity="0.7"/>
+        <rect x="12" y="32" width="20" height="4" rx="2" fill="url(#brand-teal)" opacity="0.5"/>
+        <text x="45" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="16" font-weight="600" fill="white">
+          Directus CMS
+        </text>
+      </g>
+
+      <!-- Stripe Billing -->
+      <g transform="translate(280, 75)">
+        <rect x="0" y="0" width="260" height="60" rx="4" fill="rgba(45, 212, 191, 0.1)" stroke="url(#brand-teal)" stroke-width="1.5"/>
+        <rect x="12" y="22" width="20" height="14" rx="2" fill="none" stroke="url(#brand-teal)" stroke-width="2"/>
+        <line x1="12" y1="28" x2="32" y2="28" stroke="url(#brand-teal)" stroke-width="2"/>
+        <text x="45" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="16" font-weight="600" fill="white">
+          Stripe Billing
+        </text>
+      </g>
+
+      <!-- Row 3 -->
+      <!-- Referral System -->
+      <g transform="translate(0, 150)">
+        <rect x="0" y="0" width="260" height="60" rx="4" fill="rgba(99, 102, 241, 0.1)" stroke="url(#brand-purple)" stroke-width="1.5"/>
+        <line x1="16" y1="30" x2="28" y2="30" stroke="url(#brand-purple)" stroke-width="2"/>
+        <rect x="13" y="27" width="6" height="6" rx="3" fill="url(#brand-purple)"/>
+        <rect x="25" y="27" width="6" height="6" rx="3" fill="url(#brand-purple)"/>
+        <text x="45" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="16" font-weight="600" fill="white">
+          Referral System
+        </text>
+      </g>
+
+      <!-- Client Portal -->
+      <g transform="translate(280, 150)">
+        <rect x="0" y="0" width="260" height="60" rx="4" fill="rgba(99, 102, 241, 0.1)" stroke="url(#brand-purple)" stroke-width="1.5"/>
+        <rect x="12" y="22" width="20" height="15" rx="2" fill="none" stroke="url(#brand-purple)" stroke-width="2"/>
+        <line x1="12" y1="28" x2="32" y2="28" stroke="url(#brand-purple)" stroke-width="2"/>
+        <text x="45" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="16" font-weight="600" fill="white">
+          Client Portal
+        </text>
+      </g>
+    </g>
+
+    <!-- URL -->
+    <text x="840" y="500" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="22" font-weight="700" fill="url(#brand-teal)" letter-spacing="0.5">
+      synthstack.app
+    </text>
+
+  </g>
+</svg>

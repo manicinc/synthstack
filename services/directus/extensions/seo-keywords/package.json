@@ -1,0 +1,26 @@
+{
+  "name": "directus-panel-seo-keywords",
+  "version": "1.0.0",
+  "description": "SEO Keywords management panel for tracking and optimizing target keywords",
+  "keywords": [
+    "directus-extension",
+    "directus-extension-panel"
+  ],
+  "type": "module",
+  "directus:extension": {
+    "type": "panel",
+    "path": "dist/index.js",
+    "source": "src/index.ts",
+    "host": "^11.0.0"
+  },
+  "scripts": {
+    "build": "directus-extension build",
+    "dev": "directus-extension build -w --no-minify"
+  },
+  "devDependencies": {
+    "@directus/extensions-sdk": "^11.0.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "vue": "^3.3.0"
+  }
+}

@@ -1,0 +1,129 @@
+<svg width="1200" height="600" viewBox="0 0 1200 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F172A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E293B;stop-opacity:1" />
+    </linearGradient>
+
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366F1;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#8B5CF6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#EC4899;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="600" fill="url(#bg)"/>
+
+  <!-- All content centered in safe zone -->
+  <g transform="translate(600, 300)">
+
+    <!-- Logo and title - left top -->
+    <g transform="translate(-500, -220)">
+      <g transform="scale(2.2)">
+        <rect x="0" y="0" width="22" height="3.5" rx="1.75" fill="#6366F1"/>
+        <rect x="0" y="0" width="3.5" height="10" rx="1.75" fill="#6366F1"/>
+        <rect x="0" y="8.5" width="22" height="3.5" rx="1.75" fill="#2DD4BF"/>
+        <rect x="18.5" y="8.5" width="3.5" height="10" rx="1.75" fill="#6366F1"/>
+        <rect x="0" y="17" width="22" height="3.5" rx="1.75" fill="#6366F1"/>
+      </g>
+
+      <text x="0" y="80" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="42" font-weight="900" fill="white">
+        SynthStack
+      </text>
+
+      <text x="0" y="110" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="16" font-weight="500" fill="#94A3B8">
+        Your Agency in a Box
+      </text>
+    </g>
+
+    <!-- Features grid - left side -->
+    <g transform="translate(-500, -60)">
+      <!-- Row 1 -->
+      <g>
+        <circle cx="14" cy="14" r="14" fill="rgba(99,102,241,0.15)"/>
+        <rect x="8" y="10" width="12" height="8" rx="1.5" fill="url(#accent)" opacity="0.8"/>
+        <text x="38" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="13" fill="#CBD5E1" font-weight="500">
+          Cross-Platform Apps
+        </text>
+      </g>
+
+      <g transform="translate(220, 0)">
+        <circle cx="14" cy="14" r="14" fill="rgba(139,92,246,0.15)"/>
+        <circle cx="14" cy="14" r="7" fill="none" stroke="url(#accent)" stroke-width="1.6"/>
+        <circle cx="11.5" cy="12.5" r="1.3" fill="url(#accent)"/>
+        <circle cx="16.5" cy="12.5" r="1.3" fill="url(#accent)"/>
+        <text x="38" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="13" fill="#CBD5E1" font-weight="500">
+          AI Co-founders
+        </text>
+      </g>
+
+      <!-- Row 2 -->
+      <g transform="translate(0, 42)">
+        <circle cx="14" cy="14" r="14" fill="rgba(45,212,191,0.15)"/>
+        <ellipse cx="14" cy="11" rx="5" ry="2.2" fill="url(#accent)" opacity="0.8"/>
+        <rect x="9" y="11" width="10" height="2.5" fill="url(#accent)" opacity="0.6"/>
+        <ellipse cx="14" cy="13.5" rx="5" ry="2.2" fill="url(#accent)" opacity="0.6"/>
+        <text x="38" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="13" fill="#CBD5E1" font-weight="500">
+          Directus CMS
+        </text>
+      </g>
+
+      <g transform="translate(220, 42)">
+        <circle cx="14" cy="14" r="14" fill="rgba(236,72,153,0.15)"/>
+        <rect x="8" y="10" width="12" height="8" rx="1.5" fill="url(#accent)" opacity="0.8"/>
+        <rect x="8" y="13" width="12" height="2.5" fill="white" opacity="0.2"/>
+        <text x="38" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="13" fill="#CBD5E1" font-weight="500">
+          Stripe Billing
+        </text>
+      </g>
+
+      <!-- Row 3 -->
+      <g transform="translate(0, 84)">
+        <circle cx="14" cy="14" r="14" fill="rgba(139,92,246,0.15)"/>
+        <circle cx="9" cy="12" r="3" fill="url(#accent)" opacity="0.8"/>
+        <circle cx="19" cy="12" r="3" fill="url(#accent)" opacity="0.6"/>
+        <line x1="11.5" y1="12" x2="16.5" y2="12" stroke="url(#accent)" stroke-width="1.6" opacity="0.7"/>
+        <text x="38" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="13" fill="#CBD5E1" font-weight="500">
+          Referral System
+        </text>
+      </g>
+    </g>
+
+    <!-- Pricing section - right side -->
+    <g transform="translate(180, -160)">
+      <!-- Early bird badge -->
+      <text x="0" y="0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="10" font-weight="700" fill="url(#accent)" text-anchor="start" letter-spacing="1.2">
+        EARLY BIRD • 500 COPIES
+      </text>
+
+      <!-- Main price -->
+      <text x="0" y="70" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="72" font-weight="900" fill="white" text-anchor="start">
+        $149
+      </text>
+
+      <!-- Strikethrough original price -->
+      <g transform="translate(0, -15)">
+        <text x="185" y="70" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="28" fill="#64748B" text-anchor="start">
+          $249
+        </text>
+        <line x1="185" y1="58" x2="245" y2="58" stroke="#64748B" stroke-width="2.5"/>
+      </g>
+
+      <!-- Benefits -->
+      <text x="0" y="115" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="13" font-weight="600" fill="#94A3B8" text-anchor="start">
+        ✓ Lifetime License
+      </text>
+      <text x="0" y="137" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="13" font-weight="600" fill="#94A3B8" text-anchor="start">
+        ✓ Full Source Code
+      </text>
+      <text x="0" y="159" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="13" font-weight="600" fill="#94A3B8" text-anchor="start">
+        ✓ Unlimited Projects
+      </text>
+
+      <!-- URL -->
+      <text x="0" y="195" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="16" font-weight="700" fill="url(#accent)" text-anchor="start">
+        synthstack.app →
+      </text>
+    </g>
+  </g>
+</svg>

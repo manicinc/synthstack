@@ -1,0 +1,24 @@
+{
+  "name": "@synthstack/admin-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Admin panel integration and E2E tests for SynthStack",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:api": "vitest run --dir api",
+    "test:integration": "vitest run --dir integration",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:all": "pnpm test && pnpm test:e2e"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "vitest": "^1.0.0",
+    "@vitest/coverage-v8": "^1.0.0"
+  }
+}
+

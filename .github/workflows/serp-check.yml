@@ -1,0 +1,193 @@
+# SynthStack SERP Ranking Check
+#
+# Automated workflow to check keyword rankings using SerpAPI.
+# Runs on a schedule to stay within the 250 searches/month quota.
+#
+# Schedule Strategy (to stay under 250/month limit):
+# - Critical keywords: Weekly (Mon) - ~20 searches/month
+# - High priority keywords: Bi-weekly (1st & 15th) - ~20 searches/month
+# - Medium priority keywords: Monthly (1st) - ~15 searches/month
+# Total: ~55 searches/month, leaving buffer for manual checks
+#
+# Required Secrets:
+# - SERPAPI_KEY: SerpAPI API key
+# - API_URL: Backend API URL
+
+name: SERP Ranking Check
+
+on:
+  schedule:
+    # Every Monday at 6 AM UTC (for critical keywords)
+    - cron: '0 6 * * 1'
+    # 1st and 15th of month at 7 AM UTC (for high priority keywords)
+    - cron: '0 7 1,15 * *'
+  workflow_dispatch:
+    inputs:
+      priority:
+        description: 'Keyword priority to check'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - critical
+          - high
+          - medium
+          - all
+      dry_run:
+        description: 'Dry run (no API calls)'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+
+jobs:
+  check-rankings:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Determine check priority
+        id: priority
+        run: |
+          # Determine priority based on schedule or input
+          if [[ -n "${{ github.event.inputs.priority }}" ]]; then
+            echo "priority=${{ github.event.inputs.priority }}" >> $GITHUB_OUTPUT
+          else
+            # Check day of month and day of week
+            DAY_OF_MONTH=$(date +%d)
+            DAY_OF_WEEK=$(date +%u)
+
+            if [[ "$DAY_OF_WEEK" == "1" ]]; then
+              echo "priority=critical" >> $GITHUB_OUTPUT
+            elif [[ "$DAY_OF_MONTH" == "01" || "$DAY_OF_MONTH" == "15" ]]; then
+              echo "priority=high" >> $GITHUB_OUTPUT
+            else
+              echo "priority=medium" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Check API quota
+        id: quota
+        env:
+          API_URL: ${{ secrets.API_URL }}
+        run: |
+          # Check remaining quota before proceeding
+          QUOTA_RESPONSE=$(curl -s "$API_URL/api/v1/serp/quota" || echo '{"remaining":0}')
+          REMAINING=$(echo $QUOTA_RESPONSE | jq -r '.remaining // 0')
+
+          echo "remaining=$REMAINING" >> $GITHUB_OUTPUT
+
+          if [[ "$REMAINING" -lt "5" ]]; then
+            echo "::warning::Low SERP API quota remaining: $REMAINING"
+          fi
+
+      - name: Run SERP checks
+        if: steps.quota.outputs.remaining > 0 && github.event.inputs.dry_run != 'true'
+        env:
+          SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+          API_URL: ${{ secrets.API_URL }}
+        run: |
+          PRIORITY="${{ steps.priority.outputs.priority }}"
+          echo "Running SERP checks for priority: $PRIORITY"
+
+          # Get keywords to check
+          KEYWORDS_RESPONSE=$(curl -s "$API_URL/api/v1/seo/keywords?check_frequency=$PRIORITY")
+
+          # Check each keyword
+          echo "$KEYWORDS_RESPONSE" | jq -c '.[]' | while read keyword; do
+            KEYWORD_ID=$(echo $keyword | jq -r '.id')
+            KEYWORD_TEXT=$(echo $keyword | jq -r '.keyword')
+
+            echo "Checking keyword: $KEYWORD_TEXT"
+
+            # Trigger check via API
+            curl -s -X POST "$API_URL/api/v1/serp/check/$KEYWORD_ID" \
+              -H "Content-Type: application/json" \
+              || echo "Failed to check keyword: $KEYWORD_ID"
+
+            # Rate limit: 1 request per 2 seconds
+            sleep 2
+          done
+
+      - name: Generate report
+        env:
+          API_URL: ${{ secrets.API_URL }}
+        run: |
+          # Fetch dashboard data for report
+          DASHBOARD=$(curl -s "$API_URL/api/v1/serp/dashboard")
+
+          # Create report
+          cat > report.md << EOF
+          # SERP Ranking Report
+
+          **Date:** $(date -u +"%Y-%m-%d %H:%M UTC")
+          **Priority:** ${{ steps.priority.outputs.priority }}
+          **Quota Remaining:** ${{ steps.quota.outputs.remaining }}
+
+          ## Summary
+
+          $(echo $DASHBOARD | jq -r '
+            "- Total Keywords Tracked: \(.total_keywords // 0)\n" +
+            "- Average Position: \(.average_position // "N/A")\n" +
+            "- Keywords in Top 10: \(.top_10_count // 0)\n" +
+            "- Keywords in Top 3: \(.top_3_count // 0)"
+          ')
+
+          ## Position Changes
+
+          | Keyword | Previous | Current | Change |
+          |---------|----------|---------|--------|
+          $(echo $DASHBOARD | jq -r '.recent_changes[]? | "| \(.keyword) | \(.previous_position) | \(.current_position) | \(.change) |"')
+
+          EOF
+
+          cat report.md
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: serp-report-${{ github.run_id }}
+          path: report.md
+          retention-days: 30
+
+      - name: Send notification on significant changes
+        if: always()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        run: |
+          # Check for significant ranking changes (optional)
+          if [[ -n "$SLACK_WEBHOOK" ]]; then
+            # Send to Slack if configured
+            curl -X POST "$SLACK_WEBHOOK" \
+              -H "Content-Type: application/json" \
+              -d '{
+                "text": "SERP Check Complete",
+                "blocks": [
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "*SERP Ranking Check Complete*\nPriority: ${{ steps.priority.outputs.priority }}\nQuota Remaining: ${{ steps.quota.outputs.remaining }}"
+                    }
+                  }
+                ]
+              }'
+          fi

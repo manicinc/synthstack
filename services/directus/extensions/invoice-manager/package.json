@@ -1,0 +1,30 @@
+{
+  "name": "@synthstack/invoice-manager",
+  "version": "1.0.0",
+  "description": "Invoice management panel for Directus",
+  "type": "module",
+  "directus:extension": {
+    "type": "panel",
+    "path": "dist/index.js",
+    "source": "src/index.ts",
+    "host": "^11.3.0"
+  },
+  "scripts": {
+    "build": "directus-extension build",
+    "dev": "directus-extension build --watch"
+  },
+  "keywords": [
+    "directus",
+    "directus-extension",
+    "directus-panel",
+    "invoice",
+    "billing"
+  ],
+  "devDependencies": {
+    "@directus/extensions-sdk": "^12.0.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "vue": "^3.4.0"
+  },
+  "dependencies": {}
+}

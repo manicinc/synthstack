@@ -1,0 +1,54 @@
+# =============================================================================
+# SynthStack - Version Testing (DISABLED)
+# =============================================================================
+# 
+# This workflow tested both LITE and PRO versions of SynthStack.
+# It is disabled for the community edition since only one version exists.
+#
+# If you fork this and create PRO/LITE variants, you can re-enable this
+# workflow by removing the 'if: false' condition.
+#
+# =============================================================================
+
+name: Test Versions
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+jobs:
+  # This job is intentionally empty - the workflow is disabled
+  # Remove the 'if: false' to re-enable version testing
+  disabled-notice:
+    name: Version Testing (Disabled)
+    runs-on: ubuntu-latest
+    if: false
+    steps:
+      - name: Notice
+        run: |
+          echo "Version testing is disabled for the community edition."
+          echo "See .github/workflows/test-versions.yml for documentation."
+
+# =============================================================================
+# ORIGINAL WORKFLOW (COMMENTED OUT FOR REFERENCE)
+# =============================================================================
+# 
+# The original workflow tested:
+# - LITE backend tests (ENABLE_COPILOT=false, ENABLE_REFERRALS=false)
+# - LITE frontend tests
+# - LITE E2E tests  
+# - PRO backend tests (ENABLE_COPILOT=true, ENABLE_REFERRALS=true)
+# - PRO frontend tests
+# - PRO E2E tests
+# - Build size comparison report
+#
+# To re-enable this for a commercial fork with LITE/PRO editions:
+# 1. Remove the disabled-notice job above
+# 2. Uncomment the job definitions below
+# 3. Ensure .env.lite.example and .env.pro.example exist
+# 4. Add the corresponding E2E test specs (lite-version.spec.ts, pro-version.spec.ts)
+#
+# See the git history or synthstack-pro repository for the full implementation.
+# =============================================================================

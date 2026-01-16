@@ -1,0 +1,794 @@
+{
+  "app": {
+    "name": "SynthStack",
+    "tagline": "AI-Native Full-Stack SaaS Boilerplate"
+  },
+  "nav": {
+    "home": "Home",
+    "features": "Features",
+    "pricing": "Pricing",
+    "dashboard": "Dashboard",
+    "generate": "Generate",
+    "printers": "Printers",
+    "filaments": "Filaments",
+    "profiles": "Profiles",
+    "myProfiles": "My Profiles",
+    "history": "History",
+    "account": "Account",
+    "subscription": "Subscription",
+    "login": "Log In",
+    "signup": "Sign Up",
+    "logout": "Log Out"
+  },
+  "landing": {
+    "hero": {
+      "title": "Perfect Prints, Every Time",
+      "subtitle": "Upload your STL. Get AI-optimized settings. Export to any slicer.",
+      "cta": "Get Early Bird Access - $149",
+      "secondaryCta": "View on GitHub",
+      "promoWithStats": "Limited to {max} lifetime licenses • {remaining} remaining • Save {discount}",
+      "promoDefault": "Limited to 150 lifetime licenses • Save $100 (Regular $249)"
+    },
+    "tech": {
+      "label": "Built with modern, battle-tested technologies"
+    },
+    "admin": {
+      "badge": "Built-in Admin",
+      "title": "Complete Admin Dashboard",
+      "subtitle": "Full-featured CMS and administrative control center powered by Directus"
+    },
+    "opensource": {
+      "badge": "Free Forever",
+      "title": "Community Edition",
+      "description": "The complete SynthStack core is source-available under the Community License (modified MIT, non-commercial). Great for learning, side projects, and evaluation.",
+      "features": {
+        "themes": "Themes & Dark Mode",
+        "payments": "Stripe / LemonSqueezy",
+        "subscriptions": "Subscriptions",
+        "blog": "Blog System",
+        "cms": "Directus CMS",
+        "email": "Email Templates",
+        "crossPlatform": "Cross-Platform",
+        "license": "Community License (modified MIT)"
+      },
+      "github": {
+        "label": "Star on GitHub"
+      },
+      "note": "AI Co-Founders is a premium add-on that supercharges your SynthStack with 6 specialized AI agents."
+    },
+    "pricing": {
+      "title": "Simple, Transparent Pricing",
+      "subtitle": "Source-available core, premium AI agents",
+      "community": {
+        "name": "Community",
+        "price": "Free",
+        "period": "forever",
+        "description": "Source-available starter kit (non-commercial)",
+        "features": {
+          "source": "Full source code (Community License)",
+          "cms": "Directus CMS integration",
+          "billing": "Stripe/LemonSqueezy billing",
+          "blog": "Blog & newsletter",
+          "crossPlatform": "Cross-platform builds",
+          "noAgents": "AI Co-Founders agents",
+          "noGithub": "GitHub integration",
+          "noSuggestions": "Proactive suggestions"
+        },
+        "cta": "Get Started"
+      },
+      "pro": {
+        "badge": "Most Popular",
+        "name": "Pro",
+        "price": "$297",
+        "period": "lifetime",
+        "description": "Full AI Co-Founders experience",
+        "features": {
+          "everything": "Everything in Community",
+          "agents": "All 6 AI agents",
+          "github": "GitHub PR automation",
+          "suggestions": "Proactive suggestions",
+          "rag": "RAG knowledge base",
+          "seoAudit": "AI SEO audit & optimization",
+          "templates": "All prompt templates",
+          "support": "Priority support",
+          "updates": "Lifetime updates"
+        },
+        "cta": "Buy Now"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Custom",
+        "period": "contact us",
+        "description": "For teams and agencies",
+        "features": {
+          "everything": "Everything in Pro",
+          "training": "Custom agent training",
+          "whiteLabel": "White-label branding",
+          "support": "Dedicated support",
+          "sla": "SLA guarantees",
+          "onPremise": "On-premise deployment",
+          "integrations": "Custom integrations",
+          "teamTraining": "Team training"
+        },
+        "cta": "Contact Sales"
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "subtitle": "Everything you need to know about SynthStack",
+      "items": {
+        "free": {
+          "question": "Is SynthStack really free?",
+          "answer": "Yes! The Community Edition is free for learning, personal projects, and evaluation under the Community License (modified MIT, non-commercial). For commercial production use, purchase a Commercial License."
+        },
+        "included": {
+          "question": "What's included in the Community Edition?",
+          "answer": "Everything you need to build and self-host a SaaS: Vue 3 + Quasar UI, Fastify API, Directus CMS, Supabase auth, Stripe billing, blog, newsletter, analytics, theming, and cross-platform builds."
+        },
+        "referral": {
+          "question": "How does the referral program work?",
+          "answer": "Share your unique link, earn rewards when friends sign up and purchase. Unlock tiered rewards: discount codes, credits, free months, up to 50% lifetime discount at the Elite tier."
+        },
+        "aiDifference": {
+          "question": "What makes AI Co-Founders different?",
+          "answer": "They're specialized agents with RAG context (they know your docs, code, CMS). They take real actions like creating PRs and blog posts. All actions require your approval first."
+        },
+        "customAgents": {
+          "question": "Can I create custom AI agents?",
+          "answer": "Absolutely! Create your own specialized agents directly in Directus CMS - no coding required. Define custom prompts, personalities, icons, and capabilities. New agents appear instantly in your app."
+        },
+        "apiKeys": {
+          "question": "Can I use my own AI API keys?",
+          "answer": "Yes! SynthStack supports OpenAI and Anthropic APIs with your own keys. You control costs and have full visibility into usage. No vendor lock-in."
+        },
+        "subscription": {
+          "question": "Is there a subscription option?",
+          "answer": "We offer both lifetime ($297 one-time) and monthly subscription plans. Test mode lets you try everything with $0 charges. Enterprise teams can contact us for custom pricing."
+        },
+        "byok": {
+          "question": "What is BYOK (Bring Your Own Keys)?",
+          "answer": "BYOK allows Premium and Lifetime users to use their own API keys from OpenAI and Anthropic instead of consuming SynthStack credits. This can save money at scale, bypass rate limits, and provide unlimited AI usage. Your keys are encrypted and stored securely."
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to build your next project?",
+      "subtitle": "Full-stack SaaS boilerplate with AI superpowers. Ship 10x faster.",
+      "primary": "Get Started Free",
+      "secondary": "Upgrade to Pro",
+      "note": "Community License core · Pro: $297 lifetime · Referral rewards available"
+    },
+    "features": {
+      "title": "Why SynthStack?",
+      "subtitle": "Ship faster with AI-powered development.",
+      "stlAnalysis": {
+        "title": "Smart STL Analysis",
+        "description": "Our AI examines your model's geometry, detecting overhangs, thin walls, and optimal print orientations."
+      },
+      "aiSettings": {
+        "title": "AI-Generated Settings",
+        "description": "Get optimized parameters based on your specific printer, filament, and model characteristics."
+      },
+      "multiSlicer": {
+        "title": "Export Anywhere",
+        "description": "Download ready-to-use profiles for OrcaSlicer, PrusaSlicer, Cura, and more."
+      },
+      "community": {
+        "title": "Community Validated",
+        "description": "Share profiles, see success rates, and build on what works."
+      }
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "step1": {
+        "title": "Upload Your STL",
+        "description": "Drag and drop your 3D model for instant analysis"
+      },
+      "step2": {
+        "title": "Select Your Setup",
+        "description": "Choose your printer and filament from our database"
+      },
+      "step3": {
+        "title": "Generate Settings",
+        "description": "AI creates optimized parameters for your specific print"
+      },
+      "step4": {
+        "title": "Export & Print",
+        "description": "Download for your slicer and start printing"
+      }
+    },
+    "stats": {
+      "profiles": "Profiles Generated",
+      "printers": "Printers Supported",
+      "successRate": "Success Rate"
+    },
+    "featuresGrid": {
+      "badge": "Everything You Need",
+      "title": "Full-Stack SaaS Features",
+      "subtitle": "Production-ready components out of the box. Build faster, ship sooner.",
+      "moreFeatures": {
+        "crossPlatform": "Cross-Platform (Web, iOS, Android, Desktop)",
+        "typescript": "TypeScript + Vue 3 + Fastify",
+        "docker": "Docker-Ready Deployment",
+        "docs": "Full Documentation"
+      },
+      "items": {
+        "workflows": {
+          "title": "Visual Workflows",
+          "description": "Build automations with drag-and-drop. LangGraph-powered DAGs execute AI agents, webhooks, and integrations in real-time."
+        },
+        "aiAgents": {
+          "title": "AI Co-Founders",
+          "description": "Create specialized AI agents in minutes. Edit prompts, personality, and capabilities through the admin panel - no code required."
+        },
+        "webSearch": {
+          "title": "Live Web Research",
+          "description": "Agents search the web in real-time. Get current prices, news, competitor data - not stale training data."
+        },
+        "orchestration": {
+          "title": "Multi-Agent Orchestration",
+          "description": "Agents delegate tasks to each other. Developer asks Researcher for context, Marketer asks SEO for keywords."
+        },
+        "auth": {
+          "title": "Flexible Authentication",
+          "description": "Choose between Supabase (managed) or Local PostgreSQL (self-hosted). Both support OAuth, JWT, and RBAC."
+        },
+        "selfHosted": {
+          "title": "Self-Hosted Auth Option",
+          "description": "Run without external dependencies using Local PostgreSQL Auth. Argon2id hashing, session management, and full data sovereignty."
+        },
+        "stripe": {
+          "title": "Stripe Billing",
+          "description": "Subscriptions and one-time payments. Customer portal, invoices, webhooks, and test mode built-in."
+        },
+        "directus": {
+          "title": "Directus CMS",
+          "description": "Full admin panel with visual editing, real-time collaboration, versioning, and live preview built-in."
+        },
+        "visualEditing": {
+          "title": "Visual In-Place Editing",
+          "description": "Edit content directly on your website. No switching between admin panel and preview - see changes in context."
+        },
+        "collaboration": {
+          "title": "Real-Time Collaboration",
+          "description": "Work together seamlessly with smart field locking. See who's editing what with conflict-free collaboration."
+        },
+        "versioning": {
+          "title": "Content Versioning",
+          "description": "Track all changes with automatic versioning. Restore previous versions with a single click."
+        },
+        "analytics": {
+          "title": "Analytics Dashboard",
+          "description": "Track user engagement, page views, and custom events. Built-in charts and export to CSV."
+        },
+        "newsletter": {
+          "title": "Newsletter & Email",
+          "description": "Subscriber management, template builder, and campaign tracking. Resend or SMTP integration."
+        },
+        "blog": {
+          "title": "Blog Platform",
+          "description": "Full-featured blog with categories, tags, SEO metadata, and markdown editor in Directus."
+        },
+        "seoAudit": {
+          "title": "SEO Audit & Optimization",
+          "description": "AI-powered SEO audits with keyword research, content scoring, and optimization suggestions. Lighthouse CI integration for automated performance tracking."
+        },
+        "theming": {
+          "title": "Premium Theming System",
+          "description": "10 built-in presets with 30+ light/dark combinations. 60+ CSS variables for complete customization. Real-time switching with database persistence."
+        },
+        "referral": {
+          "title": "Referral System",
+          "description": "Seasonal campaigns, tiered rewards, discount codes, and leaderboards. Fully configurable."
+        },
+        "integrations": {
+          "title": "15+ Integrations",
+          "description": "Connect Slack, Discord, GitHub, Notion, Google Sheets, Twilio, Jira, and more. BYOK supported."
+        },
+        "knowledgeBase": {
+          "title": "RAG Knowledge Base",
+          "description": "Ingest documents from Drive, Notion, or URLs. Vector embeddings power AI agent context."
+        }
+      }
+    },
+    "threeD": {
+      "badge": "Advanced Visualization",
+      "title": "Complex Workflows in 3D",
+      "subtitle": "Visualize intricate multi-step workflows with our interactive 3D graph engine"
+    },
+    "theming": {
+      "badge": "Best-Looking Quasar UX on the Web",
+      "subtitle": "Full Theming & Customization Built-In"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to your account",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign In",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up"
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Start optimizing your prints",
+      "name": "Display Name",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "submit": "Create Account",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in"
+    },
+    "forgotPassword": {
+      "title": "Reset Password",
+      "subtitle": "Enter your email to receive a reset link",
+      "email": "Email",
+      "submit": "Send Reset Link",
+      "backToLogin": "Back to login"
+    },
+    "social": {
+      "or": "or continue with",
+      "google": "Google",
+      "github": "GitHub"
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome back",
+    "credits": {
+      "title": "Credits",
+      "remaining": "{count} remaining",
+      "usedToday": "{count} used today",
+      "unlimited": "Unlimited"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "newGeneration": "New Generation",
+      "browsePrinters": "Browse Printers",
+      "viewProfiles": "View Profiles"
+    },
+    "recentGenerations": {
+      "title": "Recent Generations",
+      "empty": "No generations yet. Start by uploading an STL!"
+    }
+  },
+  "generate": {
+    "title": "Generate Print Settings",
+    "upload": {
+      "title": "Upload STL",
+      "dragDrop": "Drag and drop your STL file here",
+      "or": "or",
+      "browse": "Browse Files",
+      "maxSize": "Maximum file size: 50MB"
+    },
+    "analysis": {
+      "title": "Model Analysis",
+      "dimensions": "Dimensions",
+      "volume": "Volume",
+      "faces": "Faces",
+      "overhangs": "Overhangs",
+      "thinWalls": "Thin Walls",
+      "difficulty": "Print Difficulty"
+    },
+    "settings": {
+      "title": "Settings",
+      "printer": "Select Printer",
+      "filament": "Select Filament",
+      "quality": "Quality Preset",
+      "priorities": "Priorities",
+      "speed": "Speed",
+      "strength": "Strength",
+      "material": "Material Usage"
+    },
+    "result": {
+      "title": "Generated Settings",
+      "confidence": "Confidence",
+      "export": "Export",
+      "save": "Save Profile",
+      "regenerate": "Regenerate"
+    }
+  },
+  "pricing": {
+    "title": "Simple, Transparent Pricing",
+    "subtitle": "Start free. Upgrade when you need more.",
+    "monthly": "Monthly",
+    "annually": "Annually",
+    "savePercent": "Save {percent}%",
+    "loading": "Loading pricing...",
+    "error": "Failed to load pricing",
+    "cta": "Get Started"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try Again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "download": "Download",
+    "share": "Share",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "all": "All",
+    "none": "None"
+  },
+  "errors": {
+    "notFound": "Page not found",
+    "unauthorized": "Please log in to continue",
+    "forbidden": "You don't have permission to access this",
+    "serverError": "Server error. Please try again later."
+  },
+  "language": {
+    "select": "Select Language",
+    "current": "Current Language"
+  },
+  "referral": {
+    "page": {
+      "title": "Referral Program",
+      "subtitle": "Earn rewards for sharing SynthStack with your network",
+      "loading": "Loading your referral dashboard...",
+      "signInRequired": "Sign In Required",
+      "signInDescription": "Please sign in to access your referral dashboard and start earning rewards.",
+      "signIn": "Sign In",
+      "viewTutorial": "View Tutorial",
+      "newHere": "New to the referral program?",
+      "takeTour": "Take a quick tour to learn how to earn rewards by sharing SynthStack.",
+      "startTutorial": "Start Tutorial"
+    },
+    "dashboard": {
+      "howItWorks": {
+        "title": "How It Works",
+        "step1": {
+          "title": "Share Your Link",
+          "description": "Copy and share your unique referral link with friends"
+        },
+        "step2": {
+          "title": "Friends Sign Up",
+          "description": "They create an account using your link"
+        },
+        "step3": {
+          "title": "Earn Rewards",
+          "description": "Get rewards when they make purchases"
+        },
+        "step4": {
+          "title": "Claim & Use",
+          "description": "Redeem discounts, credits, and more"
+        }
+      },
+      "stats": {
+        "clicks": "Total Clicks",
+        "referrals": "Successful Referrals",
+        "pending": "Pending",
+        "rewards": "Rewards Earned"
+      }
+    },
+    "onboarding": {
+      "back": "Back",
+      "next": "Next",
+      "getStarted": "Get Started",
+      "welcome": {
+        "title": "Welcome to the Referral Program!",
+        "description": "Earn amazing rewards by sharing SynthStack with your friends and network.",
+        "benefit1": "Earn discount codes",
+        "benefit2": "Get bonus credits",
+        "benefit3": "Unlock premium features"
+      },
+      "code": {
+        "title": "Your Unique Referral Code",
+        "description": "This is your personal code. When friends use it, you get credit for the referral.",
+        "yourCode": "Your Code",
+        "yourLink": "Your Referral Link",
+        "loading": "Generating your code..."
+      },
+      "share": {
+        "title": "Share Your Link",
+        "description": "The more you share, the more you can earn. Choose your favorite sharing method.",
+        "copyLink": "Copy Link",
+        "copyLinkDesc": "Copy your link and paste it anywhere",
+        "social": "Social Media",
+        "socialDesc": "Share directly to Twitter or LinkedIn",
+        "email": "Email",
+        "emailDesc": "Send a personalized invitation"
+      },
+      "track": {
+        "title": "Track Your Progress",
+        "description": "Monitor your referrals in real-time and watch your rewards grow.",
+        "clicks": "Track link clicks",
+        "signups": "See who signed up",
+        "conversions": "Monitor conversions",
+        "rewards": "Unlock rewards",
+        "tierPreview": "Unlock Tier Badges"
+      },
+      "rewards": {
+        "title": "Claim Your Rewards",
+        "description": "As you hit milestones, you'll unlock increasingly valuable rewards.",
+        "discounts": "Discount Codes",
+        "discountsDesc": "Percentage off purchases",
+        "credits": "Bonus Credits",
+        "creditsDesc": "Use for AI features",
+        "freeMonths": "Free Months",
+        "freeMonthsDesc": "Subscription credit",
+        "upgrades": "Tier Upgrades",
+        "upgradesDesc": "Unlock premium access",
+        "ready": "You're ready to start earning!"
+      }
+    },
+    "tooltips": {
+      "clicks": {
+        "title": "Total Clicks",
+        "description": "The number of times someone has clicked your referral link."
+      },
+      "referrals": {
+        "title": "Successful Referrals",
+        "description": "Users who signed up and verified their email using your link."
+      },
+      "pending": {
+        "title": "Pending Referrals",
+        "description": "Users who clicked but haven't completed signup or verification yet."
+      },
+      "rewards": {
+        "title": "Rewards Earned",
+        "description": "Total rewards you've unlocked through referrals."
+      },
+      "tier": {
+        "title": "Current Tier",
+        "description": "Your referral tier determines the rewards you can unlock."
+      },
+      "code": {
+        "title": "Referral Code",
+        "description": "Your unique code that tracks referrals back to you."
+      },
+      "leaderboard": {
+        "title": "Leaderboard",
+        "description": "See how you rank against other referrers this season."
+      },
+      "discountCode": {
+        "title": "Discount Code",
+        "description": "A code you can use at checkout for a discount."
+      },
+      "credits": {
+        "title": "Credits",
+        "description": "Platform currency for AI generations and workflows."
+      },
+      "conversion": {
+        "title": "Conversion",
+        "description": "When a referred user makes their first purchase."
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "moreHelp": "Still have questions?",
+      "contactSupport": "Contact Support",
+      "viewDocs": "View Documentation",
+      "questions": {
+        "howItWorks": {
+          "q": "How does the referral program work?",
+          "a": "Share your unique referral link with friends. When they sign up and make purchases, you earn rewards based on your referral tier. The more people you refer, the better rewards you unlock!"
+        },
+        "getCode": {
+          "q": "How do I get my referral code?",
+          "a": "Your referral code is automatically generated when you visit the referral dashboard. You can find it at the top of this page along with your shareable link."
+        },
+        "whenCredit": {
+          "q": "When do I get credit for a referral?",
+          "a": "You receive credit when someone signs up using your link <strong>and</strong> verifies their email address. The signup must occur within 30 days of clicking your link."
+        },
+        "rewardTypes": {
+          "q": "What types of rewards can I earn?",
+          "a": "Rewards include: <ul><li><strong>Discount codes</strong> - Percentage off purchases</li><li><strong>Credits</strong> - Use for AI features</li><li><strong>Free months</strong> - Subscription credit</li><li><strong>Tier upgrades</strong> - Premium access</li></ul>"
+        },
+        "claimRewards": {
+          "q": "How do I claim my rewards?",
+          "a": "When you unlock a reward tier, it appears in the Rewards section of your dashboard. Click <strong>Claim</strong> to receive your reward. Credits are added instantly; discount codes are generated for you to use."
+        },
+        "expiration": {
+          "q": "Do rewards or codes expire?",
+          "a": "Credits never expire. Discount codes may have expiration dates or usage limits - check the specific terms when you claim them."
+        },
+        "selfReferral": {
+          "q": "Can I refer myself?",
+          "a": "No, self-referrals are not allowed. Using your own referral code to create another account violates our terms of service."
+        },
+        "trackProgress": {
+          "q": "How can I track my referral progress?",
+          "a": "Your dashboard shows real-time stats including clicks, signups, pending referrals, and your progress toward the next reward tier."
+        },
+        "discountCodes": {
+          "q": "How do discount codes work?",
+          "a": "Discount codes are applied at checkout. Enter the code in the discount field to receive your percentage off. Each code has specific terms (usage limits, applicable products)."
+        },
+        "creditsVsDiscounts": {
+          "q": "What's the difference between credits and discounts?",
+          "a": "<strong>Credits</strong> are platform currency used for AI generations and workflow executions. <strong>Discount codes</strong> reduce the price of purchases and subscriptions."
+        }
+      }
+    }
+  },
+  "workflows": {
+    "page": {
+      "title": "Workflows",
+      "subtitle": "Automate your business with visual workflows",
+      "tutorial": "Tutorial",
+      "newWorkflow": "New Workflow",
+      "openEditor": "Open Editor",
+      "browseTemplates": "Browse Templates",
+      "viewAll": "View All"
+    },
+    "onboarding": {
+      "step": "Step {current} of {total}",
+      "skip": "Skip tutorial",
+      "back": "Back",
+      "next": "Next",
+      "openEditor": "Open Editor",
+      "completeMessage": "You're ready to build workflows!",
+      "welcome": {
+        "title": "Welcome to Workflows!",
+        "description": "Build powerful automations visually - no coding required. Connect AI agents, external services, and your data.",
+        "aiAgents": "AI Agents",
+        "aiAgentsDesc": "Invoke AI co-founders to analyze, plan, and generate",
+        "triggers": "Smart Triggers",
+        "triggersDesc": "Schedule, webhooks, and event-driven automation",
+        "integrations": "4000+ Integrations",
+        "integrationsDesc": "Connect Slack, Google, Stripe, and more"
+      },
+      "nodes": {
+        "title": "Understanding Nodes",
+        "description": "Workflows are built from nodes connected by wires. Each node has a specific function.",
+        "input": "Input Nodes",
+        "inputDesc": "Start your flow - triggers, webhooks, schedules",
+        "process": "Process Nodes",
+        "processDesc": "Transform data - functions, AI agents, logic",
+        "output": "Output Nodes",
+        "outputDesc": "Send results - Slack, email, database"
+      },
+      "firstFlow": {
+        "title": "Your First Flow",
+        "description": "Building a workflow is simple. Just drag, connect, and deploy!",
+        "step1": "Drag nodes from the palette",
+        "step1Desc": "Find nodes on the left sidebar and drag them onto the canvas",
+        "step2": "Connect nodes with wires",
+        "step2Desc": "Click and drag from output ports to input ports",
+        "step3": "Configure each node",
+        "step3Desc": "Double-click nodes to set their properties",
+        "step4": "Click Deploy",
+        "step4Desc": "Save and activate your workflow with the Deploy button",
+        "tip": "Pro tip: Start with a template to learn faster!"
+      },
+      "integrations": {
+        "title": "Connect Your Integrations",
+        "description": "Workflows become powerful when connected to your tools. Set up API keys to unlock all features.",
+        "configure": "Configure Integrations",
+        "note": "You can add integrations later in Settings"
+      }
+    },
+    "templates": {
+      "title": "Workflow Templates",
+      "search": "Search templates...",
+      "category": "Category",
+      "difficulty": "Difficulty",
+      "allCategories": "All Categories",
+      "allLevels": "All Levels",
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced",
+      "featured": "Featured",
+      "installs": "installs",
+      "nodes": "nodes",
+      "preview": "Preview",
+      "install": "Install",
+      "noResults": "No templates found",
+      "noResultsDesc": "Try adjusting your search or filters",
+      "clearFilters": "Clear Filters",
+      "installSuccess": "Template \"{name}\" installed successfully!",
+      "installError": "Failed to install template",
+      "requiredIntegrations": "Required Integrations",
+      "noIntegrationsRequired": "No integrations required",
+      "flowStructure": "Flow Structure",
+      "categories": {
+        "gettingStarted": "Getting Started",
+        "aiAgents": "AI Agents",
+        "notifications": "Notifications",
+        "dataSync": "Data Sync",
+        "scheduling": "Scheduling",
+        "devops": "DevOps"
+      },
+      "quickFilters": {
+        "zeroConfig": "Zero Config",
+        "aiPowered": "AI Powered",
+        "popular": "Popular",
+        "new": "New"
+      }
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "help": "Help",
+      "fromTemplate": "From Template",
+      "fromTemplateDesc": "Start with a pre-built workflow",
+      "createBlank": "Create Blank",
+      "createBlankDesc": "Start from scratch",
+      "openEditor": "Open Editor",
+      "openEditorDesc": "Launch the visual builder",
+      "viewDocs": "View Docs",
+      "viewDocsDesc": "Read the documentation",
+      "popularTemplates": "Popular Templates",
+      "viewAll": "View All",
+      "helpTitle": "Workflow Quick Actions",
+      "helpFromTemplate": "Browse our library of pre-built templates. Each template is ready to use with minimal configuration.",
+      "helpCreateBlank": "Start with an empty canvas and build your workflow from scratch using nodes from the palette.",
+      "helpOpenEditor": "Launch the full Node-RED editor in a new tab to build and manage your workflows.",
+      "viewFullDocs": "View Full Documentation"
+    }
+  },
+  "apiKeys": {
+    "tooltips": {
+      "provider": {
+        "title": "API Provider",
+        "description": "Choose which AI provider's API keys you want to use. OpenAI for GPT models, Anthropic for Claude models. You can add keys for multiple providers.",
+        "icon": "info",
+        "color": "primary"
+      },
+      "rateLimits": {
+        "title": "Rate Limits Bypassed",
+        "description": "When using BYOK, SynthStack's rate limits don't apply. You're only subject to your provider's limits, allowing for higher throughput and more requests.",
+        "icon": "speed",
+        "color": "positive"
+      },
+      "usageStats": {
+        "title": "Usage Tracking",
+        "description": "BYOK usage is tracked separately from internal credits. View your API usage, token consumption, and estimated costs for each provider over the last 30 days.",
+        "icon": "analytics",
+        "color": "info"
+      },
+      "fallback": {
+        "title": "Graceful Fallback",
+        "description": "If your BYOK key fails or runs out of quota, the system automatically falls back to internal credits (if available). You'll be notified if this happens.",
+        "icon": "swap_horiz",
+        "color": "warning"
+      },
+      "validation": {
+        "title": "Key Validation",
+        "description": "API keys are automatically validated when you save them. Valid keys are marked with a green chip. Invalid keys show an error message with details on how to fix the issue.",
+        "icon": "verified",
+        "color": "positive"
+      },
+      "routingMode": {
+        "title": "Routing Mode",
+        "description": "The current routing mode determines whether BYOK or internal credits are used first. Admins can configure this system-wide: BYOK-First (default), Credit-First, or BYOK-Only.",
+        "icon": "route",
+        "color": "info"
+      },
+      "creditSavings": {
+        "title": "Save Credits with BYOK",
+        "description": "Using BYOK means you don't consume SynthStack credits for AI requests. At scale, this can save significant money by using provider direct pricing instead of credit-based billing.",
+        "icon": "savings",
+        "color": "positive"
+      },
+      "keySource": {
+        "title": "Current Key Source",
+        "description": "Shows whether your current requests are using BYOK (your own API keys) or internal credits (SynthStack's API keys). This helps you understand your current billing source.",
+        "icon": "key",
+        "color": "primary"
+      },
+      "security": {
+        "title": "Security & Privacy",
+        "description": "Your API keys are encrypted with AES-256 before being stored in the database. Keys are only decrypted in-memory when making API calls. We never log or expose your full keys.",
+        "icon": "security",
+        "color": "info"
+      },
+      "costEstimation": {
+        "title": "Cost Estimation",
+        "description": "Estimated costs are based on public provider pricing and actual token usage. Check your provider's invoice for exact costs, especially if you have custom pricing agreements.",
+        "icon": "attach_money",
+        "color": "warning"
+      }
+    }
+  }
+}

@@ -1,0 +1,110 @@
+{
+    "app": {
+        "name": "SynthStack",
+        "tagline": "Your AI Co-Founders",
+        "description": "AI-native, cross-platform SaaS boilerplate built with Vue Quasar. Ships for web, iOS, Android, desktop, and PWA from a single codebase.",
+        "fullDescription": "Meet your AI co-founders: 6 specialized agents (Researcher, Marketer, Developer, SEO Writer, Designer, General Assistant) with deep system integration, automatic RAG, proactive suggestions, and actionable capabilities like GitHub PRs, blog posts, and marketing content.",
+        "domain": "your-domain.com",
+        "version": "1.0.0"
+    },
+    "branding": {
+        "logo": {
+            "light": "/logo/synthstack-logo.svg",
+            "dark": "/logo/synthstack-logo-dark.svg",
+            "mark": "/logo/synthstack-mark.svg",
+            "markDark": "/logo/synthstack-mark-dark.svg"
+        },
+        "favicon": {
+            "default": "/favicon.svg",
+            "dark": "/favicon-dark.svg",
+            "apple": "/icons/icon-192x192.png"
+        },
+        "colors": {
+            "primary": "#6366F1",
+            "accent": "#00D4AA",
+            "theme": "#6366F1",
+            "background": "#0D0D0D"
+        },
+        "og": {
+            "image": "/og-image.svg",
+            "type": "website"
+        }
+    },
+    "company": {
+        "name": "Your Company",
+        "legalName": "Your Company LLC",
+        "founded": "2024",
+        "location": {
+            "address": "123 Main Street, Suite 100",
+            "city": "Your City",
+            "state": "ST",
+            "zip": "00000",
+            "country": "USA"
+        },
+        "phone": "(000) 000-0000",
+        "parentCompany": null
+    },
+    "contact": {
+        "support": "support@your-domain.com",
+        "sales": "sales@your-domain.com",
+        "general": "hello@your-domain.com",
+        "noreply": "noreply@your-domain.com",
+        "phone": "(000) 000-0000"
+    },
+    "social": {
+        "github": "https://github.com/your-org/your-repo",
+        "twitter": null,
+        "discord": null,
+        "linkedin": null,
+        "youtube": null
+    },
+    "links": {
+        "docs": "/docs",
+        "changelog": "/changelog",
+        "roadmap": "/roadmap",
+        "status": null
+    },
+    "legal": {
+        "privacy": "/privacy",
+        "terms": "/terms",
+        "cookies": "/cookies",
+        "security": "/security",
+        "gdpr": "/gdpr"
+    },
+    "demo": {
+        "enabled": false,
+        "email": "demo@your-domain.com",
+        "password": "ChangeMe123!"
+    },
+    "infrastructure": {
+        "containerPrefix": "synthstack",
+        "networkName": "synthstack-network",
+        "databaseName": "synthstack",
+        "subdomains": {
+            "api": "api",
+            "admin": "admin",
+            "traefik": "traefik"
+        },
+        "ports": {
+            "web": 3050,
+            "api": 3003,
+            "directus": 8099,
+            "postgres": 5499,
+            "redis": 6399,
+            "qdrant": 6333,
+            "mlService": 8001
+        }
+    },
+    "github": {
+        "orgName": "your-org",
+        "proRepoName": "your-repo",
+        "communityRepoName": "your-repo",
+        "teamSlug": null
+    },
+    "features": {
+        "copilot": false,
+        "referrals": false,
+        "analytics": true,
+        "i18n": true
+    }
+}

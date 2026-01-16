@@ -1,0 +1,135 @@
+# Traefik Dynamic Configuration
+# Middleware and routing rules
+
+http:
+  middlewares:
+    # Rate limiting
+    rate-limit:
+      rateLimit:
+        average: 100
+        burst: 50
+        period: 1s
+
+    # Security headers
+    security-headers:
+      headers:
+        browserXssFilter: true
+        contentTypeNosniff: true
+        frameDeny: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 31536000
+        customFrameOptionsValue: "SAMEORIGIN"
+        customResponseHeaders:
+          X-Content-Type-Options: "nosniff"
+          X-Frame-Options: "SAMEORIGIN"
+          X-XSS-Protection: "1; mode=block"
+          Referrer-Policy: "strict-origin-when-cross-origin"
+          Permissions-Policy: "geolocation=(), microphone=(), camera=()"
+
+    # Compression
+    compress:
+      compress:
+        excludedContentTypes:
+          - text/event-stream
+
+    # Basic auth for admin routes
+    auth:
+      basicAuth:
+        users:
+          - "admin:$apr1$xxxx$xxxx"  # Replace with actual htpasswd hash
+
+    # CORS for API
+    cors:
+      headers:
+        accessControlAllowMethods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+          - OPTIONS
+        accessControlAllowHeaders:
+          - Authorization
+          - Content-Type
+          - X-Requested-With
+        accessControlAllowOriginList:
+          - "https://synthstack.app"
+          - "https://www.synthstack.app"
+        accessControlMaxAge: 100
+        addVaryHeader: true
+
+  # Routers
+  routers:
+    # HTTP entry point for web (Cloudflare terminates SSL)
+    web-http:
+      rule: "Host(`synthstack.app`) || Host(`www.synthstack.app`)"
+      entryPoints:
+        - web
+      service: web
+      middlewares:
+        - security-headers
+        - compress
+
+    # HTTP entry point for API (Cloudflare terminates SSL)
+    api-http:
+      rule: "Host(`api.synthstack.app`)"
+      entryPoints:
+        - web
+      service: api
+      middlewares:
+        - security-headers
+        - cors
+        - rate-limit
+        - compress
+
+    # HTTPS entry point for web (direct access / Let's Encrypt validation)
+    web:
+      rule: "Host(`synthstack.app`) || Host(`www.synthstack.app`)"
+      entryPoints:
+        - websecure
+      service: web
+      tls:
+        certResolver: letsencrypt
+      middlewares:
+        - security-headers
+        - compress
+
+    # API
+    api:
+      rule: "Host(`api.synthstack.app`)"
+      entryPoints:
+        - websecure
+      service: api
+      tls:
+        certResolver: letsencrypt
+      middlewares:
+        - security-headers
+        - cors
+        - rate-limit
+        - compress
+
+  # Services
+  services:
+    web:
+      loadBalancer:
+        servers:
+          - url: "http://web:80"
+        healthCheck:
+          path: /health
+          interval: 10s
+          timeout: 3s
+
+    api:
+      loadBalancer:
+        servers:
+          - url: "http://api:3000"
+        healthCheck:
+          path: /health
+          interval: 10s
+          timeout: 3s
+
+
+
+
+

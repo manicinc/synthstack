@@ -1,0 +1,31 @@
+<h1>Verify Your Email Address ✉️</h1>
+
+<p>Hi <%= userName %>,</p>
+
+<p>Thanks for signing up for SynthStack! Please verify your email address to activate your account and unlock all features.</p>
+
+<div style="text-align: center; margin: 32px 0;">
+  <a href="<%= verificationLink %>" class="btn">Verify Email Address</a>
+</div>
+
+<p style="background: #e7f3ff; padding: 16px; border-radius: 8px;">
+  <strong>⏱️ This verification link expires in 24 hours.</strong> After that, you'll need to request a new one.
+</p>
+
+<p class="text-muted" style="margin-top: 24px;">
+  If the button doesn't work, copy and paste this link:<br>
+  <a href="<%= verificationLink %>" style="word-break: break-all;"><%= verificationLink %></a>
+</p>
+
+<div style="border-top: 2px solid #e0e0e0; margin: 32px 0; padding-top: 24px;">
+  <p><strong>What's Next?</strong></p>
+  <p>Once verified, you'll get:</p>
+  <ul>
+    <li>Daily AI credits to get started</li>
+    <li>Access to the dashboard and starter templates</li>
+    <li>Community features</li>
+    <li>AI copilot and content generation tools</li>
+  </ul>
+</div>
+
+<p><strong>The SynthStack Team</strong></p>

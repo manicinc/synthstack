@@ -1,0 +1,38 @@
+<h1>Subscription Canceled 😢</h1>
+
+<p>Hi <%= userName %>,</p>
+
+<p>We've processed your cancellation request. Your <%= planName %> subscription will remain active until <strong><%= endDate %></strong>.</p>
+
+<h2>What This Means:</h2>
+<ul style="line-height: 2;">
+  <li>✅ Full access until <%= endDate %></li>
+  <li>✅ All credits remain available</li>
+  <li>✅ No further charges</li>
+  <li>⚠️ After <%= endDate %>, you'll be moved to the Free plan</li>
+</ul>
+
+<div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 24px 0;">
+  <h3 style="margin-top: 0;">Free Plan Includes:</h3>
+  <ul>
+    <li>Daily AI credits</li>
+    <li>AI content generator</li>
+    <li>Public docs + templates</li>
+  </ul>
+</div>
+
+<p><strong>Changed Your Mind?</strong></p>
+<p>You can reactivate your subscription anytime before <%= endDate %>:</p>
+
+<div style="text-align: center; margin: 24px 0;">
+  <a href="<%= reactivateUrl %>" class="btn">Reactivate Subscription</a>
+</div>
+
+<div style="border-top: 2px solid #e0e0e0; margin: 32px 0; padding-top: 24px;">
+  <p><strong>We'd Love Your Feedback</strong></p>
+  <p>Mind telling us why you canceled? Your feedback helps us improve.</p>
+  <p><a href="<%= feedbackUrl %>">Share Feedback (2 minutes)</a></p>
+</div>
+
+<p>Thanks for being part of SynthStack. We hope to see you back soon!</p>
+<p><strong>The SynthStack Team</strong></p>

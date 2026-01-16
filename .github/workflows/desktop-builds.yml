@@ -1,0 +1,339 @@
+# SynthStack Desktop Builds (Electron)
+#
+# This workflow builds and releases Electron desktop apps for macOS, Windows, and Linux.
+# Runs on release tags or manual trigger.
+#
+# Required Secrets:
+# - MAC_CERTS: Base64 encoded .p12 certificate for macOS code signing
+# - MAC_CERTS_PASSWORD: Certificate password
+# - APPLE_ID: Apple ID email for notarization
+# - APPLE_ID_PASSWORD: App-specific password for Apple ID
+# - APPLE_TEAM_ID: Apple Developer Team ID
+# - WINDOWS_CERTS: Base64 encoded .pfx certificate for Windows signing (optional)
+# - WINDOWS_CERTS_PASSWORD: Windows certificate password (optional)
+# - GH_TOKEN: GitHub token for releases (automatically provided)
+
+name: Desktop Builds
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform to build'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - mac
+          - windows
+          - linux
+          - all
+      skip_notarization:
+        description: 'Skip macOS notarization'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: desktop-builds-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+
+jobs:
+  # Prepare build info
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      should_build_mac: ${{ steps.platforms.outputs.mac }}
+      should_build_windows: ${{ steps.platforms.outputs.windows }}
+      should_build_linux: ${{ steps.platforms.outputs.linux }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          else
+            echo "version=0.0.0-dev" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Determine platforms
+        id: platforms
+        run: |
+          PLATFORM="${{ github.event.inputs.platform || 'all' }}"
+          if [[ "$PLATFORM" == "mac" || "$PLATFORM" == "all" ]]; then
+            echo "mac=true" >> $GITHUB_OUTPUT
+          else
+            echo "mac=false" >> $GITHUB_OUTPUT
+          fi
+          if [[ "$PLATFORM" == "windows" || "$PLATFORM" == "all" ]]; then
+            echo "windows=true" >> $GITHUB_OUTPUT
+          else
+            echo "windows=false" >> $GITHUB_OUTPUT
+          fi
+          if [[ "$PLATFORM" == "linux" || "$PLATFORM" == "all" ]]; then
+            echo "linux=true" >> $GITHUB_OUTPUT
+          else
+            echo "linux=false" >> $GITHUB_OUTPUT
+          fi
+
+  # Build macOS app
+  build-mac:
+    needs: prepare
+    if: needs.prepare.outputs.should_build_mac == 'true'
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Import code signing certificate
+        if: env.MAC_CERTS != ''
+        env:
+          MAC_CERTS: ${{ secrets.MAC_CERTS }}
+          MAC_CERTS_PASSWORD: ${{ secrets.MAC_CERTS_PASSWORD }}
+        run: |
+          # Create temporary keychain
+          KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
+          KEYCHAIN_PATH=$RUNNER_TEMP/signing.keychain-db
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # Import certificate
+          echo "$MAC_CERTS" | base64 --decode > $RUNNER_TEMP/certificate.p12
+          security import $RUNNER_TEMP/certificate.p12 \
+            -P "$MAC_CERTS_PASSWORD" \
+            -A \
+            -t cert \
+            -f pkcs12 \
+            -k $KEYCHAIN_PATH
+
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+      - name: Build web app
+        run: |
+          cd apps/web
+          pnpm build
+
+      - name: Build Electron app for macOS
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_LINK: ${{ secrets.MAC_CERTS }}
+          CSC_KEY_PASSWORD: ${{ secrets.MAC_CERTS_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          SKIP_NOTARIZATION: ${{ github.event.inputs.skip_notarization }}
+        run: |
+          cd apps/web/src-electron
+          npm install
+
+          # Build for both architectures
+          npx electron-builder --mac --x64 --arm64 --publish never
+
+          # Notarize if not skipped and credentials are available
+          if [[ "$SKIP_NOTARIZATION" != "true" && -n "$APPLE_ID" ]]; then
+            echo "Notarizing macOS app..."
+            for dmg in ../../dist/electron/*.dmg; do
+              xcrun notarytool submit "$dmg" \
+                --apple-id "$APPLE_ID" \
+                --password "$APPLE_ID_PASSWORD" \
+                --team-id "$APPLE_TEAM_ID" \
+                --wait
+              xcrun stapler staple "$dmg"
+            done
+          fi
+
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-mac
+          path: |
+            apps/web/dist/electron/*.dmg
+            apps/web/dist/electron/*.zip
+          retention-days: 7
+
+  # Build Windows app
+  build-windows:
+    needs: prepare
+    if: needs.prepare.outputs.should_build_windows == 'true'
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web app
+        run: |
+          cd apps/web
+          pnpm build
+
+      - name: Build Electron app for Windows
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_LINK: ${{ secrets.WINDOWS_CERTS }}
+          CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CERTS_PASSWORD }}
+        run: |
+          cd apps/web/src-electron
+          npm install
+          npx electron-builder --win --x64 --ia32 --publish never
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-windows
+          path: |
+            apps/web/dist/electron/*.exe
+            apps/web/dist/electron/*.msi
+          retention-days: 7
+
+  # Build Linux app
+  build-linux:
+    needs: prepare
+    if: needs.prepare.outputs.should_build_linux == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm fakeroot dpkg
+
+      - name: Build web app
+        run: |
+          cd apps/web
+          pnpm build
+
+      - name: Build Electron app for Linux
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd apps/web/src-electron
+          npm install
+          npx electron-builder --linux --x64 --publish never
+
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-linux
+          path: |
+            apps/web/dist/electron/*.AppImage
+            apps/web/dist/electron/*.deb
+            apps/web/dist/electron/*.rpm
+          retention-days: 7
+
+  # Create GitHub release
+  release:
+    needs: [prepare, build-mac, build-windows, build-linux]
+    if: |
+      always() &&
+      startsWith(github.ref, 'refs/tags/') &&
+      (needs.build-mac.result == 'success' || needs.build-windows.result == 'success' || needs.build-linux.result == 'success')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download macOS artifacts
+        if: needs.build-mac.result == 'success'
+        uses: actions/download-artifact@v4
+        with:
+          name: desktop-mac
+          path: artifacts/mac
+
+      - name: Download Windows artifacts
+        if: needs.build-windows.result == 'success'
+        uses: actions/download-artifact@v4
+        with:
+          name: desktop-windows
+          path: artifacts/windows
+
+      - name: Download Linux artifacts
+        if: needs.build-linux.result == 'success'
+        uses: actions/download-artifact@v4
+        with:
+          name: desktop-linux
+          path: artifacts/linux
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Desktop v${{ needs.prepare.outputs.version }}
+          body: |
+            ## Desktop Release v${{ needs.prepare.outputs.version }}
+
+            ### Downloads
+
+            | Platform | Download |
+            |----------|----------|
+            | macOS (Intel) | [SynthStack-${{ needs.prepare.outputs.version }}-macos-x64.dmg](https://github.com/${{ github.repository }}/releases/download/v${{ needs.prepare.outputs.version }}/SynthStack-${{ needs.prepare.outputs.version }}-macos-x64.dmg) |
+            | macOS (Apple Silicon) | [SynthStack-${{ needs.prepare.outputs.version }}-macos-arm64.dmg](https://github.com/${{ github.repository }}/releases/download/v${{ needs.prepare.outputs.version }}/SynthStack-${{ needs.prepare.outputs.version }}-macos-arm64.dmg) |
+            | Windows (64-bit) | [SynthStack-${{ needs.prepare.outputs.version }}-Setup.exe](https://github.com/${{ github.repository }}/releases/download/v${{ needs.prepare.outputs.version }}/SynthStack-${{ needs.prepare.outputs.version }}-Setup.exe) |
+            | Linux (AppImage) | [SynthStack-${{ needs.prepare.outputs.version }}-linux-x64.AppImage](https://github.com/${{ github.repository }}/releases/download/v${{ needs.prepare.outputs.version }}/SynthStack-${{ needs.prepare.outputs.version }}-linux-x64.AppImage) |
+            | Linux (Debian) | [synthstack_${{ needs.prepare.outputs.version }}_amd64.deb](https://github.com/${{ github.repository }}/releases/download/v${{ needs.prepare.outputs.version }}/synthstack_${{ needs.prepare.outputs.version }}_amd64.deb) |
+
+            ### What's Changed
+            See [CHANGELOG.md](CHANGELOG.md) for details.
+
+            ### System Requirements
+            - macOS 10.15+ (Catalina or later)
+            - Windows 10/11 (64-bit)
+            - Linux: Ubuntu 18.04+, Fedora 32+, or compatible distribution
+          files: |
+            artifacts/**/*
+          draft: false
+          prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'alpha') }}

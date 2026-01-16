@@ -1,0 +1,703 @@
+{
+  "app": {
+    "name": "SynthStack",
+    "tagline": "AI原生全栈SaaS模板"
+  },
+  "nav": {
+    "home": "首页",
+    "features": "功能",
+    "pricing": "定价",
+    "dashboard": "控制面板",
+    "generate": "生成",
+    "printers": "打印机",
+    "filaments": "耗材",
+    "profiles": "配置文件",
+    "myProfiles": "我的配置",
+    "history": "历史记录",
+    "account": "账户",
+    "subscription": "订阅",
+    "login": "登录",
+    "signup": "注册",
+    "logout": "退出"
+  },
+  "landing": {
+    "hero": {
+      "title": "每次都是完美打印",
+      "subtitle": "上传您的STL文件。获取AI优化设置。导出到任何切片软件。",
+      "cta": "早鸟优惠 - $149",
+      "secondaryCta": "在GitHub上查看",
+      "promoWithStats": "限量 {max} 份终身许可证 • 剩余 {remaining} 份 • 节省 {discount}",
+      "promoDefault": "限量 150 份终身许可证 • 节省 $100（原价 $249）"
+    },
+    "tech": {
+      "label": "采用现代、久经考验的技术构建"
+    },
+    "admin": {
+      "badge": "内置管理后台",
+      "title": "完整的管理仪表板",
+      "subtitle": "由Directus驱动的全功能CMS和管理控制中心"
+    },
+    "opensource": {
+      "badge": "永久免费",
+      "title": "社区版",
+      "description": "SynthStack完整核心在社区许可（修改版MIT，非商用）下提供源码。适合学习、个人项目和评估。",
+      "features": {
+        "themes": "主题 & 深色模式",
+        "payments": "Stripe / LemonSqueezy",
+        "subscriptions": "订阅",
+        "blog": "博客系统",
+        "cms": "Directus CMS",
+        "email": "邮件模板",
+        "crossPlatform": "跨平台",
+        "license": "社区许可（修改版MIT）"
+      },
+      "github": {
+        "label": "在GitHub上点星"
+      },
+      "note": "AI Co-Founders是一个高级附加组件，为您的SynthStack提供6个专业AI代理。"
+    },
+    "pricing": {
+      "title": "简单透明的定价",
+      "subtitle": "源码可用核心，高级AI代理",
+      "community": {
+        "name": "社区版",
+        "price": "免费",
+        "period": "永久",
+        "description": "源码可用SaaS模板（非商用）",
+        "features": {
+          "source": "完整源代码（社区许可）",
+          "cms": "Directus CMS集成",
+          "billing": "Stripe/LemonSqueezy计费",
+          "blog": "博客 & 新闻通讯",
+          "crossPlatform": "跨平台构建",
+          "noAgents": "AI Co-Founders代理",
+          "noGithub": "GitHub集成",
+          "noSuggestions": "主动建议"
+        },
+        "cta": "开始使用"
+      },
+      "pro": {
+        "badge": "最受欢迎",
+        "name": "Pro",
+        "price": "$297",
+        "period": "终身",
+        "description": "完整的AI Co-Founders体验",
+        "features": {
+          "everything": "社区版全部功能",
+          "agents": "全部6个AI代理",
+          "github": "GitHub PR自动化",
+          "suggestions": "主动建议",
+          "rag": "RAG知识库",
+          "templates": "所有提示模板",
+          "support": "优先支持",
+          "updates": "终身更新"
+        },
+        "cta": "立即购买"
+      },
+      "enterprise": {
+        "name": "企业版",
+        "price": "定制",
+        "period": "联系我们",
+        "description": "适用于团队和代理机构",
+        "features": {
+          "everything": "Pro版全部功能",
+          "training": "自定义代理训练",
+          "whiteLabel": "白标品牌",
+          "support": "专属支持",
+          "sla": "SLA保障",
+          "onPremise": "本地部署",
+          "integrations": "自定义集成",
+          "teamTraining": "团队培训"
+        },
+        "cta": "联系销售"
+      }
+    },
+    "faq": {
+      "title": "常见问题",
+      "subtitle": "关于SynthStack您需要了解的一切",
+      "items": {
+        "free": {
+          "question": "SynthStack真的免费吗？",
+          "answer": "是的！社区版在社区许可（修改版MIT，非商用）下可免费用于学习、个人项目和评估。商业生产使用需要购买商业许可。"
+        },
+        "included": {
+          "question": "社区版包含什么？",
+          "answer": "生产级SaaS所需的一切：Vue 3 + Quasar UI、Fastify API、Directus CMS、Supabase认证、Stripe计费、博客、新闻通讯、分析、主题和跨平台构建。"
+        },
+        "referral": {
+          "question": "推荐计划如何运作？",
+          "answer": "分享您的专属链接，当朋友注册并购买时获得奖励。解锁分级奖励：折扣码、积分、免费月份，Elite级别最高50%终身折扣。"
+        },
+        "aiDifference": {
+          "question": "AI Co-Founders有什么不同？",
+          "answer": "它们是具有RAG上下文的专业代理（了解您的文档、代码、CMS）。它们执行真实操作，如创建PR和博客文章。所有操作都需要您先批准。"
+        },
+        "customAgents": {
+          "question": "我可以创建自定义AI代理吗？",
+          "answer": "当然可以！直接在Directus CMS中创建您自己的专业代理 - 无需编码。定义自定义提示、个性、图标和功能。新代理会立即出现在您的应用中。"
+        },
+        "apiKeys": {
+          "question": "我可以使用自己的AI API密钥吗？",
+          "answer": "可以！SynthStack支持使用您自己的密钥调用OpenAI和Anthropic API。您可以控制成本并完全了解使用情况。没有供应商锁定。"
+        },
+        "subscription": {
+          "question": "有订阅选项吗？",
+          "answer": "我们提供终身（$297一次性）和月度订阅计划。测试模式让您以$0费用试用所有功能。企业团队可以联系我们获取定制价格。"
+        }
+      }
+    },
+    "cta": {
+      "title": "准备好构建您的下一个项目了吗？",
+      "subtitle": "具有AI超能力的全栈SaaS模板。10倍速度发布。",
+      "primary": "免费开始",
+      "secondary": "升级到Pro",
+      "note": "社区许可核心 · Pro: $297 终身 · 推荐奖励可用"
+    },
+    "features": {
+      "title": "为什么选择SynthStack？",
+      "subtitle": "使用AI驱动的开发更快发布。",
+      "stlAnalysis": {
+        "title": "智能STL分析",
+        "description": "我们的AI检查您模型的几何形状，检测悬垂、薄壁和最佳打印方向。"
+      },
+      "aiSettings": {
+        "title": "AI生成设置",
+        "description": "根据您特定的打印机、耗材和模型特征获取优化参数。"
+      },
+      "multiSlicer": {
+        "title": "随处导出",
+        "description": "下载适用于OrcaSlicer、PrusaSlicer、Cura等的即用配置文件。"
+      },
+      "community": {
+        "title": "社区验证",
+        "description": "分享配置文件，查看成功率，建立在有效方案之上。"
+      }
+    },
+    "howItWorks": {
+      "title": "工作原理",
+      "step1": {
+        "title": "上传您的STL",
+        "description": "拖放您的3D模型进行即时分析"
+      },
+      "step2": {
+        "title": "选择您的设置",
+        "description": "从我们的数据库中选择您的打印机和耗材"
+      },
+      "step3": {
+        "title": "生成设置",
+        "description": "AI为您的特定打印创建优化参数"
+      },
+      "step4": {
+        "title": "导出并打印",
+        "description": "下载到您的切片软件并开始打印"
+      }
+    },
+    "stats": {
+      "profiles": "已生成配置",
+      "printers": "支持的打印机",
+      "successRate": "成功率"
+    },
+    "featuresGrid": {
+      "badge": "您需要的一切",
+      "title": "全栈 SaaS 功能",
+      "subtitle": "开箱即用的生产就绪组件。更快构建，更早发布。",
+      "moreFeatures": {
+        "crossPlatform": "跨平台（Web、iOS、Android、桌面）",
+        "typescript": "TypeScript + Vue 3 + Fastify",
+        "docker": "Docker 就绪部署",
+        "docs": "完整文档"
+      },
+      "items": {
+        "workflows": {
+          "title": "可视化工作流",
+          "description": "通过拖放构建自动化。LangGraph 驱动的 DAG 实时执行 AI 代理、Webhook 和集成。"
+        },
+        "aiAgents": {
+          "title": "AI 联合创始人",
+          "description": "几分钟内创建专业 AI 代理。通过管理面板编辑提示词、个性和能力 - 无需代码。"
+        },
+        "webSearch": {
+          "title": "实时网络研究",
+          "description": "代理实时搜索网络。获取当前价格、新闻、竞争对手数据 - 而非过时的训练数据。"
+        },
+        "orchestration": {
+          "title": "多代理编排",
+          "description": "代理之间相互委派任务。开发者向研究员询问上下文，营销员向 SEO 询问关键词。"
+        },
+        "auth": {
+          "title": "灵活认证",
+          "description": "在 Supabase（托管）或本地 PostgreSQL（自托管）之间选择。两者都支持 OAuth、JWT 和 RBAC。"
+        },
+        "selfHosted": {
+          "title": "自托管认证选项",
+          "description": "使用本地 PostgreSQL Auth 无需外部依赖。Argon2id 哈希、会话管理和完全数据主权。"
+        },
+        "stripe": {
+          "title": "Stripe 计费",
+          "description": "订阅和一次性付款。内置客户门户、发票、Webhook 和测试模式。"
+        },
+        "directus": {
+          "title": "Directus CMS",
+          "description": "完整的管理面板，具有可视化编辑、实时协作、版本控制和实时预览。"
+        },
+        "visualEditing": {
+          "title": "可视化原地编辑",
+          "description": "直接在您的网站上编辑内容。无需在管理面板和预览之间切换 - 在上下文中查看更改。"
+        },
+        "collaboration": {
+          "title": "实时协作",
+          "description": "通过智能字段锁定无缝协作。查看谁在编辑什么，实现无冲突协作。"
+        },
+        "versioning": {
+          "title": "内容版本控制",
+          "description": "通过自动版本控制跟踪所有更改。一键恢复以前的版本。"
+        },
+        "analytics": {
+          "title": "分析仪表板",
+          "description": "跟踪用户参与度、页面浏览量和自定义事件。内置图表和 CSV 导出。"
+        },
+        "newsletter": {
+          "title": "新闻通讯和邮件",
+          "description": "订阅者管理、模板构建器和活动跟踪。Resend 或 SMTP 集成。"
+        },
+        "blog": {
+          "title": "博客平台",
+          "description": "完整的博客，具有分类、标签、SEO 元数据和 Directus 中的 Markdown 编辑器。"
+        },
+        "seoAudit": {
+          "title": "SEO 审计和优化",
+          "description": "AI 驱动的 SEO 审计，包括关键词研究、内容评分和优化建议。Lighthouse CI 集成用于自动性能跟踪。"
+        },
+        "theming": {
+          "title": "高级主题系统",
+          "description": "10 个内置预设，30+ 明暗组合。60+ CSS 变量用于完全自定义。实时切换并持久化到数据库。"
+        },
+        "referral": {
+          "title": "推荐系统",
+          "description": "季节性活动、分级奖励、折扣码和排行榜。完全可配置。"
+        },
+        "integrations": {
+          "title": "15+ 集成",
+          "description": "连接 Slack、Discord、GitHub、Notion、Google Sheets、Twilio、Jira 等。支持 BYOK。"
+        },
+        "knowledgeBase": {
+          "title": "RAG 知识库",
+          "description": "从 Drive、Notion 或 URL 导入文档。向量嵌入为 AI 代理提供上下文。"
+        }
+      }
+    },
+    "threeD": {
+      "badge": "高级可视化",
+      "title": "3D 复杂工作流",
+      "subtitle": "使用我们的交互式 3D 图形引擎可视化复杂的多步骤工作流"
+    },
+    "theming": {
+      "badge": "网络上最好看的 Quasar UX",
+      "subtitle": "完整的主题和自定义系统"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "欢迎回来",
+      "subtitle": "登录您的账户",
+      "email": "邮箱",
+      "password": "密码",
+      "submit": "登录",
+      "forgotPassword": "忘记密码？",
+      "noAccount": "没有账户？",
+      "signUp": "注册"
+    },
+    "register": {
+      "title": "创建账户",
+      "subtitle": "开始优化您的打印",
+      "name": "显示名称",
+      "email": "邮箱",
+      "password": "密码",
+      "confirmPassword": "确认密码",
+      "submit": "创建账户",
+      "hasAccount": "已有账户？",
+      "signIn": "登录"
+    },
+    "forgotPassword": {
+      "title": "重置密码",
+      "subtitle": "输入您的邮箱以接收重置链接",
+      "email": "邮箱",
+      "submit": "发送重置链接",
+      "backToLogin": "返回登录"
+    },
+    "social": {
+      "or": "或使用以下方式继续",
+      "google": "Google",
+      "github": "GitHub"
+    }
+  },
+  "dashboard": {
+    "welcome": "欢迎回来",
+    "credits": {
+      "title": "额度",
+      "remaining": "剩余 {count}",
+      "usedToday": "今日已使用 {count}",
+      "unlimited": "无限制"
+    },
+    "quickActions": {
+      "title": "快捷操作",
+      "newGeneration": "新建生成",
+      "browsePrinters": "浏览打印机",
+      "viewProfiles": "查看配置"
+    },
+    "recentGenerations": {
+      "title": "最近生成",
+      "empty": "暂无生成记录。从上传STL开始吧！"
+    }
+  },
+  "generate": {
+    "title": "生成打印设置",
+    "upload": {
+      "title": "上传STL",
+      "dragDrop": "将您的STL文件拖放到此处",
+      "or": "或",
+      "browse": "浏览文件",
+      "maxSize": "最大文件大小：50MB"
+    },
+    "analysis": {
+      "title": "模型分析",
+      "dimensions": "尺寸",
+      "volume": "体积",
+      "faces": "面数",
+      "overhangs": "悬垂",
+      "thinWalls": "薄壁",
+      "difficulty": "打印难度"
+    },
+    "settings": {
+      "title": "设置",
+      "printer": "选择打印机",
+      "filament": "选择耗材",
+      "quality": "质量预设",
+      "priorities": "优先级",
+      "speed": "速度",
+      "strength": "强度",
+      "material": "材料用量"
+    },
+    "result": {
+      "title": "生成的设置",
+      "confidence": "置信度",
+      "export": "导出",
+      "save": "保存配置",
+      "regenerate": "重新生成"
+    }
+  },
+  "pricing": {
+    "title": "简单透明的定价",
+    "subtitle": "免费开始。按需升级。",
+    "monthly": "月付",
+    "annually": "年付",
+    "savePercent": "节省 {percent}%",
+    "loading": "正在加载定价...",
+    "error": "加载定价失败",
+    "cta": "开始使用"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "出错了",
+    "retry": "重试",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "view": "查看",
+    "download": "下载",
+    "share": "分享",
+    "copy": "复制",
+    "copied": "已复制！",
+    "search": "搜索",
+    "filter": "筛选",
+    "sort": "排序",
+    "all": "全部",
+    "none": "无"
+  },
+  "errors": {
+    "notFound": "页面未找到",
+    "unauthorized": "请登录后继续",
+    "forbidden": "您没有权限访问此内容",
+    "serverError": "服务器错误。请稍后重试。"
+  },
+  "language": {
+    "select": "选择语言",
+    "current": "当前语言"
+  },
+  "referral": {
+    "page": {
+      "title": "推荐计划",
+      "subtitle": "分享SynthStack给您的网络，赚取奖励",
+      "loading": "正在加载您的推荐仪表板...",
+      "signInRequired": "需要登录",
+      "signInDescription": "请登录以访问您的推荐仪表板并开始赚取奖励。",
+      "signIn": "登录",
+      "viewTutorial": "查看教程",
+      "newHere": "推荐计划新手？",
+      "takeTour": "快速了解如何通过分享SynthStack赚取奖励。",
+      "startTutorial": "开始教程"
+    },
+    "dashboard": {
+      "howItWorks": {
+        "title": "如何运作",
+        "step1": {
+          "title": "分享您的链接",
+          "description": "复制并与朋友分享您的专属推荐链接"
+        },
+        "step2": {
+          "title": "朋友注册",
+          "description": "他们使用您的链接创建账户"
+        },
+        "step3": {
+          "title": "赚取奖励",
+          "description": "当他们购买时获得奖励"
+        },
+        "step4": {
+          "title": "领取和使用",
+          "description": "兑换折扣、积分等"
+        }
+      },
+      "stats": {
+        "clicks": "总点击数",
+        "referrals": "成功推荐",
+        "pending": "待处理",
+        "rewards": "已获奖励"
+      }
+    },
+    "onboarding": {
+      "back": "返回",
+      "next": "下一步",
+      "getStarted": "开始",
+      "welcome": {
+        "title": "欢迎加入推荐计划！",
+        "description": "通过与朋友分享SynthStack赚取丰厚奖励。",
+        "benefit1": "赚取折扣码",
+        "benefit2": "获得奖励积分",
+        "benefit3": "解锁高级功能"
+      },
+      "code": {
+        "title": "您的专属推荐码",
+        "description": "这是您的个人代码。当朋友使用它时，您将获得推荐积分。",
+        "yourCode": "您的代码",
+        "yourLink": "您的推荐链接",
+        "loading": "正在生成您的代码..."
+      },
+      "share": {
+        "title": "分享您的链接",
+        "description": "分享越多，赚得越多。",
+        "copyLink": "复制链接",
+        "copyLinkDesc": "复制您的链接并粘贴到任何地方",
+        "social": "社交媒体",
+        "socialDesc": "直接分享到Twitter或LinkedIn",
+        "email": "电子邮件",
+        "emailDesc": "发送个性化邀请"
+      },
+      "track": {
+        "title": "跟踪您的进度",
+        "description": "实时监控您的推荐情况。",
+        "clicks": "跟踪链接点击",
+        "signups": "查看谁注册了",
+        "conversions": "监控转化",
+        "rewards": "解锁奖励",
+        "tierPreview": "解锁等级徽章"
+      },
+      "rewards": {
+        "title": "领取您的奖励",
+        "description": "当您达到里程碑时，将解锁越来越有价值的奖励。",
+        "discounts": "折扣码",
+        "discountsDesc": "购买折扣百分比",
+        "credits": "奖励积分",
+        "creditsDesc": "用于AI功能",
+        "freeMonths": "免费月份",
+        "freeMonthsDesc": "订阅积分",
+        "upgrades": "等级升级",
+        "upgradesDesc": "解锁高级访问",
+        "ready": "您已准备好开始赚取！"
+      }
+    },
+    "tooltips": {
+      "clicks": {
+        "title": "总点击数",
+        "description": "您的推荐链接被点击的次数。"
+      },
+      "referrals": {
+        "title": "成功推荐",
+        "description": "使用您的链接注册并验证邮箱的用户。"
+      },
+      "pending": {
+        "title": "待处理推荐",
+        "description": "点击了但尚未完成注册的用户。"
+      },
+      "rewards": {
+        "title": "已获奖励",
+        "description": "通过推荐解锁的奖励总数。"
+      },
+      "tier": {
+        "title": "当前等级",
+        "description": "您的推荐等级决定了可解锁的奖励。"
+      },
+      "code": {
+        "title": "推荐码",
+        "description": "用于追踪推荐到您的专属代码。"
+      },
+      "leaderboard": {
+        "title": "排行榜",
+        "description": "查看您与其他推荐者的排名对比。"
+      },
+      "discountCode": {
+        "title": "折扣码",
+        "description": "结账时可使用的折扣代码。"
+      },
+      "credits": {
+        "title": "积分",
+        "description": "用于AI生成和工作流的平台货币。"
+      },
+      "conversion": {
+        "title": "转化",
+        "description": "当被推荐用户完成首次购买时。"
+      }
+    },
+    "faq": {
+      "title": "常见问题",
+      "moreHelp": "还有问题？",
+      "contactSupport": "联系支持",
+      "viewDocs": "查看文档",
+      "questions": {
+        "howItWorks": {
+          "q": "推荐计划如何运作？",
+          "a": "与朋友分享您的专属推荐链接。当他们注册并购买时，您将根据等级获得奖励。"
+        },
+        "getCode": {
+          "q": "如何获取推荐码？",
+          "a": "当您访问仪表板时，推荐码会自动生成。"
+        },
+        "whenCredit": {
+          "q": "推荐何时计入积分？",
+          "a": "当有人使用您的链接注册<strong>并</strong>验证邮箱地址时，您将获得积分。"
+        },
+        "rewardTypes": {
+          "q": "可以获得哪些类型的奖励？",
+          "a": "奖励包括：<ul><li><strong>折扣码</strong></li><li><strong>积分</strong></li><li><strong>免费月份</strong></li><li><strong>等级升级</strong></li></ul>"
+        },
+        "claimRewards": {
+          "q": "如何领取奖励？",
+          "a": "当您解锁奖励等级时，它会显示在奖励部分。点击<strong>领取</strong>即可。"
+        },
+        "expiration": {
+          "q": "奖励或代码会过期吗？",
+          "a": "积分永不过期。折扣码可能有有效期限。"
+        },
+        "selfReferral": {
+          "q": "可以推荐自己吗？",
+          "a": "不可以，不允许自我推荐。"
+        },
+        "trackProgress": {
+          "q": "如何跟踪推荐进度？",
+          "a": "您的仪表板显示实时统计数据。"
+        },
+        "discountCodes": {
+          "q": "折扣码如何使用？",
+          "a": "折扣码在结账时应用。"
+        },
+        "creditsVsDiscounts": {
+          "q": "积分和折扣有什么区别？",
+          "a": "<strong>积分</strong>是平台货币。<strong>折扣码</strong>减少购买价格。"
+        }
+      }
+    }
+  },
+  "workflows": {
+    "page": {
+      "title": "工作流",
+      "subtitle": "使用可视化工作流自动化您的业务",
+      "tutorial": "教程",
+      "newWorkflow": "新建工作流",
+      "openEditor": "打开编辑器",
+      "browseTemplates": "浏览模板",
+      "viewAll": "查看全部"
+    },
+    "onboarding": {
+      "step": "步骤 {current}/{total}",
+      "skip": "跳过教程",
+      "back": "返回",
+      "next": "下一步",
+      "openEditor": "打开编辑器",
+      "completeMessage": "您已准备好创建工作流！",
+      "welcome": {
+        "title": "欢迎使用工作流！",
+        "description": "无需代码即可可视化创建强大的自动化。",
+        "aiAgents": "AI代理",
+        "aiAgentsDesc": "使用AI联合创始人进行分析和生成",
+        "triggers": "智能触发器",
+        "triggersDesc": "计划任务、Webhook和事件驱动自动化",
+        "integrations": "4000+集成",
+        "integrationsDesc": "连接Slack、Google、Stripe等"
+      },
+      "nodes": {
+        "title": "理解节点",
+        "description": "工作流由通过连线连接的节点构建。",
+        "input": "输入节点",
+        "inputDesc": "启动您的流程 - 触发器、Webhook、计划任务",
+        "process": "处理节点",
+        "processDesc": "转换数据 - 函数、AI代理、逻辑",
+        "output": "输出节点",
+        "outputDesc": "发送结果 - Slack、邮件、数据库"
+      },
+      "firstFlow": {
+        "title": "您的第一个流程",
+        "description": "创建工作流很简单。拖放、连接、部署！",
+        "step1": "从面板拖动节点",
+        "step1Desc": "在左侧边栏找到节点",
+        "step2": "用连线连接节点",
+        "step2Desc": "从输出端口点击拖动到输入端口",
+        "step3": "配置每个节点",
+        "step3Desc": "双击节点查看属性",
+        "step4": "点击部署",
+        "step4Desc": "使用部署按钮保存并激活",
+        "tip": "提示：从模板开始！"
+      },
+      "integrations": {
+        "title": "连接您的集成",
+        "description": "连接到您的工具后，工作流将变得强大。",
+        "configure": "配置集成",
+        "note": "您可以稍后在设置中添加集成"
+      }
+    },
+    "templates": {
+      "title": "工作流模板",
+      "search": "搜索模板...",
+      "category": "类别",
+      "difficulty": "难度",
+      "allCategories": "所有类别",
+      "allLevels": "所有级别",
+      "beginner": "初级",
+      "intermediate": "中级",
+      "advanced": "高级",
+      "featured": "精选",
+      "installs": "安装次数",
+      "nodes": "节点数",
+      "preview": "预览",
+      "install": "安装",
+      "noResults": "未找到模板",
+      "noResultsDesc": "尝试其他筛选条件",
+      "clearFilters": "清除筛选",
+      "installSuccess": "模板「{name}」安装成功！",
+      "installError": "安装失败"
+    },
+    "quickActions": {
+      "title": "快速操作",
+      "help": "帮助",
+      "fromTemplate": "从模板创建",
+      "fromTemplateDesc": "使用预建工作流开始",
+      "createBlank": "创建空白",
+      "createBlankDesc": "从零开始",
+      "openEditor": "打开编辑器",
+      "openEditorDesc": "启动可视化构建器",
+      "viewDocs": "查看文档",
+      "viewDocsDesc": "阅读文档",
+      "popularTemplates": "热门模板",
+      "viewAll": "查看全部"
+    }
+  }
+}

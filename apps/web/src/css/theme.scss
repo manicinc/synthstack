@@ -1,0 +1,575 @@
+/**
+ * SynthStack Theme System
+ * Comprehensive theme presets with light/dark mode support
+ *
+ * Theme variables are dynamically set by the theme store from presets.
+ * These are fallback defaults that get overridden at runtime.
+ */
+
+// ============================================
+// Theme Variables - Dark Mode (Default)
+// These serve as fallbacks when no preset is loaded
+// ============================================
+
+:root,
+.body--dark {
+  // Landing Page Variables (mapped to theme system)
+  --lp-bg: #09090b;
+  --lp-border: rgba(255, 255, 255, 0.1);
+  --lp-text: #fafafa;
+  --lp-text-secondary: #a1a1aa;
+  --lp-primary: #0d9488;
+  --lp-primary-muted: rgba(13, 148, 136, 0.08);
+  --lp-bg-alt: #18181b;
+  --lp-bg-alt-hover: #27272a;
+  
+  // Background Hierarchy
+  --bg-base: #09090b;
+  --bg-subtle: #0f0f12;
+  --bg-muted: #18181b;
+  --bg-elevated: #27272a;
+  --bg-overlay: rgba(0, 0, 0, 0.8);
+  
+  // Surface Colors
+  --surface-1: #18181b;
+  --surface-2: #1f1f23;
+  --surface-3: #27272a;
+  --surface-4: #3f3f46;
+  --surface-hover: rgba(255, 255, 255, 0.05);
+  --surface-active: rgba(255, 255, 255, 0.1);
+  
+  // Border Colors
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.15);
+  --border-focus: var(--accent-primary);
+  
+  // Text Colors - improved contrast for WCAG AA compliance
+  --text-primary: #fafafa;
+  --text-secondary: #b4b4bc;  // Lightened from #a1a1aa for better contrast (7:1 ratio)
+  --text-tertiary: #9898a0;   // Lightened from #71717a
+  --text-disabled: #71717a;   // Adjusted from #52525b
+  --text-inverse: #09090b;
+  --text-link: #60a5fa;
+  --text-link-hover: #93c5fd;
+  
+  // Accent Colors - Primary (Teal)
+  --accent-primary: #0d9488;
+  --accent-primary-hover: #14b8a6;
+  --accent-primary-active: #0f766e;
+  --accent-primary-subtle: rgba(13, 148, 136, 0.15);
+  --accent-primary-muted: rgba(13, 148, 136, 0.08);
+  
+  // Accent Colors - Secondary (Blue)
+  --accent-secondary: #3b82f6;
+  --accent-secondary-hover: #60a5fa;
+  --accent-secondary-active: #2563eb;
+  --accent-secondary-subtle: rgba(59, 130, 246, 0.15);
+  
+  // Accent Colors - Tertiary (Copper/Bronze)
+  --accent-tertiary: #d97706;
+  --accent-tertiary-hover: #f59e0b;
+  --accent-tertiary-subtle: rgba(217, 119, 6, 0.15);
+  
+  // Semantic Colors
+  --success: #22c55e;
+  --success-hover: #4ade80;
+  --success-subtle: rgba(34, 197, 94, 0.15);
+  --success-muted: rgba(34, 197, 94, 0.08);
+  
+  --warning: #eab308;
+  --warning-hover: #facc15;
+  --warning-subtle: rgba(234, 179, 8, 0.15);
+  --warning-muted: rgba(234, 179, 8, 0.08);
+  
+  --error: #ef4444;
+  --error-hover: #f87171;
+  --error-subtle: rgba(239, 68, 68, 0.15);
+  --error-muted: rgba(239, 68, 68, 0.08);
+  
+  --info: #0ea5e9;
+  --info-hover: #38bdf8;
+  --info-subtle: rgba(14, 165, 233, 0.15);
+  --info-muted: rgba(14, 165, 233, 0.08);
+  
+  // Gradients
+  --gradient-primary: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-tertiary) 100%);
+  --gradient-surface: linear-gradient(180deg, var(--surface-2) 0%, var(--surface-1) 100%);
+  --gradient-glow: radial-gradient(ellipse at center, var(--accent-primary-subtle) 0%, transparent 70%);
+  --gradient-mesh: 
+    radial-gradient(at 40% 20%, var(--accent-primary-muted) 0%, transparent 50%),
+    radial-gradient(at 80% 0%, var(--accent-secondary-subtle) 0%, transparent 50%),
+    radial-gradient(at 0% 50%, var(--accent-tertiary-subtle) 0%, transparent 50%);
+  
+  // Shadows
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 16px 32px rgba(0, 0, 0, 0.5);
+  --shadow-2xl: 0 24px 48px rgba(0, 0, 0, 0.6);
+  --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 20px var(--accent-primary-subtle);
+  --shadow-glow-lg: 0 0 40px var(--accent-primary-subtle);
+  
+  // Glass Effect
+  --glass-bg: rgba(24, 24, 27, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-blur: 12px;
+  
+  // Focus Ring
+  --focus-ring: 0 0 0 2px var(--bg-base), 0 0 0 4px var(--accent-primary);
+  
+  // Scrollbar
+  --scrollbar-track: var(--bg-muted);
+  --scrollbar-thumb: var(--surface-4);
+  --scrollbar-thumb-hover: var(--text-tertiary);
+}
+
+// ============================================
+// Theme Variables - Light Mode
+// ============================================
+
+.body--light {
+  // Landing Page Variables (mapped to theme system)
+  --lp-bg: #ffffff;
+  --lp-border: rgba(0, 0, 0, 0.08);
+  --lp-text: #18181b;
+  --lp-text-secondary: #52525b;
+  --lp-primary: #0d9488;
+  --lp-primary-muted: rgba(13, 148, 136, 0.06);
+  --lp-bg-alt: #f4f4f5;
+  --lp-bg-alt-hover: #e4e4e7;
+  
+  // Background Hierarchy
+  --bg-base: #ffffff;
+  --bg-subtle: #fafafa;
+  --bg-muted: #f4f4f5;
+  --bg-elevated: #e4e4e7;
+  --bg-overlay: rgba(255, 255, 255, 0.9);
+  
+  // Surface Colors
+  --surface-1: #ffffff;
+  --surface-2: #fafafa;
+  --surface-3: #f4f4f5;
+  --surface-4: #e4e4e7;
+  --surface-hover: rgba(0, 0, 0, 0.03);
+  --surface-active: rgba(0, 0, 0, 0.06);
+  
+  // Border Colors
+  --border-subtle: rgba(0, 0, 0, 0.04);
+  --border-default: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.12);
+  --border-focus: var(--accent-primary);
+  
+  // Text Colors - improved contrast for WCAG AA compliance
+  --text-primary: #18181b;
+  --text-secondary: #3f3f46;  // Darkened from #52525b for better contrast (7:1 ratio)
+  --text-tertiary: #52525b;   // Darkened from #71717a
+  --text-disabled: #71717a;   // Darkened from #a1a1aa
+  --text-inverse: #fafafa;
+  --text-link: #2563eb;
+  --text-link-hover: #1d4ed8;
+  
+  // Accent Colors - Primary (Teal)
+  --accent-primary: #0d9488;
+  --accent-primary-hover: #14b8a6;
+  --accent-primary-active: #0f766e;
+  --accent-primary-subtle: rgba(13, 148, 136, 0.12);
+  --accent-primary-muted: rgba(13, 148, 136, 0.06);
+  
+  --accent-secondary: #2563eb;
+  --accent-secondary-hover: #3b82f6;
+  --accent-secondary-active: #1d4ed8;
+  --accent-secondary-subtle: rgba(37, 99, 235, 0.12);
+  
+  // Shadows - lighter for light mode
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 16px 32px rgba(0, 0, 0, 0.12);
+  --shadow-2xl: 0 24px 48px rgba(0, 0, 0, 0.15);
+  --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-glow: 0 0 20px var(--accent-primary-subtle);
+  
+  // Glass Effect
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  
+  // Gradient adjustments
+  --gradient-surface: linear-gradient(180deg, var(--surface-1) 0%, var(--surface-2) 100%);
+  --gradient-mesh: 
+    radial-gradient(at 40% 20%, var(--accent-primary-muted) 0%, transparent 50%),
+    radial-gradient(at 80% 0%, var(--accent-secondary-subtle) 0%, transparent 50%);
+    
+  // Scrollbar
+  --scrollbar-track: var(--bg-muted);
+  --scrollbar-thumb: var(--border-strong);
+  --scrollbar-thumb-hover: var(--text-tertiary);
+}
+
+// ============================================
+// Quasar Dark Mode Integration
+// ============================================
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+// ============================================
+// Custom Scrollbar
+// ============================================
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+  
+  &:hover {
+    background: var(--scrollbar-thumb-hover);
+  }
+}
+
+// ============================================
+// Selection Colors
+// ============================================
+
+::selection {
+  background: var(--accent-primary);
+  color: white;
+}
+
+::-moz-selection {
+  background: var(--accent-primary);
+  color: white;
+}
+
+// ============================================
+// Theme Utility Classes
+// ============================================
+
+// Backgrounds
+.bg-base { background-color: var(--bg-base); }
+.bg-subtle { background-color: var(--bg-subtle); }
+.bg-muted { background-color: var(--bg-muted); }
+.bg-elevated { background-color: var(--bg-elevated); }
+.bg-surface-1 { background-color: var(--surface-1); }
+.bg-surface-2 { background-color: var(--surface-2); }
+.bg-surface-3 { background-color: var(--surface-3); }
+.bg-primary { background-color: var(--accent-primary); }
+.bg-primary-subtle { background-color: var(--accent-primary-subtle); }
+.bg-secondary { background-color: var(--accent-secondary); }
+.bg-secondary-subtle { background-color: var(--accent-secondary-subtle); }
+.bg-success { background-color: var(--success); }
+.bg-success-subtle { background-color: var(--success-subtle); }
+.bg-warning { background-color: var(--warning); }
+.bg-warning-subtle { background-color: var(--warning-subtle); }
+.bg-error { background-color: var(--error); }
+.bg-error-subtle { background-color: var(--error-subtle); }
+
+// Gradients
+.bg-gradient-primary { background: var(--gradient-primary); }
+.bg-gradient-surface { background: var(--gradient-surface); }
+.bg-gradient-mesh { background: var(--gradient-mesh); }
+
+// Text Colors
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-disabled { color: var(--text-disabled); }
+.text-inverse { color: var(--text-inverse); }
+.text-link { color: var(--text-link); }
+.text-accent { color: var(--accent-primary); }
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-error { color: var(--error); }
+.text-info { color: var(--info); }
+
+// Borders
+.border-subtle { border-color: var(--border-subtle); }
+.border-default { border-color: var(--border-default); }
+.border-strong { border-color: var(--border-strong); }
+.border-primary { border-color: var(--accent-primary); }
+
+// ============================================
+// Glass Morphism
+// ============================================
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+}
+
+.glass-strong {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border);
+}
+
+// ============================================
+// Interactive States
+// ============================================
+
+.interactive {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  
+  &:hover {
+    background-color: var(--surface-hover);
+  }
+  
+  &:active {
+    background-color: var(--surface-active);
+  }
+}
+
+.interactive-scale {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// ============================================
+// Focus Styles
+// ============================================
+
+.focus-ring {
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+}
+
+// ============================================
+// Print Styles
+// ============================================
+
+@media print {
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+}
+
+// ============================================
+// Theme Preset Specific Styles
+// Applied via data-preset attribute on html
+// ============================================
+
+// Brutalist preset - hard edges, no animations
+[data-preset="brutalist"] {
+  --radius-sm: 0px !important;
+  --radius-md: 0px !important;
+  --radius-lg: 0px !important;
+  --radius-xl: 0px !important;
+  --radius-full: 0px !important;
+
+  * {
+    border-radius: 0 !important;
+    transition-duration: 0ms !important;
+  }
+
+  .q-btn {
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .card, .q-card {
+    border-width: 2px;
+  }
+}
+
+// Terminal preset - scanlines, monospace everything
+[data-preset="terminal"] {
+  * {
+    font-family: var(--font-mono) !important;
+    border-radius: 0 !important;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 9999;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 255, 0, 0.03) 2px,
+      rgba(0, 255, 0, 0.03) 4px
+    );
+  }
+
+  .q-btn {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: 1px solid currentColor;
+  }
+
+  input, textarea, .q-field__native {
+    caret-color: currentColor;
+  }
+}
+
+// Cyberpunk preset - neon glow effects
+[data-preset="cyberpunk"] {
+  .q-btn--primary {
+    text-shadow: 0 0 10px currentColor;
+    box-shadow: 0 0 20px var(--color-primary);
+
+    &:hover {
+      box-shadow: 0 0 30px var(--color-primary);
+    }
+  }
+
+  .card, .q-card {
+    border: 1px solid rgba(255, 0, 255, 0.3);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.2);
+  }
+
+  a:hover {
+    text-shadow: 0 0 8px currentColor;
+  }
+}
+
+// Neumorphic preset - soft shadows
+[data-preset="neumorphic"] {
+  .card, .q-card {
+    border: none !important;
+  }
+
+  .q-btn {
+    border: none !important;
+
+    &:active {
+      box-shadow: var(--shadow-sm) !important;
+      transform: translateY(1px);
+    }
+  }
+
+  .q-field__control {
+    border: none !important;
+    box-shadow: inset 3px 3px 6px var(--border-default),
+                inset -3px -3px 6px var(--bg-elevated);
+  }
+}
+
+// Minimal preset - extra whitespace
+[data-preset="minimal"] {
+  .card, .q-card {
+    padding: calc(var(--card-padding) * 1.25);
+  }
+
+  .q-btn {
+    letter-spacing: 0.5px;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 500;
+  }
+}
+
+// Oceanic preset - wave-like animations
+[data-preset="oceanic"] {
+  .q-btn--primary:hover {
+    animation: wave-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes wave-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0, 119, 182, 0.4); }
+    50% { box-shadow: 0 0 0 10px rgba(0, 119, 182, 0); }
+  }
+}
+
+// Warm Sepia preset - paper texture feel
+[data-preset="warm-sepia"] {
+  body {
+    background-image: 
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-blend-mode: overlay;
+  }
+
+  .card, .q-card {
+    box-shadow: 2px 2px 8px rgba(61, 41, 20, 0.15);
+  }
+}
+
+// Forest preset - organic feel
+[data-preset="forest"] {
+  .q-btn--primary {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  }
+}
+
+// Sunset preset - gradient accents
+[data-preset="sunset"] {
+  .q-btn--primary {
+    background: linear-gradient(135deg, #FF6B35 0%, #9B59B6 100%) !important;
+    border: none;
+  }
+
+  h1, h2, h3 {
+    background: linear-gradient(135deg, #FF6B35 0%, #9B59B6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+// ============================================
+// Transition helpers for theme changes
+// ============================================
+
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition: 
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease !important;
+}
+
+// Disable transitions during theme load
+html.no-transitions,
+html.no-transitions *,
+html.no-transitions *::before,
+html.no-transitions *::after {
+  transition: none !important;
+}
+

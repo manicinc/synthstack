@@ -1,0 +1,38 @@
+<h1>Welcome to SynthStack, <%= userName %>! 🎉</h1>
+
+<p>We're thrilled to have you join our community of builders, creators, and innovators!</p>
+
+<h2>🚀 Get Started in 3 Easy Steps</h2>
+
+<p><strong>1. Explore Your Dashboard</strong><br>
+Discover all the powerful features of your agency-in-a-box platform.</p>
+
+<p><strong>2. Try the AI Copilot</strong><br>
+Press ⌘K to chat with your AI assistant - get help, ask questions, learn the platform.</p>
+
+<p><strong>3. Start Building</strong><br>
+Use our cross-platform tools to ship your next project 10x faster.</p>
+
+<div style="text-align: center; margin: 32px 0;">
+  <a href="<%= dashboardUrl %>" class="btn">Get Started Now</a>
+</div>
+
+<h2>📚 Helpful Resources</h2>
+<ul style="line-height: 1.8;">
+  <li><a href="<%= guidesUrl %>">Documentation</a> - Learn the platform</li>
+  <li><a href="<%= communityUrl %>">Community</a> - Connect with other builders</li>
+  <li><a href="<%= supportUrl %>">Help Center</a> - Get support when needed</li>
+</ul>
+
+<% if (creditsRemaining === null || creditsRemaining === undefined) { %>
+<p style="margin-top: 24px;">Your account is ready — you can start using AI features right away.</p>
+<% } else { %>
+<p style="margin-top: 24px;">Your account is ready with <strong><%= creditsRemaining %> credits</strong> to get started.</p>
+<% } %>
+
+<p class="text-muted" style="margin-top: 32px;">
+  Questions? Just reply to this email - we're here to help!
+</p>
+
+<p>Happy building! 🚀</p>
+<p><strong>The SynthStack Team</strong></p>

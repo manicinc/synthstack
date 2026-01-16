@@ -1,0 +1,98 @@
+services:
+  # PostgreSQL test database with ephemeral storage for speed
+  postgres-test:
+    image: postgres:16-alpine
+    container_name: synthstack-postgres-test
+    environment:
+      POSTGRES_DB: synthstack_test
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_pass
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=en_US.UTF-8"
+    ports:
+      - "5451:5432"
+    volumes:
+      # Mount test schema - PostgreSQL auto-runs .sql files from initdb.d on startup
+      - ./test-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    tmpfs:
+      # Use in-memory filesystem for maximum speed
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_user -d synthstack_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - test-network
+
+  # Redis test instance with ephemeral storage
+  redis-test:
+    image: redis:7-alpine
+    container_name: synthstack-redis-test
+    ports:
+      - "6391:6379"
+    tmpfs:
+      - /data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - test-network
+
+  # FastAPI ML service for E2E tests
+  ml-service-test:
+    build:
+      context: ../ml-service
+      dockerfile: Dockerfile
+    container_name: synthstack-ml-test
+    environment:
+      ENVIRONMENT: test
+      DATABASE_URL: postgresql://test_user:test_pass@postgres-test:5432/synthstack_test
+      REDIS_URL: redis://redis-test:6379
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-sk-test-key}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-test-key}
+      ENABLE_REQUEST_LOGGING: "true"
+      LOG_LEVEL: WARNING
+    ports:
+      - "8031:8000"
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - test-network
+
+  # Qdrant vector database for RAG tests (optional)
+  qdrant-test:
+    image: qdrant/qdrant:v1.7.4
+    container_name: synthstack-qdrant-test
+    ports:
+      - "6334:6333"
+      - "6335:6334"
+    volumes:
+      - qdrant-test-storage:/qdrant/storage
+    environment:
+      QDRANT_LOG_LEVEL: WARN
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - test-network
+
+networks:
+  test-network:
+    driver: bridge
+
+volumes:
+  qdrant-test-storage:
+    driver: local

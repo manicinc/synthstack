@@ -1,0 +1,95 @@
+{
+  "name": "@synthstack/directus-extension",
+  "version": "1.0.0",
+  "description": "SynthStack extension bundle for Directus - Dashboard, Workflows, and integrations (Community Edition)",
+  "type": "module",
+  "keywords": [
+    "directus",
+    "directus-extension",
+    "directus-extension-bundle",
+    "synthstack",
+    "cms",
+    "workflow",
+    "automation",
+    "ai",
+    "node-red"
+  ],
+  "homepage": "https://synthstack.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/synthstack/directus-extension-synthstack.git"
+  },
+  "bugs": {
+    "url": "https://github.com/synthstack/directus-extension-synthstack/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "SynthStack",
+    "email": "support@synthstack.app",
+    "url": "https://synthstack.app"
+  },
+  "directus:extension": {
+    "type": "bundle",
+    "path": {
+      "app": "dist/app.js",
+      "api": "dist/api.js"
+    },
+    "entries": [
+      {
+        "type": "module",
+        "name": "synthstack-dashboard",
+        "source": "src/modules/dashboard/index.ts"
+      },
+      {
+        "type": "module",
+        "name": "synthstack-workflows",
+        "source": "src/modules/workflows/index.ts"
+      },
+      {
+        "type": "hook",
+        "name": "synthstack-hooks",
+        "source": "src/hooks/index.ts"
+      }
+    ],
+    "host": "^10.0.0 || ^11.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "directus-extension build",
+    "dev": "directus-extension build -w --no-minify",
+    "lint": "eslint 'src/**/*.{ts,vue}' --ignore-pattern 'src/**/*.spec.ts' || true",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@directus/extensions-sdk": "^12.0.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@vitejs/plugin-vue": "^5.0.0",
+    "@vitest/coverage-v8": "^2.0.0",
+    "@vue/compiler-dom": "^3.5.26",
+    "@vue/server-renderer": "^3.5.26",
+    "@vue/test-utils": "^2.4.0",
+    "eslint": "^8.56.0",
+    "eslint-plugin-vue": "^9.24.0",
+    "happy-dom": "^15.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^2.0.0",
+    "vue": "^3.4.0",
+    "vue-eslint-parser": "^9.4.0",
+    "vue-router": "^4.6.4"
+  },
+  "peerDependencies": {
+    "@directus/extensions-sdk": ">=10.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

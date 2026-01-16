@@ -1,0 +1,22 @@
+# SynthStack Web Frontend - Vue 3 + Quasar (Development)
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy package files
+COPY package.json ./
+
+# Install dependencies with pnpm
+RUN pnpm install
+
+# Copy source code
+COPY . .
+
+# Expose ports (Quasar dev server)
+EXPOSE 3050
+
+# Start development server
+CMD ["pnpm", "dev"]

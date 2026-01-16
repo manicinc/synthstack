@@ -1,0 +1,54 @@
+<h1>Your <%= planName %> Subscription is Active! 🎊</h1>
+
+<p>Thank you for upgrading to <%= planName %>! Your subscription is now active and ready to use.</p>
+
+<div style="background: #f8f9fa; padding: 24px; border-radius: 8px; margin: 24px 0;">
+  <h2 style="margin-top: 0;">Your Plan Benefits:</h2>
+  <ul style="line-height: 2;">
+    <li><strong><%= creditsPerDay %> AI credits per day</strong></li>
+    <li>Priority processing</li>
+    <li>Projects + workspace</li>
+    <li>Workflows (automation)</li>
+    <li>Email support</li>
+    <% if (planName === 'Pro' || planName === 'Agency') { %>
+    <li>AI agents + Strategy Debates</li>
+    <li>API access</li>
+    <li>Priority support</li>
+    <% } %>
+    <% if (planName === 'Agency') { %>
+    <li>Team collaboration</li>
+    <li>White-labeling + custom branding</li>
+    <li>Dedicated support</li>
+    <% } %>
+  </ul>
+</div>
+
+<h2>📊 Subscription Details</h2>
+<table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+  <tr style="border-bottom: 1px solid #e0e0e0;">
+    <td style="padding: 12px 0;"><strong>Plan:</strong></td>
+    <td style="padding: 12px 0;"><%= planName %></td>
+  </tr>
+  <tr style="border-bottom: 1px solid #e0e0e0;">
+    <td style="padding: 12px 0;"><strong>Billing:</strong></td>
+    <td style="padding: 12px 0;"><%= isYearly ? 'Yearly' : 'Monthly' %></td>
+  </tr>
+  <tr style="border-bottom: 1px solid #e0e0e0;">
+    <td style="padding: 12px 0;"><strong>Amount:</strong></td>
+    <td style="padding: 12px 0;">$<%= amount %> <%= isYearly ? '/year' : '/month' %></td>
+  </tr>
+  <tr style="border-bottom: 1px solid #e0e0e0;">
+    <td style="padding: 12px 0;"><strong>Next Billing:</strong></td>
+    <td style="padding: 12px 0;"><%= nextBillingDate %></td>
+  </tr>
+</table>
+
+<div style="text-align: center; margin: 32px 0;">
+  <a href="<%= dashboardUrl %>" class="btn">Go to Dashboard</a>
+</div>
+
+<p><strong>Manage Your Subscription:</strong></p>
+<p>You can upgrade, downgrade, or cancel anytime from your <a href="<%= billingUrl %>">billing settings</a>.</p>
+
+<p style="margin-top: 32px;">Thank you for your support! 🙏</p>
+<p><strong>The SynthStack Team</strong></p>

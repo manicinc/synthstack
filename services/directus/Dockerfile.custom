@@ -1,0 +1,11 @@
+FROM directus/directus:latest
+
+USER root
+RUN corepack enable
+USER node
+
+# Install Collaborative Editing Extension from Directus Labs
+RUN pnpm install @directus-labs/collaborative-editing
+
+# Additional extensions can be added here in the future
+# Example: RUN pnpm install @directus-labs/some-other-extension

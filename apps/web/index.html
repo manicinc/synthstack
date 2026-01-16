@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#6366F1" />
+  <meta name="description"
+    content="SynthStack is the AI-powered SaaS boilerplate that ships your app in days, not months. Build with Vue/Quasar, Directus CMS, and deploy cross-platform." />
+  <meta name="keywords"
+    content="SynthStack, SynthStack app, SynthStack SaaS, SynthStack platform, SaaS boilerplate, Vue Quasar, Directus CMS, cross-platform app, PWA development, startup boilerplate" />
+  <meta name="author" content="SynthStack" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://synthstack.app" />
+
+  <!-- Preconnect to fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Favicon - Primary link for Google Search (must be 48x48+ and non-conditional) -->
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+  <!-- SVG favicons (modern browsers with theme support) -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" media="(prefers-color-scheme: light)" />
+  <link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" media="(prefers-color-scheme: dark)" />
+  <!-- PNG fallbacks (older browsers) -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" media="(prefers-color-scheme: light)" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-dark-32x32.png" media="(prefers-color-scheme: dark)" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" media="(prefers-color-scheme: light)" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-dark-16x16.png" media="(prefers-color-scheme: dark)" />
+  <!-- ICO fallback for IE/old browsers -->
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="SynthStack" />
+  <meta property="og:title" content="SynthStack - AI-Powered SaaS Boilerplate | Ship Your App in Days" />
+  <meta property="og:description"
+    content="SynthStack is the AI-powered SaaS boilerplate that ships your app in days, not months. Build with Vue/Quasar, Directus CMS, and deploy cross-platform." />
+  <meta property="og:image" content="https://synthstack.app/og-image.png" />
+  <meta property="og:url" content="https://synthstack.app" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@synthstackapp" />
+  <meta name="twitter:creator" content="@synthstackapp" />
+  <meta name="twitter:title" content="SynthStack - AI-Powered SaaS Boilerplate | Ship Your App in Days" />
+  <meta name="twitter:description"
+    content="SynthStack is the AI-powered SaaS boilerplate that ships your app in days, not months. Build with Vue/Quasar, Directus CMS, and deploy cross-platform." />
+  <meta name="twitter:image" content="https://synthstack.app/og-image.png" />
+
+  <!-- Structured Data (Schema.org) -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://synthstack.app/#website",
+          "url": "https://synthstack.app",
+          "name": "SynthStack",
+          "alternateName": ["SynthStack App", "SynthStack SaaS", "SynthStack Platform"],
+          "description": "AI-powered SaaS boilerplate for shipping apps in days",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://synthstack.app/search?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          },
+          "publisher": {
+            "@id": "https://synthstack.app/#organization"
+          }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://synthstack.app/#organization",
+          "name": "SynthStack",
+          "alternateName": ["SynthStack App", "SynthStack SaaS"],
+          "url": "https://synthstack.app",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://synthstack.app/logo/synthstack-mark-512.png",
+            "width": "512",
+            "height": "512"
+          },
+          "sameAs": [
+            "https://twitter.com/synthstackapp",
+            "https://github.com/manicinc/synthstack",
+            "https://discord.gg/synthstack"
+          ]
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://synthstack.app/#software",
+          "name": "SynthStack Community",
+          "alternateName": ["SynthStack App", "SynthStack SaaS", "SynthStack Platform"],
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Web, iOS, Android, Desktop",
+          "description": "SynthStack is the AI-powered SaaS boilerplate that ships your app in days, not months. Build with Vue/Quasar, Directus CMS, and deploy cross-platform.",
+          "image": "https://synthstack.app/og-image.png",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD",
+            "availability": "https://schema.org/InStock"
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5.0",
+            "reviewCount": "1"
+          },
+          "publisher": {
+            "@id": "https://synthstack.app/#organization"
+          }
+        }
+      ]
+    }
+    </script>
+
+  <title>SynthStack - AI-Powered SaaS Boilerplate | Ship Your App in Days</title>
+
+
+  <!-- Prevent FOUC (Flash of Unstyled Content) for dark mode -->
+  <script>
+    (function () {
+      var stored = localStorage.getItem('quasar-dark-mode');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var isDark = stored === 'true' || (stored === null && prefersDark);
+      document.documentElement.style.backgroundColor = isDark ? '#09090B' : '#FFFFFF';
+      document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+    })();
+  </script>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    html {
+      background-color: #09090B;
+    }
+
+    /* Dark mode default */
+    body {
+      background-color: inherit;
+      color: #fafafa;
+    }
+  </style>
+</head>
+
+<body class="body--dark">
+  <!-- quasar:entry-point -->
+</body>
+
+</html>

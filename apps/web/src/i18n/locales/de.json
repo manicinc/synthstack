@@ -1,0 +1,703 @@
+{
+  "app": {
+    "name": "SynthStack",
+    "tagline": "KI-natives Full-Stack SaaS Boilerplate"
+  },
+  "nav": {
+    "home": "Startseite",
+    "features": "Funktionen",
+    "pricing": "Preise",
+    "dashboard": "Dashboard",
+    "generate": "Generieren",
+    "printers": "Drucker",
+    "filaments": "Filamente",
+    "profiles": "Profile",
+    "myProfiles": "Meine Profile",
+    "history": "Verlauf",
+    "account": "Konto",
+    "subscription": "Abonnement",
+    "login": "Anmelden",
+    "signup": "Registrieren",
+    "logout": "Abmelden"
+  },
+  "landing": {
+    "hero": {
+      "title": "Perfekte Drucke, Jedes Mal",
+      "subtitle": "Laden Sie Ihre STL hoch. Erhalten Sie KI-optimierte Einstellungen. Exportieren Sie zu jedem Slicer.",
+      "cta": "Early Bird Zugang - $149",
+      "secondaryCta": "Auf GitHub ansehen",
+      "promoWithStats": "Begrenzt auf {max} Lifetime-Lizenzen • {remaining} verbleibend • Sparen Sie {discount}",
+      "promoDefault": "Begrenzt auf 150 Lifetime-Lizenzen • Sparen Sie $100 (Normal $249)"
+    },
+    "tech": {
+      "label": "Gebaut mit modernen, kampferprobten Technologien"
+    },
+    "admin": {
+      "badge": "Integrierter Admin",
+      "title": "Komplettes Admin-Dashboard",
+      "subtitle": "Vollständiges CMS und administratives Kontrollzentrum powered by Directus"
+    },
+    "opensource": {
+      "badge": "Für Immer Kostenlos",
+      "title": "Community Edition",
+      "description": "Der komplette SynthStack-Kern ist als Quellcode verfügbar unter der Community-Lizenz (modifizierte MIT, nicht-kommerziell). Ideal zum Lernen, für Side-Projects und Evaluation.",
+      "features": {
+        "themes": "Themes & Dark Mode",
+        "payments": "Stripe / LemonSqueezy",
+        "subscriptions": "Abonnements",
+        "blog": "Blog-System",
+        "cms": "Directus CMS",
+        "email": "E-Mail-Vorlagen",
+        "crossPlatform": "Plattformübergreifend",
+        "license": "Community-Lizenz (modifizierte MIT)"
+      },
+      "github": {
+        "label": "Auf GitHub markieren"
+      },
+      "note": "AI Co-Founders ist ein Premium-Add-on, das Ihr SynthStack mit 6 spezialisierten KI-Agenten auflädt."
+    },
+    "pricing": {
+      "title": "Einfache, Transparente Preise",
+      "subtitle": "Quellcode verfügbarer Kern, Premium-KI-Agenten",
+      "community": {
+        "name": "Community",
+        "price": "Kostenlos",
+        "period": "für immer",
+        "description": "Quellcode verfügbares Starter-Kit (nicht-kommerziell)",
+        "features": {
+          "source": "Vollständiger Quellcode (Community-Lizenz)",
+          "cms": "Directus CMS Integration",
+          "billing": "Stripe/LemonSqueezy Abrechnung",
+          "blog": "Blog & Newsletter",
+          "crossPlatform": "Plattformübergreifende Builds",
+          "noAgents": "AI Co-Founders Agenten",
+          "noGithub": "GitHub-Integration",
+          "noSuggestions": "Proaktive Vorschläge"
+        },
+        "cta": "Loslegen"
+      },
+      "pro": {
+        "badge": "Am Beliebtesten",
+        "name": "Pro",
+        "price": "$297",
+        "period": "lebenslang",
+        "description": "Vollständige AI Co-Founders Erfahrung",
+        "features": {
+          "everything": "Alles in Community",
+          "agents": "Alle 6 KI-Agenten",
+          "github": "GitHub PR-Automatisierung",
+          "suggestions": "Proaktive Vorschläge",
+          "rag": "RAG-Wissensdatenbank",
+          "templates": "Alle Prompt-Vorlagen",
+          "support": "Prioritäts-Support",
+          "updates": "Lebenslange Updates"
+        },
+        "cta": "Jetzt Kaufen"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Individuell",
+        "period": "kontaktieren Sie uns",
+        "description": "Für Teams und Agenturen",
+        "features": {
+          "everything": "Alles in Pro",
+          "training": "Individuelles Agenten-Training",
+          "whiteLabel": "White-Label-Branding",
+          "support": "Dedizierter Support",
+          "sla": "SLA-Garantien",
+          "onPremise": "On-Premise-Bereitstellung",
+          "integrations": "Individuelle Integrationen",
+          "teamTraining": "Team-Schulung"
+        },
+        "cta": "Vertrieb Kontaktieren"
+      }
+    },
+    "faq": {
+      "title": "Häufig Gestellte Fragen",
+      "subtitle": "Alles, was Sie über SynthStack wissen müssen",
+      "items": {
+        "free": {
+          "question": "Ist SynthStack wirklich kostenlos?",
+          "answer": "Ja! Die Community Edition ist kostenlos für Lernen, private Projekte und Evaluation unter der Community-Lizenz (modifizierte MIT, nicht-kommerziell). Für kommerzielle Produktion benötigen Sie eine Commercial License."
+        },
+        "included": {
+          "question": "Was ist in der Community Edition enthalten?",
+          "answer": "Alles, was Sie für ein Produktions-SaaS benötigen: Vue 3 + Quasar UI, Fastify API, Directus CMS, Supabase Auth, Stripe-Abrechnung, Blog, Newsletter, Analytics, Theming und plattformübergreifende Builds."
+        },
+        "referral": {
+          "question": "Wie funktioniert das Empfehlungsprogramm?",
+          "answer": "Teilen Sie Ihren einzigartigen Link, verdienen Sie Belohnungen, wenn Freunde sich anmelden und kaufen. Schalten Sie gestaffelte Belohnungen frei: Rabattcodes, Credits, kostenlose Monate, bis zu 50% lebenslanger Rabatt auf Elite-Stufe."
+        },
+        "aiDifference": {
+          "question": "Was macht AI Co-Founders anders?",
+          "answer": "Es sind spezialisierte Agenten mit RAG-Kontext (sie kennen Ihre Docs, Code, CMS). Sie führen echte Aktionen aus wie das Erstellen von PRs und Blog-Posts. Alle Aktionen erfordern zuerst Ihre Genehmigung."
+        },
+        "customAgents": {
+          "question": "Kann ich eigene KI-Agenten erstellen?",
+          "answer": "Absolut! Erstellen Sie Ihre eigenen spezialisierten Agenten direkt in Directus CMS - kein Programmieren erforderlich. Definieren Sie benutzerdefinierte Prompts, Persönlichkeiten, Icons und Fähigkeiten. Neue Agenten erscheinen sofort in Ihrer App."
+        },
+        "apiKeys": {
+          "question": "Kann ich meine eigenen KI-API-Schlüssel verwenden?",
+          "answer": "Ja! SynthStack unterstützt OpenAI und Anthropic APIs mit Ihren eigenen Schlüsseln. Sie kontrollieren die Kosten und haben volle Transparenz über die Nutzung. Keine Vendor-Lock-in."
+        },
+        "subscription": {
+          "question": "Gibt es eine Abonnement-Option?",
+          "answer": "Wir bieten sowohl Lifetime ($297 einmalig) als auch monatliche Abonnement-Pläne an. Der Testmodus ermöglicht es Ihnen, alles mit $0 Gebühren auszuprobieren. Enterprise-Teams können uns für individuelle Preise kontaktieren."
+        }
+      }
+    },
+    "cta": {
+      "title": "Bereit, Ihr nächstes Projekt zu bauen?",
+      "subtitle": "Full-Stack SaaS Boilerplate mit KI-Superkräften. 10x schneller ausliefern.",
+      "primary": "Kostenlos Starten",
+      "secondary": "Auf Pro Upgraden",
+      "note": "Kern unter Community-Lizenz · Pro: $297 lebenslang · Empfehlungsbelohnungen verfügbar"
+    },
+    "features": {
+      "title": "Warum SynthStack?",
+      "subtitle": "Schneller ausliefern mit KI-gestützter Entwicklung.",
+      "stlAnalysis": {
+        "title": "Intelligente STL-Analyse",
+        "description": "Unsere KI untersucht die Geometrie Ihres Modells, erkennt Überhänge, dünne Wände und optimale Druckorientierungen."
+      },
+      "aiSettings": {
+        "title": "KI-generierte Einstellungen",
+        "description": "Erhalten Sie optimierte Parameter basierend auf Ihrem spezifischen Drucker, Filament und Modelleigenschaften."
+      },
+      "multiSlicer": {
+        "title": "Überall Exportieren",
+        "description": "Laden Sie gebrauchsfertige Profile für OrcaSlicer, PrusaSlicer, Cura und mehr herunter."
+      },
+      "community": {
+        "title": "Von der Community Validiert",
+        "description": "Teilen Sie Profile, sehen Sie Erfolgsraten und bauen Sie auf dem auf, was funktioniert."
+      }
+    },
+    "howItWorks": {
+      "title": "Wie Es Funktioniert",
+      "step1": {
+        "title": "Laden Sie Ihre STL Hoch",
+        "description": "Ziehen Sie Ihr 3D-Modell für sofortige Analyse hierher"
+      },
+      "step2": {
+        "title": "Wählen Sie Ihr Setup",
+        "description": "Wählen Sie Ihren Drucker und Filament aus unserer Datenbank"
+      },
+      "step3": {
+        "title": "Generieren Sie Einstellungen",
+        "description": "KI erstellt optimierte Parameter für Ihren spezifischen Druck"
+      },
+      "step4": {
+        "title": "Exportieren & Drucken",
+        "description": "Laden Sie für Ihren Slicer herunter und beginnen Sie zu drucken"
+      }
+    },
+    "stats": {
+      "profiles": "Generierte Profile",
+      "printers": "Unterstützte Drucker",
+      "successRate": "Erfolgsrate"
+    },
+    "featuresGrid": {
+      "badge": "Alles Was Sie Brauchen",
+      "title": "Full-Stack SaaS Funktionen",
+      "subtitle": "Produktionsreife Komponenten inklusive. Schneller bauen, früher launchen.",
+      "moreFeatures": {
+        "crossPlatform": "Plattformübergreifend (Web, iOS, Android, Desktop)",
+        "typescript": "TypeScript + Vue 3 + Fastify",
+        "docker": "Docker-Ready Deployment",
+        "docs": "Vollständige Dokumentation"
+      },
+      "items": {
+        "workflows": {
+          "title": "Visuelle Workflows",
+          "description": "Automatisierungen per Drag-and-Drop erstellen. LangGraph-gesteuerte DAGs führen KI-Agenten, Webhooks und Integrationen in Echtzeit aus."
+        },
+        "aiAgents": {
+          "title": "KI Co-Founder",
+          "description": "Spezialisierte KI-Agenten in Minuten erstellen. Prompts, Persönlichkeit und Fähigkeiten über das Admin-Panel bearbeiten - kein Code erforderlich."
+        },
+        "webSearch": {
+          "title": "Live Web-Recherche",
+          "description": "Agenten durchsuchen das Web in Echtzeit. Aktuelle Preise, Nachrichten, Wettbewerberdaten abrufen - keine veralteten Trainingsdaten."
+        },
+        "orchestration": {
+          "title": "Multi-Agent Orchestrierung",
+          "description": "Agenten delegieren Aufgaben untereinander. Entwickler fragt Researcher nach Kontext, Marketer fragt SEO nach Keywords."
+        },
+        "auth": {
+          "title": "Flexible Authentifizierung",
+          "description": "Wählen Sie zwischen Supabase (verwaltet) oder lokalem PostgreSQL (selbst gehostet). Beide unterstützen OAuth, JWT und RBAC."
+        },
+        "selfHosted": {
+          "title": "Self-Hosted Auth Option",
+          "description": "Läuft ohne externe Abhängigkeiten mit lokaler PostgreSQL Auth. Argon2id Hashing, Session-Management und volle Datensouveränität."
+        },
+        "stripe": {
+          "title": "Stripe Abrechnung",
+          "description": "Abonnements und Einmalzahlungen. Kundenportal, Rechnungen, Webhooks und Testmodus integriert."
+        },
+        "directus": {
+          "title": "Directus CMS",
+          "description": "Vollständiges Admin-Panel mit visueller Bearbeitung, Echtzeit-Zusammenarbeit, Versionierung und Live-Vorschau."
+        },
+        "visualEditing": {
+          "title": "Visuelle In-Place Bearbeitung",
+          "description": "Inhalte direkt auf Ihrer Website bearbeiten. Kein Wechsel zwischen Admin-Panel und Vorschau - Änderungen im Kontext sehen."
+        },
+        "collaboration": {
+          "title": "Echtzeit-Zusammenarbeit",
+          "description": "Nahtlos zusammenarbeiten mit intelligenter Feldsperrung. Sehen Sie, wer was bearbeitet, mit konfliktfreier Zusammenarbeit."
+        },
+        "versioning": {
+          "title": "Content-Versionierung",
+          "description": "Alle Änderungen mit automatischer Versionierung verfolgen. Frühere Versionen mit einem Klick wiederherstellen."
+        },
+        "analytics": {
+          "title": "Analytics Dashboard",
+          "description": "Nutzer-Engagement, Seitenaufrufe und benutzerdefinierte Events verfolgen. Integrierte Diagramme und CSV-Export."
+        },
+        "newsletter": {
+          "title": "Newsletter & E-Mail",
+          "description": "Abonnentenverwaltung, Template-Builder und Kampagnen-Tracking. Resend oder SMTP Integration."
+        },
+        "blog": {
+          "title": "Blog-Plattform",
+          "description": "Vollständiger Blog mit Kategorien, Tags, SEO-Metadaten und Markdown-Editor in Directus."
+        },
+        "seoAudit": {
+          "title": "SEO Audit & Optimierung",
+          "description": "KI-gestützte SEO-Audits mit Keyword-Recherche, Content-Scoring und Optimierungsvorschlägen. Lighthouse CI Integration für automatisches Performance-Tracking."
+        },
+        "theming": {
+          "title": "Premium Theming System",
+          "description": "10 integrierte Presets mit 30+ Hell/Dunkel-Kombinationen. 60+ CSS-Variablen für vollständige Anpassung. Echtzeit-Wechsel mit Datenbank-Persistenz."
+        },
+        "referral": {
+          "title": "Empfehlungssystem",
+          "description": "Saisonale Kampagnen, gestaffelte Belohnungen, Rabattcodes und Bestenlisten. Vollständig konfigurierbar."
+        },
+        "integrations": {
+          "title": "15+ Integrationen",
+          "description": "Verbinden Sie Slack, Discord, GitHub, Notion, Google Sheets, Twilio, Jira und mehr. BYOK unterstützt."
+        },
+        "knowledgeBase": {
+          "title": "RAG Wissensdatenbank",
+          "description": "Dokumente von Drive, Notion oder URLs importieren. Vektor-Embeddings liefern Kontext für KI-Agenten."
+        }
+      }
+    },
+    "threeD": {
+      "badge": "Erweiterte Visualisierung",
+      "title": "Komplexe Workflows in 3D",
+      "subtitle": "Visualisieren Sie komplexe mehrstufige Workflows mit unserer interaktiven 3D-Graph-Engine"
+    },
+    "theming": {
+      "badge": "Beste Quasar UX im Web",
+      "subtitle": "Vollständiges Theming & Anpassungssystem"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Willkommen Zurück",
+      "subtitle": "Melden Sie sich bei Ihrem Konto an",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "submit": "Anmelden",
+      "forgotPassword": "Passwort vergessen?",
+      "noAccount": "Noch kein Konto?",
+      "signUp": "Registrieren"
+    },
+    "register": {
+      "title": "Konto Erstellen",
+      "subtitle": "Beginnen Sie Ihre Drucke zu optimieren",
+      "name": "Anzeigename",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "confirmPassword": "Passwort Bestätigen",
+      "submit": "Konto Erstellen",
+      "hasAccount": "Bereits ein Konto?",
+      "signIn": "Anmelden"
+    },
+    "forgotPassword": {
+      "title": "Passwort Zurücksetzen",
+      "subtitle": "Geben Sie Ihre E-Mail ein, um einen Zurücksetzungslink zu erhalten",
+      "email": "E-Mail",
+      "submit": "Link Senden",
+      "backToLogin": "Zurück zur Anmeldung"
+    },
+    "social": {
+      "or": "oder fortfahren mit",
+      "google": "Google",
+      "github": "GitHub"
+    }
+  },
+  "dashboard": {
+    "welcome": "Willkommen zurück",
+    "credits": {
+      "title": "Guthaben",
+      "remaining": "{count} verbleibend",
+      "usedToday": "{count} heute verwendet",
+      "unlimited": "Unbegrenzt"
+    },
+    "quickActions": {
+      "title": "Schnellaktionen",
+      "newGeneration": "Neue Generierung",
+      "browsePrinters": "Drucker Durchsuchen",
+      "viewProfiles": "Profile Ansehen"
+    },
+    "recentGenerations": {
+      "title": "Letzte Generierungen",
+      "empty": "Noch keine Generierungen. Beginnen Sie mit dem Hochladen einer STL!"
+    }
+  },
+  "generate": {
+    "title": "Druckeinstellungen Generieren",
+    "upload": {
+      "title": "STL Hochladen",
+      "dragDrop": "Ziehen Sie Ihre STL-Datei hierher",
+      "or": "oder",
+      "browse": "Dateien Durchsuchen",
+      "maxSize": "Maximale Dateigröße: 50MB"
+    },
+    "analysis": {
+      "title": "Modellanalyse",
+      "dimensions": "Abmessungen",
+      "volume": "Volumen",
+      "faces": "Flächen",
+      "overhangs": "Überhänge",
+      "thinWalls": "Dünne Wände",
+      "difficulty": "Druckschwierigkeit"
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "printer": "Drucker Auswählen",
+      "filament": "Filament Auswählen",
+      "quality": "Qualitätsvoreinstellung",
+      "priorities": "Prioritäten",
+      "speed": "Geschwindigkeit",
+      "strength": "Festigkeit",
+      "material": "Materialverbrauch"
+    },
+    "result": {
+      "title": "Generierte Einstellungen",
+      "confidence": "Zuverlässigkeit",
+      "export": "Exportieren",
+      "save": "Profil Speichern",
+      "regenerate": "Neu Generieren"
+    }
+  },
+  "pricing": {
+    "title": "Einfache, Transparente Preise",
+    "subtitle": "Starten Sie kostenlos. Upgraden Sie bei Bedarf.",
+    "monthly": "Monatlich",
+    "annually": "Jährlich",
+    "savePercent": "Sparen Sie {percent}%",
+    "loading": "Preise werden geladen...",
+    "error": "Preise konnten nicht geladen werden",
+    "cta": "Loslegen"
+  },
+  "common": {
+    "loading": "Wird geladen...",
+    "error": "Etwas ist schiefgelaufen",
+    "retry": "Erneut Versuchen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "view": "Ansehen",
+    "download": "Herunterladen",
+    "share": "Teilen",
+    "copy": "Kopieren",
+    "copied": "Kopiert!",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "sort": "Sortieren",
+    "all": "Alle",
+    "none": "Keine"
+  },
+  "errors": {
+    "notFound": "Seite nicht gefunden",
+    "unauthorized": "Bitte melden Sie sich an, um fortzufahren",
+    "forbidden": "Sie haben keine Berechtigung, darauf zuzugreifen",
+    "serverError": "Serverfehler. Bitte versuchen Sie es später erneut."
+  },
+  "language": {
+    "select": "Sprache Auswählen",
+    "current": "Aktuelle Sprache"
+  },
+  "referral": {
+    "page": {
+      "title": "Empfehlungsprogramm",
+      "subtitle": "Verdienen Sie Belohnungen, indem Sie SynthStack mit Ihrem Netzwerk teilen",
+      "loading": "Laden Ihres Empfehlungs-Dashboards...",
+      "signInRequired": "Anmeldung Erforderlich",
+      "signInDescription": "Bitte melden Sie sich an, um auf Ihr Empfehlungs-Dashboard zuzugreifen und Belohnungen zu verdienen.",
+      "signIn": "Anmelden",
+      "viewTutorial": "Tutorial Ansehen",
+      "newHere": "Neu im Empfehlungsprogramm?",
+      "takeTour": "Machen Sie eine kurze Tour, um zu erfahren, wie Sie Belohnungen verdienen können.",
+      "startTutorial": "Tutorial Starten"
+    },
+    "dashboard": {
+      "howItWorks": {
+        "title": "So Funktioniert's",
+        "step1": {
+          "title": "Teilen Sie Ihren Link",
+          "description": "Kopieren und teilen Sie Ihren einzigartigen Empfehlungslink"
+        },
+        "step2": {
+          "title": "Freunde Registrieren Sich",
+          "description": "Sie erstellen ein Konto mit Ihrem Link"
+        },
+        "step3": {
+          "title": "Verdienen Sie Belohnungen",
+          "description": "Erhalten Sie Belohnungen bei Käufen"
+        },
+        "step4": {
+          "title": "Einlösen & Nutzen",
+          "description": "Lösen Sie Rabatte, Credits und mehr ein"
+        }
+      },
+      "stats": {
+        "clicks": "Gesamtklicks",
+        "referrals": "Erfolgreiche Empfehlungen",
+        "pending": "Ausstehend",
+        "rewards": "Verdiente Belohnungen"
+      }
+    },
+    "onboarding": {
+      "back": "Zurück",
+      "next": "Weiter",
+      "getStarted": "Loslegen",
+      "welcome": {
+        "title": "Willkommen beim Empfehlungsprogramm!",
+        "description": "Verdienen Sie tolle Belohnungen, indem Sie SynthStack mit Freunden teilen.",
+        "benefit1": "Rabattcodes verdienen",
+        "benefit2": "Bonus-Credits erhalten",
+        "benefit3": "Premium-Funktionen freischalten"
+      },
+      "code": {
+        "title": "Ihr Einzigartiger Empfehlungscode",
+        "description": "Dies ist Ihr persönlicher Code. Wenn Freunde ihn nutzen, erhalten Sie Gutschrift.",
+        "yourCode": "Ihr Code",
+        "yourLink": "Ihr Empfehlungslink",
+        "loading": "Code wird generiert..."
+      },
+      "share": {
+        "title": "Teilen Sie Ihren Link",
+        "description": "Je mehr Sie teilen, desto mehr können Sie verdienen.",
+        "copyLink": "Link Kopieren",
+        "copyLinkDesc": "Kopieren Sie Ihren Link und fügen Sie ihn überall ein",
+        "social": "Soziale Medien",
+        "socialDesc": "Direkt auf Twitter oder LinkedIn teilen",
+        "email": "E-Mail",
+        "emailDesc": "Personalisierte Einladung senden"
+      },
+      "track": {
+        "title": "Verfolgen Sie Ihren Fortschritt",
+        "description": "Überwachen Sie Ihre Empfehlungen in Echtzeit.",
+        "clicks": "Link-Klicks verfolgen",
+        "signups": "Sehen wer sich registriert hat",
+        "conversions": "Konversionen überwachen",
+        "rewards": "Belohnungen freischalten",
+        "tierPreview": "Stufen-Abzeichen Freischalten"
+      },
+      "rewards": {
+        "title": "Belohnungen Einlösen",
+        "description": "Wenn Sie Meilensteine erreichen, schalten Sie wertvollere Belohnungen frei.",
+        "discounts": "Rabattcodes",
+        "discountsDesc": "Prozent Rabatt auf Käufe",
+        "credits": "Bonus-Credits",
+        "creditsDesc": "Für KI-Funktionen nutzen",
+        "freeMonths": "Kostenlose Monate",
+        "freeMonthsDesc": "Abonnement-Guthaben",
+        "upgrades": "Stufen-Upgrades",
+        "upgradesDesc": "Premium-Zugang freischalten",
+        "ready": "Sie sind bereit zu verdienen!"
+      }
+    },
+    "tooltips": {
+      "clicks": {
+        "title": "Gesamtklicks",
+        "description": "Die Anzahl der Klicks auf Ihren Empfehlungslink."
+      },
+      "referrals": {
+        "title": "Erfolgreiche Empfehlungen",
+        "description": "Benutzer, die sich registriert und ihre E-Mail verifiziert haben."
+      },
+      "pending": {
+        "title": "Ausstehende Empfehlungen",
+        "description": "Benutzer, die geklickt, aber die Registrierung noch nicht abgeschlossen haben."
+      },
+      "rewards": {
+        "title": "Verdiente Belohnungen",
+        "description": "Gesamte freigeschaltete Belohnungen durch Empfehlungen."
+      },
+      "tier": {
+        "title": "Aktuelle Stufe",
+        "description": "Ihre Empfehlungsstufe bestimmt die verfügbaren Belohnungen."
+      },
+      "code": {
+        "title": "Empfehlungscode",
+        "description": "Ihr einzigartiger Code, der Empfehlungen zu Ihnen zurückverfolgt."
+      },
+      "leaderboard": {
+        "title": "Bestenliste",
+        "description": "Sehen Sie Ihr Ranking im Vergleich zu anderen Empfehlern."
+      },
+      "discountCode": {
+        "title": "Rabattcode",
+        "description": "Ein Code für Rabatte beim Checkout."
+      },
+      "credits": {
+        "title": "Credits",
+        "description": "Plattform-Währung für KI-Generierungen und Workflows."
+      },
+      "conversion": {
+        "title": "Konversion",
+        "description": "Wenn ein empfohlener Benutzer seinen ersten Kauf tätigt."
+      }
+    },
+    "faq": {
+      "title": "Häufig Gestellte Fragen",
+      "moreHelp": "Noch Fragen?",
+      "contactSupport": "Support Kontaktieren",
+      "viewDocs": "Dokumentation Ansehen",
+      "questions": {
+        "howItWorks": {
+          "q": "Wie funktioniert das Empfehlungsprogramm?",
+          "a": "Teilen Sie Ihren einzigartigen Empfehlungslink mit Freunden. Wenn sie sich registrieren und Käufe tätigen, verdienen Sie Belohnungen basierend auf Ihrer Stufe."
+        },
+        "getCode": {
+          "q": "Wie erhalte ich meinen Empfehlungscode?",
+          "a": "Ihr Empfehlungscode wird automatisch generiert, wenn Sie das Dashboard besuchen."
+        },
+        "whenCredit": {
+          "q": "Wann erhalte ich Gutschrift für eine Empfehlung?",
+          "a": "Sie erhalten Gutschrift, wenn sich jemand mit Ihrem Link registriert <strong>und</strong> seine E-Mail-Adresse verifiziert."
+        },
+        "rewardTypes": {
+          "q": "Welche Arten von Belohnungen kann ich verdienen?",
+          "a": "Belohnungen umfassen: <ul><li><strong>Rabattcodes</strong></li><li><strong>Credits</strong></li><li><strong>Kostenlose Monate</strong></li><li><strong>Stufen-Upgrades</strong></li></ul>"
+        },
+        "claimRewards": {
+          "q": "Wie löse ich meine Belohnungen ein?",
+          "a": "Wenn Sie eine Belohnungsstufe freischalten, erscheint sie im Belohnungsbereich. Klicken Sie auf <strong>Einlösen</strong>."
+        },
+        "expiration": {
+          "q": "Verfallen Belohnungen oder Codes?",
+          "a": "Credits verfallen nie. Rabattcodes können Ablaufdaten haben."
+        },
+        "selfReferral": {
+          "q": "Kann ich mich selbst empfehlen?",
+          "a": "Nein, Selbstempfehlungen sind nicht erlaubt."
+        },
+        "trackProgress": {
+          "q": "Wie kann ich meinen Empfehlungsfortschritt verfolgen?",
+          "a": "Ihr Dashboard zeigt Echtzeit-Statistiken."
+        },
+        "discountCodes": {
+          "q": "Wie funktionieren Rabattcodes?",
+          "a": "Rabattcodes werden beim Checkout angewendet."
+        },
+        "creditsVsDiscounts": {
+          "q": "Was ist der Unterschied zwischen Credits und Rabatten?",
+          "a": "<strong>Credits</strong> sind Plattform-Währung. <strong>Rabattcodes</strong> reduzieren Kaufpreise."
+        }
+      }
+    }
+  },
+  "workflows": {
+    "page": {
+      "title": "Workflows",
+      "subtitle": "Automatisieren Sie Ihr Geschäft mit visuellen Workflows",
+      "tutorial": "Tutorial",
+      "newWorkflow": "Neuer Workflow",
+      "openEditor": "Editor Öffnen",
+      "browseTemplates": "Vorlagen Durchsuchen",
+      "viewAll": "Alle Anzeigen"
+    },
+    "onboarding": {
+      "step": "Schritt {current} von {total}",
+      "skip": "Tutorial überspringen",
+      "back": "Zurück",
+      "next": "Weiter",
+      "openEditor": "Editor Öffnen",
+      "completeMessage": "Sie sind bereit, Workflows zu erstellen!",
+      "welcome": {
+        "title": "Willkommen bei Workflows!",
+        "description": "Erstellen Sie leistungsstarke Automatisierungen visuell - ohne Code.",
+        "aiAgents": "KI-Agenten",
+        "aiAgentsDesc": "Nutzen Sie KI-Co-Founder zum Analysieren und Generieren",
+        "triggers": "Intelligente Trigger",
+        "triggersDesc": "Zeitplanung, Webhooks und ereignisgesteuerte Automatisierung",
+        "integrations": "4000+ Integrationen",
+        "integrationsDesc": "Verbinden Sie Slack, Google, Stripe und mehr"
+      },
+      "nodes": {
+        "title": "Nodes Verstehen",
+        "description": "Workflows werden aus Nodes gebaut, die durch Drähte verbunden sind.",
+        "input": "Eingabe-Nodes",
+        "inputDesc": "Starten Ihren Flow - Trigger, Webhooks, Zeitpläne",
+        "process": "Verarbeitungs-Nodes",
+        "processDesc": "Transformieren Daten - Funktionen, KI-Agenten, Logik",
+        "output": "Ausgabe-Nodes",
+        "outputDesc": "Senden Ergebnisse - Slack, E-Mail, Datenbank"
+      },
+      "firstFlow": {
+        "title": "Ihr Erster Flow",
+        "description": "Einen Workflow zu erstellen ist einfach. Ziehen, verbinden und deployen!",
+        "step1": "Ziehen Sie Nodes aus der Palette",
+        "step1Desc": "Finden Sie Nodes in der linken Seitenleiste",
+        "step2": "Verbinden Sie Nodes mit Drähten",
+        "step2Desc": "Klicken und ziehen Sie von Ausgabe- zu Eingabe-Ports",
+        "step3": "Konfigurieren Sie jeden Node",
+        "step3Desc": "Doppelklicken Sie auf Nodes für Eigenschaften",
+        "step4": "Klicken Sie auf Deploy",
+        "step4Desc": "Speichern und aktivieren Sie mit dem Deploy-Button",
+        "tip": "Tipp: Starten Sie mit einer Vorlage!"
+      },
+      "integrations": {
+        "title": "Verbinden Sie Ihre Integrationen",
+        "description": "Workflows werden mächtig, wenn sie mit Ihren Tools verbunden sind.",
+        "configure": "Integrationen Konfigurieren",
+        "note": "Sie können Integrationen später in den Einstellungen hinzufügen"
+      }
+    },
+    "templates": {
+      "title": "Workflow-Vorlagen",
+      "search": "Vorlagen suchen...",
+      "category": "Kategorie",
+      "difficulty": "Schwierigkeit",
+      "allCategories": "Alle Kategorien",
+      "allLevels": "Alle Stufen",
+      "beginner": "Anfänger",
+      "intermediate": "Fortgeschritten",
+      "advanced": "Experte",
+      "featured": "Empfohlen",
+      "installs": "Installationen",
+      "nodes": "Nodes",
+      "preview": "Vorschau",
+      "install": "Installieren",
+      "noResults": "Keine Vorlagen gefunden",
+      "noResultsDesc": "Versuchen Sie andere Filter",
+      "clearFilters": "Filter Löschen",
+      "installSuccess": "Vorlage \"{name}\" erfolgreich installiert!",
+      "installError": "Fehler beim Installieren"
+    },
+    "quickActions": {
+      "title": "Schnellaktionen",
+      "help": "Hilfe",
+      "fromTemplate": "Aus Vorlage",
+      "fromTemplateDesc": "Mit vorgefertigtem Workflow starten",
+      "createBlank": "Leer Erstellen",
+      "createBlankDesc": "Von Grund auf beginnen",
+      "openEditor": "Editor Öffnen",
+      "openEditorDesc": "Visuellen Builder starten",
+      "viewDocs": "Docs Anzeigen",
+      "viewDocsDesc": "Dokumentation lesen",
+      "popularTemplates": "Beliebte Vorlagen",
+      "viewAll": "Alle Anzeigen"
+    }
+  }
+}
