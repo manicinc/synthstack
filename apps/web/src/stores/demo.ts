@@ -143,8 +143,8 @@ export const useDemoStore = defineStore('demo', () => {
   /** Show banner (demo mode active and not dismissed) */
   const showBanner = computed(() => isDemo.value && !bannerDismissed.value && !bannerNeverShow.value)
 
-  /** Current credits remaining */
-  const credits = computed(() => session.value?.credits ?? 0)
+  /** Current credits remaining (show initial credits for guests without a session) */
+  const credits = computed(() => session.value?.credits ?? limits.value.initialCredits)
 
   /** Credits used so far */
   const creditsUsed = computed(() => session.value?.creditsUsed ?? 0)

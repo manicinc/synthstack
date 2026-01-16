@@ -92,51 +92,57 @@ const expanded = ref(false)
 
 <style scoped lang="scss">
 .agent-card {
-  background: rgba(15, 15, 35, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  padding: 28px;
+  background: linear-gradient(145deg, rgba(18, 18, 42, 0.85) 0%, rgba(12, 12, 30, 0.9) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 32px;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 
   // Gradient glow layer
   &::before {
     content: '';
     position: absolute;
     inset: 0;
-    border-radius: 20px;
+    border-radius: 24px;
     background: radial-gradient(
-      circle at 50% 0%,
-      color-mix(in srgb, var(--agent-color) 15%, transparent) 0%,
-      transparent 60%
+      ellipse at 50% -20%,
+      color-mix(in srgb, var(--agent-color) 20%, transparent) 0%,
+      transparent 70%
     );
     opacity: 0;
     transition: opacity 0.4s ease;
     pointer-events: none;
   }
 
-  // Top accent line
+  // Top accent line with gradient
   &::after {
     content: '';
     position: absolute;
     top: 0;
-    left: 0;
-    right: 0;
+    left: 15%;
+    right: 15%;
     height: 3px;
     background: linear-gradient(90deg, transparent, var(--agent-color), transparent);
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: all 0.4s ease;
   }
 
   &:hover {
-    transform: translateY(-6px);
-    border-color: color-mix(in srgb, var(--agent-color) 40%, transparent);
+    transform: translateY(-8px);
+    border-color: color-mix(in srgb, var(--agent-color) 50%, transparent);
     box-shadow:
-      0 20px 50px rgba(0, 0, 0, 0.25),
-      0 0 40px color-mix(in srgb, var(--agent-color) 15%, transparent);
+      0 24px 64px rgba(0, 0, 0, 0.35),
+      0 12px 24px rgba(0, 0, 0, 0.2),
+      0 0 60px color-mix(in srgb, var(--agent-color) 12%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
 
     &::before {
       opacity: 1;
@@ -144,6 +150,8 @@ const expanded = ref(false)
 
     &::after {
       opacity: 1;
+      left: 10%;
+      right: 10%;
     }
   }
 }
@@ -151,24 +159,31 @@ const expanded = ref(false)
 .agent-icon {
   width: 72px;
   height: 72px;
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--agent-color) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--agent-color) 20%, transparent);
+  border-radius: 18px;
+  background: linear-gradient(145deg,
+    color-mix(in srgb, var(--agent-color) 15%, rgba(20, 20, 45, 1)),
+    color-mix(in srgb, var(--agent-color) 8%, rgba(10, 10, 30, 1))
+  );
+  border: 1px solid color-mix(in srgb, var(--agent-color) 25%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   color: var(--agent-color);
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow:
-    0 4px 16px color-mix(in srgb, var(--agent-color) 10%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 6px 20px color-mix(in srgb, var(--agent-color) 15%, transparent),
+    0 2px 6px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
 
   .agent-card:hover & {
-    transform: scale(1.05);
+    transform: scale(1.08) translateY(-2px);
     box-shadow:
-      0 8px 24px color-mix(in srgb, var(--agent-color) 25%, transparent),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      0 12px 32px color-mix(in srgb, var(--agent-color) 30%, transparent),
+      0 4px 12px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -260,53 +275,58 @@ const expanded = ref(false)
 }
 
 // ===========================================
-// LIGHT MODE - Neumorphic clean style
+// LIGHT MODE - Premium Neumorphic Style
 // ===========================================
 :global(.body--light) {
   .agent-card {
-    background: #ffffff;
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    border: 1px solid rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
     box-shadow:
-      0 4px 20px rgba(0, 0, 0, 0.04),
-      0 1px 3px rgba(0, 0, 0, 0.02),
-      inset 0 1px 0 rgba(255, 255, 255, 1);
+      0 8px 32px rgba(0, 0, 0, 0.06),
+      0 2px 8px rgba(0, 0, 0, 0.04),
+      inset 0 1px 0 rgba(255, 255, 255, 1),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.02);
 
     &::before {
       background: radial-gradient(
-        circle at 50% 0%,
-        color-mix(in srgb, var(--agent-color) 8%, transparent) 0%,
-        transparent 60%
+        ellipse at 50% -20%,
+        color-mix(in srgb, var(--agent-color) 12%, transparent) 0%,
+        transparent 70%
       );
     }
 
     &:hover {
-      border-color: color-mix(in srgb, var(--agent-color) 30%, transparent);
+      border-color: color-mix(in srgb, var(--agent-color) 35%, transparent);
       box-shadow:
-        0 20px 50px rgba(0, 0, 0, 0.08),
-        0 8px 20px rgba(0, 0, 0, 0.04),
-        0 0 30px color-mix(in srgb, var(--agent-color) 8%, transparent),
+        0 24px 64px rgba(0, 0, 0, 0.1),
+        0 8px 24px rgba(0, 0, 0, 0.06),
+        0 0 48px color-mix(in srgb, var(--agent-color) 10%, transparent),
         inset 0 1px 0 rgba(255, 255, 255, 1);
     }
   }
 
   .agent-icon {
-    background: color-mix(in srgb, var(--agent-color) 8%, white);
-    border-color: color-mix(in srgb, var(--agent-color) 15%, transparent);
+    background: linear-gradient(145deg, #ffffff 0%, #f1f5f9 100%);
+    border: 1px solid color-mix(in srgb, var(--agent-color) 20%, transparent);
     box-shadow:
-      0 2px 8px color-mix(in srgb, var(--agent-color) 8%, transparent),
-      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      0 4px 12px color-mix(in srgb, var(--agent-color) 12%, transparent),
+      0 2px 4px rgba(0, 0, 0, 0.04),
+      inset 0 1px 0 rgba(255, 255, 255, 1),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.03);
   }
 
   .agent-card:hover .agent-icon {
     box-shadow:
-      0 6px 20px color-mix(in srgb, var(--agent-color) 15%, transparent),
-      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      0 10px 28px color-mix(in srgb, var(--agent-color) 20%, transparent),
+      0 4px 8px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 1);
   }
 
   .agent-name {
-    color: #1e293b;
+    color: #0f172a;
+    font-weight: 800;
   }
 
   .agent-description {
@@ -314,9 +334,17 @@ const expanded = ref(false)
   }
 
   .capability-tag {
-    background: #f8fafc;
-    border-color: rgba(0, 0, 0, 0.06);
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid rgba(0, 0, 0, 0.06);
     color: #475569;
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.03),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+
+    &:hover {
+      border-color: color-mix(in srgb, var(--agent-color) 30%, transparent);
+      color: var(--agent-color);
+    }
   }
 
   .agent-details {
@@ -325,7 +353,7 @@ const expanded = ref(false)
 
   .details-section {
     h4 {
-      color: #1e293b;
+      color: #0f172a;
     }
 
     ul li {
@@ -334,7 +362,13 @@ const expanded = ref(false)
   }
 
   .output-tag {
-    background: color-mix(in srgb, var(--agent-color) 8%, white);
+    background: linear-gradient(145deg,
+      color-mix(in srgb, var(--agent-color) 10%, white),
+      color-mix(in srgb, var(--agent-color) 6%, #f8fafc)
+    );
+    box-shadow:
+      0 1px 3px color-mix(in srgb, var(--agent-color) 8%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
   }
 }
 </style>
