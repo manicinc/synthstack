@@ -186,6 +186,12 @@ async function registerPlugins(app: FastifyInstance, options: AppOptions): Promi
   await app.register(cors, {
     origin: options.corsOrigins ?? defaultConfig.corsOrigins,
     credentials: true,
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'x-demo-session',
+      'x-requested-with',
+    ],
   });
   await app.register(rateLimit, {
     max: options.rateLimit ?? (defaultConfig.isProd ? 100 : 10000),

@@ -35,11 +35,23 @@
             <p>Get weekly updates on SynthStack features, tips, and exclusive offers.</p>
           </div>
 
-          <!-- EmailOctopus Form Embed -->
+          <!-- Newsletter Form Embed (EmailOctopus or Beehiiv) -->
           <div class="popup-form">
+            <!-- EmailOctopus -->
             <div
+              v-if="provider === 'emailoctopus'"
               ref="formContainer"
               class="emailoctopus-form-container"
+            />
+            <!-- Beehiiv -->
+            <iframe
+              v-else-if="provider === 'beehiiv' && beehiivPublicationId"
+              :src="`https://embeds.beehiiv.com/subscribe/${beehiivPublicationId}?slim=true`"
+              data-test-id="beehiiv-embed"
+              height="52"
+              frameborder="0"
+              scrolling="no"
+              class="beehiiv-embed"
             />
           </div>
 
@@ -86,13 +98,29 @@ const props = defineProps<{
   delay?: number
   /** Show on scroll percentage */
   showOnScroll?: number
+  /** Newsletter provider: 'emailoctopus' or 'beehiiv' */
+  provider?: 'emailoctopus' | 'beehiiv'
   /** Form ID from EmailOctopus */
   formId?: string
+  /** Publication ID from Beehiiv */
+  publicationId?: string
 }>()
 
 const STORAGE_KEY = 'synthstack_newsletter_popup'
 const REMIND_LATER_DAYS = 7
+
+// Provider detection (defaults to emailoctopus)
+const provider = computed(() =>
+  props.provider || (import.meta.env.VITE_NEWSLETTER_PROVIDER as string) || 'emailoctopus'
+)
+
+// EmailOctopus form ID
 const formId = computed(() => props.formId || import.meta.env.VITE_EMAILOCTOPUS_FORM_ID)
+
+// Beehiiv publication ID
+const beehiivPublicationId = computed(() =>
+  props.publicationId || import.meta.env.VITE_BEEHIIV_PUBLICATION_ID
+)
 
 const showPopup = ref(false)
 const dismissed = ref(false)
@@ -138,11 +166,16 @@ onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
 
-// Load EmailOctopus form when popup shows
+// Load newsletter form when popup shows
 watch(showPopup, async (show) => {
-  if (show && !formLoaded.value && formId.value) {
+  if (show && !formLoaded.value) {
     await nextTick()
-    loadEmailOctopusForm()
+    // Only EmailOctopus needs dynamic loading; Beehiiv uses iframe
+    if (provider.value === 'emailoctopus' && formId.value) {
+      loadEmailOctopusForm()
+    } else if (provider.value === 'beehiiv') {
+      formLoaded.value = true // Iframe loads automatically
+    }
   }
 })
 
@@ -272,6 +305,12 @@ defineExpose({
 .popup-form {
   padding: 0 1.5rem;
   min-height: 80px;
+
+  .beehiiv-embed {
+    width: 100%;
+    border-radius: 10px;
+    background: transparent;
+  }
 
   :deep(.emailoctopus-form) {
     .emailoctopus-form-row {
@@ -479,6 +518,83 @@ defineExpose({
 
   .popup-footer {
     padding: 0.75rem 1rem 1rem;
+  }
+}
+</style>
+
+<!-- Unscoped light mode styles -->
+<style lang="scss">
+.body--light {
+  .newsletter-popup .popup-content {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  }
+
+  .newsletter-popup .popup-close {
+    background: rgba(0, 0, 0, 0.05);
+    color: rgba(0, 0, 0, 0.5);
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.1);
+      color: rgba(0, 0, 0, 0.8);
+    }
+  }
+
+  .newsletter-popup .popup-header {
+    h3 {
+      color: rgba(0, 0, 0, 0.9);
+    }
+
+    p {
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  .newsletter-popup .popup-form {
+    :deep(.emailoctopus-form) {
+      input[type="email"] {
+        background: rgba(0, 0, 0, 0.03);
+        border-color: rgba(0, 0, 0, 0.15);
+        color: rgba(0, 0, 0, 0.9);
+
+        &::placeholder {
+          color: rgba(0, 0, 0, 0.4);
+        }
+
+        &:focus {
+          border-color: #6366F1;
+          box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+      }
+    }
+  }
+
+  .newsletter-popup .popup-footer {
+    border-top-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .newsletter-popup .btn-remind,
+  .newsletter-popup .btn-never {
+    color: rgba(0, 0, 0, 0.5);
+
+    &:hover {
+      color: rgba(0, 0, 0, 0.75);
+    }
+  }
+
+  .newsletter-popup .popup-minimized-trigger {
+    // Keep gradient colors for FAB
+  }
+
+  .newsletter-fab {
+    // Keep gradient colors for FAB
+    .fab-tooltip {
+      background: #ffffff;
+      border-color: rgba(0, 0, 0, 0.1);
+      color: rgba(0, 0, 0, 0.9);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
   }
 }
 </style>

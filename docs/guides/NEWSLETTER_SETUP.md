@@ -76,12 +76,16 @@ Add to your `.env` file:
 
 ```bash
 # EmailOctopus (Newsletter)
+# Get these from your EmailOctopus dashboard
 EMAILOCTOPUS_API_KEY=your-api-key-here
-EMAILOCTOPUS_LIST_ID=5679617a-6ef3-11f0-83af-a72ac847aedc
-VITE_EMAILOCTOPUS_FORM_ID=9262a386-6ef3-11f0-bd78-dff98cfe1a02
+EMAILOCTOPUS_LIST_ID=your-list-id-here
+VITE_EMAILOCTOPUS_FORM_ID=your-form-id-here
 ```
 
-**Get your API key:** EmailOctopus → Settings → API Keys → Create key
+**Get your credentials:**
+- **API Key:** EmailOctopus → Settings → API Keys → Create key
+- **List ID:** EmailOctopus → Lists → Select list → Settings → List ID
+- **Form ID:** EmailOctopus → Forms → Create/select form → Get the ID from the embed code URL
 
 ---
 
@@ -113,16 +117,71 @@ export async function addSubscriber(email: string, firstName?: string) {
 
 ---
 
+## Alternative: Beehiiv
+
+**Beehiiv** is a modern newsletter platform with excellent analytics and growth tools. It's a great alternative to EmailOctopus.
+
+### Why Beehiiv?
+
+| Feature | Benefit |
+|---------|---------|
+| **Free Tier** | 2,500 subscribers free |
+| **Modern Editor** | Block-based, drag-and-drop |
+| **Built-in Analytics** | Open rates, click tracking, growth metrics |
+| **Recommendations** | Cross-promote with other newsletters |
+| **Native Embeds** | Simple iframe integration |
+
+### Beehiiv Setup (5 minutes)
+
+1. **Create Account**: Sign up at [beehiiv.com](https://beehiiv.com)
+2. **Get Publication ID**: Go to Settings → Publication ID
+3. **Update Environment**:
+
+```bash
+# In your .env file
+VITE_NEWSLETTER_PROVIDER=beehiiv
+VITE_BEEHIIV_PUBLICATION_ID=your-publication-id-here
+```
+
+### Beehiiv Pricing
+
+| Tier | Subscribers | Price |
+|------|-------------|-------|
+| **Launch (Free)** | 2,500 | $0/mo |
+| Scale | 10,000 | $39/mo |
+| Max | 100,000 | $99/mo |
+
+**Free tier includes:**
+- ✅ Unlimited sends
+- ✅ Custom domains
+- ✅ Basic analytics
+- ⚠️ Beehiiv branding
+
+---
+
 ## Swapping Newsletter Providers
 
 SynthStack uses environment-based configuration, making it easy to swap providers:
 
-1. **EmailOctopus** (default) - Best free tier
-2. **Buttondown** - Developer-focused, markdown newsletters  
-3. **ConvertKit** - Advanced automations for creators
-4. **Loops** - SaaS-focused, native Resend integration
+1. **EmailOctopus** (default) - Best free tier for forms
+2. **Beehiiv** - Modern platform with growth tools
+3. **Buttondown** - Developer-focused, markdown newsletters
+4. **ConvertKit** - Advanced automations for creators
+5. **Loops** - SaaS-focused, native Resend integration
 
-To swap, update the form embed in your landing page and environment variables.
+### Environment Variables
+
+```bash
+# EmailOctopus (default)
+VITE_NEWSLETTER_PROVIDER=emailoctopus
+VITE_EMAILOCTOPUS_FORM_ID=your-form-id
+
+# OR Beehiiv
+VITE_NEWSLETTER_PROVIDER=beehiiv
+VITE_BEEHIIV_PUBLICATION_ID=your-publication-id
+```
+
+The `NewsletterPopup` component automatically uses the correct embed based on your `VITE_NEWSLETTER_PROVIDER` setting.
 
 ---
 
