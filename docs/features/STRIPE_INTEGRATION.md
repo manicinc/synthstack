@@ -69,7 +69,7 @@ STRIPE_PRICE_AGENCY_YEARLY=price_1Smp9NCBrYnyjAOOnSZQW843
 
 # Lifetime License (one-time purchase with GitHub repo access)
 STRIPE_PRICE_LIFETIME=price_1SmmNGCBrYnyjAOOjpcxHmRG
-STRIPE_PROMO_EARLYSYNTH=EARLYSYNTH
+STRIPE_PROMO_EARLYCODE=EARLYCODE
 
 # GitHub Organization Management (for lifetime license buyers)
 GITHUB_ORG_NAME=manicinc
