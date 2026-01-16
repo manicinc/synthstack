@@ -524,10 +524,196 @@ pre {
 }
 
 .q-btn {
+  // Base typography
   font-family: var(--font-display);
   font-weight: 600;
-  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
   text-transform: none;
+
+  // Neumorphic base
+  border-radius: 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+
+  // Accessibility - proper touch targets
+  min-height: 44px;
+  min-width: 44px;
+
+  // Enhanced focus states for accessibility
+  &:focus-visible {
+    outline: 3px solid var(--accent-primary, #0d9488);
+    outline-offset: 3px;
+  }
+
+  // Primary button - futuristic gradient with glow
+  &.bg-primary,
+  &[class*="bg-primary"] {
+    background: linear-gradient(135deg,
+        var(--accent-primary, #0d9488) 0%,
+        var(--accent-primary-hover, #14b8a6) 50%,
+        var(--accent-secondary, #06b6d4) 100%) !important;
+    background-size: 200% 200%;
+    background-position: 0% 50%;
+    color: #ffffff !important;
+    box-shadow:
+      0 4px 12px rgba(13, 148, 136, 0.35),
+      0 2px 4px rgba(0, 0, 0, 0.1),
+      inset 0 1px 1px rgba(255, 255, 255, 0.25),
+      inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      background-position: 100% 50%;
+      transform: translateY(-2px);
+      box-shadow:
+        0 8px 24px rgba(13, 148, 136, 0.45),
+        0 4px 8px rgba(0, 0, 0, 0.15),
+        inset 0 1px 2px rgba(255, 255, 255, 0.35);
+    }
+
+    &:active {
+      transform: translateY(1px);
+      box-shadow:
+        0 2px 8px rgba(13, 148, 136, 0.3),
+        inset 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    // Shine effect on hover
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(255, 255, 255, 0.25),
+          transparent);
+      transition: left 0.5s ease;
+      pointer-events: none;
+    }
+
+    &:hover::after {
+      left: 100%;
+    }
+  }
+
+  // Secondary/outline button
+  &.q-btn--outline,
+  &[class*="--outline"] {
+    background: var(--surface-2, rgba(255, 255, 255, 0.05)) !important;
+    border: 1.5px solid var(--border-default, rgba(255, 255, 255, 0.12)) !important;
+    color: var(--text-primary, #fafafa) !important;
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+    &:hover {
+      border-color: var(--accent-primary, #0d9488) !important;
+      color: var(--accent-primary, #0d9488) !important;
+      background: var(--accent-primary-muted, rgba(13, 148, 136, 0.08)) !important;
+      transform: translateY(-1px);
+      box-shadow:
+        0 4px 16px rgba(13, 148, 136, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  // Flat/ghost button
+  &.q-btn--flat {
+    background: transparent;
+    color: var(--text-secondary, #a1a1aa);
+
+    &:hover {
+      color: var(--text-primary, #fafafa);
+      background: var(--surface-hover, rgba(255, 255, 255, 0.06));
+    }
+
+    &:active {
+      background: var(--surface-active, rgba(255, 255, 255, 0.1));
+    }
+  }
+
+  // Unelevated primary (standard Quasar primary)
+  &.q-btn--unelevated {
+    &.bg-primary {
+
+      // Enhanced glow effect
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -4px;
+        border-radius: inherit;
+        background: linear-gradient(135deg, var(--accent-primary, #0d9488), var(--accent-secondary, #06b6d4));
+        filter: blur(16px);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      &:hover::before {
+        opacity: 0.5;
+      }
+    }
+  }
+
+  // Disabled state
+  &:disabled,
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  // Loading state
+  &.q-btn--loading {
+    pointer-events: none;
+  }
+
+  // Dense variant
+  &.q-btn--dense {
+    min-height: 36px;
+    min-width: 36px;
+    padding: 6px 12px;
+  }
+
+  // Round variant
+  &.q-btn--round {
+    border-radius: 50%;
+  }
+}
+
+// Light mode button adjustments
+.body--light .q-btn {
+
+  &.q-btn--outline,
+  &[class*="--outline"] {
+    background: var(--surface-1, #ffffff) !important;
+    border-color: var(--border-default, rgba(0, 0, 0, 0.12)) !important;
+    color: var(--text-primary, #18181b) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+    &:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+  }
+
+  &.q-btn--flat {
+    color: var(--text-secondary, #52525b);
+
+    &:hover {
+      color: var(--text-primary, #18181b);
+      background: rgba(0, 0, 0, 0.04);
+    }
+  }
 }
 
 .q-input {
@@ -617,6 +803,32 @@ pre {
 
   .safe-area-right {
     padding-right: env(safe-area-inset-right);
+  }
+
+  // Prevent iOS Safari zoom on input focus (requires font-size >= 16px)
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  input[type='number'],
+  input[type='tel'],
+  input[type='url'],
+  input[type='search'],
+  textarea,
+  select,
+  .q-field__native {
+    font-size: 16px !important;
+    touch-action: manipulation;
+  }
+
+  // Disable double-tap zoom on interactive elements
+  button,
+  a,
+  .q-btn,
+  .q-item,
+  .q-tab,
+  .q-chip,
+  [role='button'] {
+    touch-action: manipulation;
   }
 }
 
@@ -774,10 +986,17 @@ pre {
 // @import 'highlight.js/styles/github-dark.css'; // Temporarily disabled
 
 // ============================================
-// Landing Page Light Mode Overrides (Global)
-// These need to be global to override scoped styles
-// Using body.body--light for maximum specificity
+// Light Mode Support
+// Theme presets now control their own light/dark colors via CSS variables
+// Only minimal overrides needed for Quasar framework compatibility
 // ============================================
+
+// Root element light mode
+html.light {
+  background-color: var(--bg-base, #FFFFFF) !important;
+  color-scheme: light !important;
+  color: var(--text-primary, #0F172A) !important;
+}
 
 body.body--light {
   // Force color-scheme for native form controls
@@ -786,17 +1005,55 @@ body.body--light {
   // Use theme variables - the theme store sets these via JavaScript
   background-color: var(--bg-base) !important;
   color: var(--text-primary) !important;
-  // DO NOT set -webkit-text-fill-color on body - it breaks inheritance
 
   // CRITICAL: Ensure body is always visible in light mode
-  // Something (possibly an animation or transition) was setting these to problematic values
   display: block !important;
   opacity: 1 !important;
   visibility: visible !important;
   clip-path: none !important;
 
-  // Gradient text utilities (light mode)
-  // Avoid transparent-fill gradients in light mode (Chrome can repaint as invisible).
+  // All block-level text elements - use CSS variables
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--text-primary) !important;
+    -webkit-text-fill-color: var(--text-primary) !important;
+  }
+
+  // Body text elements
+  p,
+  li,
+  label,
+  td,
+  th {
+    color: var(--text-secondary) !important;
+    -webkit-text-fill-color: var(--text-secondary) !important;
+  }
+
+  // Links - use secondary color or accent
+  a:not([class*="btn"]):not([class*="gradient"]) {
+    color: var(--color-secondary) !important;
+  }
+
+  // Buttons need special handling - ensure text is visible
+  button:not(.q-btn--flat),
+  .q-btn:not(.q-btn--flat) {
+    -webkit-text-fill-color: currentColor !important;
+  }
+
+  // Flat/ghost buttons should have dark text
+  button.q-btn--flat,
+  .q-btn.q-btn--flat {
+    color: var(--text-primary) !important;
+    -webkit-text-fill-color: var(--text-primary) !important;
+  }
+
+  // Gradient text elements (light mode)
+  // Avoid transparent-fill gradients in light mode (can flicker/invisibly repaint in Chrome).
+  // Keep these as normal solid text so the landing page remains stable.
   .gradient-text,
   .gradient-word,
   .gradient-text-primary,
@@ -810,1115 +1067,25 @@ body.body--light {
     animation: none !important;
   }
 
-  // ===========================================
-  // DARK COMPONENTS IN LIGHT MODE
-  // These components intentionally keep dark backgrounds with light text
-  // Uses direct child selectors to prevent style leakage
-  // ===========================================
-
-  // Cookie consent banner - ISOLATED dark component
-  .cookie-banner {
-    color: #e2e8f0 !important;
-    -webkit-text-fill-color: #e2e8f0 !important;
-
-    // Direct descendants inherit the light text color
-    >*,
-    >*>* {
-      -webkit-text-fill-color: inherit !important;
-    }
-
-    p {
-      color: #e2e8f0 !important;
-      -webkit-text-fill-color: #e2e8f0 !important;
-    }
-
-    .link-btn,
-    a {
-      color: #14b8a6 !important;
-      -webkit-text-fill-color: #14b8a6 !important;
-    }
-
-    .btn-reject {
-      color: #94a3b8 !important;
-      -webkit-text-fill-color: #94a3b8 !important;
-    }
-
-    .btn-accept {
-      color: #ffffff !important;
-      -webkit-text-fill-color: #ffffff !important;
-    }
+  // AutonomousText text-layer - use solid color (handled in component CSS)
+  .autonomous-text .text-layer,
+  .text-layer:not(.gradient-word) {
+    -webkit-text-fill-color: #0d9488 !important;
+    color: #0d9488 !important;
+    background: none !important;
   }
 
-  // Cookie modal - ISOLATED dark component
-  .cookie-modal,
-  .cookie-modal-overlay {
-
-    // Direct descendants inherit
-    >*,
-    >*>* {
-      -webkit-text-fill-color: inherit !important;
-    }
-
-    h2,
-    h4 {
-      color: #f8fafc !important;
-      -webkit-text-fill-color: #f8fafc !important;
-    }
-
-    p {
-      color: #94a3b8 !important;
-      -webkit-text-fill-color: #94a3b8 !important;
-    }
+  // Colorized strong (tagline) should remain visible in light mode
+  .colorized strong {
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    background-clip: initial !important;
+    -webkit-text-fill-color: currentColor !important;
+    animation: none !important;
   }
 
-  // Demo status bar - ISOLATED dark component
-  .demo-status-bar {
-
-    // Direct descendants inherit
-    >*,
-    >*>* {
-      -webkit-text-fill-color: inherit !important;
-    }
-
-    .demo-badge {
-      color: #fbbf24 !important;
-      -webkit-text-fill-color: #fbbf24 !important;
-    }
-
-    .status-item {
-      color: rgba(255, 255, 255, 0.9) !important;
-      -webkit-text-fill-color: rgba(255, 255, 255, 0.9) !important;
-
-      .label {
-        color: rgba(255, 255, 255, 0.6) !important;
-        -webkit-text-fill-color: rgba(255, 255, 255, 0.6) !important;
-      }
-    }
-
-    // Close button - ensure it's visible
-    .close-btn,
-    .q-btn[aria-label*="close"] {
-      color: rgba(255, 255, 255, 0.9) !important;
-
-      .q-icon {
-        color: rgba(255, 255, 255, 0.9) !important;
-      }
-    }
-
-    // All buttons should have white text
-    .q-btn {
-      .q-btn__content {
-        color: currentColor !important;
-        -webkit-text-fill-color: currentColor !important;
-      }
-    }
-  }
-
-  // Quasar notifications - keep proper colors
-  .q-notification {
-
-    >*,
-    >*>* {
-      -webkit-text-fill-color: inherit !important;
-    }
-  }
-
-  // Typography - use theme variables with explicit text-fill-color
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    color: var(--text-primary);
-    -webkit-text-fill-color: var(--text-primary);
-  }
-
-  p {
-    color: var(--text-secondary);
-    -webkit-text-fill-color: var(--text-secondary);
-  }
-
-  // Ensure inline text elements inherit properly
-  span,
-  li,
-  td,
-  th,
-  label,
-  a {
-    color: inherit;
-    -webkit-text-fill-color: currentColor;
-  }
-
-  // Secondary text elements
-  .text-secondary,
-  [class*="secondary"] p,
-  [class*="desc"],
-  [class*="subtitle"] {
-    color: #3f3f46 !important;
-    -webkit-text-fill-color: #3f3f46 !important;
-  }
-
-  // Landing page specific sections
+  // Landing page: disable backdrop-filter effects in light mode (can cause flicker in Chrome).
   .landing-page {
-    background: var(--bg-base) !important;
-    color: var(--text-primary) !important;
-
-    // Section headers
-    .section-header {
-      h2 {
-        color: var(--text-primary) !important;
-        -webkit-text-fill-color: var(--text-primary) !important;
-      }
-
-      p {
-        color: var(--text-secondary) !important;
-        -webkit-text-fill-color: var(--text-secondary) !important;
-      }
-    }
-
-    // Section badges
-    .section-badge {
-      color: var(--color-primary) !important;
-      -webkit-text-fill-color: var(--color-primary) !important;
-      background: rgba(99, 102, 241, 0.1) !important; // Fallback or dynamic
-    }
-
-    // Feature cards
-    .feature-card {
-      background: var(--bg-elevated) !important;
-      border-color: var(--border-default) !important;
-
-      h3 {
-        color: var(--text-primary) !important;
-        -webkit-text-fill-color: var(--text-primary) !important;
-      }
-
-      p {
-        color: var(--text-secondary) !important;
-        -webkit-text-fill-color: var(--text-secondary) !important;
-      }
-    }
-
-    // Tags
-    .tag {
-      color: var(--text-secondary) !important;
-      -webkit-text-fill-color: var(--text-secondary) !important;
-      background: var(--bg-muted) !important;
-    }
-
-    // Pricing cards
-    .pricing-card {
-      background: var(--bg-elevated) !important;
-      border-color: var(--border-default) !important;
-
-      h3 {
-        color: var(--text-primary) !important;
-        -webkit-text-fill-color: var(--text-primary) !important;
-      }
-
-      .price {
-        color: var(--text-primary) !important;
-        -webkit-text-fill-color: var(--text-primary) !important;
-
-        .period {
-          color: var(--text-secondary) !important;
-          -webkit-text-fill-color: var(--text-secondary) !important;
-        }
-      }
-
-      .pricing-desc {
-        color: var(--text-secondary) !important;
-        -webkit-text-fill-color: var(--text-secondary) !important;
-      }
-
-      &.featured {
-        border-color: var(--color-secondary) !important;
-      }
-    }
-
-    // Features list
-    .features-list li {
-      color: var(--text-secondary) !important;
-      -webkit-text-fill-color: var(--text-secondary) !important;
-
-      &.disabled {
-        color: var(--text-tertiary) !important;
-        -webkit-text-fill-color: var(--text-tertiary) !important;
-      }
-    }
-
-    // FAQ section
-    .faq-section {
-      background: var(--bg-subtle) !important;
-    }
-
-    .faq-item {
-      background: var(--bg-elevated) !important;
-      border-color: var(--border-default) !important;
-
-      h3 {
-        color: var(--text-primary) !important;
-        -webkit-text-fill-color: var(--text-primary) !important;
-      }
-
-      p {
-        color: var(--text-secondary) !important;
-        -webkit-text-fill-color: var(--text-secondary) !important;
-      }
-    }
-
-    // CTA section
-    .cta-section {
-      h2 {
-        color: var(--text-primary) !important;
-        -webkit-text-fill-color: var(--text-primary) !important;
-      }
-
-      p {
-        color: var(--text-secondary) !important;
-        -webkit-text-fill-color: var(--text-secondary) !important;
-      }
-    }
-
-    // Tech section
-    .tech-section {
-      border-color: var(--border-default) !important;
-    }
-
-    .tech-label {
-      color: var(--text-secondary) !important;
-      -webkit-text-fill-color: var(--text-secondary) !important;
-    }
-
-    .tech-list li {
-      color: var(--text-primary) !important;
-      -webkit-text-fill-color: var(--text-primary) !important;
-    }
-
-    // More features banner
-    .more-features {
-      background: var(--bg-subtle) !important;
-      border-color: var(--border-default) !important;
-    }
-
-    .more-feature {
-      color: var(--text-primary) !important;
-      -webkit-text-fill-color: var(--text-primary) !important;
-    }
-
-    // Open source section
-    .opensource-card {
-      background: var(--bg-subtle) !important;
-
-      h2 {
-        color: var(--text-primary) !important;
-        -webkit-text-fill-color: var(--text-primary) !important;
-      }
-    }
-
-    .opensource-description {
-      color: var(--text-secondary) !important;
-      -webkit-text-fill-color: var(--text-secondary) !important;
-
-      strong {
-        color: var(--text-primary) !important;
-        -webkit-text-fill-color: var(--text-primary) !important;
-      }
-    }
-
-    .feature-pill {
-      background: var(--bg-elevated) !important;
-      border-color: var(--border-default) !important;
-      color: var(--text-primary) !important;
-      -webkit-text-fill-color: var(--text-primary) !important;
-    }
-  }
-
-  // Referral showcase
-  .referral-showcase {
-    .section-header h2 {
-      color: var(--text-primary) !important;
-      -webkit-text-fill-color: var(--text-primary) !important;
-    }
-
-    .section-header p {
-      color: var(--text-secondary) !important;
-      -webkit-text-fill-color: var(--text-secondary) !important;
-    }
-  }
-
-  // AI Cofounder showcase - keep dark theme for contrast
-  .ai-showcase {
-    // This section intentionally keeps its dark theme
-  }
-
-  // ===========================================
-  // App Pages - Project Detail, Copilot Hub, etc.
-  // ===========================================
-
-  // Quasar tabs in light mode
-  .q-tabs {
-    background: var(--bg-muted) !important;
-
-    .q-tab {
-      color: var(--text-secondary) !important;
-      -webkit-text-fill-color: var(--text-secondary) !important;
-
-      .q-tab__icon {
-        color: var(--text-secondary) !important;
-      }
-
-      .q-tab__label {
-        color: var(--text-secondary) !important;
-        -webkit-text-fill-color: var(--text-secondary) !important;
-      }
-
-      &.q-tab--active {
-        color: var(--color-primary) !important;
-        -webkit-text-fill-color: var(--color-primary) !important;
-
-        .q-tab__icon,
-        .q-tab__label {
-          color: var(--color-primary) !important;
-          -webkit-text-fill-color: var(--color-primary) !important;
-        }
-      }
-    }
-  }
-
-  // Quasar badges - ensure text is visible
-  .q-badge {
-    -webkit-text-fill-color: currentColor !important;
-  }
-
-  // Project detail page
-  .project-detail-page {
-    .project-header {
-      background: linear-gradient(135deg, rgba(var(--color-primary), 0.08), rgba(var(--color-accent), 0.08)) !important;
-
-      h1 {
-        color: var(--text-primary) !important;
-        -webkit-text-fill-color: var(--text-primary) !important;
-      }
-
-      p {
-        color: var(--text-secondary) !important;
-        -webkit-text-fill-color: var(--text-secondary) !important;
-      }
-    }
-
-    .stat-card {
-      background: var(--bg-elevated) !important;
-      border-color: var(--border-default) !important;
-
-      .text-caption {
-        color: var(--text-tertiary) !important;
-        -webkit-text-fill-color: var(--text-tertiary) !important;
-      }
-    }
-
-    // Todo items
-    .todo-item {
-      &:hover {
-        background-color: var(--bg-subtle) !important;
-      }
-
-      .q-item__label {
-        color: var(--text-primary) !important;
-        -webkit-text-fill-color: var(--text-primary) !important;
-
-        &.text-strike {
-          color: var(--text-tertiary) !important;
-          -webkit-text-fill-color: var(--text-tertiary) !important;
-        }
-      }
-
-      .q-item__label--caption {
-        color: var(--text-tertiary) !important;
-        -webkit-text-fill-color: var(--text-tertiary) !important;
-      }
-    }
-
-    // Copilot chat
-    .copilot-card {
-      background: var(--bg-elevated) !important;
-      border-color: var(--border-default) !important;
-    }
-
-    .chat-message.assistant .message-content {
-      background: var(--bg-muted) !important;
-      color: var(--text-primary) !important;
-      -webkit-text-fill-color: var(--text-primary) !important;
-    }
-  }
-
-  // Quasar pages
-  .q-page {
-    background: var(--bg-base) !important;
-    color: var(--text-primary) !important;
-  }
-
-  // Quasar cards
-  .q-card {
-    background: var(--bg-elevated) !important;
-    border-color: var(--border-default) !important;
-
-    .text-h6,
-    .text-h5,
-    .text-h4,
-    .text-h3,
-    .text-h2,
-    .text-h1 {
-      color: var(--text-primary) !important;
-      -webkit-text-fill-color: var(--text-primary) !important;
-    }
-
-    .text-caption,
-    .text-grey-6,
-    .text-grey-7 {
-      color: var(--text-tertiary) !important;
-      -webkit-text-fill-color: var(--text-tertiary) !important;
-    }
-
-    // Ensure primary colored text stays primary
-    .text-primary {
-      color: var(--color-primary) !important;
-      -webkit-text-fill-color: var(--color-primary) !important;
-    }
-  }
-
-  // Quasar list items
-  .q-item {
-    .q-item__label {
-      color: var(--text-primary) !important;
-      -webkit-text-fill-color: var(--text-primary) !important;
-    }
-
-    .q-item__label--caption {
-      color: var(--text-tertiary) !important;
-      -webkit-text-fill-color: var(--text-tertiary) !important;
-    }
-  }
-
-  // Quasar inputs
-  .q-field {
-    .q-field__control {
-      background: var(--bg-base) !important;
-    }
-
-    .q-field__native,
-    .q-field__input {
-      color: var(--text-primary) !important;
-      -webkit-text-fill-color: var(--text-primary) !important;
-    }
-
-    .q-field__label {
-      color: var(--text-tertiary) !important;
-    }
-  }
-
-  // Quasar dialogs
-  .q-dialog .q-card {
-    background: var(--bg-elevated) !important;
-
-    .text-h6 {
-      color: var(--text-primary) !important;
-      -webkit-text-fill-color: var(--text-primary) !important;
-    }
-  }
-
-  // Button toggle
-  .q-btn-toggle {
-    .q-btn {
-      color: var(--text-secondary) !important;
-      -webkit-text-fill-color: var(--text-secondary) !important;
-
-      &.q-btn--active {
-        color: #ffffff !important;
-        -webkit-text-fill-color: #ffffff !important;
-      }
-    }
-  }
-
-  // Timeline
-  .q-timeline {
-    .q-timeline__title {
-      color: var(--text-primary) !important;
-      -webkit-text-fill-color: var(--text-primary) !important;
-    }
-
-    .q-timeline__subtitle {
-      color: var(--text-tertiary) !important;
-      -webkit-text-fill-color: var(--text-tertiary) !important;
-    }
-  }
-
-  // Tab panels
-  .q-tab-panels {
-    background: transparent !important;
-
-    h5 {
-      color: var(--text-primary) !important;
-      -webkit-text-fill-color: var(--text-primary) !important;
-    }
-
-    .text-grey-6 {
-      color: var(--text-tertiary) !important;
-      -webkit-text-fill-color: var(--text-tertiary) !important;
-    }
-  }
-
-  // Site Header - Navigation
-  .site-header {
-    background: var(--bg-base) !important;
-    border-bottom-color: var(--border-default) !important;
-
-    .logo {
-      color: var(--text-primary) !important;
-      -webkit-text-fill-color: var(--text-primary) !important;
-
-      span {
-        color: var(--text-primary) !important;
-        -webkit-text-fill-color: var(--text-primary) !important;
-      }
-    }
-
-    .nav-links {
-      a {
-        color: var(--text-secondary) !important;
-        -webkit-text-fill-color: var(--text-secondary) !important;
-
-        &:hover,
-        &.router-link-active {
-          color: var(--color-primary) !important;
-          -webkit-text-fill-color: var(--color-primary) !important;
-        }
-      }
-    }
-
-    .about-toggle {
-      color: var(--text-secondary) !important;
-      -webkit-text-fill-color: var(--text-secondary) !important;
-    }
-
-    .about-menu {
-      background: var(--bg-elevated) !important;
-      border-color: var(--border-default) !important;
-
-      a {
-        color: var(--text-primary) !important;
-        -webkit-text-fill-color: var(--text-primary) !important;
-
-        &:hover {
-          background: var(--bg-muted) !important;
-        }
-      }
-    }
-
-    // Admin button - has gradient background, needs white text
-    .admin-btn {
-      color: #ffffff !important;
-      -webkit-text-fill-color: #ffffff !important;
-    }
-
-    .sign-in-btn {
-      color: var(--text-primary) !important;
-      -webkit-text-fill-color: var(--text-primary) !important;
-
-      .q-btn__content {
-        color: var(--text-primary) !important;
-        -webkit-text-fill-color: var(--text-primary) !important;
-      }
-    }
-
-    .theme-toggle-btn {
-      border-color: var(--border-default) !important;
-      background: var(--bg-muted) !important;
-
-      &:hover {
-        background: var(--bg-subtle) !important;
-      }
-    }
-
-    .hamburger-btn {
-      border-color: var(--border-default) !important;
-      background: var(--bg-muted) !important;
-
-      span {
-        background: var(--text-primary) !important;
-      }
-    }
-  }
-
-  // Fix all Quasar button text
-  .q-btn {
-    -webkit-text-fill-color: currentColor !important;
-
-    .q-btn__content {
-      -webkit-text-fill-color: inherit !important;
-    }
-
-    // Primary/colored buttons should have white text
-    &.bg-primary,
-    &.bg-secondary,
-    &.bg-accent,
-    &.bg-positive,
-    &.bg-negative,
-    &.bg-info,
-    &.bg-warning {
-      color: white !important;
-      -webkit-text-fill-color: white !important;
-
-      .q-btn__content,
-      .q-icon {
-        color: white !important;
-        -webkit-text-fill-color: white !important;
-      }
-    }
-
-    // Flat/text buttons should have dark text
-    &.q-btn--flat:not(.bg-primary):not(.bg-secondary) {
-      color: var(--text-primary) !important;
-      -webkit-text-fill-color: var(--text-primary) !important;
-
-      .q-btn__content,
-      .q-icon {
-        color: var(--text-primary) !important;
-        -webkit-text-fill-color: var(--text-primary) !important;
-      }
-    }
-  }
-
-  // Fix navigation links
-  .q-toolbar a,
-  .q-toolbar .q-btn {
-    -webkit-text-fill-color: currentColor !important;
-  }
-
-  // Hero subtitle
-  .hero-subtitle {
-    color: #3f3f46 !important;
-    -webkit-text-fill-color: #3f3f46 !important;
-  }
-
-  // Hero Section Text - must override scoped styles
-  // Need to explicitly set -webkit-text-fill-color to fix invisible text
-  .hero-title .title-line-1 .word>span:not(.gradient-word),
-  .landing-page .hero-title .title-line-1 .word>span:not(.gradient-word) {
-    color: #18181b !important;
-    -webkit-text-fill-color: #18181b !important;
-  }
-
-  .hero-title .title-line-1 .word .gradient-word,
-  .landing-page .hero-title .title-line-1 .word .gradient-word {
-    background: #18181b !important;
-    -webkit-background-clip: text !important;
-    background-clip: text !important;
-  }
-
-  .hero-title .title-line-1.colorized .word .gradient-word,
-  .landing-page .hero-title .title-line-1.colorized .word .gradient-word {
-    background: linear-gradient(90deg, #0d9488 0%, #00d4aa 25%, #2d9cdb 50%, #14b8a6 75%, #0d9488 100%) !important;
-    background-size: 200% auto !important;
-    -webkit-background-clip: text !important;
-    background-clip: text !important;
-  }
-
-  .hero-title .title-line-2 strong,
-  .landing-page .hero-title .title-line-2 strong {
-    color: #3f3f46 !important;
-    -webkit-text-fill-color: #3f3f46 !important;
-  }
-
-  .hero-title .title-line-2.colorized strong,
-  .landing-page .hero-title .title-line-2.colorized strong {
-    background: linear-gradient(135deg, #0d9488 0%, #00d4aa 100%) !important;
-    -webkit-background-clip: text !important;
-    background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-  }
-
-  .hero-subtitle,
-  .landing-page .hero-subtitle {
-    color: #3f3f46 !important;
-  }
-
-  // Tech Section
-  .tech-label {
-    color: #3f3f46 !important;
-  }
-
-  .tech-list li {
-    color: #18181b !important;
-  }
-
-  // Section Headers (global)
-  .section-header h2 {
-    color: #18181b !important;
-  }
-
-  .section-header p {
-    color: #3f3f46 !important;
-  }
-
-  .section-badge {
-    background: rgba(99, 102, 241, 0.12) !important;
-    color: #4338ca !important;
-  }
-
-  // Feature Cards (global)
-  .feature-card {
-    background: #ffffff !important;
-    border-color: rgba(0, 0, 0, 0.08) !important;
-  }
-
-  .feature-card h3 {
-    color: #18181b !important;
-  }
-
-  .feature-card p {
-    color: #3f3f46 !important;
-  }
-
-  .tag {
-    background: #f4f4f5 !important;
-    color: #3f3f46 !important;
-  }
-
-  .more-features {
-    background: #fafafa !important;
-    border-color: rgba(0, 0, 0, 0.08) !important;
-  }
-
-  .more-feature {
-    color: #18181b !important;
-  }
-
-  // Open Source Section
-  .opensource-card {
-    background: #fafafa !important;
-  }
-
-  .opensource-card h2 {
-    color: #18181b !important;
-  }
-
-  .opensource-description {
-    color: #3f3f46 !important;
-  }
-
-  .opensource-description strong {
-    color: #18181b !important;
-  }
-
-  .opensource-note {
-    color: #3f3f46 !important;
-  }
-
-  .opensource-badge {
-    color: #059669 !important;
-  }
-
-  .feature-pill {
-    background: #ffffff !important;
-    border-color: rgba(0, 0, 0, 0.08) !important;
-    color: #18181b !important;
-  }
-
-  // Pricing Section
-  .pricing-card {
-    background: #ffffff !important;
-    border-color: rgba(0, 0, 0, 0.08) !important;
-  }
-
-  .pricing-card h3 {
-    color: #18181b !important;
-  }
-
-  .pricing-card.featured {
-    border-color: var(--q-primary) !important;
-  }
-
-  .pricing-desc {
-    color: #3f3f46 !important;
-  }
-
-  .price .amount {
-    color: #18181b !important;
-  }
-
-  .price .period {
-    color: #3f3f46 !important;
-  }
-
-  .features-list li {
-    color: #18181b !important;
-  }
-
-  .features-list li.disabled {
-    color: #52525b !important;
-  }
-
-  // FAQ Section
-  .faq-section {
-    background: #fafafa !important;
-  }
-
-  .faq-item {
-    background: #ffffff !important;
-    border-color: rgba(0, 0, 0, 0.08) !important;
-  }
-
-  .faq-item h3 {
-    color: #18181b !important;
-  }
-
-  .faq-item p {
-    color: #3f3f46 !important;
-  }
-
-  // CTA Section
-  .cta-content h2 {
-    color: #18181b !important;
-  }
-
-  .cta-content p {
-    color: #3f3f46 !important;
-  }
-
-  .cta-note {
-    color: #3f3f46 !important;
-  }
-
-  // Admin Section
-  .admin-docs-btn {
-    background: rgba(0, 0, 0, 0.05) !important;
-    color: #18181b !important;
-    border-color: rgba(0, 0, 0, 0.08) !important;
-  }
-
-  // Demo button
-  .demo-btn {
-    color: #18181b !important;
-  }
-
-  // Features Grid section badge fix
-  .features-section .section-badge {
-    color: #1e6bb8 !important;
-    background: rgba(45, 156, 219, 0.12) !important;
-  }
-
-  // Referral Showcase Component
-  .section-description,
-  .highlight {
-    color: #3f3f46 !important;
-  }
-
-  .step h4 {
-    color: #18181b !important;
-  }
-
-  .step p {
-    color: #3f3f46 !important;
-  }
-
-  .admin-card {
-    background: #ffffff !important;
-    border-color: rgba(0, 0, 0, 0.08) !important;
-  }
-
-  .admin-card h4 {
-    color: #18181b !important;
-  }
-
-  .admin-card p {
-    color: #3f3f46 !important;
-  }
-
-  .tier-card-large {
-    background: #ffffff !important;
-  }
-
-  .tier-name {
-    color: #18181b !important;
-  }
-
-  .tier-requirement {
-    color: #3f3f46 !important;
-  }
-
-  .summary-box {
-    background: #fafafa !important;
-  }
-
-  .summary-box p {
-    color: #3f3f46 !important;
-  }
-
-  // AI Cofounders Showcase Component
-  .ai-showcase {
-    background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 50%, #ffffff 100%) !important;
-  }
-
-  .showcase-header h2 {
-    color: #1e293b !important;
-  }
-
-  .showcase-subtitle {
-    color: #475569 !important;
-  }
-
-  .premium-badge {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(0, 212, 170, 0.12) 100%) !important;
-    color: #f59e0b !important;
-    border-color: rgba(245, 158, 11, 0.25) !important;
-  }
-
-  .agent-tab {
-    background: #ffffff !important;
-    border-color: #e2e8f0 !important;
-  }
-
-  .agent-tab:hover {
-    background: #f8fafc !important;
-    border-color: #cbd5e1 !important;
-  }
-
-  .agent-tab.active {
-    background: rgba(13, 148, 136, 0.1) !important;
-  }
-
-  .tab-name {
-    color: #1e293b !important;
-  }
-
-  .tab-role {
-    color: #64748b !important;
-  }
-
-  .preview-window {
-    background: #ffffff !important;
-    border-color: #e2e8f0 !important;
-    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.08) !important;
-  }
-
-  .window-header {
-    background: #f8fafc !important;
-    border-color: #e2e8f0 !important;
-  }
-
-  .window-title {
-    color: #475569 !important;
-  }
-
-  .agent-details h3 {
-    color: #1e293b !important;
-  }
-
-  .agent-details p {
-    color: #475569 !important;
-  }
-
-  .agent-role-badge {
-    color: #0d9488 !important;
-    background: rgba(13, 148, 136, 0.12) !important;
-  }
-
-  .capability-chip {
-    color: #374151 !important;
-  }
-
-  .message-bubble p {
-    color: #1e293b !important;
-  }
-
-  .message-bubble .message-label {
-    color: #64748b !important;
-  }
-
-  .chat-message.user-message .message-bubble {
-    background: rgba(24, 24, 27, 0.9) !important;
-  }
-
-  .chat-message.agent-message .message-bubble {
-    background: #f8fafc !important;
-  }
-
-  .features-banner {
-    background: #ffffff !important;
-    border-color: #e2e8f0 !important;
-  }
-
-  .feature-icon {
-    background: #f1f5f9 !important;
-  }
-
-  .feature-text strong {
-    color: #1e293b !important;
-  }
-
-  .feature-text span {
-    color: #475569 !important;
-  }
-
-  .demo-card {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.06) 0%, rgba(0, 212, 170, 0.04) 100%) !important;
-    border-color: rgba(99, 102, 241, 0.2) !important;
-  }
-
-  .demo-content h3 {
-    color: #1e293b !important;
-  }
-
-  .demo-content>p {
-    color: #475569 !important;
-  }
-
-  .demo-badge {
-    background: rgba(13, 148, 136, 0.12) !important;
-    color: #0d9488 !important;
-  }
-
-  .credential .label {
-    color: #64748b !important;
-  }
-
-  .credential code {
-    background: #f1f5f9 !important;
-    color: #0d9488 !important;
-  }
-
-  .mini-label {
-    color: #475569 !important;
-  }
-
-  .price-tag {
-    color: #475569 !important;
-  }
-}
-
-// ============================================
-// Landing Page Light Mode Stability
-// Avoid transparent-fill gradients and heavy backdrop-filter effects in light mode
-// (Chrome can intermittently render transparent text as invisible).
-// ============================================
-
-body.body--light {
-  .landing-page {
-    .gradient-text,
-    .gradient-word,
-    .gradient-text-primary,
-    .gradient-text-secondary,
-    .gradient-text-animated,
-    .colorized strong {
-      background: none !important;
-      -webkit-background-clip: initial !important;
-      background-clip: initial !important;
-      -webkit-text-fill-color: currentColor !important;
-      animation: none !important;
-    }
-
     .glass,
     .glass-subtle,
     .glass-strong,
@@ -1937,8 +1104,77 @@ body.body--light {
       -webkit-backdrop-filter: none !important;
     }
   }
-}
 
+  // Layouts and pages
+  .q-layout,
+  .q-page-container,
+  .q-page {
+    background: var(--bg-base) !important;
+    color: var(--text-primary) !important;
+  }
+
+  // Sidebar
+  .q-drawer,
+  .app-sidebar {
+    background: var(--bg-subtle);
+  }
+
+  // Cards and surfaces
+  .q-card {
+    background: var(--bg-elevated);
+    border-color: var(--border-default);
+  }
+
+  // Inputs
+  .q-field__control {
+    background: var(--bg-base);
+  }
+
+  .q-field__native,
+  .q-field__input {
+    color: var(--text-primary);
+  }
+
+  // Landing page
+  .landing-page {
+    background: var(--bg-base) !important;
+    color: var(--text-primary) !important;
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      color: var(--text-primary);
+    }
+
+    p {
+      color: var(--text-secondary);
+    }
+
+    .section-badge {
+      color: var(--color-primary);
+      background: rgba(99, 102, 241, 0.1); // Dynamic fallback?
+    }
+
+    .feature-card,
+    .pricing-card,
+    .faq-item {
+      background: var(--bg-elevated);
+      border-color: var(--border-default);
+    }
+
+    .tag {
+      color: var(--text-secondary);
+      background: var(--bg-muted);
+    }
+
+    .faq-section {
+      background: var(--bg-subtle);
+    }
+  }
+}
 
 // ============================================
 // Electron macOS - Traffic Light Area
