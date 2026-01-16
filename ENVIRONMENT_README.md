@@ -17,13 +17,9 @@ pnpm dev
 
 ```
 .
-├── .env.example    # Template with placeholders (in git) ✅
-└── .env            # Your config with real values (gitignored) 🔒
+├── .env.example    # Template with placeholders (in git)
+└── .env            # Your config with real values (gitignored)
 ```
-
-**Legend:**
-- ✅ = Committed to git (safe, has placeholders)
-- 🔒 = Gitignored (contains real credentials)
 
 ## Required Environment Variables
 

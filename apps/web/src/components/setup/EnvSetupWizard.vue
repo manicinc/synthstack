@@ -663,12 +663,19 @@ import { useQuasar } from 'quasar'
 import projectConfig from '@/config/project-config'
 
 import rootEnvTemplate from '../../../../../.env.example?raw'
-import rootEnvLiteTemplate from '../../../../../.env.lite.example?raw'
-import rootEnvProTemplate from '../../../../../.env.pro.example?raw'
 import webEnvTemplate from '../../../.env.example?raw'
-import webEnvLiteTemplate from '../../../.env.lite.example?raw'
-import webEnvProTemplate from '../../../.env.pro.example?raw'
 import apiEnvTemplate from '../../../../../packages/api-gateway/.env.example?raw'
+
+// Optional Pro/Lite templates - only exist in pro edition
+// Use Vite's import.meta.glob to optionally import these files
+const rootEnvFiles = import.meta.glob('../../../../../.env.*.example', { query: '?raw', eager: true, import: 'default' }) as Record<string, string>
+const webEnvFiles = import.meta.glob('../../../.env.*.example', { query: '?raw', eager: true, import: 'default' }) as Record<string, string>
+
+// Fall back to main template if pro/lite templates don't exist
+const rootEnvLiteTemplate = rootEnvFiles['../../../../../.env.lite.example'] ?? rootEnvTemplate
+const rootEnvProTemplate = rootEnvFiles['../../../../../.env.pro.example'] ?? rootEnvTemplate
+const webEnvLiteTemplate = webEnvFiles['../../../.env.lite.example'] ?? webEnvTemplate
+const webEnvProTemplate = webEnvFiles['../../../.env.pro.example'] ?? webEnvTemplate
 
 defineEmits<{
   (e: 'done'): void
