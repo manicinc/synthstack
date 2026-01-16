@@ -17,17 +17,17 @@ type AgentSlug = string;
 
 // Stub for unavailable AI features
 const agentService = {
-  async getPromptTemplate(_slug: AgentSlug, _template: string): Promise<string | null> {
+  async getPromptTemplate(_slug: AgentSlug, _template: string): Promise<{ template: string } | null> {
     return null; // AI not available in Community Edition
   },
-  async chat(_slug: AgentSlug, _userId: string, _message: string, _options?: unknown): Promise<{ message?: string; tool_calls?: unknown[] }> {
+  async chat(_slug: AgentSlug, _userId: string, _messages: Array<{ role: string; content: string }>, _options?: unknown): Promise<{ message: string; sessionId: string; tool_calls?: unknown[] }> {
     throw new Error('AI features are not available in Community Edition. Upgrade to PRO at https://synthstack.app/pricing');
   },
 };
 
 const suggestionsService = {
-  async createSuggestion(_userId: string, _params: unknown): Promise<null> {
-    return null; // Suggestions not available in Community Edition
+  async createSuggestion(_userId: string, _params: unknown): Promise<{ id: string }> {
+    throw new Error('Suggestions are not available in Community Edition. Upgrade to PRO at https://synthstack.app/pricing');
   },
 };
 
