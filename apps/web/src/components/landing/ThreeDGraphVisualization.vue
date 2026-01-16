@@ -468,36 +468,81 @@ onUnmounted(() => {
   letter-spacing: 0.5px;
 }
 
-// Light mode
+// Light mode - comprehensive overrides for proper visibility
 :global(.body--light) {
+  .graph-bg {
+    background: rgba(248, 250, 252, 0.5);
+  }
+
   .bg-glow {
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
   }
 
   .node-body {
-    background: rgba(255, 255, 255, 0.95);
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+    border-width: 2px;
+  }
+
+  .graph-node.active .node-body {
+    box-shadow: 0 0 20px var(--node-color), 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .node-glow {
+    opacity: 0.15;
+  }
+
+  .graph-node.active .node-glow {
+    opacity: 0.25;
   }
 
   .node-label {
-    color: #64748b;
+    color: #334155;
+    font-weight: 600;
+  }
+
+  .graph-node.active .node-label {
+    color: var(--node-color);
   }
 
   .info-badge {
-    background: rgba(99, 102, 241, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(99, 102, 241, 0.2);
     color: #4f46e5;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+    .badge-hex {
+      color: #6366f1;
+    }
   }
 
   .graph-info p {
-    color: #64748b;
+    color: #475569;
   }
 
   .graph-stats {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  .stat-value {
+    color: #4f46e5;
   }
 
   .stat-label {
     color: #64748b;
+  }
+
+  // Edges - more visible in light mode
+  .edge-3d {
+    opacity: 0.6;
   }
 }
 

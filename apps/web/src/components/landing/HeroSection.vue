@@ -4,7 +4,7 @@
     aria-labelledby="hero-title"
     data-testid="hero-section"
   >
-    <!-- COMMUNITY: HeroDAGVisualization removed (PRO feature) -->
+    <HeroDAGVisualization class="hero-dag-bg" />
     <div
       class="hero-grid-bg"
       aria-hidden="true"
@@ -58,7 +58,8 @@
           <br>
           <span
             class="title-line title-line-2"
-            :class="{ 'revealed': taglineRevealed, 'colorized': taglineColorized }"
+            :class="{ 'revealed': taglineRevealed, 'colorized': taglineColorized, 'light-mode-visible': !themeStore.isDark }"
+            :style="lightModeSubtitleStyle"
             :data-directus="page ? editableAttr({
               collection: 'pages',
               item: page.id,
@@ -72,6 +73,8 @@
         <p
           class="hero-subtitle"
           data-testid="hero-subtitle"
+          :class="{ 'light-mode-visible': !themeStore.isDark }"
+          :style="lightModeSubtitleStyle"
           :data-directus="page ? editableAttr({
             collection: 'pages',
             item: page.id,
@@ -83,17 +86,17 @@
         </p>
         <!-- Theming Highlight Badge -->
         <div
-          v-if="themingBadgeRevealed"
+          v-if="themingBadgeRevealed || !themeStore.isDark"
           class="theming-badge"
-          :class="{ revealed: themingBadgeRevealed }"
+          :class="{ revealed: themingBadgeRevealed, 'light-mode-visible': !themeStore.isDark }"
         >
           <q-icon
             name="palette"
             size="20px"
           />
           <div class="badge-content">
-            <span class="badge-title">Best-Looking Quasar UX on the Web</span>
-            <span class="badge-subtitle">Full Theming & Customization Built-In</span>
+            <span class="badge-title">{{ t('landing.hero.badge.title') }}</span>
+            <span class="badge-subtitle">{{ t('landing.hero.badge.subtitle') }}</span>
           </div>
         </div>
         <div class="hero-cta" data-testid="hero-cta">
@@ -114,17 +117,17 @@
             icon="code"
             class="demo-btn"
             data-testid="hero-cta-secondary"
-            :href="githubUrl"
+            href="https://github.com/manicinc/synthstack"
             target="_blank"
           />
         </div>
         <div class="checkout-explainer">
           <q-icon name="check_circle" size="16px" color="positive" />
-          <span>Instant access to private GitHub repo</span>
+          <span>{{ t('landing.hero.checkout.access') }}</span>
           <q-icon name="fiber_manual_record" size="6px" class="separator" />
-          <span>Lifetime updates</span>
+          <span>{{ t('landing.hero.checkout.updates') }}</span>
           <q-icon name="fiber_manual_record" size="6px" class="separator" />
-          <span>No monthly fees</span>
+          <span>{{ t('landing.hero.checkout.fees') }}</span>
         </div>
         <p class="early-bird-note">
           <q-icon
@@ -142,13 +145,11 @@
       <div
         class="hero-visual"
         role="img"
-        aria-label="SynthStack visualization"
+        aria-label="SynthStack configuration wizard"
       >
-        <AnimatedTerminal @open-branding-wizard="brandingWizardOpen = true" />
+        <InteractiveTerminal />
       </div>
     </div>
-
-    <BrandingWizardDialog v-model="brandingWizardOpen" />
   </section>
 </template>
 
@@ -157,17 +158,14 @@ import { computed, ref, onMounted, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useVisualEditing } from '@/composables/useVisualEditing'
 import type { Page } from '@/composables/usePages'
-import { branding } from '@/config/branding'
-import AnimatedTerminal from '@/components/ui/AnimatedTerminal.vue'
-import BrandingWizardDialog from '@/components/branding/BrandingWizardDialog.vue'
+import InteractiveTerminal from '@/components/landing/InteractiveTerminal.vue'
 import AnimatedBox from '@/components/ui/AnimatedBox.vue'
 import AutonomousText from './AutonomousText.vue'
-// COMMUNITY: HeroDAGVisualization removed (PRO feature)
+import HeroDAGVisualization from './HeroDAGVisualization.vue'
 import { analyticsEvents } from '@/boot/analytics'
 import { useThemeStore } from '@/stores/theme'
 
 const themeStore = useThemeStore()
-const githubUrl = branding.social.github || branding.github.communityRepoUrl
 
 // Computed style for light mode text visibility
 const lightModeTextStyle = computed(() => {
@@ -208,8 +206,6 @@ const props = withDefaults(defineProps<Props>(), {
   checkoutLoading: false
 })
 
-const brandingWizardOpen = ref(false)
-
 const emit = defineEmits<{
   (e: 'checkout'): void
 }>()
@@ -238,30 +234,37 @@ function startCheckout() {
 onMounted(async () => {
   await nextTick()
 
-  // Phase 1: Start the slow fade-in
+  // Phase 1: Reveal content quickly (critical for LCP)
   setTimeout(() => {
     heroRevealed.value = true
-  }, 300)
+  }, 100)
 
-  // Phase 2: Gradually add colors
-  setTimeout(() => {
-    heroColorized.value = true
-  }, 2500)
-
-  // Phase 3: Reveal the tagline
   setTimeout(() => {
     taglineRevealed.value = true
-  }, 3500)
+  }, 200)
 
-  // Phase 4: Colorize the tagline
-  setTimeout(() => {
-    taglineColorized.value = true
-  }, 4500)
-
-  // Phase 5: Reveal the theming badge (early, right after initial content is visible)
   setTimeout(() => {
     themingBadgeRevealed.value = true
-  }, 1500)
+  }, 300)
+
+  // Phase 2: Defer non-critical colorization animations
+  // Use requestIdleCallback to avoid blocking main thread during initial load
+  const deferAnimations = () => {
+    setTimeout(() => {
+      heroColorized.value = true
+    }, 800)
+
+    setTimeout(() => {
+      taglineColorized.value = true
+    }, 1600)
+  }
+
+  if ('requestIdleCallback' in window) {
+    (window as Window & { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(deferAnimations)
+  } else {
+    // Fallback for Safari (doesn't support requestIdleCallback)
+    setTimeout(deferAnimations, 500)
+  }
 
   // Track hero/pricing view
   analyticsEvents.viewPricing()
@@ -269,34 +272,61 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-// Hero DAG Background
+// Hero DAG Background - positioned to overlay on the terminal (right side)
+// Translucent so terminal is visible underneath
 .hero-dag-bg {
   position: absolute;
-  inset: 0;
-  z-index: 0;
-  opacity: 0.4;
-  pointer-events: none;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 40%; // Cover right portion where terminal sits
+  z-index: 10; // ABOVE content to create floating overlay effect
+  pointer-events: none; // Allow clicks to pass through to terminal
+  opacity: 0.6; // Translucent so terminal shows through
+
+  // Light mode - even more translucent
+  :global(.body--light) & {
+    opacity: 0.35;
+  }
+
+  // Tablet: hide completely to avoid visual clutter
+  @media (max-width: 900px) {
+    display: none;
+  }
 }
 
 // Hero Section
 .hero-section {
   position: relative;
-  padding: 120px 24px 80px;
+  padding: 20px 24px 40px; // Reduced bottom padding
   overflow: hidden;
+  background: var(--bg-base);
 
+  // Mobile: even less padding
   @media (max-width: 768px) {
-    padding: 80px 16px 60px;
+    padding: 8px 16px 24px;
   }
 }
 
 .hero-grid-bg {
   position: absolute;
   inset: 0;
+  z-index: 0; // Behind content
   background-image:
     linear-gradient(to right, rgba(99, 102, 241, 0.05) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
   background-size: 40px 40px;
   opacity: 0.5;
+
+  // Light mode - hide grid to prevent gray tint
+  :global(.body--light) & {
+    opacity: 0.15;
+  }
+
+  // Mobile: reduce grid visibility since DAG is separate
+  @media (max-width: 768px) {
+    opacity: 0.25;
+  }
 }
 
 .hero-content {
@@ -307,6 +337,7 @@ onMounted(async () => {
   gap: 60px;
   align-items: center;
   position: relative;
+  z-index: 2; // Above DAG background (z-index: 0)
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
@@ -314,6 +345,7 @@ onMounted(async () => {
     text-align: center;
   }
 
+  // Mobile: ensure content appears below DAG
   @media (max-width: 768px) {
     text-align: center;
     gap: 24px;
@@ -323,7 +355,7 @@ onMounted(async () => {
 .hero-text {
   display: flex;
   flex-direction: column;
-
+  
   @media (max-width: 900px) {
     align-items: center;
   }
@@ -334,6 +366,11 @@ onMounted(async () => {
   font-weight: 800;
   line-height: 1.1;
   margin: 0 0 24px;
+
+  @media (max-width: 768px) {
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    margin: 0 0 12px;
+  }
 
   .gradient-text {
     background: linear-gradient(
@@ -367,7 +404,8 @@ onMounted(async () => {
 
     .word {
       display: inline-block;
-      opacity: 0;
+      // Default: visible
+      opacity: 1;
       margin-right: 0.25em;
       transition: opacity 1.8s cubic-bezier(0.4, 0, 0.2, 1);
       transition-delay: var(--delay, 0ms);
@@ -378,6 +416,8 @@ onMounted(async () => {
 
       > span {
         color: var(--text-primary);
+        -webkit-text-fill-color: var(--text-primary);
+        background: none;
         transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
         transition-delay: var(--color-delay, 0ms);
       }
@@ -402,10 +442,6 @@ onMounted(async () => {
       }
     }
 
-    &.revealed .word {
-      opacity: 1;
-    }
-
     &.colorized .word {
       .gradient-word {
         background: linear-gradient(
@@ -425,9 +461,19 @@ onMounted(async () => {
       }
     }
   }
+  
+  // DARK MODE ANIMATION: Use global selectors with matching specificity
+  // These must be at root level to use :global() properly
+  :global(.body--dark) .title-line-1 .word {
+    opacity: 0;
+  }
+  
+  :global(.body--dark) .title-line-1.revealed .word {
+    opacity: 1;
+  }
 
   .title-line-2 {
-    opacity: 0;
+    opacity: 1; // Default visible
     transition: opacity 2s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: clamp(1rem, 2.5vw, 1.5rem);
     font-weight: 600;
@@ -443,16 +489,21 @@ onMounted(async () => {
       transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    &.revealed {
-      opacity: 1;
-    }
-
     &.colorized strong {
       background: linear-gradient(135deg, #0d9488 0%, #00d4aa 100%);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+  }
+  
+  // DARK MODE ANIMATION for title-line-2
+  :global(.body--dark) .title-line-2 {
+    opacity: 0;
+  }
+  
+  :global(.body--dark) .title-line-2.revealed {
+    opacity: 1;
   }
 }
 
@@ -477,6 +528,7 @@ onMounted(async () => {
 // Light mode hero improvements
 :global(.body--light) .hero-subtitle {
   color: var(--text-secondary) !important;
+  -webkit-text-fill-color: var(--text-secondary) !important;
 }
 
 // Theming Badge
@@ -491,14 +543,9 @@ onMounted(async () => {
   border: 1px solid rgba(99, 102, 241, 0.25);
   border-radius: 12px;
   backdrop-filter: blur(10px);
-  opacity: 0;
-  transform: translateY(10px);
+  opacity: 1; // Default visible
+  transform: translateY(0);
   transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &.revealed {
-    opacity: 1;
-    transform: translateY(0);
-  }
 
   .q-icon {
     color: #a5b4fc;
@@ -523,6 +570,17 @@ onMounted(async () => {
     font-weight: 500;
     color: #a5b4fc;
   }
+}
+
+// DARK MODE ANIMATION for theming badge
+:global(.body--dark) .theming-badge {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+:global(.body--dark) .theming-badge.revealed {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 // Light mode overrides for theming badge
@@ -608,40 +666,174 @@ onMounted(async () => {
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
+  // CLS Prevention - explicit dimensions to prevent layout shift
+  width: 520px;
+  min-height: 400px;
+  contain: layout style;
 
   @media (max-width: 900px) {
     width: 100%;
+    max-width: 520px;
+    min-height: 350px;
+  }
+
+  @media (max-width: 600px) {
+    min-height: 320px;
   }
 }
 
-// Light mode overrides
-:global(.body--light) .hero-title .title-line-1 .word > span {
-  color: var(--text-primary) !important;
+// ==============================================
+// LIGHT MODE OVERRIDES - EXPLICIT DARK TEXT
+// Using !important to ensure these rules win
+// ==============================================
+
+// Hero section background - use CSS variable
+:global(.body--light) .hero-section {
+  background: var(--bg-base) !important;
 }
 
+// CRITICAL: Disable ALL animations in light mode to prevent flashing
+:global(.body--light) .hero-title .title-line-1 .word {
+  opacity: 1 !important;
+  transition: none !important;
+  transition-delay: 0ms !important;
+  animation: none !important;
+}
+
+:global(.body--light) .hero-title .title-line-1 .word > span {
+  transition: none !important;
+  transition-delay: 0ms !important;
+}
+
+:global(.body--light) .hero-title .title-line-2 {
+  opacity: 1 !important;
+  transition: none !important;
+  transition-delay: 0ms !important;
+}
+
+:global(.body--light) .hero-title .title-line-2 strong {
+  transition: none !important;
+}
+
+:global(.body--light) .theming-badge {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  transition: none !important;
+  backdrop-filter: none !important;
+}
+
+:global(.body--light) .hero-subtitle {
+  transition: none !important;
+}
+
+:global(.body--light) .hero-cta .q-btn {
+  transition: background-color 0.2s, transform 0.15s !important;
+}
+
+// ALL text in hero title - dark color
+:global(.body--light) .hero-title,
+:global(.body--light) .hero-title span,
+:global(.body--light) .hero-title .title-line,
+:global(.body--light) .hero-title .title-line-1,
+:global(.body--light) .hero-title .title-line-1 .word,
+:global(.body--light) .hero-title .title-line-1 .word > span:not(.gradient-word) {
+  color: #18181b !important;
+  -webkit-text-fill-color: #18181b !important;
+}
+
+// Gradient words - use solid text in light mode (transparent-fill gradients can flicker in Chrome)
 :global(.body--light) .hero-title .title-line-1 .word .gradient-word {
   background: none !important;
   -webkit-background-clip: initial !important;
   background-clip: initial !important;
-  -webkit-text-fill-color: var(--text-primary) !important;
-  color: var(--text-primary) !important;
+  -webkit-text-fill-color: #18181b !important;
+  color: #18181b !important;
   animation: none !important;
 }
 
+// Title line 2 (tagline) - dark text
+:global(.body--light) .hero-title .title-line-2,
 :global(.body--light) .hero-title .title-line-2 strong {
-  color: var(--text-secondary) !important;
-  -webkit-text-fill-color: var(--text-secondary) !important;
+  color: #3f3f46 !important;
+  -webkit-text-fill-color: #3f3f46 !important;
+  background: none !important;
 }
 
+// Colorized tagline - keep solid text in light mode
 :global(.body--light) .hero-title .title-line-2.colorized strong {
   background: none !important;
   -webkit-background-clip: initial !important;
   background-clip: initial !important;
-  -webkit-text-fill-color: var(--text-secondary) !important;
-  color: var(--text-secondary) !important;
+  -webkit-text-fill-color: #3f3f46 !important;
+  color: #3f3f46 !important;
+  animation: none !important;
 }
 
+// Demo button
 :global(.body--light) .demo-btn {
-  color: var(--text-primary) !important;
+  color: #18181b !important;
+  -webkit-text-fill-color: #18181b !important;
+}
+
+// Subtitle
+:global(.body--light) .hero-subtitle {
+  color: #3f3f46 !important;
+  -webkit-text-fill-color: #3f3f46 !important;
+}
+
+// Early bird note
+:global(.body--light) .early-bird-note {
+  color: #3f3f46 !important;
+  -webkit-text-fill-color: #3f3f46 !important;
+}
+
+// Checkout explainer
+:global(.body--light) .checkout-explainer,
+:global(.body--light) .checkout-explainer span {
+  color: #3f3f46 !important;
+  -webkit-text-fill-color: #3f3f46 !important;
+}
+
+// ==============================================
+// LIGHT MODE INSTANT VISIBILITY CLASS
+// Applied via Vue binding when not in dark mode
+// This is SCOPED so it has the right specificity to override .word { opacity: 0 }
+// ==============================================
+
+// For .word elements (hero title words)
+.word.light-mode-visible {
+  opacity: 1 !important;
+  visibility: visible !important;
+  
+  // Inner span text color (not gradient words)
+  > span:not(.gradient-word) {
+    color: #18181b !important;
+    -webkit-text-fill-color: #18181b !important;
+  }
+}
+
+// For title-line-2 (tagline)
+.title-line-2.light-mode-visible {
+  opacity: 1 !important;
+  visibility: visible !important;
+  
+  strong {
+    color: #3f3f46 !important;
+    -webkit-text-fill-color: #3f3f46 !important;
+    background: none !important;
+  }
+}
+
+// For hero subtitle
+.hero-subtitle.light-mode-visible {
+  color: #3f3f46 !important;
+  -webkit-text-fill-color: #3f3f46 !important;
+}
+
+// For theming badge
+.theming-badge.light-mode-visible {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) !important;
 }
 </style>

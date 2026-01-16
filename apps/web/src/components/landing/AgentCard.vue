@@ -92,31 +92,57 @@ const expanded = ref(false)
 
 <style scoped lang="scss">
 .agent-card {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-default);
-  border-radius: 16px;
+  background: rgba(15, 15, 35, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
   padding: 28px;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
 
+  // Gradient glow layer
   &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    background: radial-gradient(
+      circle at 50% 0%,
+      color-mix(in srgb, var(--agent-color) 15%, transparent) 0%,
+      transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+
+  // Top accent line
+  &::after {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
-    background: var(--agent-color);
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--agent-color), transparent);
     opacity: 0;
     transition: opacity 0.3s ease;
   }
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    transform: translateY(-6px);
+    border-color: color-mix(in srgb, var(--agent-color) 40%, transparent);
+    box-shadow:
+      0 20px 50px rgba(0, 0, 0, 0.25),
+      0 0 40px color-mix(in srgb, var(--agent-color) 15%, transparent);
 
     &::before {
+      opacity: 1;
+    }
+
+    &::after {
       opacity: 1;
     }
   }
@@ -126,12 +152,24 @@ const expanded = ref(false)
   width: 72px;
   height: 72px;
   border-radius: 16px;
-  background: color-mix(in srgb, var(--agent-color) 15%, transparent);
+  background: color-mix(in srgb, var(--agent-color) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--agent-color) 20%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
   color: var(--agent-color);
+  transition: all 0.3s ease;
+  box-shadow:
+    0 4px 16px color-mix(in srgb, var(--agent-color) 10%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  .agent-card:hover & {
+    transform: scale(1.05);
+    box-shadow:
+      0 8px 24px color-mix(in srgb, var(--agent-color) 25%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
 }
 
 .agent-name {
@@ -219,5 +257,84 @@ const expanded = ref(false)
   border-radius: 8px;
   font-size: 0.8rem;
   font-weight: 500;
+}
+
+// ===========================================
+// LIGHT MODE - Neumorphic clean style
+// ===========================================
+:global(.body--light) {
+  .agent-card {
+    background: #ffffff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow:
+      0 4px 20px rgba(0, 0, 0, 0.04),
+      0 1px 3px rgba(0, 0, 0, 0.02),
+      inset 0 1px 0 rgba(255, 255, 255, 1);
+
+    &::before {
+      background: radial-gradient(
+        circle at 50% 0%,
+        color-mix(in srgb, var(--agent-color) 8%, transparent) 0%,
+        transparent 60%
+      );
+    }
+
+    &:hover {
+      border-color: color-mix(in srgb, var(--agent-color) 30%, transparent);
+      box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.08),
+        0 8px 20px rgba(0, 0, 0, 0.04),
+        0 0 30px color-mix(in srgb, var(--agent-color) 8%, transparent),
+        inset 0 1px 0 rgba(255, 255, 255, 1);
+    }
+  }
+
+  .agent-icon {
+    background: color-mix(in srgb, var(--agent-color) 8%, white);
+    border-color: color-mix(in srgb, var(--agent-color) 15%, transparent);
+    box-shadow:
+      0 2px 8px color-mix(in srgb, var(--agent-color) 8%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+
+  .agent-card:hover .agent-icon {
+    box-shadow:
+      0 6px 20px color-mix(in srgb, var(--agent-color) 15%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+
+  .agent-name {
+    color: #1e293b;
+  }
+
+  .agent-description {
+    color: #475569;
+  }
+
+  .capability-tag {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.06);
+    color: #475569;
+  }
+
+  .agent-details {
+    border-top-color: rgba(0, 0, 0, 0.06);
+  }
+
+  .details-section {
+    h4 {
+      color: #1e293b;
+    }
+
+    ul li {
+      color: #475569;
+    }
+  }
+
+  .output-tag {
+    background: color-mix(in srgb, var(--agent-color) 8%, white);
+  }
 }
 </style>
