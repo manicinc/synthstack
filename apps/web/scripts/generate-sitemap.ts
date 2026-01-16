@@ -4,7 +4,7 @@
  *
  * Features:
  * - Static pages (landing, features, pricing, about, blog, docs)
- * - Blog posts with proper lastmod dates and images
+ * - Dynamic blog posts fetched from API (with fallback to hardcoded list)
  * - Image sitemap support (og-images, feature images)
  * - hreflang for internationalization
  * - Proper priority and changefreq values for SEO
@@ -22,6 +22,9 @@ const __dirname = dirname(__filename)
 
 /** Base URL for the production site */
 const BASE_URL = 'https://synthstack.app'
+
+/** API base URL for fetching dynamic content */
+const API_BASE_URL = process.env.VITE_API_URL || 'https://api.synthstack.app'
 
 /** Supported languages for hreflang */
 const SUPPORTED_LANGUAGES = ['en', 'es', 'fr', 'de', 'ja', 'zh'] as const
@@ -306,10 +309,10 @@ const STATIC_PAGES: SitemapEntry[] = [
 ]
 
 /**
- * Blog posts - these should match what's in your CMS
- * Update this list when adding new blog posts
+ * Fallback blog posts - used when API is unavailable
+ * These should be kept in sync with the CMS periodically
  */
-const BLOG_POSTS: SitemapEntry[] = [
+const FALLBACK_BLOG_POSTS: SitemapEntry[] = [
   {
     loc: '/blog/introducing-synthstack',
     lastmod: '2024-12-01',
@@ -402,6 +405,77 @@ const BLOG_POSTS: SitemapEntry[] = [
   },
 ]
 
+/** Blog post API response interface */
+interface BlogPostApiResponse {
+  id: string
+  slug: string
+  title: string
+  summary?: string
+  published_at?: string
+  image?: string
+  og_image?: string
+}
+
+/**
+ * Fetches blog posts from the API
+ * Falls back to hardcoded list if API is unavailable
+ */
+async function fetchBlogPosts(): Promise<SitemapEntry[]> {
+  try {
+    console.log(`📡 Fetching blog posts from API: ${API_BASE_URL}/api/v1/blog`)
+
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+
+    const response = await fetch(`${API_BASE_URL}/api/v1/blog?limit=100`, {
+      headers: { Accept: 'application/json' },
+      signal: controller.signal
+    })
+
+    clearTimeout(timeoutId)
+
+    if (!response.ok) {
+      throw new Error(`API returned ${response.status}: ${response.statusText}`)
+    }
+
+    const data = await response.json()
+    const posts: BlogPostApiResponse[] = Array.isArray(data) ? data : data.data || []
+
+    if (posts.length === 0) {
+      console.log('⚠️  No blog posts returned from API, using fallback list')
+      return FALLBACK_BLOG_POSTS
+    }
+
+    console.log(`✅ Fetched ${posts.length} blog posts from API`)
+
+    return posts.map((post): SitemapEntry => {
+      const imageUrl = post.og_image || post.image
+      return {
+        loc: `/blog/${post.slug}`,
+        lastmod: post.published_at
+          ? new Date(post.published_at).toISOString().split('T')[0]
+          : TODAY,
+        changefreq: 'monthly',
+        priority: 0.7,
+        images: imageUrl
+          ? [
+              {
+                loc: imageUrl.startsWith('http') ? imageUrl : `${BASE_URL}${imageUrl}`,
+                title: post.title,
+                caption: post.summary
+              }
+            ]
+          : undefined
+      }
+    })
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    console.log(`⚠️  Failed to fetch blog posts from API: ${errorMessage}`)
+    console.log('   Using fallback blog posts list')
+    return FALLBACK_BLOG_POSTS
+  }
+}
+
 /**
  * Escapes special XML characters
  */
@@ -470,7 +544,9 @@ function generateUrlEntry(entry: SitemapEntry): string {
  * Generates the complete sitemap XML
  */
 async function generateSitemap(): Promise<string> {
-  const allEntries = [...STATIC_PAGES, ...BLOG_POSTS]
+  // Fetch blog posts dynamically (with fallback)
+  const blogPosts = await fetchBlogPosts()
+  const allEntries = [...STATIC_PAGES, ...blogPosts]
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`
   xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n`

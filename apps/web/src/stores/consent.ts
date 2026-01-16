@@ -1,9 +1,9 @@
 /**
  * Cookie Consent Store
- * 
+ *
  * Centralized state management for cookie consent preferences.
- * Integrates with Google Analytics 4 and Microsoft Clarity.
- * 
+ * Integrates with Google Analytics 4, Microsoft Clarity, and Plausible Analytics.
+ *
  * @module stores/consent
  */
 import { defineStore } from 'pinia'
@@ -24,6 +24,9 @@ const CLARITY_PROJECT_ID = import.meta.env.VITE_CLARITY_PROJECT_ID || ''
 // Google Ads ID (for conversion tracking)
 const GOOGLE_ADS_ID = import.meta.env.VITE_GOOGLE_ADS_ID || ''
 
+// Plausible Analytics Domain (optional - privacy-friendly alternative)
+const PLAUSIBLE_DOMAIN = import.meta.env.VITE_PLAUSIBLE_DOMAIN || ''
+
 export interface ConsentPreferences {
   essential: boolean      // Always true - required for site function
   functional: boolean     // Preferences, chat history, etc.
@@ -41,6 +44,7 @@ declare global {
   interface Window {
     dataLayer: unknown[]
     gtag: (...args: unknown[]) => void
+    plausible?: (eventName: string, options?: { props?: Record<string, string | number | boolean> }) => void
   }
 }
 
@@ -50,6 +54,7 @@ export const useConsentStore = defineStore('consent', () => {
   const showBanner = ref(false)
   const analyticsInitialized = ref(false)
   const clarityInitialized = ref(false)
+  const plausibleInitialized = ref(false)
   
   const preferences = ref<ConsentPreferences>({
     essential: true,
@@ -212,6 +217,37 @@ export const useConsentStore = defineStore('consent', () => {
     }
   }
 
+  // Initialize Plausible Analytics (optional - privacy-friendly alternative)
+  function initPlausible(): void {
+    if (!PLAUSIBLE_DOMAIN || plausibleInitialized.value) {
+      if (!PLAUSIBLE_DOMAIN) {
+        devLog('[Analytics] Plausible not configured (optional)')
+      }
+      return
+    }
+
+    try {
+      // Load Plausible script dynamically
+      const script = document.createElement('script')
+      script.defer = true
+      script.dataset.domain = PLAUSIBLE_DOMAIN
+      script.src = 'https://plausible.io/js/script.js'
+      document.head.appendChild(script)
+
+      plausibleInitialized.value = true
+      devLog('[Analytics] Plausible initialized for domain:', PLAUSIBLE_DOMAIN)
+    } catch (error) {
+      devWarn('[Analytics] Plausible initialization failed (non-critical):', error)
+    }
+  }
+
+  // Track custom event in Plausible
+  function trackPlausibleEvent(eventName: string, props?: Record<string, string | number | boolean>): void {
+    if (plausibleInitialized.value && preferences.value.analytics && window.plausible) {
+      window.plausible(eventName, props ? { props } : undefined)
+    }
+  }
+
   // Identify user in Clarity (call after authentication)
   function identifyUser(userId: string, sessionId?: string, pageId?: string, friendlyName?: string): void {
     if (clarityInitialized.value && preferences.value.analytics) {
@@ -270,12 +306,13 @@ export const useConsentStore = defineStore('consent', () => {
     preferences,
     analyticsInitialized,
     clarityInitialized,
-    
+    plausibleInitialized,
+
     // Computed
     isAnalyticsAllowed,
     isMarketingAllowed,
     isFunctionalAllowed,
-    
+
     // Actions
     initialize,
     saveConsent,
@@ -285,18 +322,21 @@ export const useConsentStore = defineStore('consent', () => {
     applyConsents,
     initGoogleAnalytics,
     initMicrosoftClarity,
+    initPlausible,
     identifyUser,
     setTag,
     trackClarityEvent,
+    trackPlausibleEvent,
     upgradeSession,
     trackPageView,
     trackEvent,
     openSettings,
-    
+
     // Constants (exposed for reference)
     GA_MEASUREMENT_ID,
     CLARITY_PROJECT_ID,
-    GOOGLE_ADS_ID
+    GOOGLE_ADS_ID,
+    PLAUSIBLE_DOMAIN
   }
 })
 

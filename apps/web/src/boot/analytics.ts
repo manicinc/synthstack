@@ -1,13 +1,14 @@
 /**
  * Analytics Boot File
- * 
- * Initializes Google Analytics 4 and Microsoft Clarity with GDPR-compliant
- * consent mode. Uses the consent store for centralized state management.
- * 
+ *
+ * Initializes Google Analytics 4, Microsoft Clarity, and Plausible Analytics
+ * with GDPR-compliant consent mode. Uses the consent store for centralized state management.
+ *
  * Analytics IDs:
  * - Google Analytics: G-GF2XVP9RXB (via VITE_GA_MEASUREMENT_ID)
  * - Microsoft Clarity: uxkn6j9d8a (via VITE_CLARITY_PROJECT_ID)
- * 
+ * - Plausible: (optional) via VITE_PLAUSIBLE_DOMAIN
+ *
  * @module boot/analytics
  */
 import { boot } from 'quasar/wrappers'
@@ -18,11 +19,14 @@ import { devLog, devWarn, devError, logError } from '@/utils/devLogger'
 // Google Analytics 4 Measurement ID
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || ''
 
-// Microsoft Clarity Project ID  
+// Microsoft Clarity Project ID
 const CLARITY_PROJECT_ID = import.meta.env.VITE_CLARITY_PROJECT_ID || ''
 
 // Google Ads ID (for conversion tracking)
 const GOOGLE_ADS_ID = import.meta.env.VITE_GOOGLE_ADS_ID || ''
+
+// Plausible Analytics Domain (optional)
+const PLAUSIBLE_DOMAIN = import.meta.env.VITE_PLAUSIBLE_DOMAIN || ''
 
 declare global {
   interface Window {
@@ -115,19 +119,36 @@ export const analyticsEvents = {
     })
   },
 
-  // Auth Events
-  signUp: (method: string) => {
+  // Auth Events (Enhanced - tracks to GA4, Clarity, and Plausible)
+  signUp: (method: string, source?: string) => {
+    // GA4
     trackEvent('sign_up', {
       method,
+      signup_source: source || 'direct',
       event_category: 'engagement'
     })
+    // Clarity & Plausible tracked via consent store
+    try {
+      const consentStore = useConsentStore()
+      consentStore.trackClarityEvent(`signup_${method}`)
+      consentStore.setTag('signup_method', method)
+      consentStore.trackPlausibleEvent('Sign Up', { method, source: source || 'direct' })
+    } catch { /* consent store not ready */ }
   },
 
-  signIn: (method: string) => {
+  signIn: (method: string, success = true) => {
+    // GA4
     trackEvent('login', {
       method,
+      success,
       event_category: 'engagement'
     })
+    // Clarity & Plausible tracked via consent store
+    try {
+      const consentStore = useConsentStore()
+      consentStore.trackClarityEvent(success ? `login_${method}` : `login_failed_${method}`)
+      consentStore.trackPlausibleEvent('Login', { method, success: String(success) })
+    } catch { /* consent store not ready */ }
   },
 
   // Subscription Events
@@ -145,27 +166,57 @@ export const analyticsEvents = {
     })
   },
 
-  beginCheckout: (planName: string, planPrice: number) => {
+  beginCheckout: (planName: string, planPrice: number, billingCycle?: string) => {
+    // GA4
     trackEvent('begin_checkout', {
       currency: 'USD',
       value: planPrice,
+      billing_cycle: billingCycle || 'monthly',
       items: [{
         item_name: planName,
         price: planPrice
       }]
     })
+    // Clarity & Plausible tracked via consent store
+    try {
+      const consentStore = useConsentStore()
+      consentStore.trackClarityEvent(`checkout_${planName.toLowerCase().replace(/\s+/g, '_')}`)
+      consentStore.trackPlausibleEvent('Begin Checkout', { plan: planName, billing: billingCycle || 'monthly' })
+    } catch { /* consent store not ready */ }
   },
 
-  purchase: (planName: string, planPrice: number, transactionId: string) => {
+  purchase: (planName: string, planPrice: number, transactionId: string, options?: {
+    planTier?: string
+    isTrial?: boolean
+    couponCode?: string
+  }) => {
+    // GA4 (Enhanced Ecommerce)
     trackEvent('purchase', {
       transaction_id: transactionId,
       currency: 'USD',
       value: planPrice,
+      is_trial: options?.isTrial || false,
+      coupon: options?.couponCode,
       items: [{
         item_name: planName,
-        price: planPrice
+        item_category: options?.planTier || 'subscription',
+        price: planPrice,
+        quantity: 1
       }]
     })
+    // Clarity & Plausible tracked via consent store
+    try {
+      const consentStore = useConsentStore()
+      const tier = options?.planTier || planName.toLowerCase().replace(/\s+/g, '_')
+      consentStore.trackClarityEvent(`purchase_${tier}`)
+      consentStore.setTag('subscription_plan', tier)
+      consentStore.upgradeSession(`purchase_${tier}`)
+      consentStore.trackPlausibleEvent('Purchase', {
+        plan: tier,
+        revenue: planPrice,
+        is_trial: String(options?.isTrial || false)
+      })
+    } catch { /* consent store not ready */ }
   },
 
   // Content Events
@@ -207,6 +258,56 @@ export const analyticsEvents = {
       enabled,
       event_category: 'engagement'
     })
+  },
+
+  // Newsletter Events (Enhanced - tracks to GA4, Clarity, and Plausible)
+  newsletterSignup: (source: string, provider?: string) => {
+    // GA4
+    trackEvent('newsletter_signup', {
+      signup_source: source,
+      provider: provider || 'emailoctopus',
+      event_category: 'engagement'
+    })
+    // Clarity & Plausible tracked via consent store
+    try {
+      const consentStore = useConsentStore()
+      consentStore.trackClarityEvent(`newsletter_${source}`)
+      consentStore.trackPlausibleEvent('Newsletter Signup', { source, provider: provider || 'emailoctopus' })
+    } catch { /* consent store not ready */ }
+  },
+
+  // AI Agent Events (Enhanced - tracks to GA4, Clarity, and Plausible)
+  aiAgentUsed: (agentType: string, messageLength?: number, responseTime?: number) => {
+    // GA4
+    trackEvent('ai_agent_used', {
+      agent_type: agentType,
+      message_length: messageLength,
+      response_time_ms: responseTime,
+      event_category: 'engagement'
+    })
+    // Clarity & Plausible tracked via consent store
+    try {
+      const consentStore = useConsentStore()
+      consentStore.trackClarityEvent(`agent_${agentType}`)
+      consentStore.trackPlausibleEvent('AI Agent Used', { agent: agentType })
+    } catch { /* consent store not ready */ }
+  },
+
+  // Workflow Events
+  workflowExecuted: (workflowId: string, success: boolean, executionTime?: number) => {
+    // GA4
+    trackEvent('workflow_executed', {
+      workflow_id: workflowId,
+      success,
+      execution_time_ms: executionTime,
+      event_category: 'engagement'
+    })
+    // Clarity & Plausible tracked via consent store
+    try {
+      const consentStore = useConsentStore()
+      consentStore.trackClarityEvent(success ? 'workflow_success' : 'workflow_failed')
+      consentStore.trackPlausibleEvent('Workflow Executed', { success: String(success) })
+    } catch { /* consent store not ready */ }
   }
 }
 
@@ -257,6 +358,7 @@ export default boot(({ router }: { router: Router }): void => {
   // Initialize analytics providers
   consentStore.initGoogleAnalytics()
   consentStore.initMicrosoftClarity()
+  consentStore.initPlausible()
 
   // Initialize consent state from localStorage
   consentStore.initialize()
@@ -290,6 +392,7 @@ export default boot(({ router }: { router: Router }): void => {
   devLog('[Analytics] Boot complete')
   devLog('[Analytics] GA4 ID:', GA_MEASUREMENT_ID || 'Not configured')
   devLog('[Analytics] Clarity ID:', CLARITY_PROJECT_ID || 'Not configured')
+  devLog('[Analytics] Plausible Domain:', PLAUSIBLE_DOMAIN || 'Not configured (optional)')
 })
 
 export { trackEvent, trackPageView }
