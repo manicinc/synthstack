@@ -7,18 +7,26 @@ Get running locally with Docker in a few minutes.
 ```bash
 git clone https://github.com/manicinc/synthstack.git
 cd synthstack
-cp .env.example .env
 pnpm install
+pnpm generate:env --edition lite   # Generate .env from config.json
 docker compose -f docker-compose.community.yml up -d
 ```
 
 Open: http://localhost:3050
 
+> **Alternative:** You can also copy `cp .env.example .env` and fill in values manually.
+
 ---
 
-## 🔐 Generate Security Keys (Recommended)
+## 🔐 Security Keys
 
-Before deploying to production, generate unique security keys:
+The `generate:env` script automatically generates secure cryptographic keys for:
+- `DIRECTUS_KEY` / `DIRECTUS_SECRET`
+- `JWT_SECRET`
+- `ENCRYPTION_KEY`
+- `ADMIN_SECRET`
+
+If you copied `.env.example` manually, generate keys with:
 
 ```bash
 node -e "console.log('DIRECTUS_KEY=' + require('crypto').randomBytes(32).toString('hex'))"

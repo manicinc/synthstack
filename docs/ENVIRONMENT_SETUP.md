@@ -2,7 +2,76 @@
 
 ## Overview
 
-SynthStack uses environment files to configure the application. This guide explains the file structure and setup workflow.
+SynthStack uses environment files to configure both LITE and PRO versions. This guide explains the file structure and setup workflow.
+
+**Recommended:** Use the `generate-env` script to automatically generate `.env` files from your `config.json`:
+
+```bash
+pnpm generate:env --edition lite   # Community edition
+pnpm generate:env --edition pro    # PRO edition
+```
+
+The web app also includes an **Environment Setup Wizard** at `/setup/env` that can generate ready-to-copy `.env` files.
+
+---
+
+## Generating Environment Files from config.json
+
+The `generate-env` script creates `.env` files from your `config.json`, ensuring consistent configuration across your project.
+
+### Usage
+
+```bash
+# Interactive mode (prompts for edition)
+pnpm generate:env
+
+# Generate Community edition .env
+pnpm generate:env --edition lite
+
+# Generate PRO edition .env
+pnpm generate:env --edition pro
+
+# Output to specific file
+pnpm generate:env --edition pro --output .env.pro
+
+# Print to stdout (for inspection)
+pnpm generate:env --edition lite --stdout
+```
+
+### What Gets Generated
+
+The script reads `config.json` and automatically:
+
+1. **Derives URLs** from domain and port configuration
+2. **Sets feature flags** based on edition (RAG, agents, referrals)
+3. **Auto-generates security keys** (DIRECTUS_KEY, JWT_SECRET, ENCRYPTION_KEY)
+4. **Maps config values** (app name, emails, social links)
+5. **Sets placeholders** for API keys you need to fill in
+
+### Config-to-Environment Mappings
+
+| config.json Path | Generated Variables |
+|------------------|---------------------|
+| `app.name` | `VITE_APP_NAME` |
+| `app.domain` | Used for URLs in production |
+| `infrastructure.ports.*` | `VITE_API_URL`, `REDIS_URL`, `DATABASE_URL` ports |
+| `infrastructure.databaseName` | `DB_DATABASE`, `POSTGRES_DB` |
+| `contact.support` | `VITE_SUPPORT_EMAIL` |
+| `contact.general` | `VITE_CONTACT_EMAIL`, `CONTACT_EMAIL` |
+| `social.*` | `VITE_SOCIAL_GITHUB`, `VITE_SOCIAL_TWITTER`, etc. |
+| `github.*` | `GITHUB_ORG_NAME`, `GITHUB_PRO_REPO` (PRO only) |
+| `features.*` | Feature flags (`ENABLE_*`, `VITE_ENABLE_*`) |
+
+### After Generation
+
+After running `generate:env`, you still need to fill in:
+
+- **API Keys**: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `STRIPE_*` keys
+- **Supabase**: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+- **OAuth**: Google, GitHub, Discord client IDs and secrets
+- **Database password**: Change `change-this-password` to a secure password
+
+---
 
 ## Environment Files
 
@@ -12,7 +81,9 @@ These files contain **placeholder values** and are safe to commit:
 
 | File | Purpose |
 |------|---------|
-| `.env.example` | Main template with placeholder values |
+| `.env.example` | Main template with placeholder values (PRO version) |
+| `.env.lite.example` | LITE version template (basic copilot; no agents/RAG/referrals) |
+| `.env.pro.example` | PRO version template (all features enabled) |
 
 ### Personal Configuration Files (NOT in Git)
 
@@ -20,13 +91,16 @@ These files contain **real credentials** and are ignored by git:
 
 | File | Purpose | Created From |
 |------|---------|--------------|
-| `.env` | Active configuration used by services | Copy from `.env.example` |
+| `.env` | Active configuration used by services | Copy from any .example file |
+| `.env.lite` | Your personal LITE version config with real values | Copy from `.env.lite.example` |
+| `.env.pro` | Your personal PRO version config with real values | Copy from `.env.pro.example` |
 
 ## Initial Setup
 
 ### 1. Copy Template to Active Config
 
 ```bash
+# Copy the PRO template (recommended for development)
 cp .env.example .env
 ```
 
@@ -38,15 +112,61 @@ Edit `.env` and replace all placeholder values with your actual credentials:
 # Before (placeholders)
 OPENAI_API_KEY=sk-xxx
 STRIPE_SECRET_KEY=YOUR_STRIPE_SECRET_KEY
+SUPABASE_URL=https://your-project.supabase.co
 
 # After (your real values)
 OPENAI_API_KEY=sk-proj-abc123...
-STRIPE_SECRET_KEY=sk_live_...
+STRIPE_SECRET_KEY=YOUR_STRIPE_SECRET_KEY
+SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 ```
 
-### 3. Start Development
+### 3. Create Personal LITE and PRO Configs
+
+Once your `.env` has real values, create personal versions for easy switching:
 
 ```bash
+# First-time: create your local profiles from the templates
+cp .env.lite.example .env.lite
+cp .env.pro.example .env.pro
+
+# Then fill in real values in .env.lite / .env.pro (recommended: edit .env.pro first, then copy shared credentials into .env.lite)
+```
+
+## Switching Between Versions
+
+### Using npm Scripts (Recommended)
+
+The easiest way to switch versions:
+
+```bash
+# Run LITE version
+pnpm dev:lite
+
+# Run PRO version
+pnpm dev:pro
+
+# Build LITE version
+pnpm build:lite
+
+# Build PRO version
+pnpm build:pro
+```
+
+These scripts automatically:
+1. Copy `.env.lite` or `.env.pro` to `.env`
+2. Start all services with the correct configuration
+
+### Manual Switching
+
+If you prefer manual control:
+
+```bash
+# Switch to LITE
+cp .env.lite .env
+pnpm dev
+
+# Switch to PRO
+cp .env.pro .env
 pnpm dev
 ```
 
@@ -66,19 +186,27 @@ The API gateway loads environment variables from the **repo root** `.env` by def
 ```
 apps/web/
 ├── .env.example        # Template (committed)
+├── .env.lite.example   # LITE template (committed)
+├── .env.pro.example    # PRO template (committed)
+├── .env.lite           # Personal LITE config (gitignored)
+├── .env.pro            # Personal PRO config (gitignored)
 └── .env                # Active config (gitignored)
 ```
 
 ## What Gets Committed?
 
-### Safe to Commit
+### ✅ Safe to Commit
 
 - `.env.example` - Template with placeholders
+- `.env.lite.example` - LITE template with placeholders
+- `.env.pro.example` - PRO template with placeholders
 - Any `.example` file
 
-### Never Commit
+### ❌ Never Commit
 
 - `.env` - Active config with real credentials
+- `.env.lite` - Personal LITE config with real credentials
+- `.env.pro` - Personal PRO config with real credentials
 - `.env.local` - Local overrides
 - Any file without `.example` suffix
 
@@ -89,6 +217,8 @@ These are protected by `.gitignore`:
 .env
 .env.local
 .env.*.local
+.env.lite
+.env.pro
 ```
 
 ## Team Workflow
@@ -103,8 +233,13 @@ These are protected by `.gitignore`:
 
 2. **Copy templates**
    ```bash
-   cp .env.example .env
-   cp apps/web/.env.example apps/web/.env
+   # Root profiles (server-side / docker / api-gateway)
+   cp .env.pro.example .env.pro
+   cp .env.lite.example .env.lite
+
+   # Frontend profiles (VITE_* variables)
+   cp apps/web/.env.pro.example apps/web/.env.pro
+   cp apps/web/.env.lite.example apps/web/.env.lite
    ```
 
 3. **Get credentials from team**
@@ -112,13 +247,12 @@ These are protected by `.gitignore`:
    - Or use team's credential management system (1Password, etc.)
 
 4. **Fill in credentials**
-   - Edit `.env` and `apps/web/.env` with real values
+   - Edit `.env.pro`, `.env.lite`, `apps/web/.env.pro`, and `apps/web/.env.lite` with real values
    - Never commit these files
 
-5. **Run development**
-   ```bash
-   pnpm dev
-   ```
+5. **Run a version**
+   - `pnpm dev:pro` (creates `.env` / `apps/web/.env` from your PRO profiles)
+   - `pnpm dev:lite` (creates `.env` / `apps/web/.env` from your LITE profiles)
 
 ### Sharing New Services/Credentials
 
@@ -126,7 +260,9 @@ When adding new services or credentials:
 
 1. **Update templates only**
    ```bash
+   # Edit .env.example with new placeholder
    vim .env.example
+
    # Add: NEW_SERVICE_API_KEY=your-api-key-here
    ```
 
@@ -142,6 +278,12 @@ When adding new services or credentials:
    - Via password manager
    - Via secure credential storage
 
+4. **Team members update their personal configs**
+   ```bash
+   # Each team member updates their .env
+   echo "NEW_SERVICE_API_KEY=example_key_value" >> .env
+   ```
+
 ## CI/CD Considerations
 
 ### GitHub Actions
@@ -153,6 +295,8 @@ Use repository secrets instead of `.env` files:
 env:
   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
   STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+  ENABLE_COPILOT: true
+  ENABLE_REFERRALS: true
 ```
 
 ### Docker/Kubernetes
@@ -161,7 +305,7 @@ Pass environment variables at runtime:
 
 ```bash
 # Docker
-docker run -e OPENAI_API_KEY=... synthstack:latest
+docker run -e ENABLE_COPILOT=true -e ENABLE_COPILOT_RAG=false -e ENABLE_AI_AGENTS=false -e ENABLE_REFERRALS=false synthstack:lite
 
 # Kubernetes ConfigMap
 apiVersion: v1
@@ -169,7 +313,10 @@ kind: ConfigMap
 metadata:
   name: synthstack-config
 data:
-  NODE_ENV: "production"
+  ENABLE_COPILOT: "true"
+  ENABLE_COPILOT_RAG: "false"
+  ENABLE_AI_AGENTS: "false"
+  ENABLE_REFERRALS: "false"
 ```
 
 ## Troubleshooting
@@ -219,23 +366,33 @@ git push
 # Rotate all exposed credentials!
 ```
 
+### Issue: Package-level .env overriding root .env
+
+**This is by design!** Package-level environment files override root variables.
+
+**Solution:** Either:
+- Remove the package-level `.env` to use root config
+- Or understand that package config takes precedence
+
 ## Security Best Practices
 
-### DO
+### ✅ DO
 
 - Use `.env.example` templates with placeholders
 - Keep real credentials in `.env` (gitignored)
 - Rotate credentials if accidentally committed
 - Use different credentials for dev/staging/prod
 - Use password managers to share credentials
+- Set up credential rotation schedule
 
-### DON'T
+### ❌ DON'T
 
 - Commit `.env` files with real credentials
 - Share credentials via email/Slack unencrypted
 - Use production credentials in development
 - Reuse credentials across environments
 - Put credentials in code or scripts
+- Leave default/example credentials in production
 
 ## Resources
 
