@@ -23,7 +23,7 @@ pnpm install && docker compose up -d && pnpm dev:web
 
 ### Option B: Python FastAPI - Pro Edition 🔒
 
-> ⚠️ **Note:** Python backends are available in [SynthStack Pro](https://github.com/manicinc/synthstack-pro) only.
+> ⚠️ **Note:** Python backends are available in [SynthStack Pro](https://synthstack.app/pro) only.
 
 High-performance async Python backend. Drop-in replacement for TypeScript.
 
@@ -65,7 +65,7 @@ docker compose -f docker-compose.django.yml up -d
 | Edition | Repository | Best For |
 |---------|------------|----------|
 | **Community (Free)** | **[github.com/manicinc/synthstack](https://github.com/manicinc/synthstack)** | Side projects, learning, MVP |
-| **Pro (Premium)** | **[github.com/manicinc/synthstack-pro](https://github.com/manicinc/synthstack-pro)** _(Coming Soon)_ | Production apps, commercial use |
+| **Pro (Premium)** | **[synthstack.app/pro](https://synthstack.app/pro)** | Production apps, commercial use |
 
 ## 📄 License & Usage
 
