@@ -209,7 +209,7 @@ This site **dogfoods its own stack** - everything you see running on [synthstack
 
 ```bash
 # Static admin token for development
-Authorization: Bearer synthstack-static-admin-token-2024
+Authorization: Bearer replace-with-secure-token
 ```
 
 ### 📝 Directus CMS Details
@@ -272,7 +272,7 @@ Users matching `ADMIN_EMAIL` see an "Admin" page in the dashboard with:
 | Port | `5499` |
 | Database | `synthstack` |
 | User | `synthstack` |
-| Password | `synthstack_dev_2024` |
+| Password | `change-this-password` |
 
 ### Redis Cache
 

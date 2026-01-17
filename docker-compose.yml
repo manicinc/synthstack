@@ -19,7 +19,7 @@ services:
     environment:
       POSTGRES_DB: ${DB_DATABASE:-synthstack}
       POSTGRES_USER: ${DB_USER:-synthstack}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-synthstack_dev_2024}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-change-this-password}
     ports:
       - "5499:5432"
     volumes:
@@ -102,7 +102,7 @@ services:
       DB_PORT: 5432
       DB_DATABASE: ${DB_DATABASE:-synthstack}
       DB_USER: ${DB_USER:-synthstack}
-      DB_PASSWORD: ${DB_PASSWORD:-synthstack_dev_2024}
+      DB_PASSWORD: ${DB_PASSWORD:-change-this-password}
 
       # Cache
       CACHE_ENABLED: "true"
@@ -111,8 +111,8 @@ services:
 
       # Admin
       ADMIN_EMAIL: ${DIRECTUS_ADMIN_EMAIL:-admin@synthstack.app}
-      ADMIN_PASSWORD: ${DIRECTUS_ADMIN_PASSWORD:-SynthStack2024!}
-      ADMIN_TOKEN: ${DIRECTUS_ADMIN_TOKEN:-synthstack-static-admin-token-2024}
+      ADMIN_PASSWORD: ${DIRECTUS_ADMIN_PASSWORD:-change-this-password}
+      ADMIN_TOKEN: ${DIRECTUS_ADMIN_TOKEN:-replace-with-secure-token}
 
       # CORS
       PUBLIC_URL: ${DIRECTUS_PUBLIC_URL:-http://localhost:8099}
@@ -184,7 +184,7 @@ services:
       - .env
     environment:
       DIRECTUS_URL: http://directus:8055
-      DIRECTUS_ADMIN_TOKEN: ${DIRECTUS_ADMIN_TOKEN:-synthstack-static-admin-token-2024}
+      DIRECTUS_ADMIN_TOKEN: ${DIRECTUS_ADMIN_TOKEN:-replace-with-secure-token}
     depends_on:
       directus:
         condition: service_healthy
@@ -262,7 +262,7 @@ services:
       PGPORT: 5432
       PGDATABASE: ${DB_DATABASE:-synthstack}
       PGUSER: ${DB_USER:-synthstack}
-      PGPASSWORD: ${DB_PASSWORD:-synthstack_dev_2024}
+      PGPASSWORD: ${DB_PASSWORD:-change-this-password}
     depends_on:
       directus:
         condition: service_healthy
@@ -330,11 +330,11 @@ services:
       HOST: 0.0.0.0
 
       # Database
-      DATABASE_URL: postgresql://${DB_USER:-synthstack}:${DB_PASSWORD:-synthstack_dev_2024}@postgres:5432/${DB_DATABASE:-synthstack}
+      DATABASE_URL: postgresql://${DB_USER:-synthstack}:${DB_PASSWORD:-change-this-password}@postgres:5432/${DB_DATABASE:-synthstack}
 
       # Directus
       DIRECTUS_URL: http://directus:8055
-      DIRECTUS_TOKEN: ${DIRECTUS_ADMIN_TOKEN:-synthstack-static-admin-token-2024}
+      DIRECTUS_TOKEN: ${DIRECTUS_ADMIN_TOKEN:-replace-with-secure-token}
 
       # Supabase
       SUPABASE_URL: ${SUPABASE_URL}
@@ -397,7 +397,7 @@ services:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
 
       # Database (for RAG)
-      DATABASE_URL: postgresql://${DB_USER:-synthstack}:${DB_PASSWORD:-synthstack_dev_2024}@postgres:5432/${DB_DATABASE:-synthstack}
+      DATABASE_URL: postgresql://${DB_USER:-synthstack}:${DB_PASSWORD:-change-this-password}@postgres:5432/${DB_DATABASE:-synthstack}
 
       # Redis
       REDIS_URL: redis://redis:6379

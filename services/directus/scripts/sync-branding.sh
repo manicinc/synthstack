@@ -17,7 +17,7 @@ done
 echo "✅ Directus is ready"
 
 # Use admin token from environment
-TOKEN="${ADMIN_TOKEN:-synthstack-static-admin-token-2024}"
+TOKEN="${ADMIN_TOKEN:-replace-with-secure-token}"
 DIRECTUS_URL="http://localhost:8055"
 
 # Function to upload file and get ID

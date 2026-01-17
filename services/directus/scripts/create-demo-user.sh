@@ -3,7 +3,7 @@
 # This script should be run after Directus is fully initialized
 
 DIRECTUS_URL="${DIRECTUS_URL:-http://localhost:8055}"
-ADMIN_TOKEN="${DIRECTUS_ADMIN_TOKEN:-synthstack-static-admin-token-2024}"
+ADMIN_TOKEN="${DIRECTUS_ADMIN_TOKEN:-replace-with-secure-token}"
 DEMO_EMAIL="demo@synthstack.app"
 DEMO_PASSWORD="DemoUser2024!"
 
