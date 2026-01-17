@@ -240,7 +240,7 @@ docker compose up -d
 # Development - all services on localhost
 VITE_API_URL=http://localhost:3003
 VITE_DIRECTUS_URL=http://localhost:8099
-DATABASE_URL=postgresql://synthstack:synthstack_dev_2024@localhost:5499/synthstack
+DATABASE_URL=postgresql://synthstack:change-this-password@localhost:5499/synthstack
 REDIS_URL=redis://localhost:6399
 ML_SERVICE_URL=http://localhost:8001
 QDRANT_URL=http://localhost:6333

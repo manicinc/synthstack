@@ -294,7 +294,7 @@ docker compose ps
 # Database
 DB_DATABASE=synthstack
 DB_USER=synthstack
-DB_PASSWORD=synthstack_dev_2024
+DB_PASSWORD=change-this-password
 
 # Directus
 DIRECTUS_KEY=your-key
