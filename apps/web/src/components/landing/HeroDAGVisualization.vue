@@ -609,23 +609,28 @@ function getParticlePosition(edgeIndex: number, t: number) {
   --particle-opacity: 0.8;
 }
 
-// Light mode variable overrides - Premium white with dark text
+// Light mode variable overrides - Transparent with dark text
 :global(.body--light) .hero-dag-visualization {
-  --node-bg: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-  --node-border: rgba(0, 0, 0, 0.08);
+  --node-bg: transparent;
+  --node-border: transparent;
   --node-text: #1e293b;
   --node-icon: #334155;
-  --node-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.06),
-    0 2px 4px rgba(0, 0, 0, 0.03),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
-  --badge-bg: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-  --badge-border: rgba(0, 0, 0, 0.08);
-  --badge-text: #334155;
+  --node-shadow: none;
+  --badge-bg: rgba(99, 102, 241, 0.08);
+  --badge-border: rgba(99, 102, 241, 0.15);
+  --badge-text: #4f46e5;
   --glow-opacity: 0.06;
   --node-glow-opacity: 0.12;
   --edge-opacity: 0.3;
   --particle-opacity: 0.4;
+
+  .node-label {
+    backdrop-filter: none;
+
+    &::before {
+      display: none; // Hide arrow when transparent
+    }
+  }
 }
 
 .dag-labels {
