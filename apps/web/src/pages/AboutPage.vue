@@ -11,7 +11,7 @@
             mode: 'popover'
           }) : undefined"
         >
-          {{ page?.title || `About ${branding.name}` }}
+          {{ page?.title || 'About SynthStack' }}
         </h1>
         <p
           :data-directus="page ? editableAttr({
@@ -21,7 +21,7 @@
             mode: 'popover'
           }) : undefined"
         >
-          {{ page?.description || branding.description }}
+          {{ page?.description || 'Building the future of AI-powered development.' }}
         </p>
       </div>
     </section>
@@ -32,9 +32,9 @@
         <div class="catalog-copy">
           <h2>Public Catalog</h2>
           <p>
-            We maintain a public catalog of templates, workflow presets, and community resources.
-            It keeps examples transparent and makes it easy to jump into SynthStack with trusted
-            starting points.
+            We maintain a public catalog of community models, ready-to-use generation presets,
+            and scraped printer/filament specs. It keeps our recommendations transparent and
+            makes it easy to jump into the generator with trusted starting points.
           </p>
           <div class="catalog-actions">
             <q-btn
@@ -54,8 +54,8 @@
           <div class="badge">
             Open data
           </div>
-          <h3>Templates, presets, examples</h3>
-          <p>Curated building blocks you can adapt to your own product.</p>
+          <h3>Models, presets, specs</h3>
+          <p>CC-licensed where possible. Directus/Supabase ready for enterprise.</p>
         </div>
       </div>
     </section>
@@ -67,14 +67,15 @@
           <div class="mission-text">
             <h2>Our Mission</h2>
             <p>
-              We believe every builder deserves leverage — without weeks of wiring up the same
-              integrations, billing, and AI scaffolding. SynthStack helps teams ship AI-native
-              SaaS faster with a proven cross-platform foundation and deeply integrated agents.
+              We believe every maker deserves perfect prints without the frustration
+              of endless calibration and failed attempts. SynthStack uses cutting-edge
+              AI to analyze your models and generate optimized slicer profiles that
+              work the first time.
             </p>
             <p>
-              Founded in 2024 by a team of product engineers and AI practitioners, SynthStack is
-              designed to be rebranded, extended, and deployed anywhere — from side projects to
-              client work to production SaaS.
+              Founded in 2024 by a team of 3D printing enthusiasts and machine learning
+              engineers, we've helped generate over 50,000 successful print profiles
+              for makers around the world.
             </p>
           </div>
           <div class="mission-image">
@@ -101,7 +102,7 @@
               <q-icon name="auto_awesome" />
             </div>
             <h3>Innovation First</h3>
-            <p>We push the boundaries of what's possible with agentic, AI-first product development.</p>
+            <p>We push the boundaries of what's possible with AI-powered print optimization.</p>
           </div>
           <div class="value-card">
             <div class="value-icon">
@@ -122,7 +123,7 @@
               <q-icon name="all_inclusive" />
             </div>
             <h3>Accessibility</h3>
-            <p>AI development should be for everyone, not just experts. We lower the barrier.</p>
+            <p>3D printing should be for everyone, not just experts. We lower the barrier.</p>
           </div>
         </div>
       </div>
@@ -134,13 +135,84 @@
         <h2 class="section-title">
           The Team
         </h2>
-        <p class="section-subtitle">
-          Built by <a
-            href="https://manic.agency"
-            target="_blank"
-          >manic.agency</a> — 
-          a creative technology studio specializing in AI-powered tools and experiences.
-        </p>
+
+        <!-- Manic Agency CTA Card -->
+        <div class="agency-cta">
+          <div class="agency-glow" />
+          <div class="agency-content">
+            <div class="agency-logo">
+              <svg
+                viewBox="0 0 40 40"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  width="40"
+                  height="40"
+                  rx="10"
+                  fill="url(#agency-gradient)"
+                />
+                <path
+                  d="M12 28V12l8 8 8-8v16"
+                  stroke="white"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <defs>
+                  <linearGradient
+                    id="agency-gradient"
+                    x1="0"
+                    y1="0"
+                    x2="40"
+                    y2="40"
+                  >
+                    <stop stop-color="#6366f1" />
+                    <stop
+                      offset="1"
+                      stop-color="#00d4aa"
+                    />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div class="agency-text">
+              <span class="agency-prefix">A product by</span>
+              <a
+                href="https://manic.agency"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="agency-name"
+              >
+                manic<span class="dot">.</span>agency
+                <svg
+                  class="arrow"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                >
+                  <path
+                    d="M5 15L15 5M15 5H8M15 5V12"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+              <p class="agency-desc">
+                A creative technology studio specializing in AI-powered products,
+                automation tools, and digital experiences that scale.
+              </p>
+            </div>
+          </div>
+          <div class="agency-services">
+            <span class="service-tag">AI Products</span>
+            <span class="service-tag">SaaS Development</span>
+            <span class="service-tag">Automation</span>
+            <span class="service-tag">Cloud Architecture</span>
+          </div>
+        </div>
+
         <div class="team-grid">
           <div class="team-member">
             <div class="member-avatar">
@@ -165,12 +237,12 @@
           <div class="team-member">
             <div class="member-avatar">
               <q-icon
-                name="psychology"
+                name="print"
                 size="48px"
               />
             </div>
-            <h4>AI + Product</h4>
-            <p>Builders focused on agentic UX, RAG, automation, and shipping real products</p>
+            <h4>3D Printing Experts</h4>
+            <p>Makers with years of hands-on experience and knowledge</p>
           </div>
         </div>
       </div>
@@ -181,20 +253,20 @@
       <div class="section-container">
         <div class="stats-grid">
           <div class="stat">
-            <span class="stat-value">5</span>
-            <span class="stat-label">Platforms shipped</span>
+            <span class="stat-value">50K+</span>
+            <span class="stat-label">Profiles Generated</span>
           </div>
           <div class="stat">
-            <span class="stat-value">6</span>
-            <span class="stat-label">AI co-founders</span>
+            <span class="stat-value">300+</span>
+            <span class="stat-label">Supported Printers</span>
           </div>
           <div class="stat">
-            <span class="stat-value">3</span>
-            <span class="stat-label">Backend options</span>
+            <span class="stat-value">500+</span>
+            <span class="stat-label">Filaments Database</span>
           </div>
           <div class="stat">
-            <span class="stat-value">1500+</span>
-            <span class="stat-label">Tests included</span>
+            <span class="stat-value">85%</span>
+            <span class="stat-label">First-Print Success</span>
           </div>
         </div>
       </div>
@@ -227,7 +299,6 @@
 import { ref, onMounted } from 'vue'
 import { usePages, type Page } from '@/composables/usePages'
 import { useVisualEditing } from '@/composables/useVisualEditing'
-import { branding } from '@/config/branding'
 
 const { fetchPage } = usePages()
 const { editableAttr } = useVisualEditing()
@@ -481,21 +552,171 @@ onMounted(async () => {
   padding: var(--section-padding);
   text-align: center;
   background: var(--color-bg-secondary);
-  
+
   h2 {
     margin: 0 0 12px;
     font-size: 2rem;
   }
-  
+
   p {
     margin: 0 0 32px;
     color: var(--color-text-secondary);
   }
-  
+
   .cta-buttons {
     display: flex;
     gap: 16px;
     justify-content: center;
+  }
+}
+
+// Manic Agency CTA Card
+.agency-cta {
+  position: relative;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: 32px;
+  margin-bottom: 48px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    border-color: rgba(99, 102, 241, 0.4);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(99, 102, 241, 0.15);
+
+    .agency-glow {
+      opacity: 1;
+    }
+
+    .arrow {
+      transform: translate(4px, -4px);
+    }
+
+    .agency-logo svg {
+      transform: rotate(-5deg) scale(1.05);
+    }
+  }
+}
+
+.agency-glow {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at center,
+    rgba(99, 102, 241, 0.08) 0%,
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.agency-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.agency-logo {
+  flex-shrink: 0;
+
+  svg {
+    width: 56px;
+    height: 56px;
+    transition: transform 0.4s ease;
+  }
+}
+
+.agency-text {
+  flex: 1;
+}
+
+.agency-prefix {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+.agency-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+
+  .dot {
+    color: #00d4aa;
+  }
+
+  .arrow {
+    width: 20px;
+    height: 20px;
+    color: #6366f1;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    color: #6366f1;
+  }
+}
+
+.agency-desc {
+  margin: 12px 0 0;
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  max-width: 500px;
+}
+
+.agency-services {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.service-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: 100px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #6366f1;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.3);
+  }
+}
+
+@media (max-width: 600px) {
+  .agency-content {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .agency-name {
+    font-size: 1.5rem;
   }
 }
 

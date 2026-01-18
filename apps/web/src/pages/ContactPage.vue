@@ -64,7 +64,66 @@
           <!-- Contact Info -->
           <div class="contact-info">
             <h2>Other Ways to Reach Us</h2>
-            
+
+            <!-- Agency Card -->
+            <div class="agency-card">
+              <div class="agency-card-header">
+                <div class="agency-icon">
+                  <svg
+                    viewBox="0 0 32 32"
+                    fill="none"
+                  >
+                    <rect
+                      width="32"
+                      height="32"
+                      rx="8"
+                      fill="url(#contact-gradient)"
+                    />
+                    <path
+                      d="M10 22V10l6 6 6-6v12"
+                      stroke="white"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <defs>
+                      <linearGradient
+                        id="contact-gradient"
+                        x1="0"
+                        y1="0"
+                        x2="32"
+                        y2="32"
+                      >
+                        <stop stop-color="#6366f1" />
+                        <stop
+                          offset="1"
+                          stop-color="#00d4aa"
+                        />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </div>
+                <div>
+                  <span class="agency-label">SynthStack is built by</span>
+                  <a
+                    href="https://manic.agency"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="agency-link"
+                  >
+                    manic<span class="dot">.</span>agency
+                    <q-icon
+                      name="north_east"
+                      size="14px"
+                    />
+                  </a>
+                </div>
+              </div>
+              <p class="agency-card-desc">
+                A creative technology studio in Henderson, NV. We build AI-powered products and help businesses automate.
+              </p>
+            </div>
+
             <div class="info-cards">
               <div class="info-card">
                 <q-icon
@@ -75,7 +134,7 @@
                 <p>For general inquiries</p>
                 <a href="mailto:team@manic.agency">team@manic.agency</a>
               </div>
-              
+
               <div class="info-card">
                 <q-icon
                   name="support_agent"
@@ -85,7 +144,7 @@
                 <p>Technical support tickets</p>
                 <a href="mailto:support@synthstack.app">support@synthstack.app</a>
               </div>
-              
+
               <div class="info-card">
                 <q-icon
                   name="mdi-discord"
@@ -98,7 +157,7 @@
                   target="_blank"
                 >discord.gg/synthstack</a>
               </div>
-              
+
               <div class="info-card">
                 <q-icon
                   name="mdi-twitter"
@@ -107,9 +166,9 @@
                 <h3>Twitter</h3>
                 <p>Follow for updates</p>
                 <a
-                  href="https://twitter.com/synthstack"
+                  href="https://twitter.com/manicinc"
                   target="_blank"
-                >@synthstack</a>
+                >@manicinc</a>
               </div>
             </div>
 
@@ -250,6 +309,82 @@ async function submitForm() {
     margin: 0 0 24px;
     font-size: 1.5rem;
   }
+}
+
+// Agency Card
+.agency-card {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(0, 212, 170, 0.05) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: rgba(99, 102, 241, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.12);
+  }
+}
+
+.agency-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.agency-icon {
+  flex-shrink: 0;
+
+  svg {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.agency-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.agency-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+  transition: color 0.2s ease;
+
+  .dot {
+    color: #00d4aa;
+  }
+
+  .q-icon {
+    color: #6366f1;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover {
+    color: #6366f1;
+
+    .q-icon {
+      transform: translate(2px, -2px);
+    }
+  }
+}
+
+.agency-card-desc {
+  margin: 12px 0 0;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
 }
 
 .info-cards {

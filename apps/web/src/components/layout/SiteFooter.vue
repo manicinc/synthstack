@@ -110,14 +110,28 @@
           </a>
         </div>
       </div>
+
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <div class="footer-legal">
+          <p>&copy; {{ currentYear }} {{ company.legalName }}. All rights reserved.</p>
+        </div>
+        <div class="footer-made-by">
+          <ManicAgencyBadge />
+        </div>
+      </div>
     </div>
   </footer>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useBranding } from '@/composables/useBranding'
+import ManicAgencyBadge from '@/components/common/ManicAgencyBadge.vue'
 
-const { name, tagline, mark, social, links, legal } = useBranding()
+const { name, tagline, mark, social, links, legal, company } = useBranding()
+
+const currentYear = computed(() => new Date().getFullYear())
 </script>
 
 <style scoped lang="scss">
@@ -205,5 +219,34 @@ const { name, tagline, mark, social, links, legal } = useBranding()
 .icon {
   font-size: 0.8rem;
   opacity: 0.8;
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  margin-top: 20px;
+  border-top: 1px solid var(--lp-border, #e0e0e0);
+  flex-wrap: wrap;
+  gap: 16px;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.footer-legal {
+  p {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--lp-text-secondary, #555);
+  }
+}
+
+.footer-made-by {
+  display: flex;
+  align-items: center;
 }
 </style>
