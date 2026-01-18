@@ -663,19 +663,19 @@ import { useQuasar } from 'quasar'
 import projectConfig from '@/config/project-config'
 
 import rootEnvTemplate from '../../../../../.env.example?raw'
-import webEnvTemplate from '../../../.env.example?raw'
 import apiEnvTemplate from '../../../../../packages/api-gateway/.env.example?raw'
 
 // Optional Pro/Lite templates - only exist in pro edition
 // Use Vite's import.meta.glob to optionally import these files
+// Note: Web env is now consolidated with root env (no separate apps/web/.env.example)
 const rootEnvFiles = import.meta.glob('../../../../../.env.*.example', { query: '?raw', eager: true, import: 'default' }) as Record<string, string>
-const webEnvFiles = import.meta.glob('../../../.env.*.example', { query: '?raw', eager: true, import: 'default' }) as Record<string, string>
 
 // Fall back to main template if pro/lite templates don't exist
 const rootEnvLiteTemplate = rootEnvFiles['../../../../../.env.lite.example'] ?? rootEnvTemplate
 const rootEnvProTemplate = rootEnvFiles['../../../../../.env.pro.example'] ?? rootEnvTemplate
-const webEnvLiteTemplate = webEnvFiles['../../../.env.lite.example'] ?? webEnvTemplate
-const webEnvProTemplate = webEnvFiles['../../../.env.pro.example'] ?? webEnvTemplate
+// Web uses the same templates as root (env files consolidated to monorepo root)
+const webEnvLiteTemplate = rootEnvLiteTemplate
+const webEnvProTemplate = rootEnvProTemplate
 
 defineEmits<{
   (e: 'done'): void
@@ -822,7 +822,7 @@ const rendered = computed(() => {
   const rootTemplateToUse = activeTemplates.value.root || rootEnvTemplate
   const root = applyEnvTemplate(rootTemplateToUse, normalized)
 
-  const webTemplateToUse = activeTemplates.value.web || webEnvTemplate
+  const webTemplateToUse = activeTemplates.value.web || rootEnvTemplate
   const web = applyEnvTemplate(webTemplateToUse, normalized)
 
   const api = applyEnvTemplate(apiEnvTemplate, normalized)
