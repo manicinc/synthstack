@@ -18,7 +18,21 @@
     "subscription": "订阅",
     "login": "登录",
     "signup": "注册",
-    "logout": "退出"
+    "logout": "退出",
+    "docs": "文档",
+    "github": "GitHub",
+    "resources": "资源",
+    "about": "关于",
+    "blog": "博客",
+    "documentation": "文档",
+    "contact": "联系我们",
+    "discord": "Discord",
+    "admin": "管理",
+    "adminPanel": "管理面板",
+    "menu": "菜单",
+    "signIn": "登录",
+    "getStarted": "开始",
+    "getStartedFree": "免费开始"
   },
   "landing": {
     "hero": {
@@ -51,7 +65,7 @@
         "crossPlatform": "跨平台",
         "license": "社区许可（修改版MIT）"
       },
-      "github": {
+      "githubBtn": {
         "label": "在GitHub上点星"
       },
       "note": "AI Co-Founders是一个高级附加组件，为您的SynthStack提供6个专业AI代理。"

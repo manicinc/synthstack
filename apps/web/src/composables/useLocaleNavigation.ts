@@ -12,13 +12,16 @@ export function useLocaleNavigation() {
   const route = useRoute()
 
   // Get the current locale prefix from route params
+  // Safety check: route may be undefined if called before router is ready
   const currentLocalePrefix = computed(() => {
-    const locale = route.params.locale as string
+    if (!route) return ''
+    const locale = route.params?.locale as string
     return locale || ''
   })
 
   // Check if route name matches (with or without -locale suffix)
   function isRouteName(name: string): boolean {
+    if (!route) return false
     const routeName = route.name?.toString() || ''
     return routeName === name || routeName === `${name}-locale`
   }

@@ -761,50 +761,6 @@ function getCategoryLabel(category: string) {
   font-weight: 500;
 }
 
-// Light mode
-:global(.body--light) {
-  .showcase-header h2 {
-    color: #1e293b;
-  }
-
-  .showcase-header p {
-    color: #475569;
-  }
-
-  .bg-gradient {
-    background: radial-gradient(ellipse 70% 50% at 50% 100%, rgba(139, 92, 246, 0.06) 0%, transparent 60%);
-  }
-
-  .theme-card {
-    background: rgba(255, 255, 255, 0.9);
-    border-color: rgba(0, 0, 0, 0.08);
-
-    &:hover {
-      background: #fff;
-    }
-
-    &.is-active {
-      background: rgba(139, 92, 246, 0.1);
-    }
-  }
-
-  .theme-name {
-    color: #1e293b;
-  }
-
-  .theme-category {
-    color: #64748b;
-  }
-
-  .features-row {
-    background: rgba(0, 0, 0, 0.02);
-    border-color: rgba(0, 0, 0, 0.08);
-  }
-
-  .feature-item {
-    color: #334155;
-  }
-}
 
 // Reduced motion
 @media (prefers-reduced-motion: reduce) {
@@ -816,4 +772,63 @@ function getCategoryLabel(category: string) {
 }
 </style>
 
+<!-- Unscoped light mode styles - must be separate to work properly with theme switching -->
+<style lang="scss">
+.body--light {
+  .theme-showcase {
+    .showcase-header h2 {
+      color: #1e293b !important;
+    }
 
+    .showcase-header p {
+      color: #475569 !important;
+    }
+
+    .bg-gradient {
+      background: radial-gradient(ellipse 70% 50% at 50% 100%, rgba(139, 92, 246, 0.06) 0%, transparent 60%) !important;
+    }
+
+    .bg-pattern {
+      background-image:
+        linear-gradient(to right, rgba(139, 92, 246, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(139, 92, 246, 0.05) 1px, transparent 1px) !important;
+    }
+
+    .theme-card {
+      background: rgba(255, 255, 255, 0.9) !important;
+      border-color: rgba(0, 0, 0, 0.1) !important;
+
+      &:hover {
+        background: #ffffff !important;
+        border-color: rgba(0, 0, 0, 0.15) !important;
+      }
+
+      &.is-active {
+        background: rgba(139, 92, 246, 0.1) !important;
+        border-color: rgba(139, 92, 246, 0.4) !important;
+      }
+    }
+
+    .swatch {
+      border-color: rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .theme-name {
+      color: #1e293b !important;
+    }
+
+    .theme-category {
+      color: #64748b !important;
+    }
+
+    .features-row {
+      background: rgba(0, 0, 0, 0.03) !important;
+      border-color: rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .feature-item {
+      color: #334155 !important;
+    }
+  }
+}
+</style>

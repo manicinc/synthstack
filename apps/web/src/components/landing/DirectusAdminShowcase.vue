@@ -589,88 +589,6 @@ const currentPanel = computed(() => panels.find(p => p.id === activePanel.value)
   font-weight: 500;
 }
 
-// Light mode
-:global(.body--light) {
-  .showcase-header h2 {
-    color: #1e293b;
-  }
-
-  .showcase-header p {
-    color: #475569;
-  }
-
-  .bg-gradient {
-    background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 60%);
-  }
-
-  .bg-dots {
-    background-image: radial-gradient(rgba(99, 102, 241, 0.1) 1px, transparent 1px);
-  }
-
-  .panel-tab {
-    background: rgba(255, 255, 255, 0.7);
-    border-color: rgba(0, 0, 0, 0.06);
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.9);
-      border-color: rgba(0, 0, 0, 0.1);
-    }
-
-    &.is-active {
-      background: rgba(255, 255, 255, 0.95);
-      box-shadow: 0 0 24px rgba(var(--panel-color), 0.2), 0 8px 16px rgba(0, 0, 0, 0.1);
-    }
-  }
-
-  .tab-name {
-    color: #334155;
-  }
-
-  .tab-desc {
-    color: #64748b;
-  }
-
-  .browser-frame {
-    background: rgba(255, 255, 255, 0.8);
-    border-color: rgba(0, 0, 0, 0.08);
-    box-shadow:
-      0 0 40px rgba(99, 102, 241, 0.1),
-      0 25px 50px -12px rgba(0, 0, 0, 0.15);
-
-    &::before {
-      background: linear-gradient(90deg,
-        transparent 0%,
-        rgba(99, 102, 241, 0.3) 30%,
-        rgba(236, 72, 153, 0.3) 70%,
-        transparent 100%
-      );
-    }
-  }
-
-  .browser-header {
-    background: rgba(248, 250, 252, 0.8);
-    border-color: rgba(0, 0, 0, 0.06);
-  }
-
-  .browser-address {
-    background: rgba(0, 0, 0, 0.04);
-    color: #64748b;
-  }
-
-  .browser-actions {
-    color: #94a3b8;
-  }
-
-  .feature-tag {
-    background: rgba(255, 255, 255, 0.7);
-    border-color: rgba(0, 0, 0, 0.08);
-    color: #475569;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.9);
-    }
-  }
-}
 
 // Reduced motion
 @media (prefers-reduced-motion: reduce) {
@@ -681,4 +599,81 @@ const currentPanel = computed(() => panels.find(p => p.id === activePanel.value)
 }
 </style>
 
+<!-- Unscoped light mode styles - must be separate to work properly with theme switching -->
+<style lang="scss">
+.body--light {
+  .directus-showcase {
+    .showcase-header h2 {
+      color: #1e293b !important;
+    }
 
+    .showcase-header p {
+      color: #475569 !important;
+    }
+
+    .bg-gradient {
+      background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 60%) !important;
+    }
+
+    .bg-dots {
+      background-image: radial-gradient(rgba(99, 102, 241, 0.1) 1px, transparent 1px) !important;
+    }
+
+    .panel-tab {
+      background: rgba(255, 255, 255, 0.85) !important;
+      border-color: rgba(0, 0, 0, 0.08) !important;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.95) !important;
+        border-color: rgba(0, 0, 0, 0.12) !important;
+      }
+
+      &.is-active {
+        background: #ffffff !important;
+        box-shadow: 0 0 24px rgba(99, 102, 241, 0.15), 0 8px 16px rgba(0, 0, 0, 0.08) !important;
+      }
+    }
+
+    .tab-name {
+      color: #334155 !important;
+    }
+
+    .tab-desc {
+      color: #64748b !important;
+    }
+
+    .browser-frame {
+      background: rgba(255, 255, 255, 0.9) !important;
+      border-color: rgba(0, 0, 0, 0.1) !important;
+      box-shadow:
+        0 0 40px rgba(99, 102, 241, 0.1),
+        0 25px 50px -12px rgba(0, 0, 0, 0.12) !important;
+    }
+
+    .browser-header {
+      background: rgba(248, 250, 252, 0.95) !important;
+      border-color: rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .browser-address {
+      background: rgba(0, 0, 0, 0.05) !important;
+      color: #64748b !important;
+    }
+
+    .browser-actions {
+      color: #94a3b8 !important;
+    }
+
+    .feature-tag {
+      background: rgba(255, 255, 255, 0.85) !important;
+      border-color: rgba(0, 0, 0, 0.1) !important;
+      color: #475569 !important;
+
+      &:hover {
+        background: #ffffff !important;
+        color: #1e293b !important;
+      }
+    }
+  }
+}
+</style>

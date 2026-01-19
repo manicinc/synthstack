@@ -386,7 +386,7 @@ function sleep(ms: number): Promise<void> {
 }
 
 function focusInput() {
-  inputRef.value?.focus()
+  inputRef.value?.focus({ preventScroll: true })
 }
 
 function scrollToBottom() {
@@ -490,7 +490,6 @@ watch([bootLines, history, currentStep], () => {
             autocomplete="off"
             @keydown="handleKeyDown"
           />
-          <span class="cursor-blink">█</span>
         </div>
         <div class="hint-text">(default: {{ currentStepInfo.placeholder }})</div>
       </div>
@@ -833,7 +832,6 @@ watch([bootLines, history, currentStep], () => {
   font-size: inherit;
   outline: none;
   caret-color: #6366f1;
-  min-width: 0;
 
   &::placeholder {
     color: #4b5563;
@@ -842,16 +840,6 @@ watch([bootLines, history, currentStep], () => {
   &:focus {
     outline: none;
   }
-}
-
-.cursor-blink {
-  color: #6366f1;
-  animation: blink 1s step-end infinite;
-}
-
-// Hide fake cursor when input is focused (native caret shows instead)
-.input-row:has(.terminal-input:focus) .cursor-blink {
-  display: none;
 }
 
 .hint-text {

@@ -18,7 +18,21 @@
     "subscription": "Subscription",
     "login": "Log In",
     "signup": "Sign Up",
-    "logout": "Log Out"
+    "logout": "Log Out",
+    "docs": "Docs",
+    "github": "GitHub",
+    "resources": "Resources",
+    "about": "About",
+    "blog": "Blog",
+    "documentation": "Documentation",
+    "contact": "Contact",
+    "discord": "Discord",
+    "admin": "Admin",
+    "adminPanel": "Admin Panel",
+    "menu": "Menu",
+    "signIn": "Sign In",
+    "getStarted": "Get Started",
+    "getStartedFree": "Get Started Free"
   },
   "landing": {
     "hero": {
@@ -51,7 +65,7 @@
         "crossPlatform": "Cross-Platform",
         "license": "Community License (modified MIT)"
       },
-      "github": {
+      "githubBtn": {
         "label": "Star on GitHub"
       },
       "note": "AI Co-Founders is a premium add-on that supercharges your SynthStack with 6 specialized AI agents."

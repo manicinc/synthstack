@@ -13,6 +13,9 @@ const themeStore = useThemeStore()
 
 const isCalmLightMode = computed(() => !themeStore.isDark)
 
+// In light mode, completely disable heavy features for performance
+const disableHeavyEffects = computed(() => !themeStore.isDark)
+
 // Computed fill color for node inner circle - adapts to light/dark mode
 const nodeInnerFill = computed(() =>
   themeStore.isDark ? 'rgba(10, 10, 26, 0.8)' : '#ffffff'
@@ -117,8 +120,9 @@ const reduceMotionHandler = (e: MediaQueryListEvent) => {
   prefersReducedMotion.value = e.matches
 }
 
+// Disable particles in light mode AND when heavy effects are off
 const shouldAnimateParticles = computed(() =>
-  !prefersReducedMotion.value && !isCalmLightMode.value
+  !prefersReducedMotion.value && !isCalmLightMode.value && !disableHeavyEffects.value
 )
 
 function createParticle() {
@@ -227,8 +231,8 @@ function getParticlePosition(edgeIndex: number, t: number) {
     :class="{ 'calm-light': isCalmLightMode }"
     @mousemove="handleMouseMove"
   >
-    <!-- Background glow effects -->
-    <div class="dag-glow-layer">
+    <!-- Background glow effects - hidden in light mode for performance -->
+    <div v-if="!disableHeavyEffects" class="dag-glow-layer">
       <div class="glow-orb orb-1" />
       <div class="glow-orb orb-2" />
       <div class="glow-orb orb-3" />
@@ -325,7 +329,7 @@ function getParticlePosition(edgeIndex: number, t: number) {
         </pattern>
       </defs>
 
-      <!-- Edge connections -->
+      <!-- Edge connections - always visible, simplified in light mode -->
       <g class="edges-layer">
         <path
           v-for="(edge, index) in edgePaths"
@@ -333,13 +337,14 @@ function getParticlePosition(edgeIndex: number, t: number) {
           :d="edge.path"
           class="dag-edge"
           fill="none"
-          stroke="url(#edgeGradient)"
-          stroke-width="0.3"
+          :stroke="disableHeavyEffects ? '#94a3b8' : 'url(#edgeGradient)'"
+          :stroke-width="disableHeavyEffects ? 0.4 : 0.3"
           stroke-linecap="round"
         />
-        
-        <!-- Animated flow lines -->
+
+        <!-- Animated flow lines - only in dark mode -->
         <path
+          v-if="!disableHeavyEffects"
           v-for="(edge, index) in edgePaths"
           :key="`flow-${index}`"
           :d="edge.path"
@@ -353,8 +358,8 @@ function getParticlePosition(edgeIndex: number, t: number) {
         />
       </g>
 
-      <!-- Data particles -->
-      <g class="particles-layer">
+      <!-- Data particles - only render in dark mode for performance -->
+      <g v-if="!disableHeavyEffects" class="particles-layer">
         <circle
           v-for="particle in particles"
           :key="particle.id"
@@ -362,12 +367,11 @@ function getParticlePosition(edgeIndex: number, t: number) {
           :cy="getParticlePosition(particle.edgeIndex, particle.progress).y"
           r="0.6"
           fill="#00d4aa"
-          filter="url(#particleGlow)"
           class="data-particle"
         />
       </g>
 
-      <!-- Nodes -->
+      <!-- Nodes - simplified in light mode -->
       <g class="nodes-layer">
         <g
           v-for="node in nodes"
@@ -375,30 +379,32 @@ function getParticlePosition(edgeIndex: number, t: number) {
           class="dag-node"
           :transform="`translate(${node.x}, ${node.y})`"
         >
-          <!-- Node glow -->
+          <!-- Node glow - only in dark mode -->
           <circle
+            v-if="!disableHeavyEffects"
             r="4"
             :fill="node.glowColor"
             class="node-glow"
           />
-          
-          <!-- Node background -->
+
+          <!-- Node background - only in dark mode -->
           <circle
+            v-if="!disableHeavyEffects"
             r="3"
             :fill="node.color"
             class="node-bg"
             filter="url(#glow)"
           />
-          
-          <!-- Node inner - fill adapts to light/dark mode -->
+
+          <!-- Node inner circle - white in light mode -->
           <circle
             r="2.5"
             :fill="nodeInnerFill"
-            stroke-width="0.2"
+            :stroke-width="disableHeavyEffects ? 0.4 : 0.3"
             :stroke="node.color"
           />
-          
-          <!-- Node icon placeholder (using text for SVG) -->
+
+          <!-- Node icon -->
           <text
             text-anchor="middle"
             dominant-baseline="central"
@@ -417,14 +423,17 @@ function getParticlePosition(edgeIndex: number, t: number) {
       class="dag-labels"
       :style="parallaxStyle"
     >
-      <div 
-        v-for="node in nodes" 
+      <div
+        v-for="node in nodes"
         :key="`label-${node.id}`"
         class="node-label"
         :style="{
           left: `${node.x}%`,
           top: `${node.y + 8}%`,
-          '--node-color': node.color
+          '--node-color': node.color,
+          background: disableHeavyEffects ? '#ffffff' : undefined,
+          backdropFilter: disableHeavyEffects ? 'none' : undefined,
+          boxShadow: disableHeavyEffects ? '0 1px 4px rgba(0,0,0,0.1)' : undefined
         }"
       >
         <q-icon
@@ -432,14 +441,21 @@ function getParticlePosition(edgeIndex: number, t: number) {
           size="12px"
           :style="{ color: node.color }"
         />
-        <span>{{ node.label }}</span>
+        <span :style="{ color: disableHeavyEffects ? '#1a1a2e' : undefined }">{{ node.label }}</span>
       </div>
     </div>
 
     <!-- Tech badge -->
-    <div class="langgraph-badge">
-      <span class="badge-icon">⬡</span>
-      <span class="badge-text">Powered by LangGraph</span>
+    <div
+      class="langgraph-badge"
+      :style="{
+        background: disableHeavyEffects ? '#ffffff' : undefined,
+        backdropFilter: disableHeavyEffects ? 'none' : undefined,
+        boxShadow: disableHeavyEffects ? '0 1px 4px rgba(0,0,0,0.1)' : undefined
+      }"
+    >
+      <span class="badge-icon" :style="{ color: disableHeavyEffects ? '#6366f1' : undefined }">⬡</span>
+      <span class="badge-text" :style="{ color: disableHeavyEffects ? '#1a1a2e' : undefined }">Powered by LangGraph</span>
     </div>
   </div>
 </template>
@@ -609,27 +625,37 @@ function getParticlePosition(edgeIndex: number, t: number) {
   --particle-opacity: 0.8;
 }
 
-// Light mode variable overrides - Transparent with dark text
+// Light mode - clean, performant, no heavy effects
 :global(.body--light) .hero-dag-visualization {
-  --node-bg: transparent;
-  --node-border: transparent;
+  --node-bg: #ffffff;
+  --node-border: rgba(0, 0, 0, 0.08);
   --node-text: #1e293b;
   --node-icon: #334155;
-  --node-shadow: none;
+  --node-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   --badge-bg: rgba(99, 102, 241, 0.08);
   --badge-border: rgba(99, 102, 241, 0.15);
   --badge-text: #4f46e5;
-  --glow-opacity: 0.06;
-  --node-glow-opacity: 0.12;
-  --edge-opacity: 0.3;
-  --particle-opacity: 0.4;
+  --glow-opacity: 0;
+  --node-glow-opacity: 0;
+  --edge-opacity: 0.25;
+  --particle-opacity: 0;
 
+  // Remove backdrop-filter for performance
   .node-label {
     backdrop-filter: none;
+    background: #ffffff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  }
 
-    &::before {
-      display: none; // Hide arrow when transparent
-    }
+  .langgraph-badge {
+    backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.95);
+  }
+
+  // Disable ALL animations in light mode
+  * {
+    animation: none !important;
+    transition: none !important;
   }
 }
 

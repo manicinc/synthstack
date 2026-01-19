@@ -928,19 +928,40 @@ pre {
   outline-offset: 2px;
 }
 
-// Skip link for keyboard navigation
+// Skip link for keyboard navigation (accessibility)
+// Hidden by default using clip-rect (screen reader accessible), visible only on focus/tab
 .skip-link {
-  position: absolute;
-  top: -100px;
-  left: 0;
-  background: var(--color-primary);
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+  background: var(--color-primary, #6366f1);
   color: white;
-  padding: var(--space-2) var(--space-4);
-  z-index: 9999;
-  transition: top 0.2s;
+  text-decoration: none;
+  font-weight: 600;
+  z-index: 99999;
 
-  &:focus {
-    top: 0;
+  &:focus,
+  &:focus-visible {
+    position: absolute !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 12px 24px !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
+    top: 8px;
+    left: 8px;
+    border-radius: 8px;
+    outline: 3px solid white;
+    outline-offset: 2px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -1082,9 +1103,7 @@ body.body--light {
     background-clip: initial !important;
     -webkit-text-fill-color: currentColor !important;
     animation: none !important;
-  }
-
-  // Landing page: disable backdrop-filter effects in light mode (can cause flicker in Chrome).
+  }  // Landing page: disable backdrop-filter effects in light mode (can cause flicker in Chrome).
   .landing-page {
     .glass,
     .glass-subtle,

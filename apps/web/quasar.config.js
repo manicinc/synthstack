@@ -70,12 +70,15 @@ export default configure(function (ctx) {
 
       // Vite plugins
       vitePlugins: [
-        ['@intlify/unplugin-vue-i18n/vite', {
-          include: [path.resolve(__dirname, './src/i18n/locales/**/*.json')],
-          runtimeOnly: false,
-          compositionOnly: true,
-          strictMessage: false
-        }]
+        // DISABLED: The unplugin-vue-i18n plugin pre-compiles JSON to AST format,
+        // which conflicts with direct JSON imports in src/i18n/index.ts.
+        // The i18n module manually imports and registers locale files.
+        // ['@intlify/unplugin-vue-i18n/vite', {
+        //   include: [path.resolve(__dirname, './src/i18n/locales/**/*.json')],
+        //   runtimeOnly: false,
+        //   compositionOnly: true,
+        //   strictMessage: false
+        // }]
       ],
 
       // Environment variables
@@ -121,7 +124,7 @@ export default configure(function (ctx) {
       minify: ctx.prod ? 'esbuild' : false,
       sourcemap: ctx.dev,
       extractCSS: ctx.prod,
-      
+
       // Vite config
       extendViteConf(viteConf, { isClient, isServer }) {
         viteConf.server = {

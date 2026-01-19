@@ -18,7 +18,21 @@
     "subscription": "サブスクリプション",
     "login": "ログイン",
     "signup": "新規登録",
-    "logout": "ログアウト"
+    "logout": "ログアウト",
+    "docs": "ドキュメント",
+    "github": "GitHub",
+    "resources": "リソース",
+    "about": "概要",
+    "blog": "ブログ",
+    "documentation": "ドキュメント",
+    "contact": "お問い合わせ",
+    "discord": "Discord",
+    "admin": "管理",
+    "adminPanel": "管理パネル",
+    "menu": "メニュー",
+    "signIn": "ログイン",
+    "getStarted": "始める",
+    "getStartedFree": "無料で始める"
   },
   "landing": {
     "hero": {
@@ -51,7 +65,7 @@
         "crossPlatform": "クロスプラットフォーム",
         "license": "コミュニティライセンス（修正MIT）"
       },
-      "github": {
+      "githubBtn": {
         "label": "GitHubでスターを付ける"
       },
       "note": "AI Co-Foundersは、6つの専門AIエージェントでSynthStackをパワーアップするプレミアムアドオンです。"

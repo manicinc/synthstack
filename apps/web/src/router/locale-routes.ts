@@ -76,23 +76,53 @@ export function isValidLocalePrefix(prefix: string): boolean {
 }
 
 /**
+ * Recursively update route names to avoid conflicts with English routes
+ * Prefixes all named routes with 'locale-' to make them unique
+ *
+ * This is necessary because Vue Router requires unique route names.
+ * Without this, locale-wrapped routes would overwrite English routes
+ * that share the same name.
+ */
+function prefixRouteNames(route: RouteRecordRaw): RouteRecordRaw {
+  const updated: RouteRecordRaw = { ...route };
+
+  // Prefix the route name if it has one
+  if (updated.name) {
+    updated.name = `locale-${String(updated.name)}`;
+  }
+
+  // Recursively update children
+  if (updated.children) {
+    updated.children = updated.children.map(child => prefixRouteNames(child));
+  }
+
+  return updated;
+}
+
+/**
  * Wrap routes with a locale prefix parameter
  * Adds /:locale(en|es|fr|de|zh|ja) prefix to all top-level routes
+ *
+ * IMPORTANT: Route names are prefixed with 'locale-' to avoid conflicts
+ * if the same routes are also defined without locale prefix.
  *
  * @param routes - Array of route records to wrap
  * @returns Routes with locale parameter added
  */
 export function wrapWithLocale(routes: RouteRecordRaw[]): RouteRecordRaw[] {
   return routes.map(route => {
+    // First prefix all names to avoid duplicates
+    const prefixedRoute = prefixRouteNames(route);
+
     // Only wrap routes with absolute paths (top-level routes)
-    if (route.path.startsWith('/')) {
+    if (prefixedRoute.path.startsWith('/')) {
       return {
-        ...route,
-        path: `/:locale(${VALID_LOCALE_PATTERN})${route.path}`,
+        ...prefixedRoute,
+        path: `/:locale(${VALID_LOCALE_PATTERN})${prefixedRoute.path}`,
       };
     }
     // Keep relative paths unchanged (child routes)
-    return route;
+    return prefixedRoute;
   });
 }
 
@@ -100,18 +130,25 @@ export function wrapWithLocale(routes: RouteRecordRaw[]): RouteRecordRaw[] {
  * Wrap routes with non-English locale prefix only
  * English is served at / without prefix, other locales use /:locale/
  *
+ * IMPORTANT: Route names are prefixed with 'locale-' to avoid conflicts
+ * with the English routes. Vue Router requires unique route names.
+ *
  * @param routes - Array of route records to wrap
  * @returns Routes with locale parameter added (non-English only)
  */
 export function wrapWithNonEnglishLocale(routes: RouteRecordRaw[]): RouteRecordRaw[] {
   return routes.map(route => {
-    if (route.path.startsWith('/')) {
+    // First prefix all names to avoid duplicates
+    const prefixedRoute = prefixRouteNames(route);
+
+    // Then add the locale prefix to the path
+    if (prefixedRoute.path.startsWith('/')) {
       return {
-        ...route,
-        path: `/:locale(${NON_ENGLISH_LOCALE_PATTERN})${route.path}`,
+        ...prefixedRoute,
+        path: `/:locale(${NON_ENGLISH_LOCALE_PATTERN})${prefixedRoute.path}`,
       };
     }
-    return route;
+    return prefixedRoute;
   });
 }
 

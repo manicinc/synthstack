@@ -36,23 +36,42 @@
           </div>
 
           <!-- Newsletter Form Embed (EmailOctopus or Beehiiv) -->
-          <div class="popup-form">
-            <!-- EmailOctopus -->
-            <div
-              v-if="provider === 'emailoctopus'"
-              ref="formContainer"
-              class="emailoctopus-form-container"
-            />
-            <!-- Beehiiv -->
-            <iframe
-              v-else-if="provider === 'beehiiv' && beehiivPublicationId"
-              :src="`https://embeds.beehiiv.com/subscribe/${beehiivPublicationId}?slim=true`"
-              data-test-id="beehiiv-embed"
-              height="52"
-              frameborder="0"
-              scrolling="no"
-              class="beehiiv-embed"
-            />
+          <div class="popup-form" :class="{ 'form-collapsed': formCollapsed }">
+            <!-- Collapsible toggle -->
+            <button
+              v-if="formLoaded"
+              class="form-collapse-toggle"
+              @click="formCollapsed = !formCollapsed"
+            >
+              <q-icon :name="formCollapsed ? 'expand_more' : 'expand_less'" size="18px" />
+              <span>{{ formCollapsed ? 'Show form' : 'Hide form' }}</span>
+            </button>
+
+            <!-- Loading spinner -->
+            <div v-if="!formLoaded && showPopup" class="form-loading">
+              <q-spinner-dots color="primary" size="32px" />
+              <span>Loading...</span>
+            </div>
+
+            <!-- Form content (collapsible) -->
+            <div v-show="!formCollapsed" class="form-content-wrapper">
+              <!-- EmailOctopus -->
+              <div
+                v-if="provider === 'emailoctopus'"
+                ref="formContainer"
+                class="emailoctopus-form-container"
+              />
+              <!-- Beehiiv -->
+              <iframe
+                v-else-if="provider === 'beehiiv' && beehiivPublicationId"
+                :src="`https://embeds.beehiiv.com/subscribe/${beehiivPublicationId}?slim=true`"
+                data-test-id="beehiiv-embed"
+                height="52"
+                frameborder="0"
+                scrolling="no"
+                class="beehiiv-embed"
+              />
+            </div>
           </div>
 
           <div class="popup-footer">
@@ -127,6 +146,7 @@ const dismissed = ref(false)
 const minimized = ref(false)
 const formContainer = ref<HTMLElement | null>(null)
 const formLoaded = ref(false)
+const formCollapsed = ref(false)
 
 const canShowPopup = computed(() => {
   const stored = localStorage.getItem(STORAGE_KEY)
@@ -304,7 +324,59 @@ defineExpose({
 
 .popup-form {
   padding: 0 1.5rem;
-  min-height: 80px;
+  min-height: 60px;
+
+  &.form-collapsed {
+    min-height: auto;
+  }
+
+  .form-collapse-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 0.25rem 0;
+    margin-bottom: 0.5rem;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #94a3b8;
+    }
+  }
+
+  .form-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1.5rem 0;
+    color: #64748b;
+    font-size: 0.85rem;
+  }
+
+  .form-content-wrapper {
+    max-height: 280px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    // Custom scrollbar
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 2px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+    }
+  }
 
   .beehiiv-embed {
     width: 100%;
@@ -314,17 +386,25 @@ defineExpose({
 
   :deep(.emailoctopus-form) {
     .emailoctopus-form-row {
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.5rem;
     }
 
-    input[type="email"] {
+    // Hide logo and extra branding to keep it compact
+    .emailoctopus-form-image,
+    .emailoctopus-logo-wrapper,
+    .emailoctopus-privacy-link {
+      display: none !important;
+    }
+
+    input[type="email"],
+    input[type="text"] {
       width: 100%;
-      padding: 0.75rem 1rem;
+      padding: 0.6rem 0.8rem;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 10px;
+      border-radius: 8px;
       color: #f8fafc;
-      font-size: 0.95rem;
+      font-size: 0.85rem;
 
       &::placeholder {
         color: #64748b;
@@ -333,26 +413,26 @@ defineExpose({
       &:focus {
         outline: none;
         border-color: #6366F1;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
       }
     }
 
     button[type="submit"] {
       width: 100%;
-      padding: 0.75rem 1.5rem;
+      padding: 0.6rem 1rem;
+      margin-top: 0.5rem;
       background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
       color: white;
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
 
       &:hover {
         transform: translateY(-1px);
-        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
       }
     }
 
@@ -360,6 +440,7 @@ defineExpose({
       text-align: center;
       color: #10b981;
       font-weight: 500;
+      font-size: 0.9rem;
     }
   }
 }
@@ -522,8 +603,142 @@ defineExpose({
 }
 </style>
 
-<!-- Unscoped light mode styles -->
+<!-- Unscoped styles for dynamically injected EmailOctopus form -->
 <style lang="scss">
+// Global EmailOctopus form styles (dark mode default)
+// EmailOctopus replaces our container with their own structure
+.newsletter-popup .emailoctopus-form-container,
+.newsletter-popup .form-content-wrapper {
+  min-height: 80px;
+  position: relative;
+
+  // Target all possible EmailOctopus containers
+  [data-form],
+  .inline-container,
+  [eo-row] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    background: transparent !important;
+
+    // CRITICAL: Hide the header image that clashes with dark mode
+    .above-image,
+    .emailoctopus-form-image,
+    .emailoctopus-logo-wrapper,
+    img[src*="eocampaign"],
+    img[src*="emailoctopus"] {
+      display: none !important;
+    }
+
+    // Style the main content area
+    .below-image {
+      display: block !important;
+      background: transparent !important;
+      padding: 0 !important;
+    }
+
+    // Hide dividers
+    [eo-block="divider"] {
+      display: none !important;
+    }
+
+    // Style all form inputs - DARK MODE
+    input[type="email"],
+    input[type="text"],
+    .form-control {
+      display: block !important;
+      width: 100% !important;
+      padding: 0.75rem 1rem !important;
+      background: rgba(255, 255, 255, 0.08) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      border-radius: 10px !important;
+      color: #f8fafc !important;
+      font-size: 0.95rem !important;
+      box-sizing: border-box !important;
+
+      &::placeholder {
+        color: #64748b !important;
+      }
+
+      &:focus {
+        outline: none !important;
+        border-color: #6366F1 !important;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+      }
+    }
+
+    // Style labels
+    label {
+      display: block !important;
+      margin-bottom: 0.5rem !important;
+      color: #94a3b8 !important;
+      font-size: 0.85rem !important;
+    }
+
+    // Style checkboxes
+    .form-check,
+    [eo-block="checkbox"] {
+      display: flex !important;
+      align-items: flex-start !important;
+      gap: 0.5rem !important;
+      margin: 0.75rem 0 !important;
+
+      input[type="checkbox"] {
+        width: auto !important;
+        accent-color: #6366f1 !important;
+      }
+
+      label {
+        display: inline !important;
+        color: #94a3b8 !important;
+        font-size: 0.8rem !important;
+      }
+    }
+
+    // Style submit button
+    button[type="submit"],
+    input[type="submit"],
+    .btn-primary,
+    .btn {
+      display: block !important;
+      width: 100% !important;
+      padding: 0.75rem 1.5rem !important;
+      background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%) !important;
+      border: none !important;
+      border-radius: 10px !important;
+      color: white !important;
+      font-weight: 600 !important;
+      font-size: 0.95rem !important;
+      cursor: pointer !important;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3) !important;
+      margin-top: 0.5rem !important;
+
+      &:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4) !important;
+      }
+    }
+
+    // Success/error messages
+    .emailoctopus-success-message,
+    [eo-block="success"] {
+      text-align: center !important;
+      color: #10b981 !important;
+      font-weight: 500 !important;
+      padding: 1rem !important;
+    }
+
+    .emailoctopus-error-message,
+    [eo-block="error"] {
+      text-align: center !important;
+      color: #ef4444 !important;
+      font-weight: 500 !important;
+    }
+  }
+}
+
+// Light mode overrides
 .body--light {
   .newsletter-popup .popup-content {
     background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
@@ -551,21 +766,35 @@ defineExpose({
     }
   }
 
-  .newsletter-popup .popup-form {
-    :deep(.emailoctopus-form) {
-      input[type="email"] {
-        background: rgba(0, 0, 0, 0.03);
-        border-color: rgba(0, 0, 0, 0.15);
-        color: rgba(0, 0, 0, 0.9);
+  // Light mode EmailOctopus form styles
+  .newsletter-popup .emailoctopus-form-container,
+  .newsletter-popup .form-content-wrapper {
+    [data-form],
+    .inline-container {
+      label {
+        color: rgba(0, 0, 0, 0.7) !important;
+      }
+
+      input[type="email"],
+      input[type="text"],
+      .form-control {
+        background: rgba(0, 0, 0, 0.03) !important;
+        border-color: rgba(0, 0, 0, 0.15) !important;
+        color: rgba(0, 0, 0, 0.9) !important;
 
         &::placeholder {
-          color: rgba(0, 0, 0, 0.4);
+          color: rgba(0, 0, 0, 0.4) !important;
         }
 
         &:focus {
-          border-color: #6366F1;
-          box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+          border-color: #6366F1 !important;
+          box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
         }
+      }
+
+      .form-check label,
+      [eo-block="checkbox"] label {
+        color: rgba(0, 0, 0, 0.6) !important;
       }
     }
   }
@@ -583,12 +812,7 @@ defineExpose({
     }
   }
 
-  .newsletter-popup .popup-minimized-trigger {
-    // Keep gradient colors for FAB
-  }
-
   .newsletter-fab {
-    // Keep gradient colors for FAB
     .fab-tooltip {
       background: #ffffff;
       border-color: rgba(0, 0, 0, 0.1);

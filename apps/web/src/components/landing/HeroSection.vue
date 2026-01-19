@@ -272,24 +272,21 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-// Hero DAG Background - positioned to overlay on the terminal (right side)
-// Translucent so terminal is visible underneath
+// Hero DAG Background - positioned above terminal area
 .hero-dag-bg {
   position: absolute;
-  top: 0;
+  top: -20px;
   right: 0;
-  bottom: 0;
-  left: 40%; // Cover right portion where terminal sits
-  z-index: 10; // ABOVE content to create floating overlay effect
-  pointer-events: none; // Allow clicks to pass through to terminal
-  opacity: 0.6; // Translucent so terminal shows through
+  height: 350px;
+  left: 40%;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0.6;
 
-  // Light mode - even more translucent
   :global(.body--light) & {
-    opacity: 0.35;
+    opacity: 0.5;
   }
 
-  // Tablet: hide completely to avoid visual clutter
   @media (max-width: 900px) {
     display: none;
   }
@@ -298,13 +295,13 @@ onMounted(async () => {
 // Hero Section
 .hero-section {
   position: relative;
-  padding: 20px 24px 40px; // Reduced bottom padding
+  padding: 0 24px 40px; // No top padding - content should start right after nav
   overflow: hidden;
   background: var(--bg-base);
 
   // Mobile: even less padding
   @media (max-width: 768px) {
-    padding: 8px 16px 24px;
+    padding: 0 16px 24px;
   }
 }
 
@@ -318,9 +315,9 @@ onMounted(async () => {
   background-size: 40px 40px;
   opacity: 0.5;
 
-  // Light mode - hide grid to prevent gray tint
+  // Light mode - completely hide grid to prevent any gray tint
   :global(.body--light) & {
-    opacity: 0.15;
+    display: none;
   }
 
   // Mobile: reduce grid visibility since DAG is separate

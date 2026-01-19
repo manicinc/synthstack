@@ -95,6 +95,7 @@ export const FALLBACK_LOCALE = 'en-US';
  */
 export const messages: Record<string, LocaleMessages> = {
   'en-US': enUS as LocaleMessages,
+  en: enUS as LocaleMessages, // Alias for browsers that use 'en' without region
   es: es as LocaleMessages,
   fr: fr as LocaleMessages,
   de: de as LocaleMessages,
@@ -182,3 +183,4 @@ export type { LocaleDefinition, LocaleMessages } from './types';
 
 // Default export for backwards compatibility
 export default messages;
+

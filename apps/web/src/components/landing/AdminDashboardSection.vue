@@ -586,27 +586,34 @@ function particleStyle(index: number) {
   }
 }
 
-// Light mode overrides
-:global(.body--light) .admin-section {
-  background: linear-gradient(180deg, var(--bg-base) 0%, rgba(13, 148, 136, 0.05) 50%, var(--bg-base) 100%) !important;
-}
+</style>
 
-:global(.body--light) .admin-section .section-header h2 {
-  color: var(--text-primary) !important;
-}
+<!-- Unscoped light mode styles - must be separate to work properly with theme switching -->
+<style lang="scss">
+.body--light {
+  .admin-section {
+    background: linear-gradient(180deg, var(--bg-base) 0%, rgba(13, 148, 136, 0.05) 50%, var(--bg-base) 100%) !important;
 
-:global(.body--light) .admin-section .section-header p {
-  color: var(--text-secondary) !important;
-}
+    .section-header {
+      h2 {
+        color: var(--text-primary) !important;
+      }
 
-:global(.body--light) .admin-docs-btn {
-  background: rgba(0, 0, 0, 0.05) !important;
-  color: var(--text-primary) !important;
-  border-color: var(--border-default) !important;
-}
+      p {
+        color: var(--text-secondary) !important;
+      }
+    }
+  }
 
-:global(.body--light) .admin-docs-btn:hover {
-  background: rgba(0, 0, 0, 0.08) !important;
+  .admin-docs-btn {
+    background: rgba(0, 0, 0, 0.05) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-default) !important;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.08) !important;
+    }
+  }
 }
 </style>
 

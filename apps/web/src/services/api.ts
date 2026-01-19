@@ -110,7 +110,7 @@ function createApiClient(): AxiosInstance {
 
       const details =
         responseData?.details
-          ?? (responseError && typeof responseError === 'object' ? responseError : undefined)
+        ?? (responseError && typeof responseError === 'object' ? responseError : undefined)
 
       const apiError: ApiError = {
         message: responseData?.message || nestedMessage || error.message || 'An error occurred',
@@ -626,10 +626,10 @@ export interface UserStats {
 export const users = {
   me: () =>
     get<User>('/api/v1/users/me'),
-  
+
   stats: () =>
     get<UserStats>('/api/v1/users/me/stats'),
-  
+
   update: (data: Partial<User>) =>
     patch<User>('/api/v1/users/me', data),
 }
@@ -955,7 +955,6 @@ export const api = {
 
 export default {
   projects,
-  profiles,
   users,
   billing,
   gamification,

@@ -31,16 +31,10 @@ const cardRef = ref<HTMLElement | null>(null)
 const mouseX = ref(0.5)
 const mouseY = ref(0.5)
 
-// 3D transform based on mouse position
+// 3D transform disabled - no rotation on hover
 const cardTransform = computed(() => {
-  if (!isHovered.value) return {}
-  
-  const rotateX = (mouseY.value - 0.5) * -10
-  const rotateY = (mouseX.value - 0.5) * 10
-  
-  return {
-    transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`
-  }
+  // Return empty - no 3D rotation effect
+  return {}
 })
 
 // Glow position follows mouse
@@ -461,7 +455,7 @@ const animationDelay = computed(() => ({
   }
 }
 
-// Animated rotating border glow
+// Border glow - static, no rotation
 .card-border-glow {
   position: absolute;
   inset: -2px;
@@ -478,11 +472,11 @@ const animationDelay = computed(() => ({
   opacity: 0;
   transition: opacity 0.4s ease;
   z-index: -3;
-  animation: rotate-border 6s linear infinite paused;
+  // No animation - static glow only
 
   .is-hovered & {
     opacity: 0.7;
-    animation-play-state: running;
+    // Static glow, no rotation
   }
 
   .is-featured & {
@@ -494,14 +488,8 @@ const animationDelay = computed(() => ({
       #00d4aa 75%,
       #0d9488 100%
     );
-    opacity: 0.5;
-    animation-play-state: running;
+    opacity: 0.3;
   }
-}
-
-@keyframes rotate-border {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
 }
 
 // Badge
@@ -562,14 +550,9 @@ const animationDelay = computed(() => ({
   transition: opacity 0.4s ease;
 
   .is-hovered & {
-    opacity: 1;
-    animation: pulse-icon-glow 2s ease-in-out infinite;
+    opacity: 0.6;
+    // Static glow, no animation
   }
-}
-
-@keyframes pulse-icon-glow {
-  0%, 100% { opacity: 0.5; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.1); }
 }
 
 .icon-ring {
@@ -582,13 +565,8 @@ const animationDelay = computed(() => ({
 
   .is-hovered & {
     opacity: 0.3;
-    animation: spin-ring 8s linear infinite;
+    // Static ring, no rotation
   }
-}
-
-@keyframes spin-ring {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
 }
 
 // Title
@@ -635,25 +613,17 @@ const animationDelay = computed(() => ({
 
 .mini-edge {
   stroke-dasharray: 4 2;
-  animation: dash-mini 2s linear infinite;
-}
-
-@keyframes dash-mini {
-  to { stroke-dashoffset: -12; }
+  // Static edges - no animation
 }
 
 .mini-node {
-  animation: pulse-mini-node 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse-mini-node {
-  0%, 100% { r: 4; opacity: 0.8; }
-  50% { r: 5; opacity: 1; }
+  // Static nodes - no pulsing
+  opacity: 0.9;
 }
 
 .mini-particle {
-  opacity: 0.8;
-  filter: drop-shadow(0 0 3px #00d4aa);
+  // Hide animated particles
+  display: none;
 }
 
 .dag-label {
@@ -746,9 +716,8 @@ const animationDelay = computed(() => ({
   transition: opacity 0.3s ease;
 
   .is-hovered & {
-    opacity: 0.6;
-    animation: float-particle 3s ease-in-out infinite;
-    animation-delay: calc(var(--i) * 0.5s);
+    opacity: 0.4;
+    // Static particles, no animation
   }
 
   &:nth-child(1) { top: 20%; left: 10%; }
@@ -757,210 +726,6 @@ const animationDelay = computed(() => ({
   &:nth-child(4) { top: 30%; left: 70%; }
   &:nth-child(5) { top: 50%; left: 50%; }
   &:nth-child(6) { top: 10%; left: 60%; }
-}
-
-@keyframes float-particle {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(10px, -15px) scale(1.5); }
-}
-
-// Light mode - Premium neumorphic styling
-:global(.body--light) {
-  .interactive-feature-card {
-    // Light mode neumorphic shadow system
-    &::before {
-      background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.9) 0%,
-        rgba(241, 245, 249, 0.6) 100%
-      );
-    }
-  }
-
-  .card-glass-bg {
-    background: linear-gradient(
-      145deg,
-      rgba(255, 255, 255, 0.98) 0%,
-      rgba(248, 250, 252, 0.95) 50%,
-      rgba(241, 245, 249, 0.92) 100%
-    );
-    border-color: rgba(0, 0, 0, 0.06);
-    // Premium neumorphic light mode shadows
-    box-shadow:
-      8px 8px 24px rgba(0, 0, 0, 0.08),
-      -4px -4px 16px rgba(255, 255, 255, 0.9),
-      inset 0 1px 0 rgba(255, 255, 255, 1),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.03);
-
-    .is-hovered & {
-      background: linear-gradient(
-        145deg,
-        rgba(255, 255, 255, 1) 0%,
-        rgba(250, 252, 255, 0.98) 50%,
-        rgba(245, 248, 252, 0.95) 100%
-      );
-      border-color: rgba(13, 148, 136, 0.2);
-      box-shadow:
-        12px 12px 32px rgba(0, 0, 0, 0.1),
-        -6px -6px 24px rgba(255, 255, 255, 1),
-        0 8px 32px rgba(13, 148, 136, 0.12),
-        inset 0 1px 0 rgba(255, 255, 255, 1),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.02);
-    }
-  }
-
-  .card-border-glow {
-    background: conic-gradient(
-      from 0deg,
-      transparent 0%,
-      rgba(13, 148, 136, 0.35) 10%,
-      transparent 20%,
-      transparent 50%,
-      rgba(6, 182, 212, 0.35) 60%,
-      transparent 70%
-    );
-    opacity: 0;
-
-    .is-hovered & {
-      opacity: 1;
-    }
-  }
-
-  .card-top-accent {
-    background: linear-gradient(
-      90deg,
-      rgba(13, 148, 136, 0.6) 0%,
-      rgba(6, 182, 212, 0.4) 50%,
-      rgba(13, 148, 136, 0.6) 100%
-    );
-    opacity: 0.7;
-
-    .is-hovered & {
-      opacity: 1;
-      background: linear-gradient(
-        90deg,
-        rgba(13, 148, 136, 0.9) 0%,
-        rgba(6, 182, 212, 0.7) 50%,
-        rgba(13, 148, 136, 0.9) 100%
-      );
-    }
-  }
-
-  .card-glow-layer {
-    background: radial-gradient(
-      300px circle at var(--glow-x, 50%) var(--glow-y, 50%),
-      rgba(13, 148, 136, 0.08) 0%,
-      transparent 60%
-    );
-
-    .is-hovered & {
-      background: radial-gradient(
-        350px circle at var(--glow-x, 50%) var(--glow-y, 50%),
-        rgba(13, 148, 136, 0.15) 0%,
-        transparent 60%
-      );
-    }
-  }
-
-  .card-icon-wrapper {
-    background: linear-gradient(
-      145deg,
-      rgba(248, 250, 252, 1) 0%,
-      rgba(241, 245, 249, 0.95) 100%
-    );
-    box-shadow:
-      4px 4px 12px rgba(0, 0, 0, 0.06),
-      -2px -2px 8px rgba(255, 255, 255, 0.9),
-      inset 0 1px 0 rgba(255, 255, 255, 1);
-
-    .is-hovered & {
-      background: linear-gradient(
-        145deg,
-        rgba(13, 148, 136, 0.1) 0%,
-        rgba(6, 182, 212, 0.08) 100%
-      );
-      box-shadow:
-        4px 4px 16px rgba(13, 148, 136, 0.15),
-        -2px -2px 8px rgba(255, 255, 255, 1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    }
-  }
-
-  .icon-glow {
-    background: radial-gradient(
-      circle,
-      rgba(13, 148, 136, 0.2) 0%,
-      transparent 70%
-    );
-  }
-
-  .card-title {
-    color: #1e293b;
-
-    .is-hovered & {
-      color: #0d9488;
-      text-shadow: 0 0 20px rgba(13, 148, 136, 0.2);
-    }
-  }
-
-  .card-description {
-    color: #475569;
-
-    .is-hovered & {
-      color: #334155;
-    }
-  }
-
-  .tag {
-    background: linear-gradient(
-      145deg,
-      rgba(241, 245, 249, 0.9) 0%,
-      rgba(226, 232, 240, 0.8) 100%
-    );
-    border-color: rgba(0, 0, 0, 0.08);
-    color: #475569;
-    box-shadow:
-      2px 2px 6px rgba(0, 0, 0, 0.04),
-      -1px -1px 4px rgba(255, 255, 255, 0.8);
-
-    &.tag-tech {
-      background: linear-gradient(
-        145deg,
-        rgba(13, 148, 136, 0.12) 0%,
-        rgba(6, 182, 212, 0.08) 100%
-      );
-      border-color: rgba(13, 148, 136, 0.2);
-      color: #0d9488;
-    }
-  }
-
-  .mini-dag-preview {
-    background: linear-gradient(
-      145deg,
-      rgba(248, 250, 252, 0.9) 0%,
-      rgba(241, 245, 249, 0.8) 100%
-    );
-    border-color: rgba(13, 148, 136, 0.15);
-    box-shadow:
-      inset 2px 2px 6px rgba(0, 0, 0, 0.03),
-      inset -1px -1px 4px rgba(255, 255, 255, 0.5);
-  }
-
-  .dag-label {
-    color: #0d9488;
-  }
-
-  .particle {
-    background: #0d9488;
-  }
-
-  .card-link {
-    color: #0d9488;
-
-    &:hover {
-      text-shadow: 0 0 12px rgba(13, 148, 136, 0.3);
-    }
-  }
 }
 
 // Reduced motion
@@ -976,6 +741,142 @@ const animationDelay = computed(() => ({
   .mini-node,
   .particle {
     animation: none !important;
+  }
+}
+</style>
+
+<!-- Unscoped light mode styles - must be separate to work properly -->
+<style lang="scss">
+.body--light {
+  .interactive-feature-card {
+    .card-glass-bg {
+      background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.98) 0%,
+        rgba(248, 250, 252, 0.95) 50%,
+        rgba(241, 245, 249, 0.92) 100%
+      ) !important;
+      border-color: rgba(0, 0, 0, 0.08) !important;
+      box-shadow:
+        8px 8px 24px rgba(0, 0, 0, 0.08),
+        -4px -4px 16px rgba(255, 255, 255, 0.9),
+        inset 0 1px 0 rgba(255, 255, 255, 1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.03) !important;
+
+      &::after {
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(13, 148, 136, 0.4) 20%,
+          rgba(0, 212, 170, 0.5) 50%,
+          rgba(13, 148, 136, 0.4) 80%,
+          transparent 100%
+        ) !important;
+      }
+    }
+
+    &.is-hovered .card-glass-bg {
+      background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 1) 0%,
+        rgba(250, 252, 255, 0.98) 50%,
+        rgba(245, 248, 252, 0.95) 100%
+      ) !important;
+      border-color: rgba(13, 148, 136, 0.2) !important;
+      box-shadow:
+        12px 12px 32px rgba(0, 0, 0, 0.1),
+        -6px -6px 24px rgba(255, 255, 255, 1),
+        0 8px 32px rgba(13, 148, 136, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.02) !important;
+    }
+
+    &.is-featured .card-glass-bg {
+      background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.98) 0%,
+        rgba(240, 253, 250, 0.95) 50%,
+        rgba(236, 253, 245, 0.92) 100%
+      ) !important;
+      border-color: rgba(13, 148, 136, 0.25) !important;
+    }
+
+    .card-glow-layer {
+      background: radial-gradient(
+        300px circle at var(--glow-x, 50%) var(--glow-y, 50%),
+        rgba(13, 148, 136, 0.08) 0%,
+        transparent 60%
+      ) !important;
+    }
+
+    .card-border-glow {
+      background: conic-gradient(
+        from 0deg,
+        transparent 0%,
+        rgba(13, 148, 136, 0.25) 10%,
+        transparent 20%,
+        transparent 50%,
+        rgba(6, 182, 212, 0.25) 60%,
+        transparent 70%
+      ) !important;
+    }
+
+    .card-title {
+      color: #0f172a !important;
+    }
+
+    &.is-hovered .card-title {
+      color: #0f766e !important;
+    }
+
+    .card-description {
+      color: #475569 !important;
+    }
+
+    &.is-hovered .card-description {
+      color: #334155 !important;
+    }
+
+    .tag {
+      background: linear-gradient(
+        145deg,
+        rgba(241, 245, 249, 0.9) 0%,
+        rgba(226, 232, 240, 0.8) 100%
+      ) !important;
+      border-color: rgba(0, 0, 0, 0.08) !important;
+      color: #475569 !important;
+
+      &.tag-tech {
+        background: linear-gradient(
+          145deg,
+          rgba(13, 148, 136, 0.12) 0%,
+          rgba(6, 182, 212, 0.08) 100%
+        ) !important;
+        border-color: rgba(13, 148, 136, 0.2) !important;
+        color: #0d9488 !important;
+      }
+    }
+
+    .card-icon {
+      background: rgba(13, 148, 136, 0.08) !important;
+    }
+
+    .mini-dag-preview {
+      background: linear-gradient(
+        145deg,
+        rgba(248, 250, 252, 0.9) 0%,
+        rgba(241, 245, 249, 0.8) 100%
+      ) !important;
+      border-color: rgba(13, 148, 136, 0.15) !important;
+    }
+
+    .dag-label {
+      color: #0d9488 !important;
+    }
+
+    .card-link {
+      color: #0d9488 !important;
+    }
   }
 }
 </style>
