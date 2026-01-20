@@ -387,9 +387,18 @@ const appRoutes: RouteRecordRaw[] = [
         path: 'integrations',
         name: 'integrations',
         component: () => import('pages/app/settings/IntegrationsPage.vue'),
-        meta: { 
+        meta: {
           title: 'Integrations',
           description: 'Connect your favorite tools and services to automate workflows.'
+        }
+      },
+      {
+        path: 'settings/ai',
+        name: 'ai-settings',
+        component: () => import('pages/app/settings/AISettingsPage.vue'),
+        meta: {
+          title: 'AI Settings',
+          description: 'Configure AI model preferences and behavior.'
         }
       },
       {
