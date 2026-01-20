@@ -13,7 +13,7 @@ export default async function emailRoutes(fastify: FastifyInstance) {
   const queueService = getEmailQueueService();
 
   // Public tracking pixel
-  fastify.get<{ Params: { messageId: string } }>('/track/open/:messageId.png', async (request, reply) => {
+  fastify.get<{ Params: { messageId: string } }>('/email/track/open/:messageId.png', async (request, reply) => {
     const { messageId } = request.params;
     const ip = request.ip;
     const userAgent = request.headers['user-agent'];
@@ -26,7 +26,7 @@ export default async function emailRoutes(fastify: FastifyInstance) {
   });
 
   // Click tracking redirect
-  fastify.get<{ Params: { messageId: string }; Querystring: { url: string } }>('/track/click/:messageId', async (request, reply) => {
+  fastify.get<{ Params: { messageId: string }; Querystring: { url: string } }>('/email/track/click/:messageId', async (request, reply) => {
     const { messageId } = request.params;
     const { url } = request.query;
     const ip = request.ip;
@@ -38,7 +38,7 @@ export default async function emailRoutes(fastify: FastifyInstance) {
   });
 
   // Admin: Email stats
-  fastify.get<{ Querystring: { days?: number } }>('/admin/stats', {
+  fastify.get<{ Querystring: { days?: number } }>('/admin/email/stats', {
     preHandler: [fastify.authenticate, fastify.requireAdmin],
     schema: { tags: ['Email', 'Admin'], security: [{ bearerAuth: [] }] },
   }, async (request: any, reply) => {
@@ -60,7 +60,7 @@ export default async function emailRoutes(fastify: FastifyInstance) {
   });
 
   // Admin: List templates
-  fastify.get('/admin/templates', {
+  fastify.get('/admin/email/templates', {
     preHandler: [fastify.authenticate, fastify.requireAdmin],
     schema: { tags: ['Email', 'Admin'], security: [{ bearerAuth: [] }] },
   }, async (request, reply) => {
@@ -73,7 +73,7 @@ export default async function emailRoutes(fastify: FastifyInstance) {
   });
 
   // Admin: Get template
-  fastify.get<{ Params: { slug: string } }>('/admin/templates/:slug', {
+  fastify.get<{ Params: { slug: string } }>('/admin/email/templates/:slug', {
     preHandler: [fastify.authenticate, fastify.requireAdmin],
     schema: { tags: ['Email', 'Admin'], security: [{ bearerAuth: [] }] },
   }, async (request, reply) => {
@@ -92,7 +92,7 @@ export default async function emailRoutes(fastify: FastifyInstance) {
   });
 
   // Admin: Preview template
-  fastify.post<{ Params: { slug: string }; Body: { sampleData?: any } }>('/admin/templates/:slug/preview', {
+  fastify.post<{ Params: { slug: string }; Body: { sampleData?: any } }>('/admin/email/templates/:slug/preview', {
     preHandler: [fastify.authenticate, fastify.requireAdmin],
     schema: { tags: ['Email', 'Admin'], security: [{ bearerAuth: [] }] },
   }, async (request, reply) => {
@@ -109,7 +109,7 @@ export default async function emailRoutes(fastify: FastifyInstance) {
   });
 
   // Admin: Send test email
-  fastify.post<{ Body: { to: string; templateSlug: string; templateData?: any } }>('/admin/send-test', {
+  fastify.post<{ Body: { to: string; templateSlug: string; templateData?: any } }>('/admin/email/send-test', {
     preHandler: [fastify.authenticate, fastify.requireAdmin],
     schema: { tags: ['Email', 'Admin'], security: [{ bearerAuth: [] }] },
   }, async (request: any, reply) => {
@@ -132,7 +132,7 @@ export default async function emailRoutes(fastify: FastifyInstance) {
   });
 
   // Admin: Email logs
-  fastify.get<{ Querystring: { limit?: number; status?: string; userId?: string } }>('/admin/logs', {
+  fastify.get<{ Querystring: { limit?: number; status?: string; userId?: string } }>('/admin/email/logs', {
     preHandler: [fastify.authenticate, fastify.requireAdmin],
     schema: { tags: ['Email', 'Admin'], security: [{ bearerAuth: [] }] },
   }, async (request: any, reply) => {
@@ -164,7 +164,7 @@ export default async function emailRoutes(fastify: FastifyInstance) {
   });
 
   // Admin: Queue status
-  fastify.get('/admin/queue', {
+  fastify.get('/admin/email/queue', {
     preHandler: [fastify.authenticate, fastify.requireAdmin],
     schema: { tags: ['Email', 'Admin'], security: [{ bearerAuth: [] }] },
   }, async (request, reply) => {
@@ -190,7 +190,7 @@ export default async function emailRoutes(fastify: FastifyInstance) {
   });
 
   // Admin: Retry failed job
-  fastify.post<{ Params: { jobId: string } }>('/admin/queue/retry/:jobId', {
+  fastify.post<{ Params: { jobId: string } }>('/admin/email/queue/retry/:jobId', {
     preHandler: [fastify.authenticate, fastify.requireAdmin],
     schema: { tags: ['Email', 'Admin'], security: [{ bearerAuth: [] }] },
   }, async (request, reply) => {
@@ -209,7 +209,7 @@ export default async function emailRoutes(fastify: FastifyInstance) {
   });
 
   // Admin: Queue dashboard
-  fastify.get('/admin/dashboard', {
+  fastify.get('/admin/email/dashboard', {
     preHandler: [fastify.authenticate, fastify.requireAdmin],
     schema: { tags: ['Email', 'Admin'], security: [{ bearerAuth: [] }] },
   }, async (request, reply) => {
@@ -222,7 +222,7 @@ export default async function emailRoutes(fastify: FastifyInstance) {
   });
 
   // Admin: Template performance
-  fastify.get('/admin/template-performance', {
+  fastify.get('/admin/email/template-performance', {
     preHandler: [fastify.authenticate, fastify.requireAdmin],
     schema: { tags: ['Email', 'Admin'], security: [{ bearerAuth: [] }] },
   }, async (request, reply) => {
@@ -235,7 +235,7 @@ export default async function emailRoutes(fastify: FastifyInstance) {
   });
 
   // Admin: Bounce list
-  fastify.get('/admin/bounce-list', {
+  fastify.get('/admin/email/bounce-list', {
     preHandler: [fastify.authenticate, fastify.requireAdmin],
     schema: { tags: ['Email', 'Admin'], security: [{ bearerAuth: [] }] },
   }, async (request, reply) => {
@@ -248,7 +248,7 @@ export default async function emailRoutes(fastify: FastifyInstance) {
   });
 
   // Admin: Remove from bounce list
-  fastify.delete<{ Params: { email: string } }>('/admin/bounce-list/:email', {
+  fastify.delete<{ Params: { email: string } }>('/admin/email/bounce-list/:email', {
     preHandler: [fastify.authenticate, fastify.requireAdmin],
     schema: { tags: ['Email', 'Admin'], security: [{ bearerAuth: [] }] },
   }, async (request, reply) => {

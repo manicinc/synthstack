@@ -43,11 +43,11 @@ All endpoints require auth and deduct credits on success.
 
 ## Configuration
 
-### Backend (`.env`)
+### Root (`.env`)
 - `ML_SERVICE_URL` (default `http://localhost:8001`)
 - `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / `OPENROUTER_API_KEY` (depending on routing)
 
-### Frontend (`apps/web/.env`)
+### Frontend (Vite `VITE_*` in root `.env`)
 - `VITE_API_URL` (default `http://localhost:3003`)
 
 ---
@@ -57,4 +57,3 @@ All endpoints require auth and deduct credits on success.
 - If chat/generation returns 500, confirm `ML_SERVICE_URL` is reachable and the ML service is running.
 - If you always get 402, verify your user row exists in `app_users` and your tier has credits (`TIER_CONFIG`).
 - If auth fails, see `docs/AUTHENTICATION.md`.
-

@@ -6,6 +6,7 @@
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { getAuthService } from '../services/auth/index.js';
+import { config } from '../config/index.js';
 import Stripe from 'stripe';
 import PDFDocument from 'pdfkit';
 
@@ -513,8 +514,8 @@ export default async function clientPortalRoutes(fastify: FastifyInstance) {
           organization_id: organizationId,
           contact_id: contactId
         },
-        success_url: `${process.env.APP_URL}/portal/invoices?payment=success&invoice=${invoiceId}`,
-        cancel_url: `${process.env.APP_URL}/portal/invoices?payment=cancelled&invoice=${invoiceId}`
+        success_url: `${config.frontendUrl}/portal/invoices?payment=success&invoice=${invoiceId}`,
+        cancel_url: `${config.frontendUrl}/portal/invoices?payment=cancelled&invoice=${invoiceId}`
       });
 
       // Log payment session creation

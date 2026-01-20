@@ -355,8 +355,8 @@ export class StripeService {
         customer_email: customerId ? undefined : options.email,
         payment_method_types: ['card'],
         line_items: [{ price: priceId, quantity: 1 }],
-        success_url: options.successUrl || process.env.FRONTEND_URL + '/app?subscription=success&session_id={CHECKOUT_SESSION_ID}',
-        cancel_url: options.cancelUrl || process.env.FRONTEND_URL + '/pricing?subscription=cancelled',
+        success_url: options.successUrl || config.frontendUrl + '/app?subscription=success&session_id={CHECKOUT_SESSION_ID}',
+        cancel_url: options.cancelUrl || config.frontendUrl + '/pricing?subscription=cancelled',
         allow_promotion_codes: true,
         billing_address_collection: 'auto',
         tax_id_collection: { enabled: true },
@@ -394,7 +394,7 @@ export class StripeService {
     try {
       const sessionParams: Stripe.BillingPortal.SessionCreateParams = {
         customer: options.customerId,
-        return_url: options.returnUrl || process.env.FRONTEND_URL + '/app/settings/billing',
+        return_url: options.returnUrl || config.frontendUrl + '/app/settings/billing',
       };
 
       if (options.flowType) {
@@ -620,8 +620,8 @@ export class StripeService {
           },
           quantity: 1,
         }],
-        success_url: process.env.FRONTEND_URL + '/app?credits=success&session_id={CHECKOUT_SESSION_ID}',
-        cancel_url: process.env.FRONTEND_URL + '/pricing?credits=cancelled',
+        success_url: config.frontendUrl + '/app?credits=success&session_id={CHECKOUT_SESSION_ID}',
+        cancel_url: config.frontendUrl + '/pricing?credits=cancelled',
         metadata: { user_id: userId, credits: credits.toString(), type: 'credit_purchase' },
       });
 
@@ -648,8 +648,8 @@ export class StripeService {
         customer_email: email,
         payment_method_types: ['card'],
         line_items: [{ price: priceId, quantity: 1 }],
-        success_url: process.env.FRONTEND_URL + '/license-access?session={CHECKOUT_SESSION_ID}',
-        cancel_url: process.env.FRONTEND_URL + '/?license=cancelled',
+        success_url: config.frontendUrl + '/license-access?session={CHECKOUT_SESSION_ID}',
+        cancel_url: config.frontendUrl + '/?license=cancelled',
         allow_promotion_codes: true,
         billing_address_collection: 'required',
         tax_id_collection: { enabled: true },

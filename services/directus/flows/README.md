@@ -30,10 +30,10 @@ These flows serve as event triggers that notify Node-RED when specific events oc
 
 ### Environment Variables Required
 
-Add these to your Directus `.env`:
+Add these to your repo root `.env` (Docker Compose passes them into the Directus container):
 
 ```env
-API_GATEWAY_URL=http://localhost:3001
+API_GATEWAY_URL=http://localhost:3003
 NODERED_INTERNAL_TOKEN=your-secure-internal-token
 ```
 
@@ -109,5 +109,4 @@ Example minimal flow operation:
   }
 }
 ```
-
 

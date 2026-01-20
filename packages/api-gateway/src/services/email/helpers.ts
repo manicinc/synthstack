@@ -5,6 +5,7 @@
 
 import type { FastifyInstance } from 'fastify';
 import { getEmailService, EMAIL_TEMPLATES } from './index.js';
+import { config } from '../../config/index.js';
 
 /**
  * Send welcome email to new user
@@ -28,10 +29,10 @@ export async function sendWelcomeEmail(
     templateData: {
       userName,
       userEmail: email,
-      dashboardUrl: `${process.env.FRONTEND_URL}/app`,
-      guidesUrl: `${process.env.FRONTEND_URL}/guides`,
-      communityUrl: `${process.env.FRONTEND_URL}/community`,
-      supportUrl: `${process.env.FRONTEND_URL}/contact`,
+      dashboardUrl: `${config.frontendUrl}/app`,
+      guidesUrl: `${config.frontendUrl}/guides`,
+      communityUrl: `${config.frontendUrl}/community`,
+      supportUrl: `${config.frontendUrl}/contact`,
       creditsRemaining: 3,
     },
     userId,
@@ -69,8 +70,8 @@ export async function sendSubscriptionConfirmedEmail(
       isYearly,
       creditsPerDay,
       nextBillingDate: nextBillingDate.toLocaleDateString(),
-      dashboardUrl: `${process.env.FRONTEND_URL}/app`,
-      billingUrl: `${process.env.FRONTEND_URL}/app/billing`,
+      dashboardUrl: `${config.frontendUrl}/app`,
+      billingUrl: `${config.frontendUrl}/app/billing`,
     },
     userId,
     referenceType: 'subscription',
@@ -104,7 +105,7 @@ export async function sendPaymentReceiptEmail(
       paymentMethod: 'Card',
       last4,
       invoiceUrl,
-      billingUrl: `${process.env.FRONTEND_URL}/app/billing`,
+      billingUrl: `${config.frontendUrl}/app/billing`,
     },
     userId,
     referenceType: 'payment',
@@ -136,9 +137,9 @@ export async function sendTrialEndingEmail(
       trialEndDate: trialEndDate.toLocaleDateString(),
       creditsPerDay: 30,
       generationsUsed,
-      upgradeUrl: `${process.env.FRONTEND_URL}/pricing?promo=TRIAL20`,
-      pricingUrl: `${process.env.FRONTEND_URL}/pricing`,
-      contactUrl: `${process.env.FRONTEND_URL}/contact`,
+      upgradeUrl: `${config.frontendUrl}/pricing?promo=TRIAL20`,
+      pricingUrl: `${config.frontendUrl}/pricing`,
+      contactUrl: `${config.frontendUrl}/contact`,
     },
     userId,
     referenceType: 'subscription',
@@ -166,8 +167,8 @@ export async function sendPaymentFailedEmail(
       planName,
       amountDue,
       retryDate: retryDate.toLocaleDateString(),
-      updatePaymentUrl: `${process.env.FRONTEND_URL}/app/billing`,
-      supportUrl: `${process.env.FRONTEND_URL}/contact`,
+      updatePaymentUrl: `${config.frontendUrl}/app/billing`,
+      supportUrl: `${config.frontendUrl}/contact`,
     },
     userId,
     referenceType: 'payment',
@@ -201,8 +202,8 @@ export async function sendCreditLowEmail(
       dailyLimit,
       resetTime: resetTime.toLocaleTimeString(),
       currentPlan,
-      purchaseUrl: `${process.env.FRONTEND_URL}/pricing#credits`,
-      upgradeUrl: `${process.env.FRONTEND_URL}/pricing`,
+      purchaseUrl: `${config.frontendUrl}/pricing#credits`,
+      upgradeUrl: `${config.frontendUrl}/pricing`,
       lifetimeUsed: 0,
     },
     userId,
@@ -230,7 +231,7 @@ export async function sendDemoCreditLowEmail(
   sessionId: string
 ): Promise<void> {
   const emailService = getEmailService();
-  const appUrl = process.env.FRONTEND_URL || 'https://synthstack.app';
+  const appUrl = config.frontendUrl;
 
   // Schedule email for 1 hour from now
   const scheduledAt = new Date(Date.now() + 60 * 60 * 1000);
@@ -281,9 +282,9 @@ export async function sendCreditsPurchasedEmail(
       packageName,
       transactionId,
       newBalance,
-      dashboardUrl: `${process.env.FRONTEND_URL}/app`,
-      purchaseUrl: `${process.env.FRONTEND_URL}/pricing#credits`,
-      upgradeUrl: `${process.env.FRONTEND_URL}/pricing`,
+      dashboardUrl: `${config.frontendUrl}/app`,
+      purchaseUrl: `${config.frontendUrl}/pricing#credits`,
+      upgradeUrl: `${config.frontendUrl}/pricing`,
     },
     userId,
     referenceType: 'purchase',
@@ -312,8 +313,8 @@ export async function sendSubscriptionCanceledEmail(
       userName,
       planName,
       endDate: endDate.toLocaleDateString(),
-      reactivateUrl: `${process.env.FRONTEND_URL}/app/billing`,
-      feedbackUrl: `${process.env.FRONTEND_URL}/feedback?reason=cancellation`,
+      reactivateUrl: `${config.frontendUrl}/app/billing`,
+      feedbackUrl: `${config.frontendUrl}/feedback?reason=cancellation`,
     },
     userId,
     referenceType: 'subscription',
@@ -346,8 +347,8 @@ export async function sendModerationWarningEmail(
       reason,
       details,
       warningCount,
-      guidelinesUrl: `${process.env.FRONTEND_URL}/community/guidelines`,
-      appealUrl: `${process.env.FRONTEND_URL}/contact?subject=Appeal`,
+      guidelinesUrl: `${config.frontendUrl}/community/guidelines`,
+      appealUrl: `${config.frontendUrl}/contact?subject=Appeal`,
     },
     userId,
     referenceType: 'moderation',
@@ -418,7 +419,7 @@ export async function sendTeamInvitationEmail(
   const emailService = getEmailService();
 
   // Construct acceptance URL
-  const acceptUrl = `${process.env.FRONTEND_URL || 'http://localhost:3050'}/accept-invite?token=${invitationToken}`;
+  const acceptUrl = `${config.frontendUrl}/accept-invite?token=${invitationToken}`;
 
   // Format expiry date in readable format
   const expiryDateFormatted = expiryDate.toLocaleDateString('en-US', {
@@ -440,8 +441,8 @@ export async function sendTeamInvitationEmail(
       role,
       acceptUrl,
       expiryDate: expiryDateFormatted,
-      dashboardUrl: `${process.env.FRONTEND_URL || 'http://localhost:3050'}/app`,
-      supportUrl: `${process.env.FRONTEND_URL || 'http://localhost:3050'}/contact`,
+      dashboardUrl: `${config.frontendUrl}/app`,
+      supportUrl: `${config.frontendUrl}/contact`,
       currentYear: new Date().getFullYear().toString(),
     },
     userId: inviterUserId,

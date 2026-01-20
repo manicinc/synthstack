@@ -6,6 +6,7 @@
 
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { randomBytes } from 'crypto';
+import { config } from '../config/index.js';
 
 interface IntegrationType {
   id: string;
@@ -448,11 +449,11 @@ export default async function integrationRoutes(fastify: FastifyInstance) {
 
     // Handle OAuth error
     if (error) {
-      return reply.redirect(`${process.env.APP_URL}/app/settings/integrations?error=${encodeURIComponent(error_description || error)}`);
+      return reply.redirect(`${config.frontendUrl}/app/settings/integrations?error=${encodeURIComponent(error_description || error)}`);
     }
 
     if (!code || !state) {
-      return reply.redirect(`${process.env.APP_URL}/app/settings/integrations?error=missing_params`);
+      return reply.redirect(`${config.frontendUrl}/app/settings/integrations?error=missing_params`);
     }
 
     // Lookup state
@@ -462,7 +463,7 @@ export default async function integrationRoutes(fastify: FastifyInstance) {
     `, [state]);
 
     if (stateResult.rows.length === 0) {
-      return reply.redirect(`${process.env.APP_URL}/app/settings/integrations?error=invalid_state`);
+      return reply.redirect(`${config.frontendUrl}/app/settings/integrations?error=invalid_state`);
     }
 
     const oauthState = stateResult.rows[0];
@@ -511,10 +512,10 @@ export default async function integrationRoutes(fastify: FastifyInstance) {
       // Delete used state
       await pg.query('DELETE FROM oauth_states WHERE id = $1', [oauthState.id]);
 
-      return reply.redirect(`${process.env.APP_URL}/app/settings/integrations?success=${oauthState.integration_type}`);
+      return reply.redirect(`${config.frontendUrl}/app/settings/integrations?success=${oauthState.integration_type}`);
     } catch (error: any) {
       fastify.log.error({ error }, 'OAuth token exchange failed');
-      return reply.redirect(`${process.env.APP_URL}/app/settings/integrations?error=${encodeURIComponent(error.message)}`);
+      return reply.redirect(`${config.frontendUrl}/app/settings/integrations?error=${encodeURIComponent(error.message)}`);
     }
   });
 

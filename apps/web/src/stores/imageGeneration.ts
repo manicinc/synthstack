@@ -10,6 +10,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useAuthStore } from './auth'
+import { useCreditsStore } from './credits'
 
 /** Image size options */
 export type ImageSize = '1024x1024' | '1792x1024' | '1024x1792'
@@ -124,6 +125,7 @@ export const IMAGE_CREDIT_COSTS = {
 
 export const useImageGenerationStore = defineStore('imageGeneration', () => {
   const authStore = useAuthStore()
+  const creditsStore = useCreditsStore()
 
   // State
   const selectedPreset = ref<ImageGenerationPreset | null>(null)
@@ -235,7 +237,10 @@ export const useImageGenerationStore = defineStore('imageGeneration', () => {
       history.value.unshift(generationResult)
 
       // Refresh user credits
-      await authStore.fetchUser()
+      await Promise.allSettled([
+        authStore.fetchUser(),
+        creditsStore.fetchUnifiedCredits(),
+      ])
 
       return generationResult
     } catch (err: any) {
@@ -381,4 +386,3 @@ export const useImageGenerationStore = defineStore('imageGeneration', () => {
     IMAGE_CREDIT_COSTS,
   }
 })
-

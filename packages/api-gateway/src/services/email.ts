@@ -5,7 +5,11 @@
 
 import { getResendService } from './email/resend.js';
 
-const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL || 'team@manic.agency';
+const CONTACT_TO_EMAIL =
+  process.env.CONTACT_TO_EMAIL ||
+  process.env.CONTACT_EMAIL ||
+  process.env.VITE_CONTACT_EMAIL ||
+  'team@manic.agency';
 
 /**
  * Send contact form notification email

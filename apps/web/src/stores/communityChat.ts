@@ -10,6 +10,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { useCreditsStore } from '@/stores/credits'
 
 const STORAGE_KEY = 'synthstack-community-chat-v1'
 const SETTINGS_KEY = 'synthstack-community-chat-settings-v1'
@@ -87,6 +88,9 @@ function inferTitleFromMessage(message: string) {
 }
 
 export const useCommunityChatStore = defineStore('communityChat', () => {
+  const authStore = useAuthStore()
+  const creditsStore = useCreditsStore()
+
   // ============================================
   // State
   // ============================================
@@ -236,7 +240,6 @@ export const useCommunityChatStore = defineStore('communityChat', () => {
   }
 
   async function sendStreamingMessage(content: string) {
-    const authStore = useAuthStore()
     if (!authStore.accessToken) {
       throw new Error('You must be logged in to use chat.')
     }
@@ -351,7 +354,10 @@ export const useCommunityChatStore = defineStore('communityChat', () => {
 
             if (data.done) {
               // Refresh credits after completion
-              await authStore.fetchUser()
+              await Promise.allSettled([
+                authStore.fetchUser(),
+                creditsStore.fetchUnifiedCredits(),
+              ])
               saveToStorage()
               return
             }

@@ -43,7 +43,7 @@ In production, apply the same SQL against your production Postgres (where `DATAB
 
 ## Step 2: Set Required Environment Variables
 
-### Backend (`packages/api-gateway/.env`)
+### Root `.env`
 
 ```bash
 JWT_SECRET=$(openssl rand -base64 32)
@@ -55,13 +55,6 @@ You can leave Supabase env vars empty/unset:
 # SUPABASE_URL=
 # SUPABASE_ANON_KEY=
 # SUPABASE_SERVICE_ROLE_KEY=
-```
-
-### Frontend (`apps/web/.env`)
-
-Do not set Supabase frontend keys:
-
-```bash
 # VITE_SUPABASE_URL=
 # VITE_SUPABASE_ANON_KEY=
 ```

@@ -29,37 +29,7 @@ The root directory includes safe-to-commit templates plus gitignored local profi
 ### `.env.example`
 - **Purpose**: Template with placeholder values
 - **Usage**: Copy to `.env` and fill in your credentials
-- **Version**: PRO (copilot and referrals enabled by default)
-
-### `.env.lite.example`
-- **Purpose**: LITE (Community Edition) template
-- **Features**: Basic Copilot enabled (no agents, no RAG, no referrals)
-- **Feature Flags**:
-  ```bash
-  ENABLE_COPILOT=true
-  ENABLE_AI_AGENTS=false
-  ENABLE_COPILOT_RAG=false
-  ENABLE_REFERRALS=false
-  VITE_ENABLE_COPILOT=true
-  VITE_ENABLE_AI_AGENTS=false
-  VITE_ENABLE_COPILOT_RAG=false
-  VITE_ENABLE_REFERRALS=false
-  ```
-
-### `.env.pro.example`
-- **Purpose**: PRO (Commercial Edition) template
-- **Features**: ALL features including Copilot RAG, AI Agents, and Referrals
-- **Feature Flags**:
-  ```bash
-  ENABLE_COPILOT=true
-  ENABLE_AI_AGENTS=true
-  ENABLE_COPILOT_RAG=true
-  ENABLE_REFERRALS=true
-  VITE_ENABLE_COPILOT=true
-  VITE_ENABLE_AI_AGENTS=true
-  VITE_ENABLE_COPILOT_RAG=true
-  VITE_ENABLE_REFERRALS=true
-  ```
+- **Defaults**: Community-friendly (Copilot ON, Referrals OFF)
 
 ### Local profiles (gitignored)
 - `.env` - your active config
@@ -81,8 +51,10 @@ pnpm build:lite
 
 **Option 2: Manual setup**
 ```bash
-# First-time: create your local profile from the template
-cp .env.lite.example .env.lite
+# First-time: create your local profile from the root template
+cp .env.example .env.lite
+
+# Edit `.env.lite` feature flags (keep Community defaults)
 
 # Activate it
 cp .env.lite .env
@@ -104,8 +76,10 @@ pnpm build:pro
 
 **Option 2: Manual setup**
 ```bash
-# First-time: create your local profile from the template
-cp .env.pro.example .env.pro
+# First-time: create your local profile from the root template
+cp .env.example .env.pro
+
+# Edit `.env.pro` feature flags (enable PRO-only flags if you have PRO code)
 
 # Activate it
 cp .env.pro .env
@@ -127,7 +101,7 @@ SynthStack uses a small set of environment files depending on what you run:
   - `ENABLE_REFERRALS` - Enable/disable referral & rewards system
 
 ### Frontend (web)
-- **Location**: `apps/web/.env*` (VITE_ variables used at build/dev time)
+- **Location**: root `.env` (VITE_ variables used at build/dev time)
 - **Feature Flags**:
   - `VITE_ENABLE_COPILOT` - Show/hide basic AI UI components
   - `VITE_ENABLE_AI_AGENTS` - Show/hide agentic AI UI (Copilot Hub)
@@ -179,16 +153,14 @@ export const FEATURES = {
 
 ### During Development
 
-Simply copy the desired environment file and restart the dev servers:
+Use the version scripts (or set flags in `.env`) and restart the dev servers:
 
 ```bash
-# Switch to LITE (first-time: cp .env.lite.example .env.lite)
-cp .env.lite .env
-pnpm dev
+# LITE / Community
+pnpm dev:lite
 
-# Switch to PRO (first-time: cp .env.pro.example .env.pro)
-cp .env.pro .env
-pnpm dev
+# PRO (Commercial)
+pnpm dev:pro
 ```
 
 ### For Production Builds
@@ -228,15 +200,13 @@ When using Docker, the root `.env` file is automatically loaded by Docker Compos
 
 ### LITE Version
 ```bash
-# First-time: cp .env.lite.example .env.lite
-cp .env.lite .env
+# Edit `.env` feature flags for LITE/Community, then:
 docker compose up
 ```
 
 ### PRO Version
 ```bash
-# First-time: cp .env.pro.example .env.pro
-cp .env.pro .env
+# Edit `.env` feature flags for PRO, then:
 docker compose up
 ```
 
@@ -320,7 +290,7 @@ VITE_ENABLE_REFERRALS=false
 
 ### Feature Not Loading
 
-1. **Check environment file**: Ensure you copied the correct `.env.lite` or `.env.pro` (first-time: create from `.env.lite.example` / `.env.pro.example`)
+1. **Check environment file**: Ensure you’re running with the intended flags (`pnpm dev:lite` / `pnpm dev:pro`) or the correct `.env` profile.
 2. **Restart dev servers**: Changes to `.env` require restart
 3. **Check logs**: Look for feature initialization messages:
    ```
@@ -339,7 +309,7 @@ If copilot or referral routes return 404, it means:
 
 If UI components don't appear:
 - Feature is disabled in the frontend
-- Check `VITE_ENABLE_AI_AGENTS` / `VITE_ENABLE_COPILOT_RAG` / `VITE_ENABLE_REFERRALS` in `apps/web/.env`
+- Check `VITE_ENABLE_AI_AGENTS` / `VITE_ENABLE_COPILOT_RAG` / `VITE_ENABLE_REFERRALS` in the root `.env`
 - Rebuild the frontend: `pnpm --filter @synthstack/web build`
 
 ## License Implications

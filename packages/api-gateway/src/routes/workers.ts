@@ -99,5 +99,41 @@ export default async function workerRoutes(fastify: FastifyInstance) {
     return { success: true, data: { webhooksDeleted: webhooks.rowCount, eventsDeleted: events.rowCount } };
   });
 
+  fastify.post<{ Querystring: { limit?: string } }>('/process-email-queue', { preHandler: [verifyWorkerAuth], schema: { tags: ['Workers'] } }, async (request, reply) => {
+    const limit = Math.max(1, Math.min(1000, parseInt(request.query.limit || '100', 10) || 100));
+    const { getEmailService } = await import('../services/email/index.js');
+    const processed = await getEmailService().processQueue(limit);
+    return { success: true, data: { processed } };
+  });
+
+  fastify.post<{ Querystring: { days?: string } }>('/cleanup-email-logs', { preHandler: [verifyWorkerAuth], schema: { tags: ['Workers'] } }, async (request, reply) => {
+    const days = Math.max(1, Math.min(3650, parseInt(request.query.days || '180', 10) || 180));
+    const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+
+    const tracking = await fastify.pg.query(
+      'DELETE FROM email_tracking_events WHERE occurred_at < $1',
+      [cutoff]
+    );
+    const logs = await fastify.pg.query(
+      'DELETE FROM email_logs WHERE created_at < $1',
+      [cutoff]
+    );
+    const queue = await fastify.pg.query(
+      "DELETE FROM email_queue WHERE status IN ('sent','failed','cancelled') AND updated_at < $1",
+      [cutoff]
+    );
+
+    return {
+      success: true,
+      data: {
+        days,
+        cutoff,
+        trackingEventsDeleted: tracking.rowCount,
+        logsDeleted: logs.rowCount,
+        queueDeleted: queue.rowCount,
+      },
+    };
+  });
+
   fastify.get('/health', { schema: { tags: ['Workers'] } }, async () => ({ success: true, data: { status: 'healthy', timestamp: new Date().toISOString() } }));
 }

@@ -646,10 +646,10 @@ When building for Capacitor (iOS/Android) or Electron:
 **Environment Variables:**
 
 ```env
-# Frontend (apps/web/.env)
+# Frontend (VITE_* vars in root .env)
 VITE_DIRECTUS_URL=https://cms.yourdomain.com
 
-# Backend API Gateway (packages/api-gateway/.env)
+# Backend API Gateway (root .env)
 DIRECTUS_URL=https://cms.yourdomain.com
 DIRECTUS_TOKEN=your-api-token
 ```

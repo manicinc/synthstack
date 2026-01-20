@@ -39,11 +39,12 @@ SynthStack uses **environment flags** for the self-hosted build:
 
 Templates are safe to commit (`*.example`). Your real configs are gitignored (`.env`, `.env.lite`, `.env.pro`).
 
-| Location | LITE template | PRO template |
-|----------|---------------|--------------|
-| Repo root | `.env.lite.example` | `.env.pro.example` |
-| Web app | `apps/web/.env.lite.example` | `apps/web/.env.pro.example` |
-| Production deploy | `deploy/.env.example` | `deploy/.env.example` |
+| Location | Template |
+|----------|----------|
+| Repo root (recommended) | `.env.example` |
+| Web reference | `apps/web/.env.example` |
+| API reference | `packages/api-gateway/.env.example` |
+| Production deploy | `deploy/.env.example` |
 
 ## Setup Wizards (Public-Friendly)
 
@@ -51,4 +52,3 @@ Both editions include:
 
 - `/setup/branding` — exports `config.json` for consistent branding.
 - `/setup/env` — exports `.env` files rendered from the repo templates.
-

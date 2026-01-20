@@ -47,19 +47,14 @@ Copy:
 
 ## Step 4: Set Environment Variables (Dev + Production)
 
-### Local development (`apps/web/.env`)
-
-```bash
-VITE_SUPABASE_URL=https://xxxxx.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJ...
-```
-
-### Local development (`packages/api-gateway/.env`)
+### Local development (root `.env`)
 
 ```bash
 SUPABASE_URL=https://xxxxx.supabase.co
 SUPABASE_ANON_KEY=eyJ...
 SUPABASE_SERVICE_ROLE_KEY=eyJ... # secret (server only)
+VITE_SUPABASE_URL=https://xxxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJ...
 ```
 
 ### Production runtime (`deploy/.env` → `/opt/synthstack/deploy/.env`)
@@ -79,7 +74,7 @@ The web app is built in CI and needs Supabase keys at **build time**:
 - GitHub Actions **Variables**: `VITE_SUPABASE_URL`
 - GitHub Actions **Secrets**: `VITE_SUPABASE_ANON_KEY`
 
-If you build locally, set `apps/web/.env` before running `pnpm --filter @synthstack/web build`.
+If you build locally, set the values in root `.env` (or export them in your shell) before running `pnpm --filter @synthstack/web build`.
 
 ---
 
@@ -127,4 +122,3 @@ You should see `activeProvider: "supabase"` and `providers.supabase: true`.
 - External dependency / potential vendor lock-in
 - Supabase uptime and plan limits apply
 - You still must back up your **app database** (`DATABASE_URL`)
-

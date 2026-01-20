@@ -5,37 +5,42 @@ import { configure } from 'quasar/wrappers';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import { existsSync } from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load .env file for local development
-// This makes VITE_* variables available in process.env during Quasar config evaluation
-// In CI, environment variables are already set via workflow env block
-// Try apps/web/.env first, then fall back to root .env for monorepo setups
-const webEnvPath = path.join(__dirname, '.env');
-const rootEnvPath = path.join(__dirname, '../..', '.env');
+function findRepoRoot(startDir) {
+  let current = startDir;
+  for (let i = 0; i < 10; i++) {
+    const workspaceFile = path.resolve(current, 'pnpm-workspace.yaml');
+    if (existsSync(workspaceFile)) return current;
 
-let dotenvResult = dotenv.config({ path: webEnvPath });
-if (dotenvResult.error) {
-  // Try root .env as fallback
-  dotenvResult = dotenv.config({ path: rootEnvPath });
-  if (dotenvResult.error) {
-    console.error('[Quasar Config] Failed to load .env:', dotenvResult.error.message);
-  } else {
-    console.log('[Quasar Config] Loaded root .env as fallback');
+    const parent = path.dirname(current);
+    if (parent === current) break;
+    current = parent;
   }
-} else {
-  console.log('[Quasar Config] Loaded apps/web/.env successfully');
-  // Also load root .env for any vars not in apps/web/.env
-  dotenv.config({ path: rootEnvPath });
+  return undefined;
 }
-console.log('[Quasar Config] VITE_ENABLE_COPILOT:', process.env.VITE_ENABLE_COPILOT);
-console.log('[Quasar Config] VITE_ENABLE_COPILOT_RAG:', process.env.VITE_ENABLE_COPILOT_RAG);
-console.log('[Quasar Config] VITE_ENABLE_AI_AGENTS:', process.env.VITE_ENABLE_AI_AGENTS);
-console.log('[Quasar Config] VITE_ENABLE_REFERRALS:', process.env.VITE_ENABLE_REFERRALS);
 
 export default configure(function (ctx) {
+  // Load env vars from the monorepo root.
+  // Vite loads `.env.*` automatically (via `envDir` below), but Quasar config also
+  // reads from `process.env` when building the `env: { ... }` mapping.
+  const repoRoot = findRepoRoot(__dirname) || __dirname;
+  const modeEnvPath = path.join(repoRoot, ctx.prod ? '.env.production' : '.env.development');
+
+  dotenv.config({ path: modeEnvPath });
+  dotenv.config({ path: path.join(repoRoot, '.env') });
+
+  if (ctx.dev) {
+    console.log('[Quasar Config] envDir:', repoRoot);
+    console.log('[Quasar Config] VITE_ENABLE_COPILOT:', process.env.VITE_ENABLE_COPILOT);
+    console.log('[Quasar Config] VITE_ENABLE_COPILOT_RAG:', process.env.VITE_ENABLE_COPILOT_RAG);
+    console.log('[Quasar Config] VITE_ENABLE_AI_AGENTS:', process.env.VITE_ENABLE_AI_AGENTS);
+    console.log('[Quasar Config] VITE_ENABLE_REFERRALS:', process.env.VITE_ENABLE_REFERRALS);
+  }
+
   return {
     // Enable TypeScript
     supportTS: {
@@ -101,9 +106,9 @@ export default configure(function (ctx) {
         DIRECTUS_URL: process.env.VITE_DIRECTUS_URL || 'http://localhost:8099',
         SUPABASE_URL: process.env.VITE_SUPABASE_URL || '',
         SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY || '',
-        STRIPE_PUBLISHABLE_KEY: process.env.VITE_STRIPE_PUBLISHABLE_KEY || '',
+        STRIPE_PUBLISHABLE_KEY: process.env.VITE_STRIPE_PUBLISHABLE_KEY || process.env.STRIPE_PUBLISHABLE_KEY || '',
         APP_NAME: process.env.VITE_APP_NAME || 'SynthStack',
-        APP_URL: process.env.VITE_APP_URL || 'http://localhost:3000',
+        APP_URL: process.env.VITE_APP_URL || 'http://localhost:3050',
         // Feature flags - exposed as process.env.ENABLE_COPILOT (not VITE_ENABLE_COPILOT)
         ENABLE_COPILOT: process.env.VITE_ENABLE_COPILOT || 'false',
         // Back-compat: if new flags are missing, fall back to ENABLE_COPILOT (legacy behavior)
@@ -139,6 +144,9 @@ export default configure(function (ctx) {
 
       // Vite config
       extendViteConf(viteConf, { isClient, isServer }) {
+        // Use the monorepo root for Vite env loading (`import.meta.env.*`)
+        viteConf.envDir = repoRoot;
+
         viteConf.server = {
           ...(viteConf.server || {}),
           host: '0.0.0.0',
@@ -149,10 +157,15 @@ export default configure(function (ctx) {
         };
 
         // Allow imports from the monorepo root (e.g., config.json, shared templates)
+        const configJsonFile = path.resolve(__dirname, '../../config.json');
+        const allowDirs = Array.from(
+          new Set([repoRoot, path.dirname(configJsonFile)]),
+        );
+
         viteConf.server.fs = viteConf.server.fs || {};
         viteConf.server.fs.allow = [
           ...(viteConf.server.fs.allow || []),
-          path.resolve(__dirname, '../../..')
+          ...allowDirs,
         ];
 
         // Externalize Capacitor plugins for SPA/web and Electron builds

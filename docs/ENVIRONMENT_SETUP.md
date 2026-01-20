@@ -81,9 +81,9 @@ These files contain **placeholder values** and are safe to commit:
 
 | File | Purpose |
 |------|---------|
-| `.env.example` | Main template with placeholder values (PRO version) |
-| `.env.lite.example` | LITE version template (basic copilot; no agents/RAG/referrals) |
-| `.env.pro.example` | PRO version template (all features enabled) |
+| `.env.example` | Root template (recommended single `.env` for local + Docker) |
+| `apps/web/.env.example` | Frontend reference template (VITE_* variables) |
+| `packages/api-gateway/.env.example` | API reference template |
 
 ### Personal Configuration Files (NOT in Git)
 
@@ -91,16 +91,14 @@ These files contain **real credentials** and are ignored by git:
 
 | File | Purpose | Created From |
 |------|---------|--------------|
-| `.env` | Active configuration used by services | Copy from any .example file |
-| `.env.lite` | Your personal LITE version config with real values | Copy from `.env.lite.example` |
-| `.env.pro` | Your personal PRO version config with real values | Copy from `.env.pro.example` |
+| `.env` | Active configuration used by Docker + most dev workflows | Copy from `.env.example` |
 
 ## Initial Setup
 
 ### 1. Copy Template to Active Config
 
 ```bash
-# Copy the PRO template (recommended for development)
+# Copy the root template (recommended)
 cp .env.example .env
 ```
 
@@ -120,93 +118,36 @@ STRIPE_SECRET_KEY=YOUR_STRIPE_SECRET_KEY
 SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 ```
 
-### 3. Create Personal LITE and PRO Configs
-
-Once your `.env` has real values, create personal versions for easy switching:
-
-```bash
-# First-time: create your local profiles from the templates
-cp .env.lite.example .env.lite
-cp .env.pro.example .env.pro
-
-# Then fill in real values in .env.lite / .env.pro (recommended: edit .env.pro first, then copy shared credentials into .env.lite)
-```
-
-## Switching Between Versions
-
-### Using npm Scripts (Recommended)
-
-The easiest way to switch versions:
-
-```bash
-# Run LITE version
-pnpm dev:lite
-
-# Run PRO version
-pnpm dev:pro
-
-# Build LITE version
-pnpm build:lite
-
-# Build PRO version
-pnpm build:pro
-```
-
-These scripts automatically:
-1. Copy `.env.lite` or `.env.pro` to `.env`
-2. Start all services with the correct configuration
-
-### Manual Switching
-
-If you prefer manual control:
-
-```bash
-# Switch to LITE
-cp .env.lite .env
-pnpm dev
-
-# Switch to PRO
-cp .env.pro .env
-pnpm dev
-```
-
 ## Package-Level Configuration
 
-Some packages use their own `.env` files (frontend), while others load the root `.env` (backend).
+SynthStack uses a single root `.env` file as the source of truth for local dev + Docker.
 
 ### Backend (api-gateway)
 
-The API gateway loads environment variables from the **repo root** `.env` by default:
+The API gateway loads environment variables from the repo root `.env`:
 
 - Source: `packages/api-gateway/src/config/index.ts`
 - Template reference: `packages/api-gateway/.env.example` (for docs/visibility)
 
 ### Frontend (web)
 
-```
-apps/web/
-├── .env.example        # Template (committed)
-├── .env.lite.example   # LITE template (committed)
-├── .env.pro.example    # PRO template (committed)
-├── .env.lite           # Personal LITE config (gitignored)
-├── .env.pro            # Personal PRO config (gitignored)
-└── .env                # Active config (gitignored)
-```
+The web app uses the repo root `.env` for both Quasar config and Vite `import.meta.env`:
+
+- Source: `apps/web/quasar.config.js`
+- Template reference: `apps/web/.env.example`
 
 ## What Gets Committed?
 
 ### ✅ Safe to Commit
 
 - `.env.example` - Template with placeholders
-- `.env.lite.example` - LITE template with placeholders
-- `.env.pro.example` - PRO template with placeholders
+- `apps/web/.env.example` - Frontend template with placeholders (optional)
+- `packages/api-gateway/.env.example` - API template with placeholders (optional)
 - Any `.example` file
 
 ### ❌ Never Commit
 
 - `.env` - Active config with real credentials
-- `.env.lite` - Personal LITE config with real credentials
-- `.env.pro` - Personal PRO config with real credentials
 - `.env.local` - Local overrides
 - Any file without `.example` suffix
 
@@ -233,13 +174,7 @@ These are protected by `.gitignore`:
 
 2. **Copy templates**
    ```bash
-   # Root profiles (server-side / docker / api-gateway)
-   cp .env.pro.example .env.pro
-   cp .env.lite.example .env.lite
-
-   # Frontend profiles (VITE_* variables)
-   cp apps/web/.env.pro.example apps/web/.env.pro
-   cp apps/web/.env.lite.example apps/web/.env.lite
+   cp .env.example .env
    ```
 
 3. **Get credentials from team**
@@ -247,12 +182,13 @@ These are protected by `.gitignore`:
    - Or use team's credential management system (1Password, etc.)
 
 4. **Fill in credentials**
-   - Edit `.env.pro`, `.env.lite`, `apps/web/.env.pro`, and `apps/web/.env.lite` with real values
+   - Edit `.env` with real values
    - Never commit these files
 
 5. **Run a version**
-   - `pnpm dev:pro` (creates `.env` / `apps/web/.env` from your PRO profiles)
-   - `pnpm dev:lite` (creates `.env` / `apps/web/.env` from your LITE profiles)
+   - Start infra: `docker compose up -d`
+   - Run web dev: `pnpm dev:web`
+   - Run API dev (optional): `pnpm dev:api`
 
 ### Sharing New Services/Credentials
 

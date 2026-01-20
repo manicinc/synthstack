@@ -439,16 +439,46 @@
 
         <div class="grid-2 q-mt-md">
           <q-input
+            v-model="values.STRIPE_PRICE_AGENCY"
+            label="Agency price (monthly)"
+            outlined
+            placeholder="price_..."
+          />
+          <q-input
+            v-model="values.STRIPE_PRICE_LIFETIME_PRO"
+            label="Lifetime license price (STRIPE_PRICE_LIFETIME_PRO)"
+            outlined
+            placeholder="price_..."
+          />
+        </div>
+
+        <div class="grid-3 q-mt-md">
+          <q-input
+            v-model="values.STRIPE_PRICE_MAKER_YEARLY"
+            label="Maker price (yearly)"
+            outlined
+            placeholder="price_..."
+          />
+          <q-input
+            v-model="values.STRIPE_PRICE_PRO_YEARLY"
+            label="Pro price (yearly)"
+            outlined
+            placeholder="price_..."
+          />
+          <q-input
+            v-model="values.STRIPE_PRICE_AGENCY_YEARLY"
+            label="Agency price (yearly)"
+            outlined
+            placeholder="price_..."
+          />
+        </div>
+
+        <div class="q-mt-md">
+          <q-input
             v-model="values.VITE_STRIPE_PUBLISHABLE_KEY"
             label="Frontend publishable (VITE_STRIPE_PUBLISHABLE_KEY)"
             outlined
             placeholder="<stripe_publishable_key>"
-          />
-          <q-input
-            v-model="values.STRIPE_PRICE_LIFETIME"
-            label="Lifetime price (STRIPE_PRICE_LIFETIME)"
-            outlined
-            placeholder="price_..."
           />
         </div>
 
@@ -580,61 +610,16 @@
 
           <q-separator />
 
-          <q-tabs
-            v-model="activeEnv"
-            dense
-            class="text-grey-8"
-            active-color="primary"
-            indicator-color="primary"
-            align="left"
-          >
-            <q-tab name="root" label="root .env" />
-            <q-tab name="web" label="apps/web .env" />
-            <q-tab name="api" label="api-gateway .env" />
-          </q-tabs>
-
-          <q-separator />
-
-          <q-tab-panels v-model="activeEnv" animated>
-            <q-tab-panel name="root">
-              <div class="text-caption text-grey-7 q-mb-sm">
-                Save as <code>synthstack-community/.env</code>.
-              </div>
-              <q-input
-                v-model="rendered.root"
-                type="textarea"
-                readonly
-                outlined
-                autogrow
-              />
-            </q-tab-panel>
-
-            <q-tab-panel name="web">
-              <div class="text-caption text-grey-7 q-mb-sm">
-                Save as <code>synthstack-community/apps/web/.env</code>.
-              </div>
-              <q-input
-                v-model="rendered.web"
-                type="textarea"
-                readonly
-                outlined
-                autogrow
-              />
-            </q-tab-panel>
-
-            <q-tab-panel name="api">
-              <div class="text-caption text-grey-7 q-mb-sm">
-                Save as <code>synthstack-community/packages/api-gateway/.env</code>.
-              </div>
-              <q-input
-                v-model="rendered.api"
-                type="textarea"
-                readonly
-                outlined
-                autogrow
-              />
-            </q-tab-panel>
-          </q-tab-panels>
+          <div class="text-caption text-grey-7 q-mb-sm">
+            Save as <code>synthstack-community/.env</code> (source of truth for API + Web + Docker).
+          </div>
+          <q-input
+            v-model="rendered"
+            type="textarea"
+            readonly
+            outlined
+            autogrow
+          />
         </q-card>
 
         <q-stepper-navigation class="row items-center q-mt-md">
@@ -663,19 +648,14 @@ import { useQuasar } from 'quasar'
 import projectConfig from '@/config/project-config'
 
 import rootEnvTemplate from '../../../../../.env.example?raw'
-import apiEnvTemplate from '../../../../../packages/api-gateway/.env.example?raw'
 
 // Optional Pro/Lite templates - only exist in pro edition
 // Use Vite's import.meta.glob to optionally import these files
-// Note: Web env is now consolidated with root env (no separate apps/web/.env.example)
 const rootEnvFiles = import.meta.glob('../../../../../.env.*.example', { query: '?raw', eager: true, import: 'default' }) as Record<string, string>
 
 // Fall back to main template if pro/lite templates don't exist
 const rootEnvLiteTemplate = rootEnvFiles['../../../../../.env.lite.example'] ?? rootEnvTemplate
 const rootEnvProTemplate = rootEnvFiles['../../../../../.env.pro.example'] ?? rootEnvTemplate
-// Web uses the same templates as root (env files consolidated to monorepo root)
-const webEnvLiteTemplate = rootEnvLiteTemplate
-const webEnvProTemplate = rootEnvProTemplate
 
 defineEmits<{
   (e: 'done'): void
@@ -683,7 +663,6 @@ defineEmits<{
 
 const $q = useQuasar()
 const step = ref(1)
-const activeEnv = ref<'root' | 'web' | 'api'>('root')
 const edition = ref<'pro' | 'community'>('community')
 
 // Collapsible sections state
@@ -743,7 +722,11 @@ const values = reactive<Record<string, string>>({
   STRIPE_WEBHOOK_SECRET: '',
   STRIPE_PRICE_MAKER: '',
   STRIPE_PRICE_PRO: '',
-  STRIPE_PRICE_LIFETIME: '',
+  STRIPE_PRICE_AGENCY: '',
+  STRIPE_PRICE_MAKER_YEARLY: '',
+  STRIPE_PRICE_PRO_YEARLY: '',
+  STRIPE_PRICE_AGENCY_YEARLY: '',
+  STRIPE_PRICE_LIFETIME_PRO: '',
   VITE_STRIPE_PUBLISHABLE_KEY: '',
 
   // Email
@@ -778,8 +761,6 @@ const activeTemplates = computed(() => {
 
   return {
     root: isPro ? rootEnvProTemplate : rootEnvLiteTemplate,
-    web: isPro ? webEnvProTemplate : webEnvLiteTemplate,
-    api: apiEnvTemplate,
   }
 })
 
@@ -798,9 +779,11 @@ function applyEnvTemplate(template: string, overrides: Record<string, string>): 
   let out = template
   for (const [key, raw] of Object.entries(overrides)) {
     if (raw === undefined) continue
+    if (String(raw) === '') continue
     const value = envQuote(String(raw))
     const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    const re = new RegExp(`^${escapedKey}=.*$`, 'm')
+    // Support both active and commented template lines (e.g. "# STRIPE_PRICE_MAKER=...")
+    const re = new RegExp(`^\\s*#?\\s*${escapedKey}=.*$`, 'm')
     if (re.test(out)) {
       out = out.replace(re, `${key}=${value}`)
     }
@@ -817,23 +800,17 @@ const rendered = computed(() => {
     FRONTEND_URL: values.FRONTEND_URL || values.VITE_APP_URL,
     APP_URL: values.APP_URL || values.VITE_APP_URL,
     VITE_STRIPE_PUBLISHABLE_KEY: values.VITE_STRIPE_PUBLISHABLE_KEY || values.STRIPE_PUBLISHABLE_KEY,
+    // Back-compat for older templates/installs
+    STRIPE_PRICE_LIFETIME: values.STRIPE_PRICE_LIFETIME_PRO || '',
   }
 
   const rootTemplateToUse = activeTemplates.value.root || rootEnvTemplate
-  const root = applyEnvTemplate(rootTemplateToUse, normalized)
-
-  const webTemplateToUse = activeTemplates.value.web || rootEnvTemplate
-  const web = applyEnvTemplate(webTemplateToUse, normalized)
-
-  const api = applyEnvTemplate(apiEnvTemplate, normalized)
-
-  return { root, web, api }
+  return applyEnvTemplate(rootTemplateToUse, normalized)
 })
 
 function reset() {
   step.value = 1
   edition.value = 'community'
-  activeEnv.value = 'root'
   Object.assign(values, {
     DB_DATABASE: projectConfig.infrastructure.databaseName,
     DB_USER: projectConfig.infrastructure.databaseName,
@@ -864,7 +841,11 @@ function reset() {
     STRIPE_WEBHOOK_SECRET: '',
     STRIPE_PRICE_MAKER: '',
     STRIPE_PRICE_PRO: '',
-    STRIPE_PRICE_LIFETIME: '',
+    STRIPE_PRICE_AGENCY: '',
+    STRIPE_PRICE_MAKER_YEARLY: '',
+    STRIPE_PRICE_PRO_YEARLY: '',
+    STRIPE_PRICE_AGENCY_YEARLY: '',
+    STRIPE_PRICE_LIFETIME_PRO: '',
     VITE_STRIPE_PUBLISHABLE_KEY: '',
     RESEND_API_KEY: '',
     RESEND_FROM_EMAIL: projectConfig.contact.noreply || '',
@@ -876,16 +857,9 @@ function reset() {
   $q.notify({ type: 'info', message: 'Reset wizard', position: 'top', timeout: 2000 })
 }
 
-function currentEnvText(): { filename: string; contents: string } {
-  if (activeEnv.value === 'root') return { filename: 'synthstack-community.env', contents: rendered.value.root }
-  if (activeEnv.value === 'web') return { filename: 'synthstack-community-web.env', contents: rendered.value.web }
-  return { filename: 'synthstack-community-api.env', contents: rendered.value.api }
-}
-
 async function copyCurrent() {
   try {
-    const { contents } = currentEnvText()
-    await navigator.clipboard.writeText(contents)
+    await navigator.clipboard.writeText(rendered.value)
     $q.notify({ type: 'positive', message: 'Copied to clipboard', position: 'top', timeout: 2000 })
   } catch {
     $q.notify({ type: 'negative', message: 'Copy failed (clipboard blocked)', position: 'top' })
@@ -893,8 +867,8 @@ async function copyCurrent() {
 }
 
 function downloadCurrent() {
-  const { filename, contents } = currentEnvText()
-  const blob = new Blob([contents], { type: 'text/plain;charset=utf-8' })
+  const filename = 'synthstack-community.env'
+  const blob = new Blob([rendered.value], { type: 'text/plain;charset=utf-8' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url

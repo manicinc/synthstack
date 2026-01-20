@@ -325,13 +325,44 @@ export class EmailService {
 
       const queueId = result.rows[0].id;
 
-      // If not scheduled, process immediately
-      if (!options.scheduledAt) {
-        // Process in background (don't await)
+      // Process asynchronously (prefer BullMQ queue when available)
+      (async () => {
+        try {
+          const { getEmailQueueService } = await import('./queue.js');
+          const queueService = getEmailQueueService();
+          const jobData = {
+            queueId,
+            priority: options.priority || 0,
+            userId: options.userId,
+          };
+
+          if (options.scheduledAt) {
+            // Only schedule if Redis-backed queue is enabled; otherwise leave in DB
+            if (queueService.isConfigured()) {
+              await queueService.scheduleEmail(jobData, options.scheduledAt);
+            } else {
+              this.fastify.log.warn({ queueId }, 'Redis not configured; scheduled email remains in DB until processed');
+            }
+            return;
+          }
+
+          // Immediate send
+          if (queueService.isConfigured()) {
+            await queueService.addEmail(jobData);
+            return;
+          }
+        } catch (error) {
+          if (options.scheduledAt) {
+            this.fastify.log.warn({ error, queueId }, 'Email queue unavailable; scheduled email remains in DB until processed');
+            return;
+          }
+        }
+
+        // Fallback: direct processing in-process
         this.processQueueItem(queueId).catch(error => {
           this.fastify.log.error({ error, queueId }, 'Failed to process email');
         });
-      }
+      })();
 
       return {
         success: true,
@@ -519,8 +550,8 @@ export class EmailService {
    * @returns Promise resolving to number of emails processed
    */
   async processQueue(limit: number = 100): Promise<number> {
-    if (!this.transporter) {
-      this.fastify.log.warn('SMTP not configured, skipping queue processing');
+    if (!this.resendService.isConfigured() && !this.transporter) {
+      this.fastify.log.warn('No email service configured, skipping queue processing');
       return 0;
     }
 

@@ -68,17 +68,13 @@ SynthStack implements a **flexible authentication system** that supports multipl
 
 ### 3. Configure Environment Variables
 
-**Frontend** (`apps/web/.env`):
-```bash
-VITE_SUPABASE_URL=https://xxxxx.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-```
-
-**Backend** (`packages/api-gateway/.env`):
+Add to your root `.env`:
 ```bash
 SUPABASE_URL=https://xxxxx.supabase.co
 SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+VITE_SUPABASE_URL=https://xxxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 ### 4. Configure Auth Provider (Optional)
@@ -124,7 +120,7 @@ Copy the output (e.g., `x3H7k9mP2vR5wQ8sL1nC4bF6tY0jU9iA3gD5hK7mN2q=`)
 
 ### 2. Configure Environment Variables
 
-**Backend** (`packages/api-gateway/.env`):
+Add to your root `.env`:
 ```bash
 # Required for local auth
 JWT_SECRET=x3H7k9mP2vR5wQ8sL1nC4bF6tY0jU9iA3gD5hK7mN2q=
@@ -134,13 +130,6 @@ DATABASE_URL=postgresql://user:password@localhost:5432/synthstack
 # SUPABASE_URL=...
 # SUPABASE_ANON_KEY=...
 # SUPABASE_SERVICE_ROLE_KEY=...
-```
-
-**Frontend** (`apps/web/.env`):
-```bash
-# Remove or comment out Supabase vars
-# VITE_SUPABASE_URL=...
-# VITE_SUPABASE_ANON_KEY=...
 ```
 
 ### 3. Apply Migration
@@ -1065,7 +1054,7 @@ WHERE reset_token = 'token-from-email';
 
 **1. Check email service configuration:**
 ```bash
-# Check Resend API key in packages/api-gateway/.env
+# Check Resend API key in root .env
 grep RESEND_API_KEY .env
 ```
 

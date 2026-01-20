@@ -7,7 +7,7 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import Stripe from 'stripe';
 import { getStripeService, TIER_CONFIG, SubscriptionTier } from '../services/stripe.js';
-import { getEmailService } from '../services/email/index.js';
+import { getEmailService, EMAIL_TEMPLATES } from '../services/email/index.js';
 import { config } from '../config/index.js';
 
 function normalizeTierForDatabase(rawTier: unknown): SubscriptionTier | null {
@@ -287,7 +287,7 @@ async function handleCheckoutCompleted(fastify: FastifyInstance, session: Stripe
 
     // Get current balance
     const userResult = await fastify.pg.query(
-      'SELECT credits_remaining FROM app_users WHERE id = $1',
+      'SELECT credits_remaining, email, display_name FROM app_users WHERE id = $1',
       [user_id]
     );
 
@@ -310,6 +310,49 @@ async function handleCheckoutCompleted(fastify: FastifyInstance, session: Stripe
         SET status = 'completed', stripe_payment_intent_id = $1, completed_at = NOW()
         WHERE stripe_session_id = $2
       `, [session.payment_intent, session.id]);
+
+      // Email: credits purchased (best-effort)
+      try {
+        const userEmail: string | null =
+          (userResult.rows[0] as any).email ||
+          session.customer_email ||
+          session.customer_details?.email ||
+          null;
+
+        if (userEmail) {
+          const userName =
+            (userResult.rows[0] as any).display_name ||
+            userEmail.split('@')[0];
+
+          const emailService = getEmailService();
+          const result = await emailService.sendEmail({
+            to: userEmail,
+            toName: userName,
+            templateSlug: EMAIL_TEMPLATES.CREDIT_PURCHASED,
+            templateData: {
+              userName,
+              credits: creditAmount,
+              amount: session.amount_total ? session.amount_total / 100 : 0,
+              packageName: `${creditAmount} Credits`,
+              transactionId: session.id,
+              newBalance,
+              dashboardUrl: `${config.frontendUrl}/app`,
+              purchaseUrl: `${config.frontendUrl}/pricing#credits`,
+              upgradeUrl: `${config.frontendUrl}/pricing`,
+            },
+            userId: user_id,
+            referenceType: 'purchase',
+            referenceId: session.id,
+            priority: 8,
+          });
+
+          if (!result.success) {
+            fastify.log.warn({ userId: user_id, error: result.error, code: result.errorCode }, 'Credits purchased email not sent');
+          }
+        }
+      } catch (error) {
+        fastify.log.warn({ error, userId: user_id }, 'Failed to send credits purchased email');
+      }
     }
 
     fastify.log.info({ userId: user_id, credits: creditAmount }, 'Credit purchase completed');
@@ -340,7 +383,7 @@ async function handleCheckoutCompleted(fastify: FastifyInstance, session: Stripe
 
     // Send welcome email with GitHub username submission link
     try {
-      const licenseAccessUrl = `${process.env.FRONTEND_URL}/license-access?session=${session.id}`;
+      const licenseAccessUrl = `${config.frontendUrl}/license-access?session=${session.id}`;
 
       const emailService = getEmailService();
       await emailService.sendLifetimeWelcomeEmail({
@@ -412,6 +455,55 @@ async function handleCheckoutCompleted(fastify: FastifyInstance, session: Stripe
     INSERT INTO analytics_events (event_type, event_category, user_id, metadata)
     VALUES ('subscription_created', 'subscription', $1, $2)
   `, [user_id, JSON.stringify({ tier: storedTier, subscription_id: session.subscription })]);
+
+  // Email: subscription confirmation (best-effort)
+  try {
+    const userResult = await fastify.pg.query<{ email: string; display_name: string | null }>(
+      'SELECT email, display_name FROM app_users WHERE id = $1',
+      [user_id]
+    );
+
+    const userEmail =
+      userResult.rows[0]?.email ||
+      session.customer_email ||
+      session.customer_details?.email ||
+      null;
+
+    if (userEmail) {
+      const userName = userResult.rows[0]?.display_name || userEmail.split('@')[0];
+      const isYearly = session.metadata?.is_yearly === 'true';
+
+      const nextBillingDate = new Date();
+      nextBillingDate.setMonth(nextBillingDate.getMonth() + (isYearly ? 12 : 1));
+
+      const emailService = getEmailService();
+      const result = await emailService.sendEmail({
+        to: userEmail,
+        toName: userName,
+        templateSlug: EMAIL_TEMPLATES.SUBSCRIPTION_CONFIRMED,
+        templateData: {
+          userName,
+          planName: tierConfig.displayName,
+          amount: session.amount_total ? session.amount_total / 100 : 0,
+          isYearly,
+          creditsPerDay: tierConfig.creditsPerDay,
+          nextBillingDate: nextBillingDate.toLocaleDateString(),
+          dashboardUrl: `${config.frontendUrl}/app`,
+          billingUrl: `${config.frontendUrl}/app/billing`,
+        },
+        userId: user_id,
+        referenceType: 'subscription',
+        referenceId: String(session.subscription || session.id),
+        priority: 9,
+      });
+
+      if (!result.success) {
+        fastify.log.warn({ userId: user_id, error: result.error, code: result.errorCode }, 'Subscription confirmation email not sent');
+      }
+    }
+  } catch (error) {
+    fastify.log.warn({ error, userId: user_id }, 'Failed to send subscription confirmation email');
+  }
 
   fastify.log.info({ userId: user_id, tier: storedTier }, 'Subscription created via checkout');
 }

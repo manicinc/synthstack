@@ -52,7 +52,7 @@ Update in `.env`:
 # Backend
 FRONTEND_URL=https://yourdomain.app
 
-# Frontend (apps/web/.env)
+# Frontend (VITE_* vars in root .env)
 VITE_API_URL=https://api.yourdomain.app
 ```
 
@@ -175,7 +175,7 @@ DIRECTUS_PUBLIC_URL=https://admin.yourdomain.app
 SUPABASE_URL=https://auth.yourdomain.app  # If using custom Supabase domain
 ```
 
-### Frontend `apps/web/.env`
+### Frontend (VITE_* vars in root `.env`)
 
 ```env
 VITE_API_URL=https://api.yourdomain.app

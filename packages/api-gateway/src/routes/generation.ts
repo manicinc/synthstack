@@ -55,7 +55,7 @@ interface ChatCompletionBody {
 }
 
 export default async function generationRoutes(fastify: FastifyInstance) {
-  const mlServiceUrl = config.mlServiceUrl || process.env.ML_SERVICE_URL || 'http://localhost:3050';
+  const mlServiceUrl = config.mlServiceUrl || process.env.ML_SERVICE_URL || 'http://localhost:8001';
 
   /**
    * Helper to deduct credits from user

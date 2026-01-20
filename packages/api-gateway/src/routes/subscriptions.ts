@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import Stripe from 'stripe'
+import { config } from '../config/index.js'
 
 const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2025-02-24.acacia' })
@@ -88,8 +89,8 @@ export default async function subscriptionRoutes(fastify: FastifyInstance) {
           price: priceId,
           quantity: 1
         }],
-        success_url: `${process.env.FRONTEND_URL}/app?subscription=success`,
-        cancel_url: `${process.env.FRONTEND_URL}/pricing?subscription=cancelled`,
+        success_url: `${config.frontendUrl}/app?subscription=success`,
+        cancel_url: `${config.frontendUrl}/pricing?subscription=cancelled`,
         metadata: {
           userId,
           planTier,
@@ -266,4 +267,3 @@ export default async function subscriptionRoutes(fastify: FastifyInstance) {
     return { received: true }
   })
 }
-

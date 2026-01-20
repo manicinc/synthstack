@@ -22,8 +22,6 @@ If you're deploying SynthStack to production, self-hosting, or purchased a licen
 3. **Replace the DSN** in your environment files with your own DSN
 4. **Update these files:**
    - `.env` (root)
-   - `packages/api-gateway/.env`
-   - `apps/web/.env`
 
 This ensures error reports go to YOUR Sentry dashboard, not ours.
 
@@ -46,15 +44,11 @@ For each project:
 
 ### Step 3: Configure Environment Variables
 
-**Frontend (`apps/web/.env`):**
+Add to your root `.env`:
 ```bash
 VITE_SENTRY_DSN=https://xxx@o123456.ingest.sentry.io/xxx
 VITE_SENTRY_ENVIRONMENT=production
 VITE_SENTRY_TRACES_SAMPLE_RATE=0.1
-```
-
-**Backend (`packages/api-gateway/.env`):**
-```bash
 SENTRY_DSN=https://xxx@o123456.ingest.sentry.io/xxx
 SENTRY_ENVIRONMENT=production
 SENTRY_TRACES_SAMPLE_RATE=0.1

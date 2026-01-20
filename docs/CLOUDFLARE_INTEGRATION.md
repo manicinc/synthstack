@@ -170,7 +170,7 @@ Cloudflare R2 is S3-compatible object storage with no egress fees.
 
 ### 3. Configure Environment Variables
 
-Add to `packages/api-gateway/.env`:
+Add to your root `.env`:
 
 ```bash
 # Cloudflare R2 Storage
@@ -237,17 +237,17 @@ credentials-file: /root/.cloudflared/YOUR_TUNNEL_ID.json
 ingress:
   # Main website
   - hostname: synthstack.app
-    service: http://localhost:80
+    service: http://localhost:3050
   - hostname: www.synthstack.app
-    service: http://localhost:80
+    service: http://localhost:3050
 
   # API
   - hostname: api.synthstack.app
-    service: http://localhost:3000
+    service: http://localhost:3003
 
   # Admin/CMS
   - hostname: admin.synthstack.app
-    service: http://localhost:8055
+    service: http://localhost:8099
 
   # Catch-all
   - service: http_status:404

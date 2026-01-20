@@ -446,7 +446,7 @@ services:
 
       # App Config
       VITE_APP_NAME: SynthStack
-      VITE_APP_URL: http://localhost:3000
+      VITE_APP_URL: http://localhost:3050
 
       # Stripe
       VITE_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}

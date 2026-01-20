@@ -47,27 +47,18 @@ SynthStack offers two editions controlled by environment variables:
 
 **LITE (Community Edition)** - Free for learning/personal/evaluation (Community License, non-commercial):
 ```env
-ENABLE_COPILOT=false
+ENABLE_COPILOT=true
 ENABLE_REFERRALS=false
-VITE_ENABLE_COPILOT=false
+VITE_ENABLE_COPILOT=true
 VITE_ENABLE_REFERRALS=false
 ```
 
-**PRO (Commercial Edition)** - Includes AI Copilot & Referrals:
+**PRO (Commercial Edition)** - Adds PRO-only modules (e.g., referrals, advanced AI modules) when present:
 ```env
 ENABLE_COPILOT=true
 ENABLE_REFERRALS=true
 VITE_ENABLE_COPILOT=true
 VITE_ENABLE_REFERRALS=true
-```
-
-**Quick setup:**
-```bash
-# LITE: Use community edition template
-cp .env.lite.example .env
-
-# PRO: Use commercial edition template
-cp .env.pro.example .env
 ```
 
 See [VERSIONS.md](./VERSIONS.md) for detailed feature comparison.

@@ -93,7 +93,12 @@ Comprehensive transactional and marketing email system with:
 ### Environment Variables
 
 ```bash
-# SMTP Configuration
+# Resend (recommended - no SMTP required)
+RESEND_API_KEY=re_...
+RESEND_FROM_EMAIL=noreply@synthstack.app
+RESEND_FROM_NAME=SynthStack
+
+# SMTP (optional fallback)
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=your-email@gmail.com
@@ -307,19 +312,8 @@ DELETE /api/v1/admin/email/bounce-list/:email
 Run every minute or as needed:
 
 ```bash
-curl -X POST http://localhost:3003/api/v1/workers/process-email-queue \
+curl -X POST "http://localhost:3003/api/v1/workers/process-email-queue?limit=100" \
   -H "Authorization: Bearer YOUR_CRON_SECRET"
-```
-
-Add to `workers.ts`:
-```typescript
-fastify.post('/process-email-queue', {
-  preHandler: [verifyWorkerAuth]
-}, async (request, reply) => {
-  const emailService = getEmailService();
-  const processed = await emailService.processQueue(100);
-  return { success: true, data: { processed } };
-});
 ```
 
 ### Clean Old Emails
@@ -327,7 +321,7 @@ fastify.post('/process-email-queue', {
 Run monthly:
 
 ```bash
-curl -X POST http://localhost:3003/api/v1/workers/cleanup-email-logs \
+curl -X POST "http://localhost:3003/api/v1/workers/cleanup-email-logs?days=180" \
   -H "Authorization: Bearer YOUR_CRON_SECRET"
 ```
 

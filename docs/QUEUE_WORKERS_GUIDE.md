@@ -340,17 +340,24 @@ pm2 logs api-gateway
 
 **Email Queue Stats:**
 ```bash
-# Via API endpoint
-curl http://localhost:3003/api/v1/email/queue/stats
+# Via API endpoint (admin-only)
+# Tip: authenticate as an admin user and pass your JWT as a Bearer token.
+curl -H "Authorization: Bearer <ADMIN_JWT>" http://localhost:3003/api/v1/admin/email/queue
 
 # Response
 {
-  "waiting": 25,
-  "active": 5,
-  "completed": 1000,
-  "failed": 2,
-  "delayed": 10,
-  "total": 1042
+  "success": true,
+  "data": {
+    "stats": {
+      "waiting": 25,
+      "active": 5,
+      "completed": 1000,
+      "failed": 2,
+      "delayed": 10,
+      "total": 1042
+    },
+    "failedJobs": []
+  }
 }
 ```
 
@@ -628,7 +635,7 @@ docker exec synthstack-redis redis-cli ping
 docker logs synthstack-api-gateway | grep "queue initialized"
 
 # 3. Check queue stats
-curl http://localhost:3003/api/v1/email/queue/stats
+curl -H "Authorization: Bearer <ADMIN_JWT>" http://localhost:3003/api/v1/admin/email/queue
 
 # 4. Check worker count
 # Should see: "Email queue initialized" in logs

@@ -743,7 +743,7 @@ vercel deploy --prod
 
 #### Frontend (Vue 3 + Quasar)
 ```env
-# apps/web/.env.production
+# .env.production (repo root)
 VITE_API_URL=https://api.yourdomain.com
 VITE_DIRECTUS_URL=https://cms.yourdomain.com
 VITE_ENABLE_COPILOT=true
@@ -753,7 +753,7 @@ VITE_STRIPE_PUBLISHABLE_KEY=YOUR_STRIPE_PUBLISHABLE_KEY
 
 #### API Gateway (Fastify)
 ```env
-# packages/api-gateway/.env
+# .env (repo root, or deploy/.env in production)
 NODE_ENV=production
 PORT=3003
 HOST=0.0.0.0

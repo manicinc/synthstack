@@ -17,21 +17,20 @@ function findRepoRoot(startDir: string): string | undefined {
 }
 
 // Load env vars from the repo root `.env` (Docker / monorepo canonical),
-// plus an optional per-package override at `packages/api-gateway/.env`.
-const repoRoot = findRepoRoot(process.cwd());
-if (repoRoot) {
-  const cwdEnvPath = resolve(process.cwd(), '.env');
-  const rootEnvPath = resolve(repoRoot, '.env');
+// and do not load per-package `.env` files (avoid drift between packages).
+const isTestEnv =
+  process.env.NODE_ENV === 'test' ||
+  process.env.VITEST !== undefined ||
+  process.env.JEST_WORKER_ID !== undefined;
 
-  // Prefer a local `.env` in the current working directory (common with `pnpm --filter`),
-  // then fill in any missing values from the monorepo root `.env`.
-  loadEnv({ path: cwdEnvPath });
-  if (rootEnvPath !== cwdEnvPath) {
-    loadEnv({ path: rootEnvPath });
+if (!isTestEnv) {
+  const repoRoot = findRepoRoot(process.cwd());
+  if (repoRoot) {
+    loadEnv({ path: resolve(repoRoot, '.env') });
+  } else {
+    // Fallback for unusual working dirs (should still behave like legacy behavior)
+    loadEnv({ path: resolve(process.cwd(), '../../.env') });
   }
-} else {
-  // Fallback for unusual working dirs (should still behave like legacy behavior)
-  loadEnv({ path: resolve(process.cwd(), '../../.env') });
 }
 
 const envSchema = z.object({
@@ -48,7 +47,8 @@ const envSchema = z.object({
   SUPABASE_ANON_KEY: z.string().optional().default(''),
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional().default(''),
   ML_SERVICE_URL: z.string().default('http://localhost:8001'),
-  REDIS_URL: z.string().default('redis://localhost:6399'),
+  // Optional: leave unset to disable Redis-dependent features in local test/dev.
+  REDIS_URL: z.string().default(''),
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
   STRIPE_PRICE_MAKER: z.string().optional(),
@@ -78,7 +78,7 @@ const envSchema = z.object({
   JWT_SECRET: z.string().default('dev-secret-change-in-production'),
   ADMIN_SECRET: z.string().default('dev-admin-secret'),
   CRON_SECRET: z.string().optional(),
-  FRONTEND_URL: z.string().default('http://localhost:3000'),
+  FRONTEND_URL: z.string().default('http://localhost:3050'),
   RATE_LIMIT_FREE: z.string().optional(),
   RATE_LIMIT_MAKER: z.string().optional(),
   RATE_LIMIT_PRO: z.string().optional(),

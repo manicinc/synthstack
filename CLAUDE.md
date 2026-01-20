@@ -157,7 +157,7 @@ if (features.copilotEnabled) { /* ... */ }
 
 ## Environment Setup
 
-1. Copy `.env.lite.example` to `.env` for community edition
+1. Copy `.env.example` to `.env` (repo root is the single source of truth)
 2. Required variables:
    - `SUPABASE_URL`, `SUPABASE_ANON_KEY` - Auth (or use local auth)
    - `STRIPE_SECRET_KEY`, `VITE_STRIPE_PUBLISHABLE_KEY` - Payments
@@ -359,7 +359,7 @@ User Action → Vue Component → Pinia Store → API Service → API Gateway �
 
 ### Add a new feature flag
 
-1. Add to `.env.lite.example` and `.env.pro.example`
+1. Add to `.env.example`
 2. Add to `apps/web/src/config/features.ts`
 3. Add to `apps/web/src/stores/features.ts`
 4. Use via `useFeatureStore()` in components
@@ -392,4 +392,4 @@ When working with this codebase:
 
 6. **Config is centralized** - `config.json` controls branding, `features.ts` controls feature flags.
 
-7. **Environment is tiered** - `.env.lite.example` for Community, `.env.pro.example` for Pro edition.
+7. **Environment is centralized** - use repo root `.env` (generated from `.env.example` or `pnpm generate:env`).

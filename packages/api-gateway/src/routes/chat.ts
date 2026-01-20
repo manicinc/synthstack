@@ -52,7 +52,7 @@ interface ChatCompletionBody {
 }
 
 export default async function chatRoutes(fastify: FastifyInstance) {
-  const mlServiceUrl = config.mlServiceUrl || process.env.ML_SERVICE_URL || 'http://localhost:3050';
+  const mlServiceUrl = config.mlServiceUrl || process.env.ML_SERVICE_URL || 'http://localhost:8001';
 
   function resolveModelTier(model?: string, modelTier?: ModelTier): ModelTier {
     if (model) {

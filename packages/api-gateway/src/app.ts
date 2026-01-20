@@ -24,7 +24,7 @@ import { initAnalyticsService } from './services/analytics/index.js';
 import { initOrchestrationService } from './services/orchestration/index.js';
 import { initOrchestrationQueueService } from './services/orchestration/queue.js';
 import { initAuthService, getAuthService } from './services/auth/index.js';
-import { initEmailService } from './services/email/index.js';
+import { initEmailQueueService, initEmailService } from './services/email/index.js';
 
 // Plugins
 import rateLimitTierPlugin from './plugins/rate-limit-tier.js';
@@ -42,6 +42,8 @@ import webhooksRoutes from './routes/webhooks.js';
 import subscriptionRoutes from './routes/subscriptions.js';
 import communityRoutes from './routes/community.js';
 import usersRoutes from './routes/users.js';
+import emailRoutes from './routes/email.js';
+import adminDiagnosticsRoutes from './routes/admin-diagnostics.js';
 import adminSyncRoutes from './routes/admin-sync.js';
 import billingRoutes from './routes/billing.js';
 import workerRoutes from './routes/workers.js';
@@ -233,10 +235,13 @@ async function registerPlugins(app: FastifyInstance, options: AppOptions): Promi
     app.log.warn({ error }, '⚠️ Auth service initialization failed, using fallback');
   }
 
+  // Email service is used by routes even in test mode. It is safe to initialize without keys.
+  initEmailService(app);
+  initEmailQueueService(app);
+
   // Initialize external services (skip in test mode)
   if (!options.skipServices) {
     initStripeService(app);
-    initEmailService(app);
     initNewsletterService(app);
     initAnalyticsService(app);
     // initDocsIngestionService removed - Community Edition
@@ -360,6 +365,7 @@ async function registerRoutes(app: FastifyInstance, options: AppOptions): Promis
   await app.register(chatRoutes, { prefix: '/api/v1/chat' });
   await app.register(communityRoutes, { prefix: '/api/v1' });
   await app.register(usersRoutes, { prefix: '/api/v1/users' });
+  await app.register(emailRoutes, { prefix: '/api/v1' });
 
   // Billing routes require Stripe (skip in test mode when skipServices is true)
   if (!options.skipServices) {
@@ -376,6 +382,7 @@ async function registerRoutes(app: FastifyInstance, options: AppOptions): Promis
     await app.register(analyticsRoutes, { prefix: '/api/v1/analytics' });
   }
   await app.register(workerRoutes, { prefix: '/api/v1/workers' });
+  await app.register(adminDiagnosticsRoutes, { prefix: '/api/v1/admin' });
   await app.register(adminSyncRoutes, { prefix: '/api/v1/admin' });
 
   // COMMUNITY: Copilot/Agents routes removed - not available in Community Edition

@@ -523,8 +523,12 @@
 	import DOMPurify from 'dompurify'
 	import { api } from '@/services/api'
 	import { logError } from '@/utils/devLogger'
+  import { useAuthStore } from '@/stores/auth'
+  import { useCreditsStore } from '@/stores/credits'
 
 const $q = useQuasar()
+const authStore = useAuthStore()
+const creditsStore = useCreditsStore()
 
 // Generation type
 const generationType = ref('text')
@@ -626,6 +630,23 @@ function tokensForWords(words: number): number {
   return clampTokens(safeWords * 2)
 }
 
+function estimateTextCreditCost(model: string): number {
+  if (model === 'gpt-4') return 5
+  if (model === 'gpt-4-turbo') return 3
+  return 1
+}
+
+function estimateImageCreditCost(quality: 'standard' | 'hd', size: string): number {
+  const key = `${quality}-${size}`
+  if (key === 'standard-1024x1024') return 5
+  if (key === 'standard-1792x1024') return 7
+  if (key === 'standard-1024x1792') return 7
+  if (key === 'hd-1024x1024') return 10
+  if (key === 'hd-1792x1024') return 15
+  if (key === 'hd-1024x1792') return 15
+  return 5
+}
+
 function buildTextSystemPrompt(): string {
   const tone = textTone.value || 'Professional'
   const templatePrompts: Record<string, string> = {
@@ -685,12 +706,21 @@ async function generateText() {
 
     generatedText.value = response.data?.content || ''
 
+    await Promise.allSettled([
+      authStore.fetchUser(),
+      creditsStore.fetchUnifiedCredits(),
+    ])
+
     $q.notify({
       type: 'positive',
       message: 'Text generated successfully!',
       position: 'top'
     })
   } catch (error: any) {
+    if (error?.status === 402) {
+      creditsStore.showInsufficientCreditsModal(estimateTextCreditCost(textModel.value))
+      return
+    }
     logError('Text generation failed:', error)
     $q.notify({
       type: 'negative',
@@ -724,12 +754,23 @@ async function generateImage() {
     const imageUrl = response.data?.imageUrl
     generatedImages.value = imageUrl ? [{ url: imageUrl }] : []
 
+    await Promise.allSettled([
+      authStore.fetchUser(),
+      creditsStore.fetchUnifiedCredits(),
+    ])
+
     $q.notify({
       type: 'positive',
       message: 'Image generated successfully!',
       position: 'top'
     })
   } catch (error: any) {
+    if (error?.status === 402) {
+      creditsStore.showInsufficientCreditsModal(
+        estimateImageCreditCost(imageQuality.value, imageSize.value),
+      )
+      return
+    }
     logError('Image generation failed:', error)
     $q.notify({
       type: 'negative',
@@ -763,12 +804,21 @@ async function generateCode() {
 
     generatedCode.value = response.data?.content || ''
 
+    await Promise.allSettled([
+      authStore.fetchUser(),
+      creditsStore.fetchUnifiedCredits(),
+    ])
+
     $q.notify({
       type: 'positive',
       message: 'Code generated successfully!',
       position: 'top'
     })
   } catch (error: any) {
+    if (error?.status === 402) {
+      creditsStore.showInsufficientCreditsModal(estimateTextCreditCost(codeModel.value))
+      return
+    }
     logError('Code generation failed:', error)
     $q.notify({
       type: 'negative',
@@ -803,12 +853,21 @@ async function generateDocument() {
     const raw = response.data?.content || ''
     generatedDocument.value = documentFormat.value === 'html' ? DOMPurify.sanitize(raw) : raw
 
+    await Promise.allSettled([
+      authStore.fetchUser(),
+      creditsStore.fetchUnifiedCredits(),
+    ])
+
     $q.notify({
       type: 'positive',
       message: 'Document generated successfully!',
       position: 'top'
     })
   } catch (error: any) {
+    if (error?.status === 402) {
+      creditsStore.showInsufficientCreditsModal(estimateTextCreditCost(textModel.value))
+      return
+    }
     logError('Document generation failed:', error)
     $q.notify({
       type: 'negative',
