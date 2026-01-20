@@ -74,7 +74,7 @@
         <q-card class="settings-card">
           <q-card-section>
             <div class="setting-row">
-              <div class="setting-label" data-testid="temperature-label">
+              <div class="setting-label" data-testid="model-tier-label">
                 <h4>Model Tier</h4>
                 <p>Choose your preferred AI model tier</p>
               </div>
