@@ -1,0 +1,170 @@
+[
+    {
+        "id": "form-crm-flow",
+        "type": "tab",
+        "label": "Form to CRM",
+        "disabled": false,
+        "info": "Capture form submissions and create CRM records in Directus.\n\nNo external integrations required - uses built-in Directus CMS.\n\nThis flow:\n1. Receives form submissions via webhook\n2. Validates the data\n3. Creates a record in Directus\n4. Returns a success response",
+        "env": []
+    },
+    {
+        "id": "http-form-submit",
+        "type": "http in",
+        "z": "form-crm-flow",
+        "name": "Form Submit",
+        "url": "/form/submit",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 100,
+        "wires": [
+            [
+                "validate-form"
+            ]
+        ]
+    },
+    {
+        "id": "validate-form",
+        "type": "function",
+        "z": "form-crm-flow",
+        "name": "Validate Form",
+        "func": "const data = msg.payload;\n\n// Validation rules\nconst errors = [];\n\nif (!data.name || data.name.trim().length < 2) {\n    errors.push('Name is required (min 2 characters)');\n}\n\nif (!data.email || !data.email.includes('@')) {\n    errors.push('Valid email is required');\n}\n\nif (errors.length > 0) {\n    msg.statusCode = 400;\n    msg.payload = { \n        success: false, \n        errors: errors \n    };\n    return [null, msg];\n}\n\n// Prepare data for Directus\nmsg.directusData = {\n    collection: 'leads', // Change to your collection name\n    data: {\n        name: data.name.trim(),\n        email: data.email.toLowerCase().trim(),\n        phone: data.phone || null,\n        company: data.company || null,\n        message: data.message || null,\n        source: data.source || 'website',\n        status: 'new',\n        created_at: new Date().toISOString()\n    }\n};\n\nreturn [msg, null];",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 100,
+        "wires": [
+            [
+                "directus-create"
+            ],
+            [
+                "http-error"
+            ]
+        ],
+        "outputLabels": [
+            "Valid",
+            "Invalid"
+        ]
+    },
+    {
+        "id": "directus-create",
+        "type": "synthstack-directus",
+        "z": "form-crm-flow",
+        "name": "Create Lead",
+        "operation": "create",
+        "collection": "leads",
+        "x": 530,
+        "y": 80,
+        "wires": [
+            [
+                "format-success"
+            ]
+        ]
+    },
+    {
+        "id": "format-success",
+        "type": "function",
+        "z": "form-crm-flow",
+        "name": "Success Response",
+        "func": "const created = msg.payload;\n\nmsg.statusCode = 201;\nmsg.payload = {\n    success: true,\n    message: 'Form submitted successfully',\n    id: created.id,\n    timestamp: new Date().toISOString()\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 720,
+        "y": 80,
+        "wires": [
+            [
+                "http-success",
+                "debug-success"
+            ]
+        ]
+    },
+    {
+        "id": "http-success",
+        "type": "http response",
+        "z": "form-crm-flow",
+        "name": "200 OK",
+        "statusCode": "",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "x": 900,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "http-error",
+        "type": "http response",
+        "z": "form-crm-flow",
+        "name": "400 Error",
+        "statusCode": "",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "x": 530,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "debug-success",
+        "type": "debug",
+        "z": "form-crm-flow",
+        "name": "Log Success",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload.id",
+        "statusType": "auto",
+        "x": 910,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "inject-test",
+        "type": "inject",
+        "z": "form-crm-flow",
+        "name": "Test Form",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"company\":\"Acme Inc\",\"message\":\"Interested in your product\",\"source\":\"landing-page\"}",
+        "payloadType": "json",
+        "x": 130,
+        "y": 180,
+        "wires": [
+            [
+                "validate-form"
+            ]
+        ]
+    },
+    {
+        "id": "comment-setup",
+        "type": "comment",
+        "z": "form-crm-flow",
+        "name": "Setup Instructions",
+        "info": "## No External Setup Required!\n\nThis flow uses Directus (built-in CMS).\n\n## Customization:\n\n1. Change the collection name in \"Create Lead\" node\n2. Modify validation rules in \"Validate Form\"\n3. Add/remove fields as needed\n\n## Testing:\n\n- Click \"Test Form\" to simulate a submission\n- Or POST to: /api/nodered/form/submit\n\n## Form Endpoint:\n\n`POST https://app.synthstack.app/api/nodered/form/submit`\n\nBody:\n```json\n{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"company\": \"Acme Inc\",\n  \"message\": \"Hello!\"\n}\n```",
+        "x": 170,
+        "y": 260,
+        "wires": []
+    }
+]
+
+

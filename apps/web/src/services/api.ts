@@ -367,6 +367,7 @@ export interface Project {
   description?: string
   status: ProjectStatus
   ownerId?: string
+  memberRole?: string
   isSystem?: boolean
   tags?: ProjectTag[]
   createdAt: string
@@ -637,25 +638,44 @@ export const users = {
 // --- Credits / Subscription ---
 
 export interface Subscription {
-  id: string
-  plan: 'free' | 'maker' | 'pro'
-  status: 'active' | 'canceled' | 'past_due'
-  currentPeriodEnd: string
-  cancelAtPeriodEnd: boolean
+  tier: string | null
+  status: string | null
+  plan: {
+    id: string | null
+    name: string | null
+    description: string | null
+    priceMonthly: number | null
+    priceYearly: number | null
+    features: string[]
+  }
+  limits: {
+    creditsPerDay: number
+    rateLimitPerMinute: number
+    maxFileSize: number
+  }
+  credits: {
+    remaining: number
+    lifetimeUsed: number
+    resetsAt: string | null
+  }
+  billing: {
+    stripeCustomerId: string | null
+    subscriptionId: string | null
+    startedAt: string | null
+    endsAt: string | null
+    cancelAtPeriodEnd: boolean
+  }
 }
 
 export const billing = {
   subscription: () =>
     get<Subscription>('/api/v1/billing/subscription'),
 
-  createCheckout: (priceId: string) =>
-    post<{ url: string }>('/api/v1/billing/checkout', { priceId }),
+  createCheckout: (data: { tier: 'maker' | 'pro' | 'agency' | 'unlimited'; isYearly?: boolean; promoCode?: string }) =>
+    post<{ checkoutUrl: string; sessionId?: string }>('/api/v1/billing/checkout', data),
 
   createPortal: () =>
-    post<{ url: string }>('/api/v1/billing/portal'),
-
-  credits: () =>
-    get<{ credits: number; limit: number }>('/api/v1/billing/credits')
+    post<{ portalUrl: string }>('/api/v1/billing/portal')
 }
 
 // ============================================

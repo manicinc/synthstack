@@ -12,11 +12,23 @@ const __dirname = path.dirname(__filename);
 // Load .env file for local development
 // This makes VITE_* variables available in process.env during Quasar config evaluation
 // In CI, environment variables are already set via workflow env block
-const dotenvResult = dotenv.config({ path: path.join(__dirname, '.env') });
+// Try apps/web/.env first, then fall back to root .env for monorepo setups
+const webEnvPath = path.join(__dirname, '.env');
+const rootEnvPath = path.join(__dirname, '../..', '.env');
+
+let dotenvResult = dotenv.config({ path: webEnvPath });
 if (dotenvResult.error) {
-  console.error('[Quasar Config] Failed to load .env:', dotenvResult.error.message);
+  // Try root .env as fallback
+  dotenvResult = dotenv.config({ path: rootEnvPath });
+  if (dotenvResult.error) {
+    console.error('[Quasar Config] Failed to load .env:', dotenvResult.error.message);
+  } else {
+    console.log('[Quasar Config] Loaded root .env as fallback');
+  }
 } else {
-  console.log('[Quasar Config] Loaded .env successfully');
+  console.log('[Quasar Config] Loaded apps/web/.env successfully');
+  // Also load root .env for any vars not in apps/web/.env
+  dotenv.config({ path: rootEnvPath });
 }
 console.log('[Quasar Config] VITE_ENABLE_COPILOT:', process.env.VITE_ENABLE_COPILOT);
 console.log('[Quasar Config] VITE_ENABLE_COPILOT_RAG:', process.env.VITE_ENABLE_COPILOT_RAG);

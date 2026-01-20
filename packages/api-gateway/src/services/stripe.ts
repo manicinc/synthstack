@@ -12,9 +12,8 @@ import { config } from '../config/index.js';
 // TYPES & INTERFACES
 // ============================================
 
-// Note: Subscription tiers for Stripe subscriptions (customer-facing).
-// Agency is the top plan; there is no "unlimited" subscription tier.
-export type SubscriptionTier = 'free' | 'maker' | 'pro' | 'agency';
+// Note: `unlimited` is a legacy alias some installs may still have stored.
+export type SubscriptionTier = 'free' | 'maker' | 'pro' | 'agency' | 'unlimited';
 
 export interface TierConfig {
   name: string;
@@ -139,6 +138,30 @@ export const TIER_CONFIG: Record<SubscriptionTier, TierConfig> = {
     stripePriceIdMonthly: config.stripe.prices.agency,
     stripePriceIdYearly: process.env.STRIPE_PRICE_AGENCY_YEARLY,
     // Premium workflow access with discount
+    workflowCreditMultiplier: 0.75,
+    freeWorkflowExecutionsPerDay: 100,
+    workflowsEnabled: true,
+  },
+  unlimited: {
+    // Backwards-compatibility alias: old installs may still have `unlimited` stored.
+    // Treat it as `agency` (high limits, not actually unlimited).
+    name: 'unlimited',
+    displayName: 'Agency (legacy unlimited)',
+    creditsPerDay: 500,
+    rateLimitPerMinute: 100,
+    rateLimitGeneration: 60,
+    maxFileSize: 500 * 1024 * 1024,
+    features: [
+      'Everything in Pro',
+      '500 credits/day',
+      'Team collaboration',
+      'White-labeling + custom branding',
+      'Dedicated support',
+      '100 free workflow executions/day',
+      '25% workflow discount',
+    ],
+    stripePriceIdMonthly: (config.stripe.prices as any).unlimited,
+    stripePriceIdYearly: process.env.STRIPE_PRICE_UNLIMITED_YEARLY,
     workflowCreditMultiplier: 0.75,
     freeWorkflowExecutionsPerDay: 100,
     workflowsEnabled: true,
@@ -320,6 +343,12 @@ export class StripeService {
     const customerId = await this.getOrCreateCustomer(options.userId, options.email);
 
     try {
+      // DB schema compatibility:
+      // - Marketing/Stripe tier name may be "agency"
+      // - Database tier constraint may still expect "unlimited"
+      const tierForWebhookMetadata: SubscriptionTier =
+        options.tier === 'agency' ? 'unlimited' : options.tier;
+
       const sessionParams: Stripe.Checkout.SessionCreateParams = {
         mode: 'subscription',
         customer: customerId || undefined,
@@ -334,11 +363,11 @@ export class StripeService {
         customer_update: customerId ? { address: 'auto', name: 'auto' } : undefined,
         metadata: {
           user_id: options.userId,
-          tier: options.tier,
+          tier: tierForWebhookMetadata,
           is_yearly: options.isYearly ? 'true' : 'false',
         },
         subscription_data: {
-          metadata: { user_id: options.userId, tier: options.tier },
+          metadata: { user_id: options.userId, tier: tierForWebhookMetadata },
           trial_period_days: options.trialDays,
         },
       };
@@ -705,6 +734,8 @@ export class StripeService {
   getTierFromPriceId(priceId: string): SubscriptionTier {
     for (const [tier, cfg] of Object.entries(TIER_CONFIG)) {
       if (cfg.stripePriceIdMonthly === priceId || cfg.stripePriceIdYearly === priceId) {
+        // Store top tier in DB as `unlimited` for back-compat with the schema.
+        if (tier === 'agency') return 'unlimited';
         return tier as SubscriptionTier;
       }
     }

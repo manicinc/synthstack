@@ -29,7 +29,11 @@ import {
 import { users, apiKeys, featureFlags, mockResponses } from '../../test/byok-fixtures';
 import type { Pool } from 'pg';
 
-describe('BYOK Integration Tests', () => {
+// These tests require a reachable Postgres instance (see `src/test/db-helpers.ts`).
+// Default to skipping in unit-test environments unless explicitly enabled.
+const describeIf = process.env.RUN_BYOK_INTEGRATION_TESTS === 'true' ? describe : describe.skip;
+
+describeIf('BYOK Integration Tests', () => {
   let pool: Pool;
 
   beforeAll(async () => {
@@ -261,7 +265,7 @@ describe('BYOK Integration Tests', () => {
       const user = await createTestUser({
         id: users.lifetime.id,
         email: users.lifetime.email,
-        subscriptionTier: 'enterprise',
+        subscriptionTier: 'agency',
         creditsRemaining: 50000,
       });
 

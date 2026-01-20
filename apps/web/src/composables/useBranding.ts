@@ -49,7 +49,7 @@ export function useBranding() {
       ...branding.demo,
       // Use local Directus URL when running on localhost
       adminUrl: import.meta.env.VITE_ADMIN_URL ||
-        (isLocalhost ? 'http://localhost:8056' : getSubdomainUrl('admin'))
+        (isLocalhost ? 'http://localhost:8099' : getSubdomainUrl('admin'))
     }
   })
 

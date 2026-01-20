@@ -1,0 +1,218 @@
+{
+  "id": "kb-ingestion-flow",
+  "label": "Knowledge Base Ingestion",
+  "info": "Ingest documents from multiple sources into the knowledge base for RAG",
+  "nodes": [
+    {
+      "id": "schedule-ingest",
+      "type": "synthstack-trigger",
+      "z": "kb-ingestion-flow",
+      "name": "Hourly Scan",
+      "triggerType": "schedule",
+      "schedule": "0 * * * *",
+      "x": 150,
+      "y": 200,
+      "wires": [["parallel-sources"]]
+    },
+    {
+      "id": "manual-ingest",
+      "type": "http in",
+      "z": "kb-ingestion-flow",
+      "name": "Manual Ingest",
+      "url": "/api/kb/ingest",
+      "method": "post",
+      "x": 150,
+      "y": 100,
+      "wires": [["route-source"]]
+    },
+    {
+      "id": "parallel-sources",
+      "type": "function",
+      "z": "kb-ingestion-flow",
+      "name": "Trigger All Sources",
+      "func": "// Send messages to scan all configured sources\nconst sources = [\n  { source: 'gdrive', folderId: env.get('KB_GDRIVE_FOLDER') },\n  { source: 'notion', databaseId: env.get('KB_NOTION_DB') },\n  { source: 'confluence', spaceKey: env.get('KB_CONFLUENCE_SPACE') }\n].filter(s => s.folderId || s.databaseId || s.spaceKey);\n\nreturn sources.map(s => ({ payload: s }));",
+      "outputs": 1,
+      "x": 380,
+      "y": 200,
+      "wires": [["route-source"]]
+    },
+    {
+      "id": "route-source",
+      "type": "switch",
+      "z": "kb-ingestion-flow",
+      "name": "Source Type",
+      "property": "payload.source",
+      "propertyType": "msg",
+      "rules": [
+        { "t": "eq", "v": "gdrive", "vt": "str" },
+        { "t": "eq", "v": "notion", "vt": "str" },
+        { "t": "eq", "v": "url", "vt": "str" },
+        { "t": "eq", "v": "text", "vt": "str" }
+      ],
+      "x": 560,
+      "y": 150,
+      "wires": [["scan-gdrive"], ["scan-notion"], ["ingest-url"], ["ingest-text"]]
+    },
+    {
+      "id": "scan-gdrive",
+      "type": "synthstack-gdrive",
+      "z": "kb-ingestion-flow",
+      "name": "Scan Google Drive",
+      "operation": "listFiles",
+      "folderId": "{{payload.folderId}}",
+      "mimeTypes": ["application/pdf", "application/vnd.google-apps.document", "text/plain", "text/markdown"],
+      "x": 780,
+      "y": 80,
+      "wires": [["filter-new-gdrive"]]
+    },
+    {
+      "id": "scan-notion",
+      "type": "synthstack-notion",
+      "z": "kb-ingestion-flow",
+      "name": "Scan Notion",
+      "operation": "queryDatabase",
+      "databaseId": "{{payload.databaseId}}",
+      "x": 780,
+      "y": 140,
+      "wires": [["filter-new-notion"]]
+    },
+    {
+      "id": "filter-new-gdrive",
+      "type": "function",
+      "z": "kb-ingestion-flow",
+      "name": "Filter New Files",
+      "func": "const files = msg.payload.files || [];\nconst lastSync = flow.get('lastGdriveSync') || new Date(0);\n\nconst newFiles = files.filter(f => {\n  const modTime = new Date(f.modifiedTime);\n  return modTime > lastSync;\n});\n\nflow.set('lastGdriveSync', new Date());\n\nif (newFiles.length === 0) {\n  node.status({ fill: 'grey', shape: 'ring', text: 'No new files' });\n  return null;\n}\n\nnode.status({ fill: 'blue', shape: 'dot', text: `${newFiles.length} files` });\nmsg.payload = newFiles;\nreturn msg;",
+      "outputs": 1,
+      "x": 1000,
+      "y": 80,
+      "wires": [["split-files"]]
+    },
+    {
+      "id": "filter-new-notion",
+      "type": "function",
+      "z": "kb-ingestion-flow",
+      "name": "Filter New Pages",
+      "func": "const pages = msg.payload.results || [];\nconst lastSync = flow.get('lastNotionSync') || new Date(0);\n\nconst newPages = pages.filter(p => {\n  const editTime = new Date(p.last_edited_time);\n  return editTime > lastSync;\n});\n\nflow.set('lastNotionSync', new Date());\n\nif (newPages.length === 0) {\n  node.status({ fill: 'grey', shape: 'ring', text: 'No new pages' });\n  return null;\n}\n\nnode.status({ fill: 'blue', shape: 'dot', text: `${newPages.length} pages` });\nmsg.payload = newPages.map(p => ({\n  source: 'notion',\n  sourceId: p.id,\n  title: p.properties?.Name?.title?.[0]?.plain_text || 'Untitled',\n  url: p.url\n}));\nreturn msg;",
+      "outputs": 1,
+      "x": 1000,
+      "y": 140,
+      "wires": [["split-files"]]
+    },
+    {
+      "id": "split-files",
+      "type": "split",
+      "z": "kb-ingestion-flow",
+      "name": "Split Files",
+      "splt": "\\n",
+      "spltType": "str",
+      "arraySplt": 1,
+      "arraySpltType": "len",
+      "stream": false,
+      "x": 1190,
+      "y": 110,
+      "wires": [["ingest-document"]]
+    },
+    {
+      "id": "ingest-url",
+      "type": "synthstack-kb-ingest",
+      "z": "kb-ingestion-flow",
+      "name": "Ingest URL",
+      "sourceType": "url",
+      "x": 780,
+      "y": 200,
+      "wires": [["log-ingest"], ["handle-error"]]
+    },
+    {
+      "id": "ingest-text",
+      "type": "synthstack-kb-ingest",
+      "z": "kb-ingestion-flow",
+      "name": "Ingest Text",
+      "sourceType": "text",
+      "x": 780,
+      "y": 260,
+      "wires": [["log-ingest"], ["handle-error"]]
+    },
+    {
+      "id": "ingest-document",
+      "type": "synthstack-kb-ingest",
+      "z": "kb-ingestion-flow",
+      "name": "Ingest Document",
+      "sourceType": "auto",
+      "chunkSize": 1000,
+      "chunkOverlap": 200,
+      "x": 1370,
+      "y": 110,
+      "wires": [["join-results"], ["handle-error"]]
+    },
+    {
+      "id": "join-results",
+      "type": "join",
+      "z": "kb-ingestion-flow",
+      "name": "Join Results",
+      "mode": "auto",
+      "build": "array",
+      "property": "payload",
+      "propertyType": "msg",
+      "x": 1550,
+      "y": 110,
+      "wires": [["summarize-ingest"]]
+    },
+    {
+      "id": "summarize-ingest",
+      "type": "function",
+      "z": "kb-ingestion-flow",
+      "name": "Summarize",
+      "func": "const results = msg.payload;\nconst totalChunks = results.reduce((sum, r) => sum + (r.chunksCreated || 0), 0);\nconst successCount = results.filter(r => r.success).length;\nconst errorCount = results.filter(r => !r.success).length;\n\nmsg.summary = {\n  totalDocuments: results.length,\n  successfulIngestions: successCount,\n  failedIngestions: errorCount,\n  totalChunksCreated: totalChunks,\n  timestamp: new Date().toISOString()\n};\n\nnode.status({ \n  fill: errorCount > 0 ? 'yellow' : 'green', \n  shape: 'dot', \n  text: `${successCount}/${results.length} docs, ${totalChunks} chunks` \n});\n\nreturn msg;",
+      "outputs": 1,
+      "x": 1730,
+      "y": 110,
+      "wires": [["log-ingest", "notify-complete"]]
+    },
+    {
+      "id": "log-ingest",
+      "type": "synthstack-directus",
+      "z": "kb-ingestion-flow",
+      "name": "Log Ingestion",
+      "operation": "create",
+      "collection": "kb_ingestion_logs",
+      "x": 1550,
+      "y": 200,
+      "wires": [[]]
+    },
+    {
+      "id": "notify-complete",
+      "type": "synthstack-slack",
+      "z": "kb-ingestion-flow",
+      "name": "Notify Complete",
+      "operation": "postMessage",
+      "channel": "#kb-updates",
+      "x": 1910,
+      "y": 110,
+      "wires": [[]]
+    },
+    {
+      "id": "handle-error",
+      "type": "function",
+      "z": "kb-ingestion-flow",
+      "name": "Handle Error",
+      "func": "node.error(`Ingestion failed: ${msg.error.message}`, msg);\n\nmsg.errorLog = {\n  source: msg.payload.source,\n  sourceId: msg.payload.sourceId,\n  error: msg.error.message,\n  timestamp: new Date().toISOString()\n};\n\nreturn msg;",
+      "outputs": 1,
+      "x": 1190,
+      "y": 260,
+      "wires": [["log-error"]]
+    },
+    {
+      "id": "log-error",
+      "type": "synthstack-directus",
+      "z": "kb-ingestion-flow",
+      "name": "Log Error",
+      "operation": "create",
+      "collection": "kb_ingestion_errors",
+      "x": 1370,
+      "y": 260,
+      "wires": [[]]
+    }
+  ]
+}
+
+

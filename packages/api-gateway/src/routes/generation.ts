@@ -61,17 +61,56 @@ export default async function generationRoutes(fastify: FastifyInstance) {
    * Helper to deduct credits from user
    */
   async function deductCredits(userId: string, amount: number, reason: string, referenceType: string, referenceId: string) {
-    await fastify.pg.query(`
-      UPDATE app_users
-      SET credits_remaining = GREATEST(0, credits_remaining - $1),
-          lifetime_credits_used = lifetime_credits_used + $1
-      WHERE id = $2
-    `, [amount, userId]);
+    const client = await fastify.pg.pool.connect();
+    try {
+      await client.query('BEGIN');
 
-    await fastify.pg.query(`
-      INSERT INTO credit_transactions (user_id, amount, reason, reference_type, reference_id)
-      VALUES ($1, $2, $3, $4, $5)
-    `, [userId, -amount, reason, referenceType, referenceId]);
+      const balanceResult = await client.query<{ credits_remaining: number | null }>(
+        'SELECT credits_remaining FROM app_users WHERE id = $1 FOR UPDATE',
+        [userId]
+      );
+
+      if (balanceResult.rows.length === 0) {
+        throw new Error('User not found');
+      }
+
+      const balanceBefore = balanceResult.rows[0].credits_remaining ?? 0;
+      const balanceAfter = Math.max(0, balanceBefore - amount);
+
+      await client.query(
+        `
+        UPDATE app_users
+        SET credits_remaining = $1,
+            lifetime_credits_used = lifetime_credits_used + $2
+        WHERE id = $3
+      `,
+        [balanceAfter, amount, userId]
+      );
+
+      await client.query(
+        `
+        INSERT INTO credit_transactions (
+          user_id,
+          type,
+          transaction_type,
+          amount,
+          balance_before,
+          balance_after,
+          reference_type,
+          reference_id,
+          reason
+        ) VALUES ($1, 'generation', 'deduction', $2, $3, $4, $5, $6, $7)
+      `,
+        [userId, -amount, balanceBefore, balanceAfter, referenceType, referenceId, reason]
+      );
+
+      await client.query('COMMIT');
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
   /**

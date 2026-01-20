@@ -1,0 +1,138 @@
+[
+  {
+    "id": "flow-support-rag",
+    "type": "tab",
+    "label": "Customer Support RAG",
+    "info": "Answer customer questions using the knowledge base",
+    "disabled": false
+  },
+  {
+    "id": "webhook-question",
+    "type": "synthstack-trigger",
+    "z": "flow-support-rag",
+    "name": "Support Question Webhook",
+    "triggerType": "webhook",
+    "path": "/support/ask",
+    "method": "POST",
+    "x": 180,
+    "y": 100,
+    "wires": [["validate-input"]]
+  },
+  {
+    "id": "validate-input",
+    "type": "function",
+    "z": "flow-support-rag",
+    "name": "Validate Input",
+    "func": "if (!msg.payload.question || typeof msg.payload.question !== 'string') {\n  msg.statusCode = 400;\n  msg.payload = { error: 'Question is required' };\n  return [null, msg];\n}\n\nif (msg.payload.question.length > 1000) {\n  msg.statusCode = 400;\n  msg.payload = { error: 'Question too long (max 1000 chars)' };\n  return [null, msg];\n}\n\nmsg.question = msg.payload.question;\nmsg.conversationId = msg.payload.conversation_id;\nreturn [msg, null];",
+    "outputs": 2,
+    "x": 390,
+    "y": 100,
+    "wires": [["search-knowledge-base"], ["send-error-response"]]
+  },
+  {
+    "id": "search-knowledge-base",
+    "type": "synthstack-kb-search",
+    "z": "flow-support-rag",
+    "name": "Search Support Docs",
+    "collectionName": "support-docs",
+    "topK": 5,
+    "scoreThreshold": 0.7,
+    "x": 600,
+    "y": 100,
+    "wires": [["check-results"], ["handle-search-error"]]
+  },
+  {
+    "id": "check-results",
+    "type": "function",
+    "z": "flow-support-rag",
+    "name": "Check Results",
+    "func": "if (msg.payload.results.length === 0) {\n  // No relevant docs found, use general AI\n  msg.useGeneralAI = true;\n  msg.context = '';\n} else {\n  msg.useGeneralAI = false;\n}\nreturn msg;",
+    "outputs": 1,
+    "x": 800,
+    "y": 100,
+    "wires": [["generate-answer"]]
+  },
+  {
+    "id": "generate-answer",
+    "type": "synthstack-copilot",
+    "z": "flow-support-rag",
+    "name": "Generate Answer",
+    "systemPrompt": "You are a helpful customer support assistant for SynthStack, an AI-native SaaS platform. Answer questions based on the provided context. If you're not sure, say so. Be friendly and concise.",
+    "useContext": true,
+    "maxTokens": 500,
+    "x": 1000,
+    "y": 100,
+    "wires": [["format-response"], ["handle-ai-error"]]
+  },
+  {
+    "id": "format-response",
+    "type": "function",
+    "z": "flow-support-rag",
+    "name": "Format Response",
+    "func": "const response = {\n  answer: msg.payload.answer,\n  sources: msg.payload.results?.map(r => ({\n    title: r.metadata?.title,\n    url: r.metadata?.url,\n    score: r.score\n  })).filter(s => s.title) || [],\n  conversation_id: msg.conversationId,\n  confidence: msg.useGeneralAI ? 'low' : 'high'\n};\n\n// Log for analytics\nmsg.analytics = {\n  question: msg.question,\n  sources_used: response.sources.length,\n  confidence: response.confidence\n};\n\nmsg.payload = response;\nmsg.statusCode = 200;\nreturn msg;",
+    "outputs": 1,
+    "x": 1200,
+    "y": 100,
+    "wires": [["log-interaction", "send-success-response"]]
+  },
+  {
+    "id": "log-interaction",
+    "type": "synthstack-directus",
+    "z": "flow-support-rag",
+    "name": "Log to Analytics",
+    "operation": "create",
+    "collection": "support_interactions",
+    "x": 1420,
+    "y": 60,
+    "wires": [[], []]
+  },
+  {
+    "id": "send-success-response",
+    "type": "http response",
+    "z": "flow-support-rag",
+    "name": "Send Response",
+    "statusCode": "",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "x": 1420,
+    "y": 140,
+    "wires": []
+  },
+  {
+    "id": "handle-search-error",
+    "type": "function",
+    "z": "flow-support-rag",
+    "name": "Handle Search Error",
+    "func": "node.warn('KB search failed: ' + msg.error.message);\n// Continue without context\nmsg.context = '';\nmsg.useGeneralAI = true;\nreturn msg;",
+    "outputs": 1,
+    "x": 830,
+    "y": 160,
+    "wires": [["generate-answer"]]
+  },
+  {
+    "id": "handle-ai-error",
+    "type": "function",
+    "z": "flow-support-rag",
+    "name": "Handle AI Error",
+    "func": "msg.statusCode = 500;\nmsg.payload = {\n  error: 'Unable to generate answer',\n  message: 'Please try again or contact support'\n};\nreturn msg;",
+    "outputs": 1,
+    "x": 1200,
+    "y": 160,
+    "wires": [["send-error-response"]]
+  },
+  {
+    "id": "send-error-response",
+    "type": "http response",
+    "z": "flow-support-rag",
+    "name": "Send Error",
+    "statusCode": "",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "x": 1420,
+    "y": 200,
+    "wires": []
+  }
+]
+

@@ -10,13 +10,19 @@ import { getStripeService, TIER_CONFIG, SubscriptionTier } from '../services/str
 import { getEmailService } from '../services/email/index.js';
 import { config } from '../config/index.js';
 
+function normalizeTierForDatabase(rawTier: unknown): SubscriptionTier | null {
+  const tier = (typeof rawTier === 'string' ? rawTier : '').trim().toLowerCase();
+  if (!tier) return null;
+  if (tier === 'agency') return 'unlimited';
+  if (tier === 'free' || tier === 'maker' || tier === 'pro' || tier === 'unlimited') return tier;
+  return null;
+}
+
 // ============================================
 // STRIPE WEBHOOKS ROUTES
 // ============================================
 
 export default async function stripeWebhookRoutes(fastify: FastifyInstance) {
-  const stripeService = getStripeService();
-
   /**
    * POST /api/v1/webhooks/stripe
    * Handle all Stripe webhook events
@@ -29,6 +35,17 @@ export default async function stripeWebhookRoutes(fastify: FastifyInstance) {
       description: 'Receives and processes Stripe webhook events',
     },
   }, async (request: any, reply: FastifyReply) => {
+    let stripeService;
+    try {
+      stripeService = getStripeService();
+    } catch {
+      return reply.status(503).send({ success: false, error: 'Stripe service not initialized' });
+    }
+
+    if (!stripeService.isConfigured() || !config.stripe.webhookSecret) {
+      return reply.status(500).send({ success: false, error: 'Stripe not configured' });
+    }
+
     const sig = request.headers['stripe-signature'] as string;
     const rawBody = request.rawBody;
 
@@ -87,8 +104,6 @@ export default async function stripeWebhookRoutes(fastify: FastifyInstance) {
 // ============================================
 
 async function processStripeEvent(fastify: FastifyInstance, event: Stripe.Event) {
-  const stripeService = getStripeService();
-
   switch (event.type) {
     // ========== CHECKOUT EVENTS ==========
     case 'checkout.session.completed':
@@ -355,9 +370,15 @@ async function handleCheckoutCompleted(fastify: FastifyInstance, session: Stripe
     return;
   }
 
-  const tierConfig = TIER_CONFIG[tier as SubscriptionTier];
-  if (!tierConfig) {
+  const storedTier = normalizeTierForDatabase(tier);
+  if (!storedTier) {
     fastify.log.error({ tier }, 'Invalid tier in checkout metadata');
+    return;
+  }
+
+  const tierConfig = TIER_CONFIG[storedTier];
+  if (!tierConfig) {
+    fastify.log.error({ tier: storedTier }, 'Invalid tier in checkout metadata');
     return;
   }
 
@@ -373,7 +394,7 @@ async function handleCheckoutCompleted(fastify: FastifyInstance, session: Stripe
       updated_at = NOW()
     WHERE id = $5
   `, [
-    tier,
+    storedTier,
     session.subscription,
     session.customer,
     tierConfig.creditsPerDay === Infinity ? 999999 : tierConfig.creditsPerDay,
@@ -384,15 +405,15 @@ async function handleCheckoutCompleted(fastify: FastifyInstance, session: Stripe
   await fastify.pg.query(`
     INSERT INTO subscription_history (user_id, action, to_tier, stripe_subscription_id, metadata)
     VALUES ($1, 'created', $2, $3, $4)
-  `, [user_id, tier, session.subscription, JSON.stringify({ session_id: session.id })]);
+  `, [user_id, storedTier, session.subscription, JSON.stringify({ session_id: session.id })]);
 
   // Log analytics event
   await fastify.pg.query(`
     INSERT INTO analytics_events (event_type, event_category, user_id, metadata)
     VALUES ('subscription_created', 'subscription', $1, $2)
-  `, [user_id, JSON.stringify({ tier, subscription_id: session.subscription })]);
+  `, [user_id, JSON.stringify({ tier: storedTier, subscription_id: session.subscription })]);
 
-  fastify.log.info({ userId: user_id, tier }, 'Subscription created via checkout');
+  fastify.log.info({ userId: user_id, tier: storedTier }, 'Subscription created via checkout');
 }
 
 async function handleCheckoutExpired(fastify: FastifyInstance, session: Stripe.Checkout.Session) {
@@ -415,7 +436,7 @@ async function handleSubscriptionCreated(fastify: FastifyInstance, subscription:
   const stripeService = getStripeService();
   const customerId = subscription.customer as string;
   const priceId = subscription.items.data[0]?.price.id;
-  const tier = stripeService.getTierFromPriceId(priceId);
+  const tier = normalizeTierForDatabase(stripeService.getTierFromPriceId(priceId)) || 'free';
 
   // Find user by customer ID
   const userResult = await fastify.pg.query(
@@ -454,7 +475,7 @@ async function handleSubscriptionCreated(fastify: FastifyInstance, subscription:
 async function handleSubscriptionUpdated(fastify: FastifyInstance, subscription: Stripe.Subscription) {
   const stripeService = getStripeService();
   const priceId = subscription.items.data[0]?.price.id;
-  const newTier = stripeService.getTierFromPriceId(priceId);
+  const newTier = normalizeTierForDatabase(stripeService.getTierFromPriceId(priceId)) || 'free';
 
   // Find user
   const userResult = await fastify.pg.query(
@@ -708,6 +729,6 @@ async function handleCustomerUpdate(fastify: FastifyInstance, customer: Stripe.C
 // ============================================
 
 function getTierRank(tier: SubscriptionTier): number {
-  const ranks: Record<SubscriptionTier, number> = { free: 0, maker: 1, pro: 2, agency: 3 };
+  const ranks: Record<SubscriptionTier, number> = { free: 0, maker: 1, pro: 2, agency: 3, unlimited: 3 };
   return ranks[tier] ?? 0;
 }

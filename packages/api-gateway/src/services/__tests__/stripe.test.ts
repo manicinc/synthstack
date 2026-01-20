@@ -8,8 +8,11 @@ import type { FastifyInstance } from 'fastify';
 import type Stripe from 'stripe';
 
 // Build at runtime to avoid GitHub Push Protection flagging these in the public repo.
-const STRIPE_SECRET_KEY_MOCK = ['sk', 'test', 'mock', 'key'].join('_');
-const STRIPE_WEBHOOK_SECRET_MOCK = ['whsec', 'test', 'secret'].join('_');
+// Use vi.hoisted so the values are available to vi.mock factories (which are hoisted).
+const { STRIPE_SECRET_KEY_MOCK, STRIPE_WEBHOOK_SECRET_MOCK } = vi.hoisted(() => ({
+  STRIPE_SECRET_KEY_MOCK: ['sk', 'test', 'mock', 'key'].join('_'),
+  STRIPE_WEBHOOK_SECRET_MOCK: ['whsec', 'test', 'secret'].join('_'),
+}));
 
 // Mock the config module before importing the service
 vi.mock('../../config/index.js', () => ({

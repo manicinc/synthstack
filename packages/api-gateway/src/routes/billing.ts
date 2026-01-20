@@ -308,7 +308,7 @@ export default async function billingRoutes(fastify: FastifyInstance) {
         type: 'object',
         required: ['tier'],
         properties: {
-          tier: { type: 'string', enum: ['maker', 'pro', 'agency'] },
+          tier: { type: 'string', enum: ['maker', 'pro', 'agency', 'unlimited'] },
           isYearly: { type: 'boolean', default: false },
           promoCode: { type: 'string' },
         },
@@ -328,10 +328,13 @@ export default async function billingRoutes(fastify: FastifyInstance) {
         return reply.status(500).send({ success: false, error: 'Stripe not configured' });
       }
 
+      // DB schema may store the top tier as `unlimited`; Stripe config/env may call it `agency`.
+      const checkoutTier = tier === 'unlimited' ? 'agency' : tier;
+
       const session = await stripeService.createCheckoutSession({
         userId,
         email,
-        tier: tier as SubscriptionTier,
+        tier: checkoutTier as SubscriptionTier,
         isYearly,
         promoCode,
         trialDays: 3,
@@ -422,7 +425,7 @@ export default async function billingRoutes(fastify: FastifyInstance) {
         type: 'object',
         required: ['newTier'],
         properties: {
-          newTier: { type: 'string', enum: ['free', 'maker', 'pro', 'agency'] },
+          newTier: { type: 'string', enum: ['free', 'maker', 'pro', 'agency', 'unlimited'] },
           isYearly: { type: 'boolean' },
         },
       },
@@ -462,9 +465,12 @@ export default async function billingRoutes(fastify: FastifyInstance) {
         });
       }
 
+      const stripeTier = newTier === 'unlimited' ? 'agency' : newTier;
+      const storedTier = newTier === 'agency' ? 'unlimited' : newTier;
+
       const changeResult = await stripeService.changeSubscriptionTier(
         currentSubscriptionId,
-        newTier as SubscriptionTier,
+        stripeTier as SubscriptionTier,
         isYearly
       );
 
@@ -472,15 +478,23 @@ export default async function billingRoutes(fastify: FastifyInstance) {
         return reply.status(400).send({ success: false, error: changeResult.error });
       }
 
+      const tierRank = (raw: string | null | undefined): number => {
+        const t = (raw || 'free').toLowerCase();
+        if (t === 'maker') return 1;
+        if (t === 'pro') return 2;
+        if (t === 'agency' || t === 'unlimited') return 3;
+        return 0;
+      };
+
       // Log the change
       await fastify.pg.query(`
         INSERT INTO subscription_history (user_id, action, from_tier, to_tier, stripe_subscription_id, metadata)
         VALUES ($1, $2, $3, $4, $5, $6)
       `, [
         userId,
-        currentTier < newTier ? 'upgraded' : 'downgraded',
+        tierRank(storedTier) > tierRank(currentTier) ? 'upgraded' : 'downgraded',
         currentTier,
-        newTier,
+        storedTier,
         currentSubscriptionId,
         JSON.stringify({ prorationAmount: changeResult.prorationAmount }),
       ]);
@@ -488,13 +502,13 @@ export default async function billingRoutes(fastify: FastifyInstance) {
       // Update user's tier
       await fastify.pg.query(`
         UPDATE app_users SET subscription_tier = $1, updated_at = NOW() WHERE id = $2
-      `, [newTier, userId]);
+      `, [storedTier, userId]);
 
       return {
         success: true,
         data: {
           message: 'Plan changed successfully',
-          newTier,
+          newTier: storedTier,
           prorationAmount: changeResult.prorationAmount ? changeResult.prorationAmount / 100 : 0,
         },
       };

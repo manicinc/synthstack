@@ -61,6 +61,13 @@ export const TIER_RATE_LIMITS: Record<SubscriptionTier, EndpointLimits> = {
     upload: 40,
     auth: 20,
   },
+  unlimited: {
+    // Legacy/DB top-tier alias (treat as Agency)
+    general: 100,
+    generation: 60,
+    upload: 40,
+    auth: 20,
+  },
 };
 
 // ============================================

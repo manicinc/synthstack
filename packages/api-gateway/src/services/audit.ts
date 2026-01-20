@@ -703,7 +703,23 @@ export class AuditService {
       // Generate embedding for the content
       let embedding: number[] | null = null;
       try {
-        embedding = await embeddingsService.generateEmbedding(content);
+        const withTimeout = async <T>(promise: Promise<T>, timeoutMs: number): Promise<T> => {
+          return new Promise<T>((resolve, reject) => {
+            const timer = setTimeout(() => reject(new Error('Embedding generation timed out')), timeoutMs);
+            promise.then(
+              (value) => {
+                clearTimeout(timer);
+                resolve(value);
+              },
+              (error) => {
+                clearTimeout(timer);
+                reject(error);
+              }
+            );
+          });
+        };
+
+        embedding = await withTimeout(embeddingsService.generateEmbedding(content), 2500);
       } catch (embedError) {
         this.server.log.warn({ error: embedError }, 'Failed to generate embedding for knowledge entry');
       }

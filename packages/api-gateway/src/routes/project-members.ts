@@ -1,11 +1,13 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { directus } from '../services/directus.js';
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { randomBytes } from 'crypto';
 import { sendTeamInvitationEmail } from '../services/email/helpers.js';
 
+type ProjectPermission = 'view' | 'invite';
+type MemberRole = 'owner' | 'admin' | 'member' | 'viewer';
+
 interface InviteMemberBody {
   email: string;
-  role?: 'member' | 'admin' | 'viewer';
+  role?: Exclude<MemberRole, 'owner'>;
   permissions?: {
     can_edit?: boolean;
     can_delete?: boolean;
@@ -13,8 +15,13 @@ interface InviteMemberBody {
   };
 }
 
-interface AcceptInvitationBody {
-  token: string;
+interface UpdateMemberBody {
+  role?: Exclude<MemberRole, 'owner'>;
+  permissions?: {
+    can_edit?: boolean;
+    can_delete?: boolean;
+    can_invite?: boolean;
+  };
 }
 
 interface UpdateProfileBody {
@@ -33,824 +40,934 @@ interface SuggestAssigneeBody {
   taskType?: string;
 }
 
+function parsePermissions(raw: unknown): { can_edit?: boolean; can_delete?: boolean; can_invite?: boolean } {
+  if (!raw) return {};
+  if (typeof raw === 'object') return raw as any;
+  if (typeof raw === 'string') {
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return {};
+    }
+  }
+  return {};
+}
+
+function roleBasePermissions(role: string | null | undefined): { canEdit: boolean; canInvite: boolean; canDelete: boolean } {
+  switch (role) {
+    case 'owner':
+      return { canEdit: true, canInvite: true, canDelete: true };
+    case 'admin':
+      return { canEdit: true, canInvite: true, canDelete: true };
+    case 'member':
+      return { canEdit: true, canInvite: false, canDelete: false };
+    case 'viewer':
+    default:
+      return { canEdit: false, canInvite: false, canDelete: false };
+  }
+}
+
+function defaultPermissionsForRole(role: Exclude<MemberRole, 'owner'>): { can_edit: boolean; can_delete: boolean; can_invite: boolean } {
+  const base = roleBasePermissions(role);
+  return {
+    can_edit: base.canEdit,
+    can_delete: base.canDelete,
+    can_invite: base.canInvite,
+  };
+}
+
+function normalizeProfile(profileRaw: unknown): Record<string, unknown> {
+  const profile = profileRaw && typeof profileRaw === 'object' ? (profileRaw as Record<string, unknown>) : {};
+
+  const skills = Array.isArray(profile.skills) ? profile.skills : [];
+  const expertiseSnake = Array.isArray(profile.expertise_areas) ? profile.expertise_areas : null;
+  const expertiseCamel = Array.isArray(profile.expertiseAreas) ? profile.expertiseAreas : null;
+  const preferredSnake = Array.isArray(profile.preferred_task_types) ? profile.preferred_task_types : null;
+  const preferredCamel = Array.isArray(profile.preferredTaskTypes) ? profile.preferredTaskTypes : null;
+
+  const roleTitle = typeof profile.roleTitle === 'string'
+    ? profile.roleTitle
+    : typeof profile.role_title === 'string'
+      ? profile.role_title
+      : undefined;
+
+  const availability = typeof profile.availability === 'string' ? profile.availability : 'available';
+  const capacity = typeof profile.capacityPercent === 'number'
+    ? profile.capacityPercent
+    : typeof profile.capacity_percent === 'number'
+      ? profile.capacity_percent
+      : 100;
+
+  const bio = typeof profile.bio === 'string' ? profile.bio : '';
+
+  return {
+    ...profile,
+    role_title: roleTitle,
+    roleTitle,
+    skills,
+    expertise_areas: expertiseSnake ?? expertiseCamel ?? [],
+    expertiseAreas: expertiseCamel ?? expertiseSnake ?? [],
+    availability,
+    capacity_percent: capacity,
+    capacityPercent: capacity,
+    preferred_task_types: preferredSnake ?? preferredCamel ?? [],
+    preferredTaskTypes: preferredCamel ?? preferredSnake ?? [],
+    bio,
+  };
+}
+
+async function requireProjectPermission(
+  server: FastifyInstance,
+  request: any,
+  reply: FastifyReply,
+  projectId: string,
+  permission: ProjectPermission
+): Promise<{
+  project: { id: string; owner_id: string | null; is_system: boolean | null };
+  userId: string | null;
+  canInvite: boolean;
+} | null> {
+  const user = request.user;
+  const userId: string | null = user?.id ?? null;
+
+  const projectResult = await server.pg.query<{
+    id: string;
+    owner_id: string | null;
+    is_system: boolean | null;
+    member_role: string | null;
+    member_permissions: unknown;
+  }>(
+    `
+      SELECT
+        p.id,
+        p.owner_id,
+        p.is_system,
+        pm.role as member_role,
+        pm.permissions as member_permissions
+      FROM projects p
+      LEFT JOIN project_members pm
+        ON pm.project_id = p.id
+       AND pm.user_id = $2
+       AND pm.status = 'active'
+      WHERE p.id = $1
+      LIMIT 1
+    `,
+    [projectId, userId]
+  );
+
+  const project = projectResult.rows[0];
+  if (!project) {
+    reply.status(404).send({ success: false, error: { code: 'NOT_FOUND', message: 'Project not found' } });
+    return null;
+  }
+
+  const isPlatformAdmin = user?.is_admin === true;
+  const isOwner = Boolean(userId && project.owner_id && project.owner_id === userId);
+  const memberRole = project.member_role;
+  const base = roleBasePermissions(memberRole);
+  const overrides = parsePermissions(project.member_permissions);
+
+  let canInvite = base.canInvite || overrides.can_invite === true;
+  if (isOwner || isPlatformAdmin) canInvite = true;
+
+  const canView = Boolean(project.is_system) || isPlatformAdmin || isOwner || Boolean(memberRole);
+
+  if (permission === 'view') {
+    if (!canView) {
+      reply.status(404).send({ success: false, error: { code: 'NOT_FOUND', message: 'Project not found' } });
+      return null;
+    }
+    return { project, userId, canInvite };
+  }
+
+  // invite permission requires auth
+  if (!userId) {
+    reply.status(401).send({ success: false, error: { code: 'UNAUTHORIZED', message: 'Authentication required' } });
+    return null;
+  }
+
+  if (!canInvite) {
+    reply.status(403).send({ success: false, error: { code: 'FORBIDDEN', message: 'Invite permission required' } });
+    return null;
+  }
+
+  return { project, userId, canInvite };
+}
+
+function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
+function isValidEmail(email: string): boolean {
+  // Basic sanity validation; do not over-reject.
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 export default async function projectMembersRoutes(server: FastifyInstance) {
-  // Get project members
+  // =====================================================
+  // Members
+  // =====================================================
+
   server.get(
     '/projects/:projectId/members',
     { preHandler: server.authenticate },
-    async (
-      request: FastifyRequest<{ Params: { projectId: string } }>,
-      reply: FastifyReply
-    ) => {
-      try {
-        const { projectId } = request.params;
-        const userId = (request as any).user?.id;
+    async (request: FastifyRequest<{ Params: { projectId: string } }>, reply: FastifyReply) => {
+      const { projectId } = request.params;
+      const access = await requireProjectPermission(server, request as any, reply, projectId, 'view');
+      if (!access) return;
 
-        if (!userId) {
-          return reply.status(401).send({ error: 'Unauthorized' });
-        }
+      const result = await server.pg.query<{
+        id: string;
+        project_id: string;
+        user_id: string;
+        role: MemberRole;
+        permissions: unknown;
+        status: string;
+        profile: unknown;
+        date_created: string;
+        date_updated: string;
+        user_email: string;
+        user_display_name: string | null;
+        user_avatar_url: string | null;
+      }>(
+        `
+        SELECT
+          pm.*,
+          au.email as user_email,
+          au.display_name as user_display_name,
+          au.avatar_url as user_avatar_url
+        FROM project_members pm
+        JOIN app_users au ON au.id = pm.user_id
+        WHERE pm.project_id = $1 AND pm.status = 'active'
+        ORDER BY
+          CASE pm.role
+            WHEN 'owner' THEN 0
+            WHEN 'admin' THEN 1
+            WHEN 'member' THEN 2
+            WHEN 'viewer' THEN 3
+            ELSE 4
+          END,
+          au.email ASC
+      `,
+        [projectId]
+      );
 
-        // Verify user has access to this project
-        const project = await directus.items('projects').readOne(projectId);
-        if (!project) {
-          return reply.status(404).send({ error: 'Project not found' });
-        }
+      const members = result.rows.map((row) => ({
+        id: row.id,
+        project_id: row.project_id,
+        user_id: row.user_id,
+        role: row.role,
+        permissions: row.permissions,
+        status: row.status,
+        profile: normalizeProfile(row.profile),
+        date_created: row.date_created,
+        date_updated: row.date_updated,
+        user: {
+          id: row.user_id,
+          email: row.user_email,
+          display_name: row.user_display_name ?? undefined,
+          avatar_url: row.user_avatar_url ?? undefined,
+        },
+      }));
 
-        // Check if user is owner or member
-        const isMember = await directus.items('project_members').readByQuery({
-          filter: {
-            project_id: { _eq: projectId },
-            user_id: { _eq: userId },
-            status: { _eq: 'active' },
-          },
-          limit: 1,
-        });
-
-        if (project.owner_id !== userId && (!isMember.data || isMember.data.length === 0)) {
-          return reply.status(403).send({ error: 'Access denied' });
-        }
-
-        // Get all members
-        const members = await directus.items('project_members').readByQuery({
-          filter: {
-            project_id: { _eq: projectId },
-            status: { _eq: 'active' },
-          },
-        } as any);
-
-        return reply.send({
-          success: true,
-          data: members.data || [],
-        });
-      } catch (error) {
-        request.log.error(error, 'Error fetching project members');
-        return reply.status(500).send({ error: 'Failed to fetch project members' });
-      }
+      return reply.send({ success: true, data: members });
     }
   );
 
-  // Invite member to project
-  server.post(
-    '/projects/:projectId/members/invite',
-    { preHandler: server.authenticate },
-    async (
-      request: FastifyRequest<{ Params: { projectId: string }; Body: InviteMemberBody }>,
-      reply: FastifyReply
-    ) => {
-      try {
-        const { projectId } = request.params;
-        const { email, role = 'member', permissions } = request.body;
-        const userId = (request as any).user?.id;
-
-        if (!userId) {
-          return reply.status(401).send({ error: 'Unauthorized' });
-        }
-
-        if (!email) {
-          return reply.status(400).send({ error: 'Email is required' });
-        }
-
-        // Verify user is owner of this project
-        const project = await directus.items('projects').readOne(projectId);
-        if (!project || project.owner_id !== userId) {
-          return reply.status(403).send({ error: 'Only project owner can invite members' });
-        }
-
-        // Check if user is already a member
-        const existingMember = await directus.items('project_members').readByQuery({
-          filter: {
-            project_id: { _eq: projectId },
-            user_id: {
-              email: { _eq: email },
-            },
-          },
-          limit: 1,
-        });
-
-        if (existingMember.data && existingMember.data.length > 0) {
-          return reply.status(400).send({ error: 'User is already a member of this project' });
-        }
-
-        // Check for existing pending invitation
-        const existingInvitation = await directus.items('project_invitations').readByQuery({
-          filter: {
-            project_id: { _eq: projectId },
-            email: { _eq: email },
-            status: { _eq: 'pending' },
-          },
-          limit: 1,
-        });
-
-        if (existingInvitation.data && existingInvitation.data.length > 0) {
-          return reply.status(400).send({ error: 'Invitation already sent to this email' });
-        }
-
-        // Generate unique invitation token
-        const token = randomBytes(32).toString('hex');
-
-        // Create invitation
-        const defaultPermissions = {
-          can_edit: permissions?.can_edit ?? true,
-          can_delete: permissions?.can_delete ?? false,
-          can_invite: permissions?.can_invite ?? false,
-        };
-
-        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-
-        const invitation = await directus.items('project_invitations').createOne({
-          project_id: projectId,
-          email,
-          invited_by: userId,
-          role,
-          permissions: defaultPermissions,
-          status: 'pending',
-          token,
-          expires_at: expiresAt,
-        });
-
-        // Send invitation email
-        try {
-          // Get inviter user details
-          const inviterUser = await (directus as any).users.readOne(userId);
-          const inviterName = inviterUser.first_name && inviterUser.last_name
-            ? `${inviterUser.first_name} ${inviterUser.last_name}`
-            : inviterUser.email;
-          const inviterEmail = inviterUser.email;
-
-          await sendTeamInvitationEmail(
-            server,
-            email,
-            userId,
-            inviterName,
-            inviterEmail,
-            projectId,
-            project.name || 'Untitled Project',
-            project.description,
-            role,
-            token,
-            expiresAt
-          );
-
-          request.log.info({ invitationId: invitation.id, email }, 'Team invitation email sent successfully');
-        } catch (emailError) {
-          // Log email error but don't fail the invitation
-          request.log.error(emailError, 'Failed to send team invitation email');
-          // Invitation is still created, user can get link from UI
-        }
-
-        return reply.send({
-          success: true,
-          message: 'Invitation sent successfully',
-          data: {
-            id: invitation.id,
-            email: invitation.email,
-            role: invitation.role,
-            expires_at: invitation.expires_at,
-            // Include token in development only
-            ...(process.env.NODE_ENV === 'development' && { token }),
-          },
-        });
-      } catch (error) {
-        request.log.error(error, 'Error inviting member');
-        return reply.status(500).send({ error: 'Failed to invite member' });
-      }
-    }
-  );
-
-  // Get project invitations
-  server.get(
-    '/projects/:projectId/invitations',
-    { preHandler: server.authenticate },
-    async (
-      request: FastifyRequest<{ Params: { projectId: string } }>,
-      reply: FastifyReply
-    ) => {
-      try {
-        const { projectId } = request.params;
-        const userId = (request as any).user?.id;
-
-        if (!userId) {
-          return reply.status(401).send({ error: 'Unauthorized' });
-        }
-
-        // Verify user is owner of this project
-        const project = await directus.items('projects').readOne(projectId);
-        if (!project || project.owner_id !== userId) {
-          return reply.status(403).send({ error: 'Only project owner can view invitations' });
-        }
-
-        // Get pending invitations
-        const invitations = await directus.items('project_invitations').readByQuery({
-          filter: {
-            project_id: { _eq: projectId },
-            status: { _in: ['pending', 'accepted', 'declined'] },
-          },
-          sort: ['-date_created'],
-        });
-
-        return reply.send({
-          success: true,
-          data: invitations.data || [],
-        });
-      } catch (error) {
-        request.log.error(error, 'Error fetching invitations');
-        return reply.status(500).send({ error: 'Failed to fetch invitations' });
-      }
-    }
-  );
-
-  // Accept invitation
-  server.post(
-    '/invitations/:token/accept',
-    { preHandler: server.authenticate },
-    async (
-      request: FastifyRequest<{ Params: { token: string } }>,
-      reply: FastifyReply
-    ) => {
-      try {
-        const { token } = request.params;
-        const userId = (request as any).user?.id;
-        const userEmail = (request as any).user?.email;
-
-        if (!userId || !userEmail) {
-          return reply.status(401).send({ error: 'Unauthorized' });
-        }
-
-        // Find invitation
-        const invitations = await directus.items('project_invitations').readByQuery({
-          filter: {
-            token: { _eq: token },
-            status: { _eq: 'pending' },
-          },
-          limit: 1,
-        });
-
-        if (!invitations.data || invitations.data.length === 0) {
-          return reply.status(404).send({ error: 'Invitation not found or already used' });
-        }
-
-        const invitation = invitations.data[0];
-
-        // Verify invitation is for this user's email
-        if (invitation.email !== userEmail) {
-          return reply.status(403).send({ error: 'This invitation was sent to a different email address' });
-        }
-
-        // Check if invitation is expired
-        if (new Date(invitation.expires_at) < new Date()) {
-          await directus.items('project_invitations').updateOne(invitation.id, {
-            status: 'expired',
-          });
-          return reply.status(400).send({ error: 'Invitation has expired' });
-        }
-
-        // Check if user is already a member
-        const existingMember = await directus.items('project_members').readByQuery({
-          filter: {
-            project_id: { _eq: invitation.project_id },
-            user_id: { _eq: userId },
-          },
-          limit: 1,
-        });
-
-        if (existingMember.data && existingMember.data.length > 0) {
-          return reply.status(400).send({ error: 'You are already a member of this project' });
-        }
-
-        // Add user as project member
-        await directus.items('project_members').createOne({
-          project_id: invitation.project_id,
-          user_id: userId,
-          role: invitation.role,
-          permissions: invitation.permissions,
-          status: 'active',
-        });
-
-        // Update invitation status
-        await directus.items('project_invitations').updateOne(invitation.id, {
-          status: 'accepted',
-          accepted_at: new Date(),
-        });
-
-        return reply.send({
-          success: true,
-          message: 'Invitation accepted successfully',
-          data: {
-            project_id: invitation.project_id,
-            role: invitation.role,
-          },
-        });
-      } catch (error) {
-        request.log.error(error, 'Error accepting invitation');
-        return reply.status(500).send({ error: 'Failed to accept invitation' });
-      }
-    }
-  );
-
-  // Cancel invitation
-  server.delete(
-    '/invitations/:invitationId',
-    { preHandler: server.authenticate },
-    async (
-      request: FastifyRequest<{ Params: { invitationId: string } }>,
-      reply: FastifyReply
-    ) => {
-      try {
-        const { invitationId } = request.params;
-        const userId = (request as any).user?.id;
-
-        if (!userId) {
-          return reply.status(401).send({ error: 'Unauthorized' });
-        }
-
-        // Get invitation
-        const invitation = await directus.items('project_invitations').readOne(invitationId);
-        if (!invitation) {
-          return reply.status(404).send({ error: 'Invitation not found' });
-        }
-
-        // Verify user is the one who sent the invitation
-        if (invitation.invited_by !== userId) {
-          return reply.status(403).send({ error: 'You can only cancel invitations you sent' });
-        }
-
-        // Delete invitation
-        await directus.items('project_invitations').deleteOne(invitationId);
-
-        return reply.send({
-          success: true,
-          message: 'Invitation cancelled successfully',
-        });
-      } catch (error) {
-        request.log.error(error, 'Error cancelling invitation');
-        return reply.status(500).send({ error: 'Failed to cancel invitation' });
-      }
-    }
-  );
-
-  // Remove member from project
-  server.delete(
+  server.patch(
     '/projects/:projectId/members/:memberId',
     { preHandler: server.authenticate },
     async (
-      request: FastifyRequest<{ Params: { projectId: string; memberId: string } }>,
+      request: FastifyRequest<{ Params: { projectId: string; memberId: string }; Body: UpdateMemberBody }>,
       reply: FastifyReply
     ) => {
-      try {
-        const { projectId, memberId } = request.params;
-        const userId = (request as any).user?.id;
+      const { projectId, memberId } = request.params;
+      const access = await requireProjectPermission(server, request as any, reply, projectId, 'invite');
+      if (!access) return;
 
-        if (!userId) {
-          return reply.status(401).send({ error: 'Unauthorized' });
-        }
-
-        // Verify user is owner of this project
-        const project = await directus.items('projects').readOne(projectId);
-        if (!project || project.owner_id !== userId) {
-          return reply.status(403).send({ error: 'Only project owner can remove members' });
-        }
-
-        // Get member
-        const member = await directus.items('project_members').readOne(memberId);
-        if (!member || member.project_id !== projectId) {
-          return reply.status(404).send({ error: 'Member not found' });
-        }
-
-        // Cannot remove owner
-        if (member.role === 'owner') {
-          return reply.status(400).send({ error: 'Cannot remove project owner' });
-        }
-
-        // Update member status to removed
-        await directus.items('project_members').updateOne(memberId, {
-          status: 'removed',
-        });
-
-        return reply.send({
-          success: true,
-          message: 'Member removed successfully',
-        });
-      } catch (error) {
-        request.log.error(error, 'Error removing member');
-        return reply.status(500).send({ error: 'Failed to remove member' });
+      const role = request.body?.role;
+      if (role && !['admin', 'member', 'viewer'].includes(role)) {
+        return reply.status(400).send({ success: false, error: { code: 'INVALID_ROLE', message: 'Invalid role' } });
       }
+
+      const memberResult = await server.pg.query<{ id: string; project_id: string; role: MemberRole }>(
+        `SELECT id, project_id, role FROM project_members WHERE id = $1 LIMIT 1`,
+        [memberId]
+      );
+
+      if (memberResult.rows.length === 0 || memberResult.rows[0].project_id !== projectId) {
+        return reply.status(404).send({ success: false, error: { code: 'NOT_FOUND', message: 'Member not found' } });
+      }
+
+      if (memberResult.rows[0].role === 'owner') {
+        return reply.status(400).send({ success: false, error: { code: 'CANNOT_UPDATE_OWNER', message: 'Cannot modify project owner' } });
+      }
+
+      const updates: string[] = [];
+      const params: unknown[] = [];
+      let i = 1;
+
+      if (role) {
+        updates.push(`role = $${i++}`);
+        params.push(role);
+
+        const defaults = defaultPermissionsForRole(role);
+        const overrides = request.body.permissions || {};
+        const mergedPermissions = {
+          ...defaults,
+          ...overrides,
+        };
+        updates.push(`permissions = $${i++}::jsonb`);
+        params.push(JSON.stringify(mergedPermissions));
+      } else if (request.body.permissions) {
+        updates.push(`permissions = $${i++}::jsonb`);
+        params.push(JSON.stringify(request.body.permissions));
+      }
+
+      if (updates.length === 0) {
+        return reply.send({ success: true });
+      }
+
+      params.push(memberId);
+      await server.pg.query(
+        `UPDATE project_members SET ${updates.join(', ')}, date_updated = NOW() WHERE id = $${i}`,
+        params
+      );
+
+      return reply.send({ success: true });
     }
   );
 
-  // Get invitation details (public route - no auth required)
+  server.delete(
+    '/projects/:projectId/members/:memberId',
+    { preHandler: server.authenticate },
+    async (request: FastifyRequest<{ Params: { projectId: string; memberId: string } }>, reply: FastifyReply) => {
+      const { projectId, memberId } = request.params;
+      const access = await requireProjectPermission(server, request as any, reply, projectId, 'invite');
+      if (!access) return;
+
+      const memberResult = await server.pg.query<{ id: string; project_id: string; role: MemberRole }>(
+        `SELECT id, project_id, role FROM project_members WHERE id = $1 LIMIT 1`,
+        [memberId]
+      );
+
+      if (memberResult.rows.length === 0 || memberResult.rows[0].project_id !== projectId) {
+        return reply.status(404).send({ success: false, error: { code: 'NOT_FOUND', message: 'Member not found' } });
+      }
+
+      if (memberResult.rows[0].role === 'owner') {
+        return reply.status(400).send({ success: false, error: { code: 'CANNOT_REMOVE_OWNER', message: 'Cannot remove project owner' } });
+      }
+
+      await server.pg.query(
+        `UPDATE project_members SET status = 'removed', date_updated = NOW() WHERE id = $1`,
+        [memberId]
+      );
+
+      return reply.send({ success: true, message: 'Member removed successfully' });
+    }
+  );
+
+  // =====================================================
+  // Invitations
+  // =====================================================
+
+  server.get(
+    '/projects/:projectId/invitations',
+    { preHandler: server.authenticate },
+    async (request: FastifyRequest<{ Params: { projectId: string } }>, reply: FastifyReply) => {
+      const { projectId } = request.params;
+      const access = await requireProjectPermission(server, request as any, reply, projectId, 'invite');
+      if (!access) return;
+
+      const invitations = await server.pg.query(
+        `
+        SELECT *
+        FROM project_invitations
+        WHERE project_id = $1
+        ORDER BY date_created DESC
+      `,
+        [projectId]
+      );
+
+      return reply.send({ success: true, data: invitations.rows });
+    }
+  );
+
+  server.post(
+    '/projects/:projectId/members/invite',
+    { preHandler: server.authenticate },
+    async (request: FastifyRequest<{ Params: { projectId: string }; Body: InviteMemberBody }>, reply: FastifyReply) => {
+      const { projectId } = request.params;
+      const userId = (request as any).user?.id as string | undefined;
+
+      const access = await requireProjectPermission(server, request as any, reply, projectId, 'invite');
+      if (!access) return;
+
+      const role: Exclude<MemberRole, 'owner'> = request.body?.role || 'member';
+      if (!['admin', 'member', 'viewer'].includes(role)) {
+        return reply.status(400).send({ success: false, error: { code: 'INVALID_ROLE', message: 'Invalid role' } });
+      }
+
+      const email = normalizeEmail(request.body?.email || '');
+      if (!email || !isValidEmail(email)) {
+        return reply.status(400).send({ success: false, error: { code: 'INVALID_EMAIL', message: 'A valid email is required' } });
+      }
+
+      // Check if email already belongs to an active member
+      const existingMember = await server.pg.query(
+        `
+        SELECT pm.id
+        FROM project_members pm
+        JOIN app_users au ON au.id = pm.user_id
+        WHERE pm.project_id = $1 AND pm.status = 'active' AND LOWER(au.email) = $2
+        LIMIT 1
+      `,
+        [projectId, email]
+      );
+
+      if (existingMember.rows.length > 0) {
+        return reply.status(400).send({ success: false, error: { code: 'ALREADY_MEMBER', message: 'User is already a member of this project' } });
+      }
+
+      // Check for existing pending invitation
+      const existingInvitation = await server.pg.query(
+        `
+        SELECT id
+        FROM project_invitations
+        WHERE project_id = $1 AND LOWER(email) = $2 AND status = 'pending'
+        LIMIT 1
+      `,
+        [projectId, email]
+      );
+
+      if (existingInvitation.rows.length > 0) {
+        return reply.status(400).send({ success: false, error: { code: 'INVITE_EXISTS', message: 'Invitation already sent to this email' } });
+      }
+
+      const defaults = defaultPermissionsForRole(role);
+      const mergedPermissions = {
+        ...defaults,
+        ...(request.body.permissions || {}),
+      };
+
+      const token = randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+      const invitationResult = await server.pg.query<{
+        id: string;
+        email: string;
+        role: string;
+        status: string;
+        token: string;
+        expires_at: string;
+        date_created: string;
+      }>(
+        `
+        INSERT INTO project_invitations (
+          project_id,
+          email,
+          invited_by,
+          role,
+          permissions,
+          status,
+          token,
+          expires_at
+        )
+        VALUES ($1, $2, $3, $4, $5::jsonb, 'pending', $6, $7)
+        RETURNING id, email, role, status, token, expires_at, date_created
+      `,
+        [projectId, email, userId, role, JSON.stringify(mergedPermissions), token, expiresAt.toISOString()]
+      );
+
+      const invitation = invitationResult.rows[0];
+
+      // Send invitation email (best effort)
+      try {
+        const projectResult = await server.pg.query<{ name: string; description: string | null }>(
+          `SELECT name, description FROM projects WHERE id = $1 LIMIT 1`,
+          [projectId]
+        );
+
+        const inviterEmail = (request as any).user?.email as string | undefined;
+        const inviterDisplayName = (request as any).user?.display_name as string | null | undefined;
+        const inviterName = inviterDisplayName || (inviterEmail ? inviterEmail.split('@')[0] : 'A teammate');
+
+        const projectName = projectResult.rows[0]?.name || 'Untitled Project';
+        const projectDescription = projectResult.rows[0]?.description || undefined;
+
+        if (inviterEmail) {
+          await sendTeamInvitationEmail(
+            server,
+            invitation.email,
+            userId || '',
+            inviterName,
+            inviterEmail,
+            projectId,
+            projectName,
+            projectDescription,
+            role,
+            invitation.token,
+            new Date(invitation.expires_at)
+          );
+        }
+      } catch (error) {
+        request.log.error(error, 'Failed to send team invitation email');
+      }
+
+      return reply.send({
+        success: true,
+        message: 'Invitation sent successfully',
+        data: invitation,
+      });
+    }
+  );
+
+  server.delete(
+    '/projects/:projectId/invitations/:invitationId',
+    { preHandler: server.authenticate },
+    async (
+      request: FastifyRequest<{ Params: { projectId: string; invitationId: string } }>,
+      reply: FastifyReply
+    ) => {
+      const { projectId, invitationId } = request.params;
+      const access = await requireProjectPermission(server, request as any, reply, projectId, 'invite');
+      if (!access) return;
+
+      const result = await server.pg.query(
+        `DELETE FROM project_invitations WHERE id = $1 AND project_id = $2`,
+        [invitationId, projectId]
+      );
+
+      if (result.rowCount === 0) {
+        return reply.status(404).send({ success: false, error: { code: 'NOT_FOUND', message: 'Invitation not found' } });
+      }
+
+      return reply.send({ success: true, message: 'Invitation cancelled successfully' });
+    }
+  );
+
+  // Backwards-compatible route (deprecated): DELETE /api/v1/invitations/:invitationId
+  server.delete(
+    '/invitations/:invitationId',
+    { preHandler: server.authenticate },
+    async (request: FastifyRequest<{ Params: { invitationId: string } }>, reply: FastifyReply) => {
+      const { invitationId } = request.params;
+      const userId = (request as any).user?.id as string | undefined;
+      if (!userId) {
+        return reply.status(401).send({ success: false, error: { code: 'UNAUTHORIZED', message: 'Authentication required' } });
+      }
+
+      const inviteResult = await server.pg.query<{ id: string; project_id: string; invited_by: string }>(
+        `SELECT id, project_id, invited_by FROM project_invitations WHERE id = $1 LIMIT 1`,
+        [invitationId]
+      );
+      if (inviteResult.rows.length === 0) {
+        return reply.status(404).send({ success: false, error: { code: 'NOT_FOUND', message: 'Invitation not found' } });
+      }
+
+      const invitation = inviteResult.rows[0];
+      const canCancelAsInviter = invitation.invited_by === userId;
+      if (!canCancelAsInviter) {
+        const access = await requireProjectPermission(server, request as any, reply, invitation.project_id, 'invite');
+        if (!access) return;
+      }
+
+      await server.pg.query(`DELETE FROM project_invitations WHERE id = $1`, [invitationId]);
+      return reply.send({ success: true, message: 'Invitation cancelled successfully' });
+    }
+  );
+
+  // =====================================================
+  // Invitation Acceptance & Public Lookup
+  // =====================================================
+
   server.get(
     '/invitations/:token',
-    async (
-      request: FastifyRequest<{ Params: { token: string } }>,
-      reply: FastifyReply
-    ) => {
-      try {
-        const { token } = request.params;
+    async (request: FastifyRequest<{ Params: { token: string } }>, reply: FastifyReply) => {
+      const { token } = request.params;
 
-        // Find invitation
-        const invitations = await directus.items('project_invitations').readByQuery({
-          filter: {
-            token: { _eq: token },
-          },
-          limit: 1,
-        });
+      const result = await server.pg.query<{
+        id: string;
+        project_id: string;
+        email: string;
+        invited_by: string;
+        role: string;
+        status: string;
+        expires_at: string;
+        token: string;
+        project_name: string;
+        project_description: string | null;
+        inviter_email: string | null;
+        inviter_display_name: string | null;
+      }>(
+        `
+        SELECT
+          i.*,
+          p.name as project_name,
+          p.description as project_description,
+          au.email as inviter_email,
+          au.display_name as inviter_display_name
+        FROM project_invitations i
+        JOIN projects p ON p.id = i.project_id
+        LEFT JOIN app_users au ON au.id = i.invited_by
+        WHERE i.token = $1
+        LIMIT 1
+      `,
+        [token]
+      );
 
-        if (!invitations.data || invitations.data.length === 0) {
-          return reply.status(404).send({ error: 'Invitation not found' });
-        }
-
-        const invitation = invitations.data[0];
-
-        // Check if already accepted
-        if (invitation.status === 'accepted') {
-          return reply.status(400).send({
-            error: 'Invitation already accepted',
-            status: 'accepted'
-          });
-        }
-
-        // Check if expired
-        if (new Date(invitation.expires_at) < new Date()) {
-          // Update status to expired if not already
-          if (invitation.status === 'pending') {
-            await directus.items('project_invitations').updateOne(invitation.id, {
-              status: 'expired',
-            });
-          }
-          return reply.status(400).send({
-            error: 'Invitation has expired',
-            status: 'expired'
-          });
-        }
-
-        // Check if cancelled
-        if (invitation.status === 'cancelled') {
-          return reply.status(400).send({
-            error: 'Invitation has been cancelled',
-            status: 'cancelled'
-          });
-        }
-
-        // Get project details
-        const project = await directus.items('projects').readOne(invitation.project_id);
-
-        // Get inviter details
-        const inviter = await (directus as any).users.readOne(invitation.invited_by);
-        const inviterName = inviter.first_name && inviter.last_name
-          ? `${inviter.first_name} ${inviter.last_name}`
-          : inviter.email;
-
-        // Return invitation details (safe for public consumption)
-        return reply.send({
-          success: true,
-          data: {
-            email: invitation.email,
-            role: invitation.role,
-            status: invitation.status,
-            expires_at: invitation.expires_at,
-            project: {
-              id: invitation.project_id,
-              name: project?.name || 'Untitled Project',
-              description: project?.description,
-            },
-            inviter: {
-              name: inviterName,
-              email: inviter.email,
-            },
-          },
-        });
-      } catch (error) {
-        request.log.error(error, 'Error fetching invitation details');
-        return reply.status(500).send({ error: 'Failed to fetch invitation details' });
+      if (result.rows.length === 0) {
+        return reply.status(404).send({ success: false, error: { code: 'NOT_FOUND', message: 'Invitation not found' } });
       }
+
+      const invitation = result.rows[0];
+
+      if (invitation.status === 'accepted') {
+        return reply.status(400).send({ success: false, error: { code: 'ALREADY_ACCEPTED', message: 'Invitation already accepted' } });
+      }
+
+      const isExpired = invitation.expires_at && new Date(invitation.expires_at) < new Date();
+      if (isExpired) {
+        if (invitation.status === 'pending') {
+          await server.pg.query(`UPDATE project_invitations SET status = 'expired', date_updated = NOW() WHERE id = $1`, [invitation.id]);
+        }
+        return reply.status(400).send({ success: false, error: { code: 'EXPIRED', message: 'Invitation has expired' } });
+      }
+
+      if (invitation.status !== 'pending') {
+        return reply.status(400).send({ success: false, error: { code: 'INVALID_STATUS', message: `Invitation is ${invitation.status}` } });
+      }
+
+      const inviterName = invitation.inviter_display_name
+        || (invitation.inviter_email ? invitation.inviter_email.split('@')[0] : 'A teammate');
+
+      return reply.send({
+        success: true,
+        data: {
+          email: invitation.email,
+          role: invitation.role,
+          status: invitation.status,
+          expires_at: invitation.expires_at,
+          project: {
+            id: invitation.project_id,
+            name: invitation.project_name,
+            description: invitation.project_description || undefined,
+          },
+          inviter: {
+            name: inviterName,
+            email: invitation.inviter_email,
+          },
+        },
+      });
     }
   );
 
-  // ============================================
-  // Team Member Profile Endpoints
-  // ============================================
+  server.post(
+    '/invitations/:token/accept',
+    { preHandler: server.authenticate },
+    async (request: FastifyRequest<{ Params: { token: string } }>, reply: FastifyReply) => {
+      const { token } = request.params;
+      const userId = (request as any).user?.id as string | undefined;
+      const userEmail = (request as any).user?.email as string | undefined;
 
-  /**
-   * Update member profile (skills, availability, etc.)
-   * Members can update their own profile, admins/owners can update any member's profile
-   */
+      if (!userId || !userEmail) {
+        return reply.status(401).send({ success: false, error: { code: 'UNAUTHORIZED', message: 'Authentication required' } });
+      }
+
+      const invitationResult = await server.pg.query<{
+        id: string;
+        project_id: string;
+        email: string;
+        role: Exclude<MemberRole, 'owner'>;
+        permissions: unknown;
+        status: string;
+        expires_at: string;
+      }>(
+        `
+        SELECT id, project_id, email, role, permissions, status, expires_at
+        FROM project_invitations
+        WHERE token = $1
+        LIMIT 1
+      `,
+        [token]
+      );
+
+      if (invitationResult.rows.length === 0) {
+        return reply.status(404).send({ success: false, error: { code: 'NOT_FOUND', message: 'Invitation not found' } });
+      }
+
+      const invitation = invitationResult.rows[0];
+
+      if (invitation.status !== 'pending') {
+        return reply.status(400).send({ success: false, error: { code: 'INVALID_STATUS', message: `Invitation is ${invitation.status}` } });
+      }
+
+      const isExpired = invitation.expires_at && new Date(invitation.expires_at) < new Date();
+      if (isExpired) {
+        await server.pg.query(`UPDATE project_invitations SET status = 'expired', date_updated = NOW() WHERE id = $1`, [invitation.id]);
+        return reply.status(400).send({ success: false, error: { code: 'EXPIRED', message: 'Invitation has expired' } });
+      }
+
+      if (normalizeEmail(invitation.email) !== normalizeEmail(userEmail)) {
+        return reply.status(403).send({ success: false, error: { code: 'EMAIL_MISMATCH', message: 'This invitation was sent to a different email address' } });
+      }
+
+      // Ensure user isn't already an active member
+      const existingMember = await server.pg.query<{ id: string; status: string }>(
+        `SELECT id, status FROM project_members WHERE project_id = $1 AND user_id = $2 LIMIT 1`,
+        [invitation.project_id, userId]
+      );
+
+      if (existingMember.rows.length > 0 && existingMember.rows[0].status === 'active') {
+        return reply.status(400).send({ success: false, error: { code: 'ALREADY_MEMBER', message: 'You are already a member of this project' } });
+      }
+
+      const permissions = parsePermissions(invitation.permissions);
+
+      if (existingMember.rows.length > 0) {
+        await server.pg.query(
+          `
+          UPDATE project_members
+          SET role = $1, permissions = $2::jsonb, status = 'active', date_updated = NOW()
+          WHERE id = $3
+        `,
+          [invitation.role, JSON.stringify(permissions), existingMember.rows[0].id]
+        );
+      } else {
+        await server.pg.query(
+          `
+          INSERT INTO project_members (project_id, user_id, role, permissions, status)
+          VALUES ($1, $2, $3, $4::jsonb, 'active')
+        `,
+          [invitation.project_id, userId, invitation.role, JSON.stringify(permissions)]
+        );
+      }
+
+      await server.pg.query(
+        `
+        UPDATE project_invitations
+        SET status = 'accepted', accepted_at = NOW(), date_updated = NOW()
+        WHERE id = $1
+      `,
+        [invitation.id]
+      );
+
+      return reply.send({
+        success: true,
+        message: 'Invitation accepted successfully',
+        data: { project_id: invitation.project_id, role: invitation.role },
+      });
+    }
+  );
+
+  // =====================================================
+  // Team Member Profile
+  // =====================================================
+
   server.patch(
     '/projects/:projectId/members/:memberId/profile',
     { preHandler: server.authenticate },
     async (
-      request: FastifyRequest<{
-        Params: { projectId: string; memberId: string };
-        Body: UpdateProfileBody;
-      }>,
+      request: FastifyRequest<{ Params: { projectId: string; memberId: string }; Body: UpdateProfileBody }>,
       reply: FastifyReply
     ) => {
-      try {
-        const { projectId, memberId } = request.params;
-        const updates = request.body;
-        const userId = (request as any).user?.id;
+      const { projectId, memberId } = request.params;
+      const updates = request.body || {};
+      const userId = (request as any).user?.id as string | undefined;
 
-        if (!userId) {
-          return reply.status(401).send({ error: 'Unauthorized' });
-        }
-
-        // Get the member being updated
-        const member = await directus.items('project_members').readOne(memberId);
-        if (!member || member.project_id !== projectId) {
-          return reply.status(404).send({ error: 'Member not found' });
-        }
-
-        // Check permissions: user can update their own profile OR be admin/owner
-        const isOwnProfile = member.user_id === userId;
-        if (!isOwnProfile) {
-          // Check if requester is admin/owner
-          const requesterMember = await directus.items('project_members').readByQuery({
-            filter: {
-              project_id: { _eq: projectId },
-              user_id: { _eq: userId },
-              role: { _in: ['owner', 'admin'] },
-              status: { _eq: 'active' },
-            },
-            limit: 1,
-          });
-
-          if (!requesterMember.data || requesterMember.data.length === 0) {
-            return reply.status(403).send({ error: 'You can only update your own profile' });
-          }
-        }
-
-        // Build profile update
-        const currentProfile = member.profile || {};
-        const newProfile = {
-          ...currentProfile,
-          ...(updates.roleTitle !== undefined && { role_title: updates.roleTitle }),
-          ...(updates.skills !== undefined && { skills: updates.skills }),
-          ...(updates.expertiseAreas !== undefined && { expertise_areas: updates.expertiseAreas }),
-          ...(updates.availability !== undefined && { availability: updates.availability }),
-          ...(updates.capacityPercent !== undefined && {
-            capacity_percent: Math.max(0, Math.min(100, updates.capacityPercent)),
-          }),
-          ...(updates.preferredTaskTypes !== undefined && { preferred_task_types: updates.preferredTaskTypes }),
-          ...(updates.bio !== undefined && { bio: updates.bio }),
-        };
-
-        // Update the profile
-        await directus.items('project_members').updateOne(memberId, {
-          profile: newProfile,
-        });
-
-        return reply.send({
-          success: true,
-          message: 'Profile updated successfully',
-          data: {
-            memberId,
-            profile: newProfile,
-          },
-        });
-      } catch (error) {
-        request.log.error(error, 'Error updating member profile');
-        return reply.status(500).send({ error: 'Failed to update profile' });
+      if (!userId) {
+        return reply.status(401).send({ success: false, error: { code: 'UNAUTHORIZED', message: 'Authentication required' } });
       }
+
+      const memberResult = await server.pg.query<{ id: string; project_id: string; user_id: string; profile: unknown }>(
+        `SELECT id, project_id, user_id, profile FROM project_members WHERE id = $1 LIMIT 1`,
+        [memberId]
+      );
+
+      if (memberResult.rows.length === 0 || memberResult.rows[0].project_id !== projectId) {
+        return reply.status(404).send({ success: false, error: { code: 'NOT_FOUND', message: 'Member not found' } });
+      }
+
+      const member = memberResult.rows[0];
+      const isOwnProfile = member.user_id === userId;
+
+      if (!isOwnProfile) {
+        const access = await requireProjectPermission(server, request as any, reply, projectId, 'invite');
+        if (!access) return;
+      }
+
+      const currentProfile = member.profile && typeof member.profile === 'object' ? (member.profile as Record<string, unknown>) : {};
+      const nextProfile: Record<string, unknown> = { ...currentProfile };
+
+      if (updates.roleTitle !== undefined) nextProfile.role_title = updates.roleTitle;
+      if (updates.skills !== undefined) nextProfile.skills = updates.skills;
+      if (updates.expertiseAreas !== undefined) nextProfile.expertise_areas = updates.expertiseAreas;
+      if (updates.availability !== undefined) nextProfile.availability = updates.availability;
+      if (updates.capacityPercent !== undefined) nextProfile.capacity_percent = Math.max(0, Math.min(100, updates.capacityPercent));
+      if (updates.preferredTaskTypes !== undefined) nextProfile.preferred_task_types = updates.preferredTaskTypes;
+      if (updates.bio !== undefined) nextProfile.bio = updates.bio;
+
+      await server.pg.query(
+        `UPDATE project_members SET profile = $1::jsonb, date_updated = NOW() WHERE id = $2`,
+        [JSON.stringify(nextProfile), memberId]
+      );
+
+      return reply.send({
+        success: true,
+        message: 'Profile updated successfully',
+        data: { memberId, profile: normalizeProfile(nextProfile) },
+      });
     }
   );
 
-  /**
-   * Get team context for AI agents
-   * Returns simplified team data with profiles for AI prompt injection
-   */
+  // =====================================================
+  // Team Context + Assignee Suggestions (used by agents/copilot)
+  // =====================================================
+
   server.get(
     '/projects/:projectId/team-context',
     { preHandler: server.authenticate },
-    async (
-      request: FastifyRequest<{ Params: { projectId: string } }>,
-      reply: FastifyReply
-    ) => {
-      try {
-        const { projectId } = request.params;
-        const userId = (request as any).user?.id;
+    async (request: FastifyRequest<{ Params: { projectId: string } }>, reply: FastifyReply) => {
+      const { projectId } = request.params;
+      const access = await requireProjectPermission(server, request as any, reply, projectId, 'view');
+      if (!access) return;
 
-        if (!userId) {
-          return reply.status(401).send({ error: 'Unauthorized' });
-        }
+      const members = await server.pg.query<{
+        id: string;
+        user_id: string;
+        role: MemberRole;
+        profile: unknown;
+        email: string;
+        display_name: string | null;
+      }>(
+        `
+        SELECT pm.id, pm.user_id, pm.role, pm.profile, au.email, au.display_name
+        FROM project_members pm
+        JOIN app_users au ON au.id = pm.user_id
+        WHERE pm.project_id = $1 AND pm.status = 'active'
+      `,
+        [projectId]
+      );
 
-        // Verify user has access to this project
-        const project = await directus.items('projects').readOne(projectId);
-        if (!project) {
-          return reply.status(404).send({ error: 'Project not found' });
-        }
-
-        // Check if user is owner or member
-        const isMember = await directus.items('project_members').readByQuery({
-          filter: {
-            project_id: { _eq: projectId },
-            user_id: { _eq: userId },
-            status: { _eq: 'active' },
-          },
-          limit: 1,
-        });
-
-        if (project.owner_id !== userId && (!isMember.data || isMember.data.length === 0)) {
-          return reply.status(403).send({ error: 'Access denied' });
-        }
-
-        // Get all active members with user info
-        const members = await directus.items('project_members').readByQuery({
-          filter: {
-            project_id: { _eq: projectId },
-            status: { _eq: 'active' },
-          },
-          fields: ['id', 'user_id', 'role', 'profile'],
-        } as any);
-
-        // Enrich with user display info
-        const enrichedMembers = await Promise.all(
-          (members.data || []).map(async (member: any) => {
-            try {
-              const user = await (directus as any).users.readOne(member.user_id);
-              const displayName = user.first_name && user.last_name
-                ? `${user.first_name} ${user.last_name}`
-                : user.email?.split('@')[0] || 'Unknown';
-
-              const profile = member.profile || {};
-
-              return {
-                id: member.id,
-                userId: member.user_id,
-                displayName,
-                role: member.role,
-                profile: {
-                  roleTitle: profile.role_title || member.role,
-                  skills: profile.skills || [],
-                  expertiseAreas: profile.expertise_areas || [],
-                  availability: profile.availability || 'available',
-                  capacityPercent: profile.capacity_percent ?? 100,
-                  preferredTaskTypes: profile.preferred_task_types || [],
-                  bio: profile.bio || null,
-                },
-              };
-            } catch {
-              return null;
-            }
-          })
-        );
-
-        return reply.send({
-          success: true,
-          data: {
-            projectId,
-            members: enrichedMembers.filter(Boolean),
-          },
-        });
-      } catch (error) {
-        request.log.error(error, 'Error fetching team context');
-        return reply.status(500).send({ error: 'Failed to fetch team context' });
-      }
+      return reply.send({
+        success: true,
+        data: {
+          projectId,
+          members: members.rows.map((m) => ({
+            id: m.id,
+            userId: m.user_id,
+            displayName: m.display_name || m.email.split('@')[0],
+            role: m.role,
+            profile: normalizeProfile(m.profile),
+          })),
+        },
+      });
     }
   );
 
-  /**
-   * Suggest best assignee for a task based on skills and availability
-   */
   server.post(
     '/projects/:projectId/suggest-assignee',
     { preHandler: server.authenticate },
     async (
-      request: FastifyRequest<{
-        Params: { projectId: string };
-        Body: SuggestAssigneeBody;
-      }>,
+      request: FastifyRequest<{ Params: { projectId: string }; Body: SuggestAssigneeBody }>,
       reply: FastifyReply
     ) => {
-      try {
-        const { projectId } = request.params;
-        const { taskDescription, requiredSkills, taskType } = request.body;
-        const userId = (request as any).user?.id;
+      const { projectId } = request.params;
+      const access = await requireProjectPermission(server, request as any, reply, projectId, 'view');
+      if (!access) return;
 
-        if (!userId) {
-          return reply.status(401).send({ error: 'Unauthorized' });
-        }
+      const { requiredSkills, taskType } = request.body || {};
 
-        // Verify user has access to this project
-        const project = await directus.items('projects').readOne(projectId);
-        if (!project) {
-          return reply.status(404).send({ error: 'Project not found' });
-        }
+      const members = await server.pg.query<{
+        id: string;
+        user_id: string;
+        role: MemberRole;
+        profile: unknown;
+        email: string;
+        display_name: string | null;
+      }>(
+        `
+        SELECT pm.id, pm.user_id, pm.role, pm.profile, au.email, au.display_name
+        FROM project_members pm
+        JOIN app_users au ON au.id = pm.user_id
+        WHERE pm.project_id = $1 AND pm.status = 'active'
+      `,
+        [projectId]
+      );
 
-        // Check if user is owner or member
-        const isMember = await directus.items('project_members').readByQuery({
-          filter: {
-            project_id: { _eq: projectId },
-            user_id: { _eq: userId },
-            status: { _eq: 'active' },
-          },
-          limit: 1,
-        });
+      const suggestions = members.rows
+        .map((member) => {
+          const profile = normalizeProfile(member.profile);
+          const memberSkills = Array.isArray(profile.skills) ? (profile.skills as string[]) : [];
+          const memberTaskTypes = Array.isArray(profile.preferredTaskTypes)
+            ? (profile.preferredTaskTypes as string[])
+            : Array.isArray(profile.preferred_task_types)
+              ? (profile.preferred_task_types as string[])
+              : [];
+          const availability = typeof profile.availability === 'string' ? (profile.availability as string) : 'available';
+          const capacity = typeof profile.capacityPercent === 'number' ? (profile.capacityPercent as number) : 100;
 
-        if (project.owner_id !== userId && (!isMember.data || isMember.data.length === 0)) {
-          return reply.status(403).send({ error: 'Access denied' });
-        }
+          let skillScore = 0;
+          const matchReasons: string[] = [];
 
-        // Get all active members
-        const members = await directus.items('project_members').readByQuery({
-          filter: {
-            project_id: { _eq: projectId },
-            status: { _eq: 'active' },
-          },
-        } as any);
+          if (requiredSkills && requiredSkills.length > 0) {
+            const matchedSkills = requiredSkills.filter((s: string) =>
+              memberSkills.some((ms: string) => ms.toLowerCase() === s.toLowerCase())
+            );
+            skillScore = Math.min(40, matchedSkills.length * 10);
+            if (matchedSkills.length > 0) matchReasons.push(`Has skills: ${matchedSkills.join(', ')}`);
+          } else {
+            skillScore = 20;
+          }
 
-        // Score each member
-        const scoredMembers = await Promise.all(
-          (members.data || []).map(async (member: any) => {
-            try {
-              const user = await (directus as any).users.readOne(member.user_id);
-              const displayName = user.first_name && user.last_name
-                ? `${user.first_name} ${user.last_name}`
-                : user.email?.split('@')[0] || 'Unknown';
+          let availabilityScore = 0;
+          if (availability === 'available') {
+            availabilityScore = 25;
+            matchReasons.push('Currently available');
+          } else if (availability === 'busy') {
+            availabilityScore = 10;
+            matchReasons.push('Busy but reachable');
+          }
 
-              const profile = member.profile || {};
-              const memberSkills = profile.skills || [];
-              const memberTaskTypes = profile.preferred_task_types || [];
-              const availability = profile.availability || 'available';
-              const capacity = profile.capacity_percent ?? 100;
+          let capacityScore = 0;
+          if (capacity <= 50) {
+            capacityScore = 25;
+            matchReasons.push(`Has capacity (${capacity}%)`);
+          } else if (capacity <= 80) {
+            capacityScore = 15;
+          } else {
+            capacityScore = 5;
+          }
 
-              // Calculate scores
-              let skillScore = 0;
-              const matchReasons: string[] = [];
+          let taskTypeScore = 0;
+          if (taskType && memberTaskTypes.some((t) => t.toLowerCase() === taskType.toLowerCase())) {
+            taskTypeScore = 10;
+            matchReasons.push('Prefers this task type');
+          } else {
+            taskTypeScore = 5;
+          }
 
-              // Skill matching (40 points max)
-              if (requiredSkills && requiredSkills.length > 0) {
-                const matchedSkills = requiredSkills.filter((s: string) =>
-                  memberSkills.some((ms: string) => ms.toLowerCase() === s.toLowerCase())
-                );
-                skillScore = Math.min(40, matchedSkills.length * 10);
-                if (matchedSkills.length > 0) {
-                  matchReasons.push(`Has skills: ${matchedSkills.join(', ')}`);
-                }
-              } else {
-                skillScore = 20; // Neutral if no skills required
-              }
+          const totalScore = skillScore + availabilityScore + capacityScore + taskTypeScore;
+          return {
+            memberId: member.id,
+            userId: member.user_id,
+            displayName: member.display_name || member.email.split('@')[0],
+            matchScore: totalScore,
+            matchReasons,
+          };
+        })
+        .filter((m) => m.matchScore > 0)
+        .sort((a, b) => b.matchScore - a.matchScore)
+        .slice(0, 3);
 
-              // Availability score (25 points max)
-              let availabilityScore = 0;
-              if (availability === 'available') {
-                availabilityScore = 25;
-                matchReasons.push('Currently available');
-              } else if (availability === 'busy') {
-                availabilityScore = 10;
-                matchReasons.push('Busy but reachable');
-              }
-
-              // Capacity score (25 points max)
-              let capacityScore = 0;
-              if (capacity <= 50) {
-                capacityScore = 25;
-                matchReasons.push(`Has capacity (${capacity}%)`);
-              } else if (capacity <= 80) {
-                capacityScore = 15;
-              } else {
-                capacityScore = 5;
-              }
-
-              // Task type score (10 points max)
-              let taskTypeScore = 0;
-              if (taskType && memberTaskTypes.some((t: string) => t.toLowerCase() === taskType.toLowerCase())) {
-                taskTypeScore = 10;
-                matchReasons.push('Prefers this task type');
-              } else {
-                taskTypeScore = 5;
-              }
-
-              const totalScore = skillScore + availabilityScore + capacityScore + taskTypeScore;
-
-              return {
-                memberId: member.id,
-                userId: member.user_id,
-                displayName,
-                matchScore: totalScore,
-                matchReasons,
-              };
-            } catch {
-              return null;
-            }
-          })
-        );
-
-        // Filter and sort by score
-        const suggestions = scoredMembers
-          .filter((m): m is NonNullable<typeof m> => m !== null && m.matchScore > 0)
-          .sort((a, b) => b.matchScore - a.matchScore)
-          .slice(0, 3);
-
-        return reply.send({
-          success: true,
-          data: {
-            suggestions,
-            query: { taskDescription, requiredSkills, taskType },
-          },
-        });
-      } catch (error) {
-        request.log.error(error, 'Error suggesting assignee');
-        return reply.status(500).send({ error: 'Failed to suggest assignee' });
-      }
+      return reply.send({
+        success: true,
+        data: {
+          suggestions,
+          query: { requiredSkills, taskType },
+        },
+      });
     }
   );
 }

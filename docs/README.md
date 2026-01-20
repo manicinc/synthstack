@@ -13,7 +13,7 @@ Welcome to the SynthStack documentation hub. Find everything you need to build, 
 
 ## Features
 
-- [AI Copilot](./features/COPILOT.md) - Built-in AI chat assistant with RAG
+- [AI (Chat + Generations)](./features/COPILOT.md) - Credit-metered chat + text/image generation
 - [Stripe Integration](./features/STRIPE_INTEGRATION.md) - Payment processing and subscriptions
 - [Newsletter & Analytics](./NEWSLETTER_ANALYTICS.md) - Email marketing and tracking
 

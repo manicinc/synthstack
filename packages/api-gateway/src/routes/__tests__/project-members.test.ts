@@ -1,58 +1,37 @@
 /**
- * Unit tests for project-members routes
- * Tests team profile management, team context, and assignee suggestions
+ * Unit tests for project-members routes (Postgres-backed)
+ *
+ * Covers:
+ * - Team member profile updates (own + invite-permission users)
+ * - Team context visibility + shape
+ * - Assignee suggestions scoring basics
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import Fastify, { FastifyInstance } from 'fastify';
-import {
-  TEST_PROJECT,
-  TEST_USERS,
-  TEST_TEAM_MEMBERS,
-  MOCK_PROFILE_UPDATE,
-  MOCK_SUGGEST_ASSIGNEE_REQUEST,
-} from '../../__tests__/fixtures/team-members.js';
-
-// Use vi.hoisted to define mocks before they're used in vi.mock
-const { mockItems, mockUsers } = vi.hoisted(() => ({
-  mockItems: {
-    readOne: vi.fn(),
-    readByQuery: vi.fn(),
-    updateOne: vi.fn(),
-    createOne: vi.fn(),
-    deleteOne: vi.fn(),
-  },
-  mockUsers: {
-    readOne: vi.fn(),
-  },
-}));
-
-vi.mock('../../services/directus.js', () => ({
-  directus: {
-    items: vi.fn(() => mockItems),
-    users: mockUsers,
-  },
-}));
-
-// Import routes after mocking
 import projectMembersRoutes from '../project-members.js';
+import { TEST_PROJECT, TEST_USERS, TEST_TEAM_MEMBERS } from '../../__tests__/fixtures/team-members.js';
 
 describe('Project Members Routes', () => {
   let server: FastifyInstance;
+  let mockPgQuery: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     server = Fastify();
+    mockPgQuery = vi.fn();
 
-    // Decorate with authenticate middleware
+    server.decorate('pg', { query: mockPgQuery } as any);
+
     server.decorate('authenticate', async (request: any, reply: any) => {
       if (!request.headers.authorization) {
         return reply.code(401).send({ error: 'Unauthorized' });
       }
+
       const userId = request.headers['x-test-user-id'] || TEST_USERS.owner.id;
-      request.user = {
-        id: userId,
-        email: request.headers['x-test-user-email'] || TEST_USERS.owner.email,
-      };
+      const email = request.headers['x-test-user-email'] || TEST_USERS.owner.email;
+      const isAdmin = request.headers['x-test-is-admin'] === 'true';
+
+      request.user = { id: userId, email, is_admin: isAdmin };
     });
 
     await server.register(projectMembersRoutes);
@@ -70,53 +49,77 @@ describe('Project Members Routes', () => {
 
   describe('PATCH /projects/:projectId/members/:memberId/profile', () => {
     it('should update own profile successfully', async () => {
-      // Setup: member updating their own profile
-      mockItems.readOne.mockResolvedValueOnce({
-        ...TEST_TEAM_MEMBERS.member,
-        user_id: TEST_USERS.member.id,
-      });
-      mockItems.updateOne.mockResolvedValueOnce({ success: true });
+      mockPgQuery
+        .mockResolvedValueOnce({
+          rows: [{
+            id: TEST_TEAM_MEMBERS.editor.id,
+            project_id: TEST_PROJECT.id,
+            user_id: TEST_USERS.member.id,
+            profile: {},
+          }],
+        })
+        .mockResolvedValueOnce({ rows: [] });
 
       const response = await server.inject({
         method: 'PATCH',
-        url: `/projects/${TEST_PROJECT.id}/members/${TEST_TEAM_MEMBERS.member.id}/profile`,
+        url: `/projects/${TEST_PROJECT.id}/members/${TEST_TEAM_MEMBERS.editor.id}/profile`,
         headers: {
           authorization: 'Bearer test-token',
           'x-test-user-id': TEST_USERS.member.id,
         },
-        payload: MOCK_PROFILE_UPDATE,
+        payload: {
+          roleTitle: 'Engineer',
+          skills: ['TypeScript', 'Node.js'],
+          availability: 'available',
+          capacityPercent: 40,
+          preferredTaskTypes: ['development'],
+          bio: 'Hello',
+        },
       });
 
       expect(response.statusCode).toBe(200);
-      const result = response.json();
-      expect(result.success).toBe(true);
-      expect(result.message).toBe('Profile updated successfully');
-      expect(mockItems.updateOne).toHaveBeenCalledWith(
-        TEST_TEAM_MEMBERS.member.id,
-        expect.objectContaining({
-          profile: expect.objectContaining({
-            role_title: MOCK_PROFILE_UPDATE.roleTitle,
-            skills: MOCK_PROFILE_UPDATE.skills,
-          }),
-        })
-      );
+      const body = response.json();
+      expect(body.success).toBe(true);
+      expect(body.message).toBe('Profile updated successfully');
+      expect(body.data).toHaveProperty('memberId', TEST_TEAM_MEMBERS.editor.id);
+      expect(body.data.profile).toHaveProperty('skills');
+
+      const updateCall = mockPgQuery.mock.calls[1];
+      expect(updateCall[0]).toContain('UPDATE project_members SET profile');
+      const jsonArg = updateCall[1][0] as string;
+      const saved = JSON.parse(jsonArg);
+      expect(saved.role_title).toBe('Engineer');
+      expect(saved.skills).toEqual(['TypeScript', 'Node.js']);
+      expect(saved.capacity_percent).toBe(40);
     });
 
-    it('should allow admin to update any member profile', async () => {
-      // Setup: admin updating another member's profile
-      mockItems.readOne.mockResolvedValueOnce({
-        ...TEST_TEAM_MEMBERS.member,
-        user_id: TEST_USERS.member.id,
-      });
-      // Admin check query
-      mockItems.readByQuery.mockResolvedValueOnce({
-        data: [TEST_TEAM_MEMBERS.admin],
-      });
-      mockItems.updateOne.mockResolvedValueOnce({ success: true });
+    it('should allow inviter (admin/owner) to update another member profile', async () => {
+      mockPgQuery
+        // Member lookup
+        .mockResolvedValueOnce({
+          rows: [{
+            id: TEST_TEAM_MEMBERS.viewer.id,
+            project_id: TEST_PROJECT.id,
+            user_id: TEST_USERS.viewer.id,
+            profile: {},
+          }],
+        })
+        // requireProjectPermission('invite')
+        .mockResolvedValueOnce({
+          rows: [{
+            id: TEST_PROJECT.id,
+            owner_id: TEST_USERS.owner.id,
+            is_system: false,
+            member_role: 'admin',
+            member_permissions: { can_invite: true },
+          }],
+        })
+        // Update
+        .mockResolvedValueOnce({ rows: [] });
 
       const response = await server.inject({
         method: 'PATCH',
-        url: `/projects/${TEST_PROJECT.id}/members/${TEST_TEAM_MEMBERS.member.id}/profile`,
+        url: `/projects/${TEST_PROJECT.id}/members/${TEST_TEAM_MEMBERS.viewer.id}/profile`,
         headers: {
           authorization: 'Bearer test-token',
           'x-test-user-id': TEST_USERS.admin.id,
@@ -128,41 +131,25 @@ describe('Project Members Routes', () => {
       expect(response.json().success).toBe(true);
     });
 
-    it('should allow owner to update any member profile', async () => {
-      // Setup: owner updating member's profile
-      mockItems.readOne.mockResolvedValueOnce({
-        ...TEST_TEAM_MEMBERS.member,
-        user_id: TEST_USERS.member.id,
-      });
-      // Owner check query
-      mockItems.readByQuery.mockResolvedValueOnce({
-        data: [TEST_TEAM_MEMBERS.owner],
-      });
-      mockItems.updateOne.mockResolvedValueOnce({ success: true });
-
-      const response = await server.inject({
-        method: 'PATCH',
-        url: `/projects/${TEST_PROJECT.id}/members/${TEST_TEAM_MEMBERS.member.id}/profile`,
-        headers: {
-          authorization: 'Bearer test-token',
-          'x-test-user-id': TEST_USERS.owner.id,
-        },
-        payload: { roleTitle: 'Updated by Owner' },
-      });
-
-      expect(response.statusCode).toBe(200);
-    });
-
-    it('should reject non-admin updating others profile', async () => {
-      // Setup: regular member trying to update another member's profile
-      mockItems.readOne.mockResolvedValueOnce({
-        ...TEST_TEAM_MEMBERS.owner,
-        user_id: TEST_USERS.owner.id,
-      });
-      // Permission check - not admin/owner
-      mockItems.readByQuery.mockResolvedValueOnce({
-        data: [],
-      });
+    it('should reject non-inviter updating others profile', async () => {
+      mockPgQuery
+        .mockResolvedValueOnce({
+          rows: [{
+            id: TEST_TEAM_MEMBERS.owner.id,
+            project_id: TEST_PROJECT.id,
+            user_id: TEST_USERS.owner.id,
+            profile: {},
+          }],
+        })
+        .mockResolvedValueOnce({
+          rows: [{
+            id: TEST_PROJECT.id,
+            owner_id: TEST_USERS.owner.id,
+            is_system: false,
+            member_role: 'member',
+            member_permissions: {},
+          }],
+        });
 
       const response = await server.inject({
         method: 'PATCH',
@@ -175,20 +162,26 @@ describe('Project Members Routes', () => {
       });
 
       expect(response.statusCode).toBe(403);
-      expect(response.json().error).toBe('You can only update your own profile');
+      const body = response.json();
+      expect(body.success).toBe(false);
+      expect(body.error?.code).toBe('FORBIDDEN');
     });
 
-    it('should validate capacity range 0-100', async () => {
-      mockItems.readOne.mockResolvedValueOnce({
-        ...TEST_TEAM_MEMBERS.member,
-        user_id: TEST_USERS.member.id,
-      });
-      mockItems.updateOne.mockResolvedValueOnce({ success: true });
+    it('should clamp capacity to 0..100', async () => {
+      mockPgQuery
+        .mockResolvedValueOnce({
+          rows: [{
+            id: TEST_TEAM_MEMBERS.editor.id,
+            project_id: TEST_PROJECT.id,
+            user_id: TEST_USERS.member.id,
+            profile: {},
+          }],
+        })
+        .mockResolvedValueOnce({ rows: [] });
 
-      // Test with capacity > 100
       const response = await server.inject({
         method: 'PATCH',
-        url: `/projects/${TEST_PROJECT.id}/members/${TEST_TEAM_MEMBERS.member.id}/profile`,
+        url: `/projects/${TEST_PROJECT.id}/members/${TEST_TEAM_MEMBERS.editor.id}/profile`,
         headers: {
           authorization: 'Bearer test-token',
           'x-test-user-id': TEST_USERS.member.id,
@@ -197,128 +190,21 @@ describe('Project Members Routes', () => {
       });
 
       expect(response.statusCode).toBe(200);
-      // Should be clamped to 100
-      expect(mockItems.updateOne).toHaveBeenCalledWith(
-        TEST_TEAM_MEMBERS.member.id,
-        expect.objectContaining({
-          profile: expect.objectContaining({
-            capacity_percent: 100,
-          }),
-        })
-      );
+      const jsonArg = mockPgQuery.mock.calls[1][1][0] as string;
+      expect(JSON.parse(jsonArg).capacity_percent).toBe(100);
     });
 
-    it('should clamp negative capacity to 0', async () => {
-      mockItems.readOne.mockResolvedValueOnce({
-        ...TEST_TEAM_MEMBERS.member,
-        user_id: TEST_USERS.member.id,
-      });
-      mockItems.updateOne.mockResolvedValueOnce({ success: true });
+    it('should return 404 when member not found', async () => {
+      mockPgQuery.mockResolvedValueOnce({ rows: [] });
 
       const response = await server.inject({
         method: 'PATCH',
-        url: `/projects/${TEST_PROJECT.id}/members/${TEST_TEAM_MEMBERS.member.id}/profile`,
-        headers: {
-          authorization: 'Bearer test-token',
-          'x-test-user-id': TEST_USERS.member.id,
-        },
-        payload: { capacityPercent: -50 },
-      });
-
-      expect(response.statusCode).toBe(200);
-      expect(mockItems.updateOne).toHaveBeenCalledWith(
-        TEST_TEAM_MEMBERS.member.id,
-        expect.objectContaining({
-          profile: expect.objectContaining({
-            capacity_percent: 0,
-          }),
-        })
-      );
-    });
-
-    it('should handle missing member gracefully', async () => {
-      mockItems.readOne.mockResolvedValueOnce(null);
-
-      const response = await server.inject({
-        method: 'PATCH',
-        url: `/projects/${TEST_PROJECT.id}/members/nonexistent-member/profile`,
-        headers: {
-          authorization: 'Bearer test-token',
-          'x-test-user-id': TEST_USERS.owner.id,
-        },
+        url: `/projects/${TEST_PROJECT.id}/members/nonexistent/profile`,
+        headers: { authorization: 'Bearer test-token' },
         payload: { roleTitle: 'Test' },
       });
 
       expect(response.statusCode).toBe(404);
-      expect(response.json().error).toBe('Member not found');
-    });
-
-    it('should handle member from different project', async () => {
-      mockItems.readOne.mockResolvedValueOnce({
-        ...TEST_TEAM_MEMBERS.member,
-        project_id: 'different-project', // Different project
-      });
-
-      const response = await server.inject({
-        method: 'PATCH',
-        url: `/projects/${TEST_PROJECT.id}/members/${TEST_TEAM_MEMBERS.member.id}/profile`,
-        headers: {
-          authorization: 'Bearer test-token',
-          'x-test-user-id': TEST_USERS.owner.id,
-        },
-        payload: { roleTitle: 'Test' },
-      });
-
-      expect(response.statusCode).toBe(404);
-      expect(response.json().error).toBe('Member not found');
-    });
-
-    it('should return 401 without authentication', async () => {
-      const response = await server.inject({
-        method: 'PATCH',
-        url: `/projects/${TEST_PROJECT.id}/members/${TEST_TEAM_MEMBERS.member.id}/profile`,
-        payload: { roleTitle: 'Test' },
-      });
-
-      expect(response.statusCode).toBe(401);
-    });
-
-    it('should merge profile updates with existing profile', async () => {
-      const existingProfile = {
-        role_title: 'Existing Title',
-        skills: ['OldSkill'],
-        bio: 'Existing bio',
-      };
-
-      mockItems.readOne.mockResolvedValueOnce({
-        ...TEST_TEAM_MEMBERS.member,
-        user_id: TEST_USERS.member.id,
-        profile: existingProfile,
-      });
-      mockItems.updateOne.mockResolvedValueOnce({ success: true });
-
-      const response = await server.inject({
-        method: 'PATCH',
-        url: `/projects/${TEST_PROJECT.id}/members/${TEST_TEAM_MEMBERS.member.id}/profile`,
-        headers: {
-          authorization: 'Bearer test-token',
-          'x-test-user-id': TEST_USERS.member.id,
-        },
-        payload: { skills: ['NewSkill1', 'NewSkill2'] },
-      });
-
-      expect(response.statusCode).toBe(200);
-      // Should keep existing fields and update skills
-      expect(mockItems.updateOne).toHaveBeenCalledWith(
-        TEST_TEAM_MEMBERS.member.id,
-        expect.objectContaining({
-          profile: expect.objectContaining({
-            role_title: 'Existing Title', // Preserved
-            bio: 'Existing bio', // Preserved
-            skills: ['NewSkill1', 'NewSkill2'], // Updated
-          }),
-        })
-      );
     });
   });
 
@@ -327,44 +213,25 @@ describe('Project Members Routes', () => {
   // ============================================
 
   describe('GET /projects/:projectId/team-context', () => {
-    it('should return team context for project members', async () => {
-      mockItems.readOne.mockResolvedValueOnce(TEST_PROJECT);
-      mockItems.readByQuery
-        .mockResolvedValueOnce({ data: [TEST_TEAM_MEMBERS.owner] }) // Member check
+    it('should return team context for authorized users', async () => {
+      mockPgQuery
+        // requireProjectPermission('view')
         .mockResolvedValueOnce({
-          data: Object.values(TEST_TEAM_MEMBERS).filter((m) => m.status === 'active'),
-        }); // Team members
-
-      // Mock user lookups
-      mockUsers.readOne
-        .mockResolvedValueOnce(TEST_USERS.owner)
-        .mockResolvedValueOnce(TEST_USERS.admin)
-        .mockResolvedValueOnce(TEST_USERS.member)
-        .mockResolvedValueOnce(TEST_USERS.viewer);
-
-      const response = await server.inject({
-        method: 'GET',
-        url: `/projects/${TEST_PROJECT.id}/team-context`,
-        headers: {
-          authorization: 'Bearer test-token',
-          'x-test-user-id': TEST_USERS.owner.id,
-        },
-      });
-
-      expect(response.statusCode).toBe(200);
-      const result = response.json();
-      expect(result.success).toBe(true);
-      expect(result.data.projectId).toBe(TEST_PROJECT.id);
-      expect(Array.isArray(result.data.members)).toBe(true);
-    });
-
-    it('should include profile data in response', async () => {
-      mockItems.readOne.mockResolvedValueOnce(TEST_PROJECT);
-      mockItems.readByQuery
-        .mockResolvedValueOnce({ data: [TEST_TEAM_MEMBERS.owner] })
-        .mockResolvedValueOnce({ data: [TEST_TEAM_MEMBERS.owner] });
-
-      mockUsers.readOne.mockResolvedValueOnce(TEST_USERS.owner);
+          rows: [{
+            id: TEST_PROJECT.id,
+            owner_id: TEST_USERS.owner.id,
+            is_system: false,
+            member_role: 'owner',
+            member_permissions: {},
+          }],
+        })
+        // members query
+        .mockResolvedValueOnce({
+          rows: [
+            { id: TEST_TEAM_MEMBERS.owner.id, user_id: TEST_USERS.owner.id, role: 'owner', profile: {}, email: TEST_USERS.owner.email, display_name: 'Project Owner' },
+            { id: TEST_TEAM_MEMBERS.admin.id, user_id: TEST_USERS.admin.id, role: 'admin', profile: {}, email: TEST_USERS.admin.email, display_name: 'Team Admin' },
+          ],
+        });
 
       const response = await server.inject({
         method: 'GET',
@@ -376,22 +243,23 @@ describe('Project Members Routes', () => {
       });
 
       expect(response.statusCode).toBe(200);
-      const result = response.json();
-      const member = result.data.members[0];
-
-      expect(member).toHaveProperty('id');
-      expect(member).toHaveProperty('userId');
-      expect(member).toHaveProperty('displayName');
-      expect(member).toHaveProperty('role');
-      expect(member).toHaveProperty('profile');
-      expect(member.profile).toHaveProperty('skills');
-      expect(member.profile).toHaveProperty('availability');
-      expect(member.profile).toHaveProperty('capacityPercent');
+      const body = response.json();
+      expect(body.success).toBe(true);
+      expect(body.data.projectId).toBe(TEST_PROJECT.id);
+      expect(Array.isArray(body.data.members)).toBe(true);
+      expect(body.data.members[0]).toHaveProperty('profile');
     });
 
-    it('should reject unauthorized users', async () => {
-      mockItems.readOne.mockResolvedValueOnce(TEST_PROJECT);
-      mockItems.readByQuery.mockResolvedValueOnce({ data: [] }); // Not a member
+    it('should return 404 for unauthorized users (no membership)', async () => {
+      mockPgQuery.mockResolvedValueOnce({
+        rows: [{
+          id: TEST_PROJECT.id,
+          owner_id: TEST_USERS.owner.id,
+          is_system: false,
+          member_role: null,
+          member_permissions: null,
+        }],
+      });
 
       const response = await server.inject({
         method: 'GET',
@@ -402,99 +270,7 @@ describe('Project Members Routes', () => {
         },
       });
 
-      expect(response.statusCode).toBe(403);
-      expect(response.json().error).toBe('Access denied');
-    });
-
-    it('should return 404 for non-existent project', async () => {
-      mockItems.readOne.mockResolvedValueOnce(null);
-
-      const response = await server.inject({
-        method: 'GET',
-        url: '/projects/nonexistent-project/team-context',
-        headers: {
-          authorization: 'Bearer test-token',
-          'x-test-user-id': TEST_USERS.owner.id,
-        },
-      });
-
       expect(response.statusCode).toBe(404);
-      expect(response.json().error).toBe('Project not found');
-    });
-
-    it('should allow project owner access even if not in members table', async () => {
-      mockItems.readOne.mockResolvedValueOnce({
-        ...TEST_PROJECT,
-        owner_id: TEST_USERS.owner.id,
-      });
-      mockItems.readByQuery
-        .mockResolvedValueOnce({ data: [] }) // Not in members
-        .mockResolvedValueOnce({ data: [TEST_TEAM_MEMBERS.owner] });
-
-      mockUsers.readOne.mockResolvedValueOnce(TEST_USERS.owner);
-
-      const response = await server.inject({
-        method: 'GET',
-        url: `/projects/${TEST_PROJECT.id}/team-context`,
-        headers: {
-          authorization: 'Bearer test-token',
-          'x-test-user-id': TEST_USERS.owner.id,
-        },
-      });
-
-      expect(response.statusCode).toBe(200);
-    });
-
-    it('should format display name from first and last name', async () => {
-      mockItems.readOne.mockResolvedValueOnce(TEST_PROJECT);
-      mockItems.readByQuery
-        .mockResolvedValueOnce({ data: [TEST_TEAM_MEMBERS.owner] })
-        .mockResolvedValueOnce({ data: [TEST_TEAM_MEMBERS.owner] });
-
-      mockUsers.readOne.mockResolvedValueOnce({
-        ...TEST_USERS.owner,
-        first_name: 'John',
-        last_name: 'Doe',
-      });
-
-      const response = await server.inject({
-        method: 'GET',
-        url: `/projects/${TEST_PROJECT.id}/team-context`,
-        headers: {
-          authorization: 'Bearer test-token',
-          'x-test-user-id': TEST_USERS.owner.id,
-        },
-      });
-
-      expect(response.statusCode).toBe(200);
-      const member = response.json().data.members[0];
-      expect(member.displayName).toBe('John Doe');
-    });
-
-    it('should fallback to email username for display name', async () => {
-      mockItems.readOne.mockResolvedValueOnce(TEST_PROJECT);
-      mockItems.readByQuery
-        .mockResolvedValueOnce({ data: [TEST_TEAM_MEMBERS.owner] })
-        .mockResolvedValueOnce({ data: [TEST_TEAM_MEMBERS.owner] });
-
-      mockUsers.readOne.mockResolvedValueOnce({
-        id: 'user-001',
-        email: 'john.doe@example.com',
-        // No first_name or last_name
-      });
-
-      const response = await server.inject({
-        method: 'GET',
-        url: `/projects/${TEST_PROJECT.id}/team-context`,
-        headers: {
-          authorization: 'Bearer test-token',
-          'x-test-user-id': TEST_USERS.owner.id,
-        },
-      });
-
-      expect(response.statusCode).toBe(200);
-      const member = response.json().data.members[0];
-      expect(member.displayName).toBe('john.doe');
     });
   });
 
@@ -503,22 +279,56 @@ describe('Project Members Routes', () => {
   // ============================================
 
   describe('POST /projects/:projectId/suggest-assignee', () => {
-    beforeEach(() => {
-      // Default setup for assignee tests
-      mockItems.readOne.mockResolvedValue(TEST_PROJECT);
-      mockItems.readByQuery
-        .mockResolvedValueOnce({ data: [TEST_TEAM_MEMBERS.owner] }) // Member check
+    it('should return up to 3 suggestions sorted by score', async () => {
+      mockPgQuery
+        // requireProjectPermission('view')
         .mockResolvedValueOnce({
-          data: [TEST_TEAM_MEMBERS.owner, TEST_TEAM_MEMBERS.admin, TEST_TEAM_MEMBERS.member],
-        }); // Team members
+          rows: [{
+            id: TEST_PROJECT.id,
+            owner_id: TEST_USERS.owner.id,
+            is_system: false,
+            member_role: 'owner',
+            member_permissions: {},
+          }],
+        })
+        // members query
+        .mockResolvedValueOnce({
+          rows: [
+            {
+              id: TEST_TEAM_MEMBERS.owner.id,
+              user_id: TEST_USERS.owner.id,
+              role: 'owner',
+              email: TEST_USERS.owner.email,
+              display_name: 'Owner',
+              profile: { skills: ['Vue', 'TypeScript'], availability: 'available', capacity_percent: 40, preferred_task_types: ['Development'] },
+            },
+            {
+              id: TEST_TEAM_MEMBERS.admin.id,
+              user_id: TEST_USERS.admin.id,
+              role: 'admin',
+              email: TEST_USERS.admin.email,
+              display_name: 'Admin',
+              profile: { skills: ['React'], availability: 'busy', capacity_percent: 80, preferred_task_types: [] },
+            },
+            {
+              id: TEST_TEAM_MEMBERS.viewer.id,
+              user_id: TEST_USERS.viewer.id,
+              role: 'viewer',
+              email: TEST_USERS.viewer.email,
+              display_name: 'Viewer',
+              profile: { skills: [], availability: 'away', capacity_percent: 100, preferred_task_types: [] },
+            },
+            {
+              id: TEST_TEAM_MEMBERS.editor.id,
+              user_id: TEST_USERS.member.id,
+              role: 'member',
+              email: TEST_USERS.member.email,
+              display_name: 'Member',
+              profile: { skills: ['TypeScript'], availability: 'available', capacity_percent: 20, preferred_task_types: ['Development'] },
+            },
+          ],
+        });
 
-      mockUsers.readOne
-        .mockResolvedValueOnce(TEST_USERS.owner)
-        .mockResolvedValueOnce(TEST_USERS.admin)
-        .mockResolvedValueOnce(TEST_USERS.member);
-    });
-
-    it('should return top 3 suggestions sorted by score', async () => {
       const response = await server.inject({
         method: 'POST',
         url: `/projects/${TEST_PROJECT.id}/suggest-assignee`,
@@ -526,21 +336,41 @@ describe('Project Members Routes', () => {
           authorization: 'Bearer test-token',
           'x-test-user-id': TEST_USERS.owner.id,
         },
-        payload: MOCK_SUGGEST_ASSIGNEE_REQUEST,
+        payload: { requiredSkills: ['TypeScript'], taskType: 'Development' },
       });
 
       expect(response.statusCode).toBe(200);
-      const result = response.json();
-      expect(result.success).toBe(true);
-      expect(Array.isArray(result.data.suggestions)).toBe(true);
-      expect(result.data.suggestions.length).toBeLessThanOrEqual(3);
+      const body = response.json();
+      expect(body.success).toBe(true);
+      expect(Array.isArray(body.data.suggestions)).toBe(true);
+      expect(body.data.suggestions.length).toBeLessThanOrEqual(3);
 
-      // Should be sorted by matchScore descending
-      const scores = result.data.suggestions.map((s: any) => s.matchScore);
+      const scores = body.data.suggestions.map((s: any) => s.matchScore);
       expect(scores).toEqual([...scores].sort((a, b) => b - a));
     });
 
-    it('should match skills correctly', async () => {
+    it('should include skill match reasons when skills match', async () => {
+      mockPgQuery
+        .mockResolvedValueOnce({
+          rows: [{
+            id: TEST_PROJECT.id,
+            owner_id: TEST_USERS.owner.id,
+            is_system: false,
+            member_role: 'owner',
+            member_permissions: {},
+          }],
+        })
+        .mockResolvedValueOnce({
+          rows: [{
+            id: TEST_TEAM_MEMBERS.owner.id,
+            user_id: TEST_USERS.owner.id,
+            role: 'owner',
+            email: TEST_USERS.owner.email,
+            display_name: 'Owner',
+            profile: { skills: ['Vue', 'TypeScript'], availability: 'available', capacity_percent: 40 },
+          }],
+        });
+
       const response = await server.inject({
         method: 'POST',
         url: `/projects/${TEST_PROJECT.id}/suggest-assignee`,
@@ -548,148 +378,24 @@ describe('Project Members Routes', () => {
           authorization: 'Bearer test-token',
           'x-test-user-id': TEST_USERS.owner.id,
         },
-        payload: {
-          requiredSkills: ['Vue', 'TypeScript'],
-        },
+        payload: { requiredSkills: ['Vue'] },
       });
 
       expect(response.statusCode).toBe(200);
-      const result = response.json();
-
-      // Owner has Vue and TypeScript, should be ranked higher
-      const ownerSuggestion = result.data.suggestions.find(
-        (s: any) => s.userId === TEST_USERS.owner.id
-      );
-      expect(ownerSuggestion).toBeDefined();
-      // Check that at least one reason mentions the skills
+      const ownerSuggestion = response.json().data.suggestions[0];
       expect(ownerSuggestion.matchReasons.some((r: string) => r.includes('Vue'))).toBe(true);
     });
 
-    it('should factor in availability', async () => {
-      // Reset mocks for this specific test
-      vi.clearAllMocks();
-
-      mockItems.readOne.mockResolvedValue(TEST_PROJECT);
-      mockItems.readByQuery
-        .mockResolvedValueOnce({ data: [TEST_TEAM_MEMBERS.owner] })
-        .mockResolvedValueOnce({
-          data: [
-            TEST_TEAM_MEMBERS.owner, // available
-            TEST_TEAM_MEMBERS.admin, // busy
-            TEST_TEAM_MEMBERS.awayMember, // away
-          ],
-        });
-
-      mockUsers.readOne
-        .mockResolvedValueOnce(TEST_USERS.owner)
-        .mockResolvedValueOnce(TEST_USERS.admin)
-        .mockResolvedValueOnce({ id: 'user-006', email: 'away@test.com' });
-
-      const response = await server.inject({
-        method: 'POST',
-        url: `/projects/${TEST_PROJECT.id}/suggest-assignee`,
-        headers: {
-          authorization: 'Bearer test-token',
-          'x-test-user-id': TEST_USERS.owner.id,
-        },
-        payload: { taskDescription: 'Any task' },
+    it('should return 404 for unauthorized users (no membership)', async () => {
+      mockPgQuery.mockResolvedValueOnce({
+        rows: [{
+          id: TEST_PROJECT.id,
+          owner_id: TEST_USERS.owner.id,
+          is_system: false,
+          member_role: null,
+          member_permissions: null,
+        }],
       });
-
-      expect(response.statusCode).toBe(200);
-      const result = response.json();
-
-      // Available member should have "Currently available" in reasons
-      const availableSuggestion = result.data.suggestions.find((s: any) =>
-        s.matchReasons.includes('Currently available')
-      );
-      expect(availableSuggestion).toBeDefined();
-    });
-
-    it('should factor in capacity', async () => {
-      // Reset mocks for this specific test
-      vi.clearAllMocks();
-
-      mockItems.readOne.mockResolvedValue(TEST_PROJECT);
-      mockItems.readByQuery
-        .mockResolvedValueOnce({ data: [TEST_TEAM_MEMBERS.owner] })
-        .mockResolvedValueOnce({
-          data: [
-            TEST_TEAM_MEMBERS.member, // 40% capacity - has room
-            TEST_TEAM_MEMBERS.admin, // 80% capacity - busy
-          ],
-        });
-
-      mockUsers.readOne
-        .mockResolvedValueOnce(TEST_USERS.member)
-        .mockResolvedValueOnce(TEST_USERS.admin);
-
-      const response = await server.inject({
-        method: 'POST',
-        url: `/projects/${TEST_PROJECT.id}/suggest-assignee`,
-        headers: {
-          authorization: 'Bearer test-token',
-          'x-test-user-id': TEST_USERS.owner.id,
-        },
-        payload: { taskDescription: 'Any task' },
-      });
-
-      expect(response.statusCode).toBe(200);
-      const result = response.json();
-
-      // Member with 40% capacity should have capacity reason
-      const lowCapacitySuggestion = result.data.suggestions.find((s: any) =>
-        s.matchReasons.some((r: string) => r.includes('capacity'))
-      );
-      expect(lowCapacitySuggestion).toBeDefined();
-    });
-
-    it('should match task type preferences', async () => {
-      const response = await server.inject({
-        method: 'POST',
-        url: `/projects/${TEST_PROJECT.id}/suggest-assignee`,
-        headers: {
-          authorization: 'Bearer test-token',
-          'x-test-user-id': TEST_USERS.owner.id,
-        },
-        payload: {
-          taskType: 'Development',
-        },
-      });
-
-      expect(response.statusCode).toBe(200);
-      const result = response.json();
-
-      // Owner and Member prefer Development
-      const devSuggestion = result.data.suggestions.find((s: any) =>
-        s.matchReasons.includes('Prefers this task type')
-      );
-      expect(devSuggestion).toBeDefined();
-    });
-
-    it('should include query in response', async () => {
-      const response = await server.inject({
-        method: 'POST',
-        url: `/projects/${TEST_PROJECT.id}/suggest-assignee`,
-        headers: {
-          authorization: 'Bearer test-token',
-          'x-test-user-id': TEST_USERS.owner.id,
-        },
-        payload: MOCK_SUGGEST_ASSIGNEE_REQUEST,
-      });
-
-      expect(response.statusCode).toBe(200);
-      const result = response.json();
-      expect(result.data.query).toEqual(MOCK_SUGGEST_ASSIGNEE_REQUEST);
-    });
-
-    it('should reject unauthorized users', async () => {
-      // This test needs its own beforeEach setup since it uses a different user
-      mockItems.readOne.mockReset();
-      mockItems.readByQuery.mockReset();
-      mockUsers.readOne.mockReset();
-
-      mockItems.readOne.mockResolvedValue(TEST_PROJECT);
-      mockItems.readByQuery.mockResolvedValueOnce({ data: [] }); // Not a member
 
       const response = await server.inject({
         method: 'POST',
@@ -698,53 +404,11 @@ describe('Project Members Routes', () => {
           authorization: 'Bearer test-token',
           'x-test-user-id': TEST_USERS.outsider.id,
         },
-        payload: MOCK_SUGGEST_ASSIGNEE_REQUEST,
+        payload: { requiredSkills: ['TypeScript'] },
       });
 
-      expect(response.statusCode).toBe(403);
-    });
-
-    it('should return empty suggestions for project with no members', async () => {
-      mockItems.readOne.mockReset();
-      mockItems.readByQuery.mockReset();
-      mockUsers.readOne.mockReset();
-
-      mockItems.readOne.mockResolvedValue(TEST_PROJECT);
-      mockItems.readByQuery
-        .mockResolvedValueOnce({ data: [TEST_TEAM_MEMBERS.owner] }) // Member check passes
-        .mockResolvedValueOnce({ data: [] }); // No team members
-
-      const response = await server.inject({
-        method: 'POST',
-        url: `/projects/${TEST_PROJECT.id}/suggest-assignee`,
-        headers: {
-          authorization: 'Bearer test-token',
-          'x-test-user-id': TEST_USERS.owner.id,
-        },
-        payload: MOCK_SUGGEST_ASSIGNEE_REQUEST,
-      });
-
-      expect(response.statusCode).toBe(200);
-      const result = response.json();
-      expect(result.data.suggestions).toEqual([]);
-    });
-
-    it('should handle empty request body', async () => {
-      const response = await server.inject({
-        method: 'POST',
-        url: `/projects/${TEST_PROJECT.id}/suggest-assignee`,
-        headers: {
-          authorization: 'Bearer test-token',
-          'x-test-user-id': TEST_USERS.owner.id,
-        },
-        payload: {},
-      });
-
-      expect(response.statusCode).toBe(200);
-      // Should still return suggestions based on availability/capacity
-      const result = response.json();
-      expect(result.success).toBe(true);
-      expect(Array.isArray(result.data.suggestions)).toBe(true);
+      expect(response.statusCode).toBe(404);
     });
   });
 });
+

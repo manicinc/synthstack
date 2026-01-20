@@ -118,7 +118,9 @@ describe('Auth Routes', () => {
         credits_used_today: 25,
       };
 
-      mockPgQuery.mockResolvedValueOnce({ rows: [mockUser] });
+      mockPgQuery
+        .mockResolvedValueOnce({ rows: [mockUser] }) // app_users lookup
+        .mockResolvedValueOnce({ rows: [{ used_today: '25' }] }); // credit_transactions usage
 
       const response = await server.inject({
         method: 'GET',
@@ -156,7 +158,9 @@ describe('Auth Routes', () => {
     });
 
     it('should handle missing user data gracefully', async () => {
-      mockPgQuery.mockResolvedValueOnce({ rows: [] });
+      mockPgQuery
+        .mockResolvedValueOnce({ rows: [] }) // app_users lookup
+        .mockResolvedValueOnce({ rows: [] }); // credit_transactions usage
 
       const response = await server.inject({
         method: 'GET',

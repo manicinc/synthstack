@@ -19,7 +19,7 @@ This document outlines the comprehensive plan for integrating Stripe payments wi
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    API Gateway (Fastify)                             │
 ├─────────────────────────────────────────────────────────────────────┤
-│  /auth/*      │  /subscriptions/*   │  /credits/*   │  /community/* │
+│  /auth/*      │  /billing/*         │  /credits/*   │  /community/* │
 │  - Login      │  - Create checkout  │  - Use        │  - Upload     │
 │  - Register   │  - Webhook handler  │  - Purchase   │  - Moderate   │
 │  - OAuth CB   │  - Portal session   │  - Balance    │  - Reports    │
@@ -48,6 +48,8 @@ Current API env vars and tiers:
 | Maker | `STRIPE_PRICE_MAKER` | price_1SmoJoCBrYnyjAOOrEyKLXgz | 30 | $12.99/mo ($116.91/yr) |
 | Pro | `STRIPE_PRICE_PRO` | price_1SmoyiCBrYnyjAOOTZbX7tpl | 100 | $24.99/mo ($224.91/yr) |
 | Agency | `STRIPE_PRICE_AGENCY` | price_1Smp4ZCBrYnyjAOOlCWqbRrs | 500 | $39.99/mo ($359.91/yr) |
+
+> Note: the marketing tier **Agency** is stored as `subscription_tier='unlimited'` in the database. The API may accept either `agency` or `unlimited` and normalizes to the DB-safe value.
 
 ### Required Environment Variables
 
@@ -99,11 +101,11 @@ VITE_SUPABASE_ANON_KEY=eyJ...
 ### User Table Sync
 
 ```sql
--- Trigger to sync Supabase auth.users to our users table
+-- Trigger to sync Supabase auth.users to our app_users table
 CREATE OR REPLACE FUNCTION sync_user_from_auth()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.users (id, email, display_name, subscription_tier, credits_remaining)
+  INSERT INTO public.app_users (id, email, display_name, subscription_tier, credits_remaining)
   VALUES (
     NEW.id,
     NEW.email,
@@ -124,23 +126,19 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 ### Checkout Session Creation
 
 ```typescript
-// POST /api/v1/subscriptions/checkout
-async function createCheckout(userId: string, priceId: string) {
-  const session = await stripe.checkout.sessions.create({
-    mode: 'subscription',
-    payment_method_types: ['card'],
-    customer_email: user.email,
-    client_reference_id: userId,
-    line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${FRONTEND_URL}/app?subscription=success&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${FRONTEND_URL}/pricing`,
-    metadata: { userId, priceId },
-    subscription_data: {
-      metadata: { userId },
-      trial_period_days: 3, // ← Free trial before first charge
-    },
-  });
-  return session.url;
+// POST /api/v1/billing/checkout
+// Body: { tier: 'maker' | 'pro' | 'agency', isYearly?: boolean, promoCode?: string }
+async function createCheckout(userId: string, tier: string, isYearly = false, promoCode?: string) {
+  const session = await stripeService.createCheckoutSession({
+    userId,
+    email: user.email,
+    tier,
+    isYearly,
+    promoCode,
+    trialDays: 3, // ← Free trial before first charge (0 to disable)
+  })
+
+  return session.url
 }
 ```
 
@@ -194,7 +192,7 @@ const session = await stripeService.createCheckoutSession({
 ### Customer Portal
 
 ```typescript
-// POST /api/v1/subscriptions/portal
+// POST /api/v1/billing/portal
 async function createPortalSession(userId: string) {
   const user = await getUser(userId);
   const session = await stripe.billingPortal.sessions.create({
@@ -209,13 +207,14 @@ async function createPortalSession(userId: string) {
 
 ### Credit Allocation by Tier
 
-| Tier | Credits/Day | Max File Size | AI Model |
-|------|-------------|---------------|----------|
-| Free (Public) | 5 | 25 MB | Premium |
-| Free (Private) | 3 | 10 MB | Basic |
-| Maker | 50 | 100 MB | Advanced |
-| Pro | 200 | 500 MB | Premium |
-| Agency | Unlimited | 1 GB | Premium |
+Credits are configured in the API gateway tier config (`packages/api-gateway/src/services/stripe.ts`).
+
+| Tier | Credits/Day | Max File Size |
+|------|-------------|---------------|
+| Free | 10 | 10 MB |
+| Maker | 30 | 50 MB |
+| Pro | 100 | 200 MB |
+| Agency (DB: `unlimited`) | 500 | 500 MB |
 
 ### Credit Operations
 
@@ -236,7 +235,7 @@ async function useCredit(userId: string, amount: number = 1) {
   
   // Deduct and log
   await db.query(`
-    UPDATE users SET credits_remaining = credits_remaining - $1, lifetime_credits_used = lifetime_credits_used + $1
+    UPDATE app_users SET credits_remaining = credits_remaining - $1, lifetime_credits_used = lifetime_credits_used + $1
     WHERE id = $2
   `, [amount, userId]);
   
@@ -276,10 +275,10 @@ Directus automatically creates an admin UI for these tables:
 ### Backend (API Gateway)
 
 - [ ] Install Stripe SDK: `pnpm add stripe`
-- [ ] Create `/subscriptions/checkout` endpoint
-- [ ] Create `/subscriptions/webhook` endpoint
-- [ ] Create `/subscriptions/portal` endpoint
-- [ ] Create `/subscriptions/current` endpoint
+- [ ] Create `/billing/checkout` endpoint
+- [ ] Create `/webhooks/stripe` endpoint
+- [ ] Create `/billing/portal` endpoint
+- [ ] Create `/billing/subscription` endpoint
 - [ ] Implement credit deduction middleware
 - [ ] Add daily credit reset cron job
 - [ ] Set up Supabase JWT verification
@@ -736,4 +735,3 @@ For common issues (invitation not received, changed username, etc.), see the int
 - API docs: Swagger UI at `/docs`, OpenAPI at `/openapi.json` and `/openapi.yaml`
 - Admin CMS: `docs/ADMIN_CMS.md`
 - Pricing/plan docs: see `README.md` and this file for env mapping
-

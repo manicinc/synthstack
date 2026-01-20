@@ -4,7 +4,17 @@
  * Tests for automatic auth provider detection based on environment configuration
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
+
+// This suite only validates provider auto-detection logic.
+// Mock heavyweight provider implementations to keep imports fast + deterministic.
+vi.mock('../providers/supabase.js', () => ({
+    SupabaseAuthProvider: class SupabaseAuthProvider {},
+}));
+
+vi.mock('../providers/local.js', () => ({
+    LocalAuthProvider: class LocalAuthProvider {},
+}));
 
 // Mock config before importing AuthService
 const mockConfig = {
@@ -41,15 +51,18 @@ const mockFastify = {
 };
 
 describe('AuthService Auto-Detection', () => {
+    let AuthService: any;
+
+    beforeAll(async () => {
+        // Import once (these tests only validate config detection; no need to reload the module every test).
+        ({ AuthService } = await import('../index.js'));
+    }, 60000);
+
     beforeEach(() => {
         vi.clearAllMocks();
         // Reset config for each test
         mockConfig.supabaseUrl = '';
         mockConfig.supabaseServiceRoleKey = '';
-    });
-
-    afterEach(() => {
-        vi.resetModules();
     });
 
     describe('loadProviderConfig defaults', () => {
@@ -61,15 +74,14 @@ describe('AuthService Auto-Detection', () => {
             // Mock no DB config table
             mockPool.query.mockRejectedValueOnce(new Error('relation "auth_provider_config" does not exist'));
 
-            const { AuthService } = await import('../index.js');
             const authService = new (AuthService as any)(mockFastify);
-            await authService.initialize();
+            await (authService as any).loadProviderConfig();
 
             const config = authService.getConfig();
             expect(config.activeProvider).toBe('local');
             expect(config.supabaseEnabled).toBe(false);
             expect(config.localEnabled).toBe(true);
-        }, 15000); // Extended timeout for initial module import
+        }, 25000); // Extended timeout for initial module import in CI/sandbox environments
 
         it('should default to Supabase auth when Supabase is configured', async () => {
             // Set Supabase env vars
@@ -79,15 +91,14 @@ describe('AuthService Auto-Detection', () => {
             // Mock no DB config table
             mockPool.query.mockRejectedValueOnce(new Error('relation "auth_provider_config" does not exist'));
 
-            const { AuthService } = await import('../index.js');
             const authService = new (AuthService as any)(mockFastify);
-            await authService.initialize();
+            await (authService as any).loadProviderConfig();
 
             const config = authService.getConfig();
             expect(config.activeProvider).toBe('supabase');
             expect(config.supabaseEnabled).toBe(true);
             expect(config.localEnabled).toBe(true); // Always enabled as fallback
-        });
+        }, 15000);
 
         it('should log appropriate message when using local auth', async () => {
             mockConfig.supabaseUrl = '';
@@ -96,9 +107,8 @@ describe('AuthService Auto-Detection', () => {
             // Mock empty DB config result
             mockPool.query.mockResolvedValueOnce({ rows: [] });
 
-            const { AuthService } = await import('../index.js');
             const authService = new (AuthService as any)(mockFastify);
-            await authService.initialize();
+            await (authService as any).loadProviderConfig();
 
             expect(mockFastify.log.info).toHaveBeenCalledWith(
                 '📦 Supabase not configured - using local PostgreSQL auth'
@@ -120,9 +130,8 @@ describe('AuthService Auto-Detection', () => {
                 }],
             });
 
-            const { AuthService } = await import('../index.js');
             const authService = new (AuthService as any)(mockFastify);
-            await authService.initialize();
+            await (authService as any).loadProviderConfig();
 
             const config = authService.getConfig();
             expect(config.activeProvider).toBe('local');
@@ -138,9 +147,8 @@ describe('AuthService Auto-Detection', () => {
 
             mockPool.query.mockRejectedValueOnce(new Error('table not found'));
 
-            const { AuthService } = await import('../index.js');
             const authService = new (AuthService as any)(mockFastify);
-            await authService.initialize();
+            await (authService as any).loadProviderConfig();
 
             const config = authService.getConfig();
             expect(config.activeProvider).toBe('local');

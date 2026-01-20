@@ -63,16 +63,35 @@ export default async function authRoutes(fastify: FastifyInstance) {
   }, async (request: FastifyRequest, _reply: FastifyReply) => {
     const { user } = request;
 
-    // Get additional user data
-    const result = await fastify.pg.query(
-      `SELECT u.*, uc.credits_remaining, uc.credits_used_today
-       FROM app_users u
-       LEFT JOIN user_credits uc ON uc.user_id = u.id
-       WHERE u.id = $1`,
+    const profileResult = await fastify.pg.query<{
+      id: string;
+      email: string;
+      display_name: string | null;
+      avatar_url: string | null;
+      subscription_tier: string | null;
+      credits_remaining: number | null;
+      created_at: string;
+    }>(
+      `SELECT id, email, display_name, avatar_url, subscription_tier, credits_remaining, created_at
+       FROM app_users
+       WHERE id = $1
+       LIMIT 1`,
       [user!.id]
     );
 
-    const profile = result.rows[0];
+    const profile = profileResult.rows[0];
+
+    const todayStart = new Date();
+    todayStart.setUTCHours(0, 0, 0, 0);
+
+    const usageResult = await fastify.pg.query<{ used_today: string }>(
+      `
+      SELECT COALESCE(SUM(ABS(amount)), 0)::text as used_today
+      FROM credit_transactions
+      WHERE user_id = $1 AND amount < 0 AND created_at >= $2
+    `,
+      [user!.id, todayStart.toISOString()]
+    );
 
     return {
       success: true,
@@ -87,7 +106,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
         },
         credits: {
           remaining: profile?.credits_remaining ?? 5,
-          usedToday: profile?.credits_used_today ?? 0,
+          usedToday: parseInt(usageResult.rows[0]?.used_today || '0', 10),
         },
       },
     };

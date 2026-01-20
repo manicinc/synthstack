@@ -29,6 +29,7 @@ import { initEmailService } from './services/email/index.js';
 // Plugins
 import rateLimitTierPlugin from './plugins/rate-limit-tier.js';
 import conditionalFeaturesPlugin from './plugins/conditional-features.js';
+import rawBodyPlugin from './plugins/raw-body.js';
 import demoAuthPlugin from './middleware/demoAuth.js';
 
 // Routes
@@ -157,6 +158,9 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
  * Register all plugins
  */
 async function registerPlugins(app: FastifyInstance, options: AppOptions): Promise<void> {
+  // Raw body capture (Stripe/webhook signature verification)
+  await app.register(rawBodyPlugin);
+
   // Swagger/OpenAPI
   await app.register(fastifySwagger, {
     openapi: {

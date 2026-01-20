@@ -343,19 +343,20 @@ function getParticlePosition(edgeIndex: number, t: number) {
         />
 
         <!-- Animated flow lines - only in dark mode -->
-        <path
-          v-if="!disableHeavyEffects"
-          v-for="(edge, index) in edgePaths"
-          :key="`flow-${index}`"
-          :d="edge.path"
-          class="dag-edge-flow"
-          fill="none"
-          stroke="#00d4aa"
-          stroke-width="0.15"
-          stroke-dasharray="2 3"
-          stroke-linecap="round"
-          :style="{ animationDelay: `${index * 0.3}s` }"
-        />
+        <template v-if="!disableHeavyEffects">
+          <path
+            v-for="(edge, index) in edgePaths"
+            :key="`flow-${index}`"
+            :d="edge.path"
+            class="dag-edge-flow"
+            fill="none"
+            stroke="#00d4aa"
+            stroke-width="0.15"
+            stroke-dasharray="2 3"
+            stroke-linecap="round"
+            :style="{ animationDelay: `${index * 0.3}s` }"
+          />
+        </template>
       </g>
 
       <!-- Data particles - only render in dark mode for performance -->

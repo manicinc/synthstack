@@ -91,17 +91,17 @@ export async function mockAuth(page: Page) {
   })
 
   // User stats endpoint - called by auth store during initialization
-  await page.route('**/api/v1/users/stats', async (route) => {
+  await page.route('**/api/v1/users/me/stats', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({
         success: true,
         data: {
-          projects_count: 5,
-          workflows_count: 10,
-          storage_used: 1024,
-          credits_remaining: 100
+          generationsThisMonth: 5,
+          generationsLimit: 100,
+          profilesCreated: 0,
+          profilesDownloaded: 0
         }
       }),
     })
@@ -881,4 +881,3 @@ export async function mockLandingAPIs(page: Page) {
     })
   })
 }
-

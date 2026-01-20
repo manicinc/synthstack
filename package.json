@@ -13,7 +13,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "cp .env.community .env && pnpm -r --parallel dev",
+    "dev": "pnpm -r --parallel dev",
     "dev:web": "pnpm --filter @synthstack/web dev",
     "dev:api": "pnpm --filter @synthstack/api-gateway dev",
     "build": "pnpm -r build",

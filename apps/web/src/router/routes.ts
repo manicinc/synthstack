@@ -315,7 +315,13 @@ const appRoutes: RouteRecordRaw[] = [
         path: '',
         name: 'app',
         // COMMUNITY: Default to dashboard instead of Copilot Hub
-        redirect: { name: 'dashboard' }
+        redirect: (to) => {
+          const subscribe = to.query.subscribe
+          if (typeof subscribe === 'string' && subscribe.trim()) {
+            return { name: 'subscription', query: { subscribe, yearly: to.query.yearly } }
+          }
+          return { name: 'dashboard' }
+        }
       },
       {
         path: 'generate',

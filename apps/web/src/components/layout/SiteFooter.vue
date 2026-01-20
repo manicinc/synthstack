@@ -112,13 +112,13 @@
       </div>
 
       <!-- Footer Bottom -->
-      <div class="footer-bottom">
-        <div class="footer-legal">
-          <p>&copy; {{ currentYear }} {{ company.legalName }}. All rights reserved.</p>
-        </div>
-        <div class="footer-made-by">
-          <ManicAgencyBadge />
-        </div>
+        <div class="footer-bottom">
+          <div class="footer-legal">
+          <p>&copy; {{ currentYear }} {{ company.name }}. All rights reserved.</p>
+          </div>
+          <div class="footer-made-by">
+            <ManicAgencyBadge />
+          </div>
       </div>
     </div>
   </footer>

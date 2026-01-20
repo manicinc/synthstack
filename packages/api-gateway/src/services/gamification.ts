@@ -216,8 +216,14 @@ export function calculateTaskPoints(todo: Todo, streakDays: number): PointsCalcu
   if (todo.due_date) {
     const now = new Date();
     const due = new Date(todo.due_date);
-    if (now < due) {
-      const daysEarly = Math.floor((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    // Use calendar days (start-of-day) to avoid time-of-day flakiness.
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfDueDay = new Date(due.getFullYear(), due.getMonth(), due.getDate());
+
+    if (startOfDueDay > startOfToday) {
+      const msPerDay = 1000 * 60 * 60 * 24;
+      const diffDays = (startOfDueDay.getTime() - startOfToday.getTime()) / msPerDay;
+      const daysEarly = Math.max(0, Math.round(diffDays));
       earlyBonus = Math.min(0.5, daysEarly * 0.05) * base;
     }
   }

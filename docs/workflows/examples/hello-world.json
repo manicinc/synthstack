@@ -1,0 +1,88 @@
+[
+    {
+        "id": "hello-world-flow",
+        "type": "tab",
+        "label": "Hello World",
+        "disabled": false,
+        "info": "Your first SynthStack workflow - no configuration needed!\n\nThis flow demonstrates the basic building blocks:\n1. Inject node to trigger the flow\n2. Function node to process data\n3. Debug node to see the output\n\nClick the button on the Inject node to run it.",
+        "env": []
+    },
+    {
+        "id": "inject-hello",
+        "type": "inject",
+        "z": "hello-world-flow",
+        "name": "Click to Start",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "greeting",
+        "payload": "Hello from SynthStack!",
+        "payloadType": "str",
+        "x": 150,
+        "y": 100,
+        "wires": [
+            [
+                "function-format"
+            ]
+        ]
+    },
+    {
+        "id": "function-format",
+        "type": "function",
+        "z": "hello-world-flow",
+        "name": "Format Message",
+        "func": "// Get the current timestamp\nconst now = new Date().toLocaleString();\n\n// Create a formatted message\nmsg.payload = {\n    message: msg.payload,\n    timestamp: now,\n    source: 'SynthStack Workflow',\n    status: 'success'\n};\n\n// Add some metadata\nmsg.metadata = {\n    flowName: 'Hello World',\n    executedAt: Date.now()\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 100,
+        "wires": [
+            [
+                "debug-output"
+            ]
+        ]
+    },
+    {
+        "id": "debug-output",
+        "type": "debug",
+        "z": "hello-world-flow",
+        "name": "View Output",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload.message",
+        "statusType": "auto",
+        "x": 550,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "comment-instructions",
+        "type": "comment",
+        "z": "hello-world-flow",
+        "name": "Instructions",
+        "info": "## How to use this flow:\n\n1. Click the blue button on the \"Click to Start\" node\n2. Open the Debug panel (bug icon in sidebar)\n3. See your formatted message!\n\n## Next steps:\n- Try changing the message in the Inject node\n- Modify the Function node to add more data\n- Add more nodes from the palette",
+        "x": 150,
+        "y": 200,
+        "wires": []
+    }
+]
+
+

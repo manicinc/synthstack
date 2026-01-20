@@ -1,9 +1,38 @@
 import { z } from 'zod';
 import { config as loadEnv } from 'dotenv';
-import { resolve } from 'path';
+import { existsSync } from 'fs';
+import { dirname, resolve } from 'path';
 
-// Load environment variables from root .env file
-loadEnv({ path: resolve(process.cwd(), '../../.env') });
+function findRepoRoot(startDir: string): string | undefined {
+  let current = startDir;
+  for (let i = 0; i < 10; i++) {
+    const workspaceFile = resolve(current, 'pnpm-workspace.yaml');
+    if (existsSync(workspaceFile)) return current;
+
+    const parent = dirname(current);
+    if (parent === current) break;
+    current = parent;
+  }
+  return undefined;
+}
+
+// Load env vars from the repo root `.env` (Docker / monorepo canonical),
+// plus an optional per-package override at `packages/api-gateway/.env`.
+const repoRoot = findRepoRoot(process.cwd());
+if (repoRoot) {
+  const cwdEnvPath = resolve(process.cwd(), '.env');
+  const rootEnvPath = resolve(repoRoot, '.env');
+
+  // Prefer a local `.env` in the current working directory (common with `pnpm --filter`),
+  // then fill in any missing values from the monorepo root `.env`.
+  loadEnv({ path: cwdEnvPath });
+  if (rootEnvPath !== cwdEnvPath) {
+    loadEnv({ path: rootEnvPath });
+  }
+} else {
+  // Fallback for unusual working dirs (should still behave like legacy behavior)
+  loadEnv({ path: resolve(process.cwd(), '../../.env') });
+}
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
