@@ -2,7 +2,7 @@ FROM node:20-alpine AS extensions-builder
 
 WORKDIR /build
 
-RUN apk add --no-cache python3 make g++ git
+RUN apk update && apk add --no-cache python3 make g++ git
 
 # Build all Directus extensions into dist/
 COPY extensions ./extensions

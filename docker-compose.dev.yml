@@ -89,8 +89,8 @@ services:
   # =========================================
   ts-ml-service:
     build:
-      context: ./packages/ts-ml-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: packages/ts-ml-service/Dockerfile
     container_name: synthstack-ts-ml
     restart: unless-stopped
     ports:
