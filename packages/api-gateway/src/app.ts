@@ -45,6 +45,7 @@ import usersRoutes from './routes/users.js';
 import emailRoutes from './routes/email.js';
 import adminDiagnosticsRoutes from './routes/admin-diagnostics.js';
 import adminSyncRoutes from './routes/admin-sync.js';
+import adminInvoicesRoutes from './routes/admin-invoices.js';
 import billingRoutes from './routes/billing.js';
 import workerRoutes from './routes/workers.js';
 import newsletterRoutes from './routes/newsletter.js';
@@ -384,6 +385,7 @@ async function registerRoutes(app: FastifyInstance, options: AppOptions): Promis
   await app.register(workerRoutes, { prefix: '/api/v1/workers' });
   await app.register(adminDiagnosticsRoutes, { prefix: '/api/v1/admin' });
   await app.register(adminSyncRoutes, { prefix: '/api/v1/admin' });
+  await app.register(adminInvoicesRoutes, { prefix: '/api/v1/admin' });
 
   // COMMUNITY: Copilot/Agents routes removed - not available in Community Edition
 

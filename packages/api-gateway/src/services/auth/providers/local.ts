@@ -107,6 +107,8 @@ export class LocalAuthProvider implements IAuthProvider {
       parallelism: 4,
     });
 
+    const newUserId = crypto.randomUUID();
+
     // Generate email verification token
     const verificationToken = crypto.randomBytes(32).toString('hex');
     const verificationTokenHash = this.hashToken(verificationToken);
@@ -118,10 +120,10 @@ export class LocalAuthProvider implements IAuthProvider {
 
       // Create user in app_users
       const userResult = await client.query(
-        `INSERT INTO app_users (email, display_name, created_at, updated_at)
-         VALUES ($1, $2, NOW(), NOW())
+        `INSERT INTO app_users (id, email, display_name, created_at, updated_at)
+         VALUES ($1, $2, $3, NOW(), NOW())
          RETURNING id, email, display_name, created_at, updated_at`,
-        [data.email, data.displayName || data.email.split('@')[0]]
+        [newUserId, data.email, data.displayName || data.email.split('@')[0]]
       );
 
       const user = userResult.rows[0];

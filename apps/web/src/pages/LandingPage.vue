@@ -154,16 +154,16 @@ async function startLifetimeCheckout() {
     // Track checkout initiation
     analyticsEvents.beginCheckout('SynthStack Pro - Lifetime', 297)
 
-	    const response = await fetch(`${apiUrl}/api/v1/billing/lifetime-checkout`, {
+    const response = await fetch(`${apiUrl}/api/v1/billing/lifetime-checkout`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ promoCode })
     })
 
-	    if (!response.ok) {
-	      debugWarn('api', 'lifetime-checkout request failed', { status: response.status })
-	      throw new Error('Failed to create checkout session')
-	    }
+    if (!response.ok) {
+      debugWarn('api', 'lifetime-checkout request failed', { status: response.status })
+      throw new Error('Failed to create checkout session')
+    }
 
     const data = await response.json()
     if (data.success && data.data?.checkoutUrl) {

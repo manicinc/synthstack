@@ -46,6 +46,12 @@ const envSchema = z.object({
   SUPABASE_URL: z.string().optional().default(''),
   SUPABASE_ANON_KEY: z.string().optional().default(''),
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional().default(''),
+  OAUTH_GOOGLE_CLIENT_ID: z.string().optional(),
+  OAUTH_GOOGLE_CLIENT_SECRET: z.string().optional(),
+  OAUTH_GITHUB_CLIENT_ID: z.string().optional(),
+  OAUTH_GITHUB_CLIENT_SECRET: z.string().optional(),
+  OAUTH_DISCORD_CLIENT_ID: z.string().optional(),
+  OAUTH_DISCORD_CLIENT_SECRET: z.string().optional(),
   ML_SERVICE_URL: z.string().default('http://localhost:8001'),
   // Optional: leave unset to disable Redis-dependent features in local test/dev.
   REDIS_URL: z.string().default(''),
@@ -130,6 +136,17 @@ export const config = {
   supabaseAnonKey: env.SUPABASE_ANON_KEY,
   supabaseServiceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY,
   supabase: { url: env.SUPABASE_URL, serviceKey: env.SUPABASE_SERVICE_ROLE_KEY },
+  oauth: {
+    google: env.OAUTH_GOOGLE_CLIENT_ID && env.OAUTH_GOOGLE_CLIENT_SECRET
+      ? { clientId: env.OAUTH_GOOGLE_CLIENT_ID, clientSecret: env.OAUTH_GOOGLE_CLIENT_SECRET }
+      : undefined,
+    github: env.OAUTH_GITHUB_CLIENT_ID && env.OAUTH_GITHUB_CLIENT_SECRET
+      ? { clientId: env.OAUTH_GITHUB_CLIENT_ID, clientSecret: env.OAUTH_GITHUB_CLIENT_SECRET }
+      : undefined,
+    discord: env.OAUTH_DISCORD_CLIENT_ID && env.OAUTH_DISCORD_CLIENT_SECRET
+      ? { clientId: env.OAUTH_DISCORD_CLIENT_ID, clientSecret: env.OAUTH_DISCORD_CLIENT_SECRET }
+      : undefined,
+  },
   mlServiceUrl: env.ML_SERVICE_URL,
   redisUrl: env.REDIS_URL,
   stripe: {

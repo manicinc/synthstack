@@ -66,23 +66,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
+import { useAuthStore } from '@/stores/auth'
 
+const route = useRoute()
 const router = useRouter()
 const $q = useQuasar()
+const authStore = useAuthStore()
 
 const password = ref('')
 const confirmPassword = ref('')
 const showPassword = ref(false)
 const loading = ref(false)
 
+const resetToken = computed(() => (typeof route.query.token === 'string' ? route.query.token : ''))
+
 async function onSubmit() {
   loading.value = true
   try {
-    // TODO: Implement password reset with Supabase
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    // Local/directus providers require a reset token; Supabase uses its recovery session.
+    if (authStore.activeProvider !== 'supabase' && !resetToken.value) {
+      throw new Error('Missing reset token. Please use the link from your email.')
+    }
+
+    await authStore.updatePasswordWithToken(resetToken.value, password.value)
     $q.notify({
       type: 'positive',
       message: 'Password reset successfully!'
@@ -91,7 +100,7 @@ async function onSubmit() {
   } catch (error) {
     $q.notify({
       type: 'negative',
-      message: 'Failed to reset password'
+      message: error instanceof Error ? error.message : (authStore.error || 'Failed to reset password')
     })
   } finally {
     loading.value = false
@@ -133,7 +142,6 @@ async function onSubmit() {
   gap: 16px;
 }
 </style>
-
 
 
 

@@ -1,4 +1,7 @@
 <template>
+  <!-- Fixed Header - MUST be outside q-layout for position:fixed to work -->
+  <SiteHeader />
+
   <q-layout
     view="hHh Lpr fFf"
     class="app-layout"
@@ -11,8 +14,6 @@
     <DemoStatusBar />
 
     <RateLimitBanner />
-
-    <SiteHeader />
 
     <!-- Mobile Sidebar Toggle Button (only on mobile app routes) -->
     <q-btn
@@ -581,9 +582,9 @@ watchEffect(() => {
     top: 44px !important; // Height of DemoStatusBar
   }
 
-  // Also add padding to page container to account for both bars
+  // Keep content below the fixed SiteHeader (DemoStatusBar is sticky/in-flow)
   .q-page-container {
-    padding-top: 0 !important;
+    padding-top: 64px !important;
   }
 }
 
@@ -617,33 +618,13 @@ watchEffect(() => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-// Fix scrolling issues - override Quasar's fixed heights on all screen sizes
-html, body {
-  height: auto !important;
-  min-height: 100% !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-}
-
-.q-layout {
-  height: auto !important;
-  min-height: 100vh !important;
-}
-
-.q-page-container {
-  height: auto !important;
-  min-height: auto !important;
-}
-
-.q-page {
-  height: auto !important;
-  min-height: auto !important;
-}
+// NOTE: Scroll behavior and .site-header positioning handled by scroll-fix.scss
+// Do not add duplicate html/body/q-layout rules here
 
 // Additional mobile-specific fixes
 @media (max-width: 900px) {
   .q-page-container {
-    padding-top: 0 !important;
+    padding-top: 64px !important;
     padding-bottom: 0 !important;
   }
 }

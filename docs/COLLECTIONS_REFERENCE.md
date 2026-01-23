@@ -154,9 +154,12 @@ Reusable project templates.
 
 Financial operations and invoicing system.
 
+> Canonical billing tables: `invoices`, `invoice_items`, `payments`, `payment_sessions`, `items`, `tax_rates`, `expenses`, `expense_categories`.
+> Legacy AgencyOS billing tables (`os_invoices`, `os_payments`, `os_expenses`, `os_items`, `os_tax_rates`) are deprecated/removed and dropped by `services/directus/migrations/132_drop_agencyos_invoicing.sql`.
+
 ### Collections (8)
 
-#### `os_invoices`
+#### `os_invoices` (deprecated/removed)
 Client invoices.
 
 | Field | Type | Description |
@@ -176,7 +179,7 @@ Client invoices.
 
 **Auto-Calculations**: PostgreSQL triggers calculate totals when invoice items change.
 
-#### `os_payments`
+#### `os_payments` (deprecated/removed)
 Payment records.
 
 | Field | Type | Description |
@@ -190,7 +193,7 @@ Payment records.
 
 **Display Template**: `${{amount}} - {{payment_date}}`
 
-#### `os_expenses`
+#### `os_expenses` (deprecated/removed)
 Billable expenses.
 
 | Field | Type | Description |
@@ -204,7 +207,7 @@ Billable expenses.
 
 **Display Template**: `{{name}} - ${{cost}}`
 
-#### `os_items`
+#### `os_items` (deprecated/removed)
 Reusable invoice line items catalog.
 
 | Field | Type | Description |
@@ -225,7 +228,7 @@ Expense categorization.
 | description | TEXT | Category description |
 | color | STRING | Display color |
 
-#### `os_tax_rates`
+#### `os_tax_rates` (deprecated/removed)
 Tax rates for invoicing.
 
 | Field | Type | Description |
@@ -793,7 +796,7 @@ These collections are junction/detail tables and don't appear in the sidebar:
 Database schema is managed through SQL migrations located in `services/directus/migrations/`:
 
 - **071-077**: Core collections (deals, projects, invoices, proposals, help, blocks)
-- **078**: PostgreSQL triggers for invoice calculations
+- **135**: PostgreSQL triggers for canonical invoice calculations (`invoice_items`, `payments`)
 - **079**: Collection metadata (icons, colors, notes)
 - **080**: Fixed collection group naming (added synthstack_ prefix)
 
@@ -803,15 +806,15 @@ Database schema is managed through SQL migrations located in `services/directus/
 
 ### PostgreSQL Triggers
 
-**Invoice Calculation** (`trigger_calculate_invoice_item`):
-- Automatically calculates `line_amount = unit_price × quantity`
-- Calculates `tax_amount = line_amount × tax_rate`
-- Updates on `os_invoice_items` INSERT/UPDATE
+**Invoice Item Tax** (`invoice_items_calculate_tax_amount`):
+- Calculates `tax_amount` from `tax_rates.rate`
+- Updates on `invoice_items` INSERT/UPDATE
 
-**Invoice Totals** (`trigger_update_invoice_totals`):
-- Recalculates invoice `subtotal`, `total_tax`, `total`
-- Updates `amount_due = total - amount_paid`
-- Triggers on `os_invoice_items` changes
+**Invoice Totals** (`invoice_items_update_invoice_totals`):
+- Recalculates invoice `subtotal`, `total_tax`, `total` after `invoice_items` changes
+
+**Invoice Payment Status** (`payments_update_invoice`):
+- Maintains `invoices.amount_paid`, `paid_date`, and `status` (`sent`/`partial`/`paid`)
 
 ---
 
@@ -837,17 +840,17 @@ All collections accessible via Directus REST/GraphQL API:
 
 **REST**:
 ```bash
-GET  /items/os_invoices
-POST /items/os_invoices
-GET  /items/os_invoices/{id}
-PATCH /items/os_invoices/{id}
-DELETE /items/os_invoices/{id}
+GET  /items/invoices
+POST /items/invoices
+GET  /items/invoices/{id}
+PATCH /items/invoices/{id}
+DELETE /items/invoices/{id}
 ```
 
 **GraphQL**:
 ```graphql
 query {
-  os_invoices {
+  invoices {
     invoice_number
     total
     organization {

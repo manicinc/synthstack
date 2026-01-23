@@ -26,6 +26,7 @@ import {
 } from './types.js';
 import { SupabaseAuthProvider } from './providers/supabase.js';
 import { LocalAuthProvider } from './providers/local.js';
+import { DirectusAuthProvider } from './providers/directus.js';
 import {
   createOAuthProviders,
   getConfiguredProviders,
@@ -120,6 +121,22 @@ export class AuthService {
         }
       } catch (error) {
         this.fastify.log.warn({ error }, '⚠️ Failed to initialize Local provider');
+      }
+    }
+
+    // Directus token verification (primarily for Directus admin UI extensions).
+    // Enable in development by default for local testing; in production gate behind DB config.
+    const enableDirectusProvider = Boolean(this.providerConfig?.directusEnabled) || config.isDev;
+    if (enableDirectusProvider) {
+      try {
+        const directusProvider = new DirectusAuthProvider({
+          directusUrl: config.directusUrl || '',
+          pool: this.pool,
+        });
+        this.providers.set('directus', directusProvider);
+        this.fastify.log.info('✅ Directus auth provider initialized');
+      } catch (error) {
+        this.fastify.log.warn({ error }, '⚠️ Failed to initialize Directus provider');
       }
     }
 
@@ -602,11 +619,12 @@ export class AuthService {
         }
       } else {
         // Create new user from OAuth profile
+        const newUserId = crypto.randomUUID();
         const result = await client.query(
-          `INSERT INTO app_users (email, display_name, avatar_url, created_at, updated_at)
-           VALUES ($1, $2, $3, NOW(), NOW())
+          `INSERT INTO app_users (id, email, display_name, avatar_url, created_at, updated_at)
+           VALUES ($1, $2, $3, $4, NOW(), NOW())
            RETURNING id, email, display_name, avatar_url, created_at, updated_at`,
-          [userInfo.email, userInfo.name || userInfo.email.split('@')[0], userInfo.avatarUrl]
+          [newUserId, userInfo.email, userInfo.name || userInfo.email.split('@')[0], userInfo.avatarUrl]
         );
         user = result.rows[0];
         userId = user.id;

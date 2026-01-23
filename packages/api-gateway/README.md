@@ -759,7 +759,7 @@ pnpm migrate:create migration_name
 
 ## 📄 License
 
-Community License (modified MIT, non-commercial) / Commercial License (Pro Edition)
+MIT License (Community Edition). Pro Edition is distributed separately under commercial terms.
 
 See [LICENSE](../../LICENSE) for details.
 

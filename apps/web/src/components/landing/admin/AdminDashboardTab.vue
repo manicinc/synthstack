@@ -287,4 +287,79 @@ const barHeights = [
 }
 </style>
 
+<style lang="scss">
+// Light mode overrides (unscoped to work with global body class)
+.body--light {
+  .dashboard-content {
+    .content-header {
+      h3 {
+        color: #1e293b !important;
+      }
+
+      .time-badge {
+        background: rgba(0, 0, 0, 0.05) !important;
+        color: #475569 !important;
+      }
+    }
+
+    .stat-box {
+      background: linear-gradient(145deg, rgba(0, 0, 0, 0.02), rgba(255, 255, 255, 0.8)) !important;
+      border-color: rgba(0, 0, 0, 0.08) !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+      &:hover {
+        border-color: rgba(234, 88, 12, 0.4) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      }
+    }
+
+    .stat-icon {
+      &.users {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05)) !important;
+      }
+
+      &.revenue {
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05)) !important;
+      }
+
+      &.ai {
+        background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(168, 85, 247, 0.05)) !important;
+      }
+    }
+
+    .stat-data {
+      .stat-value {
+        color: #0f172a !important;
+      }
+
+      .stat-label {
+        color: #64748b !important;
+      }
+    }
+
+    .stat-trend.positive {
+      background: rgba(34, 197, 94, 0.12) !important;
+      color: #16a34a !important;
+    }
+
+    .chart-section {
+      background: linear-gradient(145deg, rgba(0, 0, 0, 0.01), rgba(255, 255, 255, 0.6)) !important;
+      border-color: rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .chart-header span {
+      color: #1e293b !important;
+    }
+
+    .chart-legend {
+      color: #64748b !important;
+    }
+
+    .chart-line {
+      background: linear-gradient(90deg, transparent, rgba(234, 88, 12, 0.4), transparent) !important;
+    }
+  }
+}
+</style>
+
 

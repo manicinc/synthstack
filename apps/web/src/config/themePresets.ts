@@ -9,6 +9,244 @@
 import type { ThemePreset } from '@/types/theme'
 
 /**
+ * Light Mode - Clean, bright, simple
+ */
+export const lightModePreset: ThemePreset = {
+  id: 'light-mode',
+  slug: 'light-mode',
+  name: 'Light Mode',
+  description: 'Clean and bright with excellent readability',
+  category: 'modern',
+  isDefault: false,
+  isPremium: false,
+
+  previewColors: {
+    primary: '#3B82F6',
+    secondary: '#6366F1',
+    accent: '#8B5CF6',
+  },
+
+  light: {
+    bg: {
+      base: '#FFFFFF',
+      subtle: '#F8FAFC',
+      muted: '#F1F5F9',
+      elevated: '#FFFFFF',
+    },
+    text: {
+      primary: '#0F172A',
+      secondary: '#475569',
+      tertiary: '#94A3B8',
+    },
+    border: {
+      default: '#E2E8F0',
+      subtle: '#F1F5F9',
+    },
+    shadow: {
+      sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+      md: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+      lg: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+      xl: '0 20px 25px -5px rgb(0 0 0 / 0.1)',
+    },
+  },
+
+  dark: {
+    bg: {
+      base: '#FFFFFF',
+      subtle: '#F8FAFC',
+      muted: '#F1F5F9',
+      elevated: '#FFFFFF',
+    },
+    text: {
+      primary: '#0F172A',
+      secondary: '#475569',
+      tertiary: '#94A3B8',
+    },
+    border: {
+      default: '#E2E8F0',
+      subtle: '#F1F5F9',
+    },
+    shadow: {
+      sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+      md: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+      lg: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+      xl: '0 20px 25px -5px rgb(0 0 0 / 0.1)',
+    },
+  },
+
+  colors: {
+    primary: '#3B82F6',
+    primaryHover: '#2563EB',
+    secondary: '#6366F1',
+    secondaryHover: '#4F46E5',
+    accent: '#8B5CF6',
+    accentHover: '#7C3AED',
+    success: '#10B981',
+    warning: '#F59E0B',
+    error: '#EF4444',
+    info: '#0EA5E9',
+  },
+
+  typography: {
+    fontSans: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+    fontMono: "'JetBrains Mono', 'Fira Code', monospace",
+    fontDisplay: "'Inter', sans-serif",
+    fontSizeBase: '16px',
+  },
+
+  style: {
+    borderRadius: {
+      sm: '6px',
+      md: '8px',
+      lg: '12px',
+      xl: '16px',
+      full: '9999px',
+    },
+    glassOpacity: 0.9,
+    blur: {
+      sm: '8px',
+      md: '12px',
+      lg: '16px',
+    },
+  },
+
+  transitions: {
+    fast: '150ms',
+    normal: '250ms',
+    slow: '350ms',
+    easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+    easingBounce: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+  },
+
+  components: {
+    buttonPaddingX: '16px',
+    buttonPaddingY: '10px',
+    inputPaddingX: '14px',
+    inputPaddingY: '12px',
+    cardPadding: '24px',
+  },
+}
+
+/**
+ * Dark Mode - Sleek, modern dark theme
+ */
+export const darkModePreset: ThemePreset = {
+  id: 'dark-mode',
+  slug: 'dark-mode',
+  name: 'Dark Mode',
+  description: 'Sleek and modern with easy-on-the-eyes contrast',
+  category: 'modern',
+  isDefault: false,
+  isPremium: false,
+
+  previewColors: {
+    primary: '#60A5FA',
+    secondary: '#818CF8',
+    accent: '#A78BFA',
+  },
+
+  light: {
+    bg: {
+      base: '#0F172A',
+      subtle: '#1E293B',
+      muted: '#334155',
+      elevated: '#1E293B',
+    },
+    text: {
+      primary: '#F8FAFC',
+      secondary: '#CBD5E1',
+      tertiary: '#94A3B8',
+    },
+    border: {
+      default: '#334155',
+      subtle: '#1E293B',
+    },
+    shadow: {
+      sm: '0 1px 2px 0 rgb(0 0 0 / 0.3)',
+      md: '0 4px 6px -1px rgb(0 0 0 / 0.4)',
+      lg: '0 10px 15px -3px rgb(0 0 0 / 0.5)',
+      xl: '0 20px 25px -5px rgb(0 0 0 / 0.6)',
+    },
+  },
+
+  dark: {
+    bg: {
+      base: '#0F172A',
+      subtle: '#1E293B',
+      muted: '#334155',
+      elevated: '#1E293B',
+    },
+    text: {
+      primary: '#F8FAFC',
+      secondary: '#CBD5E1',
+      tertiary: '#94A3B8',
+    },
+    border: {
+      default: '#334155',
+      subtle: '#1E293B',
+    },
+    shadow: {
+      sm: '0 1px 2px 0 rgb(0 0 0 / 0.3)',
+      md: '0 4px 6px -1px rgb(0 0 0 / 0.4)',
+      lg: '0 10px 15px -3px rgb(0 0 0 / 0.5)',
+      xl: '0 20px 25px -5px rgb(0 0 0 / 0.6)',
+    },
+  },
+
+  colors: {
+    primary: '#60A5FA',
+    primaryHover: '#3B82F6',
+    secondary: '#818CF8',
+    secondaryHover: '#6366F1',
+    accent: '#A78BFA',
+    accentHover: '#8B5CF6',
+    success: '#34D399',
+    warning: '#FBBF24',
+    error: '#F87171',
+    info: '#38BDF8',
+  },
+
+  typography: {
+    fontSans: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+    fontMono: "'JetBrains Mono', 'Fira Code', monospace",
+    fontDisplay: "'Inter', sans-serif",
+    fontSizeBase: '16px',
+  },
+
+  style: {
+    borderRadius: {
+      sm: '6px',
+      md: '8px',
+      lg: '12px',
+      xl: '16px',
+      full: '9999px',
+    },
+    glassOpacity: 0.8,
+    blur: {
+      sm: '8px',
+      md: '12px',
+      lg: '16px',
+    },
+  },
+
+  transitions: {
+    fast: '150ms',
+    normal: '250ms',
+    slow: '350ms',
+    easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+    easingBounce: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+  },
+
+  components: {
+    buttonPaddingX: '16px',
+    buttonPaddingY: '10px',
+    inputPaddingX: '14px',
+    inputPaddingY: '12px',
+    cardPadding: '24px',
+  },
+}
+
+/**
  * SynthStack - Default modern tech aesthetic
  * Enhanced for Premium Feel
  */
@@ -1271,6 +1509,8 @@ export const neumorphicPreset: ThemePreset = {
  * All theme presets registry
  */
 export const themePresets: Record<string, ThemePreset> = {
+  'light-mode': lightModePreset,
+  'dark-mode': darkModePreset,
   synthstack: synthstackPreset,
   minimal: minimalPreset,
   brutalist: brutalistPreset,

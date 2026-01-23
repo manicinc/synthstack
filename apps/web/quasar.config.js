@@ -207,6 +207,7 @@ export default configure(function (ctx) {
     // Dev server
     devServer: {
       https: false,
+      host: process.env.HOST || '127.0.0.1',
       port: 3050,
       open: false,
       allowedHosts: ['.trycloudflare.com', 'localhost', '.localhost'],
@@ -241,7 +242,7 @@ export default configure(function (ctx) {
           info: '#2D9CDB',
           warning: '#F1C40F'
         },
-        dark: true
+        dark: 'auto'
       },
 
       iconSet: 'material-icons',

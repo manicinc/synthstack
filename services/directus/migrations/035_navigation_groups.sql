@@ -148,7 +148,7 @@ VALUES (
   'dashboard',
   'Main business overview dashboard',
   NOW(),
-  (SELECT id FROM directus_users WHERE email = 'admin@synthstack.app' LIMIT 1)
+  (SELECT id FROM directus_users ORDER BY date_created ASC LIMIT 1)
 ) ON CONFLICT DO NOTHING;
 
 -- Create Invoice Management dashboard
@@ -159,7 +159,7 @@ VALUES (
   'receipt_long',
   'Invoice management and billing',
   NOW(),
-  (SELECT id FROM directus_users WHERE email = 'admin@synthstack.app' LIMIT 1)
+  (SELECT id FROM directus_users ORDER BY date_created ASC LIMIT 1)
 ) ON CONFLICT DO NOTHING;
 
 -- Create CRM Pipeline dashboard
@@ -170,7 +170,7 @@ VALUES (
   'trending_up',
   'Sales pipeline and deal tracking',
   NOW(),
-  (SELECT id FROM directus_users WHERE email = 'admin@synthstack.app' LIMIT 1)
+  (SELECT id FROM directus_users ORDER BY date_created ASC LIMIT 1)
 ) ON CONFLICT DO NOTHING;
 
 -- Create AI Copilot dashboard (if doesn't exist)
@@ -181,7 +181,7 @@ VALUES (
   'smart_toy',
   'AI assistance and chat interface',
   NOW(),
-  (SELECT id FROM directus_users WHERE email = 'admin@synthstack.app' LIMIT 1)
+  (SELECT id FROM directus_users ORDER BY date_created ASC LIMIT 1)
 ) ON CONFLICT DO NOTHING;
 
 -- Create Analytics dashboard
@@ -192,7 +192,7 @@ VALUES (
   'analytics',
   'Business metrics and reporting',
   NOW(),
-  (SELECT id FROM directus_users WHERE email = 'admin@synthstack.app' LIMIT 1)
+  (SELECT id FROM directus_users ORDER BY date_created ASC LIMIT 1)
 ) ON CONFLICT DO NOTHING;
 
 -- ======================
@@ -229,7 +229,7 @@ BEGIN
       1, 1, 24, 12,
       '{"showGreeting": true, "showQuickLinks": true, "showRecentActivity": true}'::jsonb,
       NOW(),
-      (SELECT id FROM directus_users WHERE email = 'admin@synthstack.app' LIMIT 1)
+      (SELECT id FROM directus_users ORDER BY date_created ASC LIMIT 1)
     ) ON CONFLICT DO NOTHING;
 
     -- Create Business Metrics panel on Overview
@@ -246,7 +246,7 @@ BEGIN
       1, 13, 24, 8,
       '{"metricsToShow": ["invoices_due", "active_deals", "active_projects", "tasks_today"], "refreshInterval": 60, "compactView": false}'::jsonb,
       NOW(),
-      (SELECT id FROM directus_users WHERE email = 'admin@synthstack.app' LIMIT 1)
+      (SELECT id FROM directus_users ORDER BY date_created ASC LIMIT 1)
     ) ON CONFLICT DO NOTHING;
   END IF;
 
@@ -265,7 +265,7 @@ BEGIN
       1, 1, 24, 20,
       '{"showQuickActions": true, "defaultFilter": "all", "itemsPerPage": 10}'::jsonb,
       NOW(),
-      (SELECT id FROM directus_users WHERE email = 'admin@synthstack.app' LIMIT 1)
+      (SELECT id FROM directus_users ORDER BY date_created ASC LIMIT 1)
     ) ON CONFLICT DO NOTHING;
   END IF;
 
@@ -284,7 +284,7 @@ BEGIN
       1, 1, 24, 20,
       '{"showMetrics": true, "groupBy": "stage", "defaultView": "kanban"}'::jsonb,
       NOW(),
-      (SELECT id FROM directus_users WHERE email = 'admin@synthstack.app' LIMIT 1)
+      (SELECT id FROM directus_users ORDER BY date_created ASC LIMIT 1)
     ) ON CONFLICT DO NOTHING;
   END IF;
 END $$;

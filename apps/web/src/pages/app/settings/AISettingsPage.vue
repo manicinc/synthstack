@@ -434,10 +434,8 @@ async function loadSettings() {
   errorMessage.value = ''
 
   try {
-    const response = await users.getAISettings()
-    if (response.data) {
-      Object.assign(formData, response.data)
-    }
+    const settings = await users.getAISettings()
+    Object.assign(formData, settings)
   } catch (error: unknown) {
     const err = error as Error
     errorMessage.value = err.message || 'Failed to load settings'
@@ -457,7 +455,8 @@ async function saveSettings() {
   successMessage.value = ''
 
   try {
-    await users.updateAISettings(formData)
+    const updatedSettings = await users.updateAISettings(formData)
+    Object.assign(formData, updatedSettings)
     successMessage.value = 'Settings saved successfully'
     $q.notify({
       type: 'positive',

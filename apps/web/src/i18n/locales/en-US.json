@@ -54,7 +54,7 @@
     "opensource": {
       "badge": "Free Forever",
       "title": "Community Edition",
-      "description": "The complete SynthStack core is source-available under the Community License (modified MIT, non-commercial). Great for learning, side projects, and evaluation.",
+      "description": "The complete SynthStack core is open-source under the MIT License. Great for side projects, startups, and production.",
       "features": {
         "themes": "Themes & Dark Mode",
         "payments": "Stripe / LemonSqueezy",
@@ -63,7 +63,7 @@
         "cms": "Directus CMS",
         "email": "Email Templates",
         "crossPlatform": "Cross-Platform",
-        "license": "Community License (modified MIT)"
+        "license": "MIT License"
       },
       "githubBtn": {
         "label": "Star on GitHub"
@@ -72,14 +72,14 @@
     },
     "pricing": {
       "title": "Simple, Transparent Pricing",
-      "subtitle": "Source-available core, premium AI agents",
+      "subtitle": "Open-source core, premium AI agents",
       "community": {
         "name": "Community",
         "price": "Free",
         "period": "forever",
-        "description": "Source-available starter kit (non-commercial)",
+        "description": "Open-source starter kit (MIT)",
         "features": {
-          "source": "Full source code (Community License)",
+          "source": "Full source code (MIT License)",
           "cms": "Directus CMS integration",
           "billing": "Stripe/LemonSqueezy billing",
           "blog": "Blog & newsletter",
@@ -133,7 +133,7 @@
       "items": {
         "free": {
           "question": "Is SynthStack really free?",
-          "answer": "Yes! The Community Edition is free for learning, personal projects, and evaluation under the Community License (modified MIT, non-commercial). For commercial production use, purchase a Commercial License."
+          "answer": "Yes! The Community Edition is open-source (MIT) and free to use, including commercially. Pro is optional for additional premium features and support."
         },
         "included": {
           "question": "What's included in the Community Edition?",
@@ -170,7 +170,7 @@
       "subtitle": "Full-stack SaaS boilerplate with AI superpowers. Ship 10x faster.",
       "primary": "Get Started Free",
       "secondary": "Upgrade to Pro",
-      "note": "Community License core · Pro: $297 lifetime · Referral rewards available"
+      "note": "MIT-licensed core · Pro: $297 lifetime · Referral rewards available"
     },
     "features": {
       "title": "Why SynthStack?",

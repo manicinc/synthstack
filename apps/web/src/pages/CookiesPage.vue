@@ -44,8 +44,8 @@
                 <td>1 year</td>
               </tr>
               <tr>
-                <td><code>quasar-dark-mode</code></td>
-                <td>Remembers your light/dark theme preference</td>
+                <td><code>synthstack-theme</code></td>
+                <td>Remembers your theme preference (light/dark/system)</td>
                 <td>1 year</td>
               </tr>
             </tbody>

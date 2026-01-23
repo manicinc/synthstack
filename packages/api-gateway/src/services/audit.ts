@@ -17,7 +17,16 @@ import { embeddingsService } from './embeddings.js';
 
 // COMMUNITY: Types defined locally (agents service removed)
 type AgentSlug = string;
-type ContextSource = { type: string; id?: string; name?: string };
+type ContextSource =
+  | { type: string; id?: string; name?: string }
+  | {
+      id?: string;
+      sourceType: string;
+      content: string;
+      relevanceScore?: number;
+      metadata: { sourceId: string };
+      retrievedAt?: string;
+    };
 
 // ============================================
 // Types
@@ -271,13 +280,25 @@ export class AuditService {
 
     try {
       // Format context sources for storage
-      const formattedContextSources = contextSources.map((source) => ({
-        source_type: source.sourceType,
-        source_id: source.metadata.sourceId,
-        content_preview: source.content.slice(0, 200),
-        relevance_score: source.relevanceScore,
-        retrieved_at: source.retrievedAt,
-      }));
+      const formattedContextSources = contextSources.map((source) => {
+        if ('sourceType' in source) {
+          return {
+            source_type: source.sourceType,
+            source_id: source.metadata?.sourceId || source.id || null,
+            content_preview: (source.content || '').slice(0, 200),
+            relevance_score: source.relevanceScore ?? null,
+            retrieved_at: source.retrievedAt ?? null,
+          };
+        }
+
+        return {
+          source_type: source.type,
+          source_id: source.id || null,
+          content_preview: (source.name || '').slice(0, 200),
+          relevance_score: null,
+          retrieved_at: null,
+        };
+      });
 
       // Format derived insights with timestamp
       const formattedInsights = derivedInsights.map((insight) => ({

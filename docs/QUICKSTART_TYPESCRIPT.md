@@ -45,7 +45,7 @@ SUPABASE_ANON_KEY=eyJ...
 
 SynthStack offers two editions controlled by environment variables:
 
-**LITE (Community Edition)** - Free for learning/personal/evaluation (Community License, non-commercial):
+**LITE (Community Edition)** - MIT-licensed core (defaults shown):
 ```env
 ENABLE_COPILOT=true
 ENABLE_REFERRALS=false

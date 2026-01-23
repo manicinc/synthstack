@@ -286,4 +286,357 @@ export default async function usersRoutes(fastify: FastifyInstance) {
       return reply.send({ success: true, data: [] });
     }
   );
+
+  // ==========================================
+  // AI Settings Endpoints
+  // ==========================================
+
+  /**
+   * GET /api/v1/users/me/ai-settings
+   * Get user's AI model preferences and settings.
+   */
+  fastify.get(
+    '/me/ai-settings',
+    {
+      preHandler: [fastify.authenticate],
+      schema: {
+        tags: ['Users'],
+        summary: 'Get AI settings',
+        description: 'Get user AI model preferences and settings',
+        security: [{ bearerAuth: [] }],
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: {
+                type: 'object',
+                properties: {
+                  globalModel: { type: 'string', nullable: true },
+                  globalModelTier: { type: 'string' },
+                  agentModelOverrides: { type: 'object' },
+                  defaultTemperature: { type: 'number' },
+                  maxContextTokens: { type: 'number' },
+                  includeProjectContext: { type: 'boolean' },
+                  streamResponses: { type: 'boolean' },
+                  showReasoning: { type: 'boolean' },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request: any, reply: FastifyReply) => {
+      const userId = request.user?.id;
+      if (!userId) return reply.status(401).send({ success: false, error: 'Unauthorized' });
+
+      const result = await fastify.pg.query<{
+        global_model: string | null;
+        global_model_tier: string;
+        agent_model_overrides: Record<string, string>;
+        default_temperature: number;
+        max_context_tokens: number;
+        include_project_context: boolean;
+        stream_responses: boolean;
+        show_reasoning: boolean;
+      }>(
+        `SELECT global_model, global_model_tier, agent_model_overrides,
+                default_temperature, max_context_tokens, include_project_context,
+                stream_responses, show_reasoning
+         FROM user_ai_settings
+         WHERE user_id = $1`,
+        [userId]
+      );
+
+      // Return defaults if no settings exist
+      const settings = result.rows[0] || {
+        global_model: null,
+        global_model_tier: 'standard',
+        agent_model_overrides: {},
+        default_temperature: 0.7,
+        max_context_tokens: 8000,
+        include_project_context: true,
+        stream_responses: true,
+        show_reasoning: false,
+      };
+
+      return reply.send({
+        success: true,
+        data: {
+          globalModel: settings.global_model,
+          globalModelTier: settings.global_model_tier,
+          agentModelOverrides: settings.agent_model_overrides,
+          defaultTemperature: Number(settings.default_temperature),
+          maxContextTokens: settings.max_context_tokens,
+          includeProjectContext: settings.include_project_context,
+          streamResponses: settings.stream_responses,
+          showReasoning: settings.show_reasoning,
+        },
+      });
+    }
+  );
+
+  /**
+   * PATCH /api/v1/users/me/ai-settings
+   * Update user's AI model preferences and settings.
+   */
+  fastify.patch(
+    '/me/ai-settings',
+    {
+      preHandler: [fastify.authenticate],
+      schema: {
+        tags: ['Users'],
+        summary: 'Update AI settings',
+        description: 'Update user AI model preferences and settings',
+        security: [{ bearerAuth: [] }],
+        body: {
+          type: 'object',
+          properties: {
+            globalModel: { type: 'string', nullable: true },
+            globalModelTier: { type: 'string', enum: ['cheap', 'standard', 'premium'] },
+            agentModelOverrides: {
+              type: 'object',
+              additionalProperties: { type: 'string' },
+            },
+            defaultTemperature: { type: 'number', minimum: 0, maximum: 1 },
+            maxContextTokens: { type: 'number', minimum: 1000, maximum: 128000 },
+            includeProjectContext: { type: 'boolean' },
+            streamResponses: { type: 'boolean' },
+            showReasoning: { type: 'boolean' },
+          },
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: {
+                type: 'object',
+                properties: {
+                  globalModel: { type: 'string', nullable: true },
+                  globalModelTier: { type: 'string' },
+                  agentModelOverrides: { type: 'object' },
+                  defaultTemperature: { type: 'number' },
+                  maxContextTokens: { type: 'number' },
+                  includeProjectContext: { type: 'boolean' },
+                  streamResponses: { type: 'boolean' },
+                  showReasoning: { type: 'boolean' },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request: any, reply: FastifyReply) => {
+      const userId = request.user?.id;
+      if (!userId) return reply.status(401).send({ success: false, error: 'Unauthorized' });
+
+      const body = (request.body || {}) as {
+        globalModel?: string | null;
+        globalModelTier?: string;
+        agentModelOverrides?: Record<string, string>;
+        defaultTemperature?: number;
+        maxContextTokens?: number;
+        includeProjectContext?: boolean;
+        streamResponses?: boolean;
+        showReasoning?: boolean;
+      };
+
+      // Validate agentModelOverrides to reduce accidental misuse and avoid storing junk keys
+      if (body.agentModelOverrides !== undefined) {
+        const overrides = body.agentModelOverrides as unknown;
+        if (!overrides || typeof overrides !== 'object' || Array.isArray(overrides)) {
+          return reply.status(400).send({
+            success: false,
+            error: 'agentModelOverrides must be an object mapping agentId -> model string',
+          });
+        }
+
+        const entries = Object.entries(overrides as Record<string, unknown>);
+        if (entries.length > 50) {
+          return reply.status(400).send({
+            success: false,
+            error: 'agentModelOverrides has too many entries (max 50)',
+          });
+        }
+
+        for (const [agentId, model] of entries) {
+          if (!/^[a-z0-9_-]{1,64}$/i.test(agentId)) {
+            return reply.status(400).send({
+              success: false,
+              error: `Invalid agentModelOverrides key: "${agentId}"`,
+            });
+          }
+          if (model !== null && model !== undefined && typeof model !== 'string') {
+            return reply.status(400).send({
+              success: false,
+              error: `Invalid model override for "${agentId}" (must be string)`,
+            });
+          }
+          if (typeof model === 'string' && model.length > 128) {
+            return reply.status(400).send({
+              success: false,
+              error: `Model override for "${agentId}" is too long (max 128 chars)`,
+            });
+          }
+        }
+
+        // Optional: validate against known agent slugs (best-effort; don't fail if table missing)
+        try {
+          const slugs = entries.map(([agentId]) => agentId);
+          const result = await fastify.pg.query<{ slug: string }>(
+            `SELECT slug FROM ai_agents WHERE slug = ANY($1::text[])`,
+            [slugs]
+          );
+          const known = new Set(result.rows.map((r) => r.slug));
+          const unknown = slugs.filter((s) => !known.has(s));
+          if (unknown.length > 0) {
+            return reply.status(400).send({
+              success: false,
+              error: `Unknown agent ID(s): ${unknown.join(', ')}`,
+            });
+          }
+        } catch {
+          // Ignore validation failures (e.g., table missing)
+        }
+      }
+
+      // Build upsert query dynamically
+      const updates: string[] = [];
+      const values: unknown[] = [userId];
+      let paramIndex = 2;
+
+      const fieldMappings: Record<string, string> = {
+        globalModel: 'global_model',
+        globalModelTier: 'global_model_tier',
+        agentModelOverrides: 'agent_model_overrides',
+        defaultTemperature: 'default_temperature',
+        maxContextTokens: 'max_context_tokens',
+        includeProjectContext: 'include_project_context',
+        streamResponses: 'stream_responses',
+        showReasoning: 'show_reasoning',
+      };
+
+      for (const [camelKey, snakeKey] of Object.entries(fieldMappings)) {
+        const value = body[camelKey as keyof typeof body];
+        if (value !== undefined) {
+          // Special handling for JSON field
+          if (camelKey === 'agentModelOverrides') {
+            updates.push(`${snakeKey} = $${paramIndex++}::jsonb`);
+            values.push(JSON.stringify(value));
+          } else {
+            updates.push(`${snakeKey} = $${paramIndex++}`);
+            values.push(value);
+          }
+        }
+      }
+
+      if (updates.length === 0) {
+        // No updates, return current settings
+        const settingsResult = await fastify.pg.query<{
+          global_model: string | null;
+          global_model_tier: string;
+          agent_model_overrides: Record<string, string>;
+          default_temperature: number;
+          max_context_tokens: number;
+          include_project_context: boolean;
+          stream_responses: boolean;
+          show_reasoning: boolean;
+        }>(
+          `SELECT global_model, global_model_tier, agent_model_overrides,
+                  default_temperature, max_context_tokens, include_project_context,
+                  stream_responses, show_reasoning
+           FROM user_ai_settings WHERE user_id = $1`,
+          [userId]
+        );
+
+        const row = settingsResult.rows[0];
+        return reply.send({
+          success: true,
+          data: row
+            ? {
+                globalModel: row.global_model,
+                globalModelTier: row.global_model_tier,
+                agentModelOverrides: row.agent_model_overrides || {},
+                defaultTemperature: row.default_temperature,
+                maxContextTokens: row.max_context_tokens,
+                includeProjectContext: row.include_project_context,
+                streamResponses: row.stream_responses,
+                showReasoning: row.show_reasoning,
+              }
+            : {
+                globalModel: null,
+                globalModelTier: 'standard',
+                agentModelOverrides: {},
+                defaultTemperature: 0.7,
+                maxContextTokens: 8000,
+                includeProjectContext: true,
+                streamResponses: true,
+                showReasoning: false,
+              },
+        });
+      }
+
+      // Upsert: Insert if not exists, update if exists
+      await fastify.pg.query(
+        `INSERT INTO user_ai_settings (user_id)
+         VALUES ($1)
+         ON CONFLICT (user_id) DO NOTHING`,
+        [userId]
+      );
+
+      await fastify.pg.query(
+        `UPDATE user_ai_settings
+         SET ${updates.join(', ')}
+         WHERE user_id = $1`,
+        values
+      );
+
+      // Return updated settings by querying directly
+      const settingsResult = await fastify.pg.query<{
+        global_model: string | null;
+        global_model_tier: string;
+        agent_model_overrides: Record<string, string>;
+        default_temperature: number;
+        max_context_tokens: number;
+        include_project_context: boolean;
+        stream_responses: boolean;
+        show_reasoning: boolean;
+      }>(
+        `SELECT global_model, global_model_tier, agent_model_overrides,
+                default_temperature, max_context_tokens, include_project_context,
+                stream_responses, show_reasoning
+         FROM user_ai_settings WHERE user_id = $1`,
+        [userId]
+      );
+
+      const row = settingsResult.rows[0];
+      return reply.send({
+        success: true,
+        data: row
+          ? {
+              globalModel: row.global_model,
+              globalModelTier: row.global_model_tier,
+              agentModelOverrides: row.agent_model_overrides || {},
+              defaultTemperature: row.default_temperature,
+              maxContextTokens: row.max_context_tokens,
+              includeProjectContext: row.include_project_context,
+              streamResponses: row.stream_responses,
+              showReasoning: row.show_reasoning,
+            }
+          : {
+              globalModel: null,
+              globalModelTier: 'standard',
+              agentModelOverrides: {},
+              defaultTemperature: 0.7,
+              maxContextTokens: 8000,
+              includeProjectContext: true,
+              streamResponses: true,
+              showReasoning: false,
+            },
+      });
+    }
+  );
 }

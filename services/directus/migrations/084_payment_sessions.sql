@@ -2,7 +2,7 @@
 -- Migration 084: Payment Sessions for Stripe Checkout
 -- ============================================
 -- Tracks Stripe Checkout sessions before payment completion
--- When payment completes, a record is created in os_payments
+-- When payment completes, a record is created in payments
 -- ============================================
 
 -- Payment Sessions Table

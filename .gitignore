@@ -9,11 +9,21 @@ build/
 .vite/
 
 # Environment files
-.env
-.env.local
-.env.*.local
-.env.lite
-.env.pro
+**/.env
+**/.env.lite
+**/.env.pro
+**/.env.production
+**/.env.staging
+**/.env.development
+**/.env.test
+**/.env.local
+**/.env.*.local
+
+# Track repo-root env files intentionally (private repo)
+!/.env
+!/.env.lite
+!/.env.pro
+!/.env.production
 
 # IDE
 .idea/

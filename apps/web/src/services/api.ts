@@ -12,6 +12,7 @@
 import axios from 'axios'
 import type { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios'
 import { useAuthStore } from '@/stores/auth'
+import { useDemoStore } from '@/stores/demo'
 import { useRateLimitStore } from '@/stores/rateLimit'
 import { devLog, devWarn, devError, logError } from '@/utils/devLogger'
 
@@ -57,6 +58,18 @@ function createApiClient(): AxiosInstance {
       const authStore = useAuthStore()
       if (authStore.accessToken) {
         config.headers.Authorization = `Bearer ${authStore.accessToken}`
+      } else {
+        // Demo mode support: attach X-Demo-Session for unauthenticated users.
+        // This enables backend demo rate limits + credits for routes that support it.
+        try {
+          const demoStore = useDemoStore()
+          const sessionId = demoStore.session?.sessionId
+          if (sessionId) {
+            config.headers['X-Demo-Session'] = sessionId
+          }
+        } catch {
+          // Avoid breaking requests if Pinia isn't initialized yet.
+        }
       }
       return config
     },
@@ -624,6 +637,19 @@ export interface UserStats {
   profilesDownloaded: number
 }
 
+// --- AI Settings Types ---
+
+export interface AISettings {
+  globalModel: string | null
+  globalModelTier: 'cheap' | 'standard' | 'premium'
+  agentModelOverrides: Record<string, string>
+  defaultTemperature: number
+  maxContextTokens: number
+  includeProjectContext: boolean
+  streamResponses: boolean
+  showReasoning: boolean
+}
+
 export const users = {
   me: () =>
     get<User>('/api/v1/users/me'),
@@ -633,6 +659,13 @@ export const users = {
 
   update: (data: Partial<User>) =>
     patch<User>('/api/v1/users/me', data),
+
+  // AI Settings
+  getAISettings: () =>
+    get<AISettings>('/api/v1/users/me/ai-settings'),
+
+  updateAISettings: (data: Partial<AISettings>) =>
+    patch<AISettings>('/api/v1/users/me/ai-settings', data),
 }
 
 // --- Credits / Subscription ---

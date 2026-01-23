@@ -32,20 +32,18 @@
               class="word"
               :class="{ 'light-mode-visible': !themeStore.isDark }"
               :style="{
-                '--delay': `${i * 400}ms`,
-                '--color-delay': `${i * 300 + 800}ms`,
-                ...lightModeTextStyle,
+                '--delay': `${i * 120}ms`,
               }"
             >
               <AutonomousText
                 v-if="word === 'Autonomous'"
-                :delay="i * 400"
+                :delay="i * 120"
                 class="autonomous-word"
               />
               <AnimatedBox
                 v-else-if="word === 'Box'"
                 :size="72"
-                :delay="i * 400"
+                :delay="i * 120"
                 :animated="heroRevealed"
                 class="inline-box"
               />
@@ -167,27 +165,10 @@ import { useThemeStore } from '@/stores/theme'
 
 const themeStore = useThemeStore()
 
-// Computed style for light mode text visibility
-const lightModeTextStyle = computed(() => {
-  if (themeStore.isDark) return {}
-  return {
-    '--delay': '0ms',
-    '--color-delay': '0ms',
-    opacity: '1',
-    visibility: 'visible' as const,
-    color: 'var(--text-primary)',
-    WebkitTextFillColor: 'var(--text-primary)'
-  }
-})
-
+// Computed style for light mode subtitle visibility
 const lightModeSubtitleStyle = computed(() => {
   if (themeStore.isDark) return {}
-  return {
-    opacity: '1',
-    visibility: 'visible' as const,
-    color: 'var(--text-secondary)',
-    WebkitTextFillColor: 'var(--text-secondary)'
-  }
+  return { opacity: '1' }
 })
 
 interface Props {
@@ -214,12 +195,12 @@ const { t } = useI18n()
 const { editableAttr } = useVisualEditing()
 
 // Hero text reveal animation state
-// Start revealed immediately to ensure visibility (animation is cosmetic)
-const heroRevealed = ref(true)
+// Start hidden - will animate in (or show immediately in light mode)
+const heroRevealed = ref(false)
 const heroColorized = ref(false)
-const taglineRevealed = ref(true)
+const taglineRevealed = ref(false)
 const taglineColorized = ref(false)
-const themingBadgeRevealed = ref(true)
+const themingBadgeRevealed = ref(false)
 
 // Hero words - "Your Autonomous Agency in a Box"
 const heroWords = computed(() => {
@@ -234,37 +215,23 @@ function startCheckout() {
 onMounted(async () => {
   await nextTick()
 
-  // Phase 1: Reveal content quickly (critical for LCP)
-  setTimeout(() => {
+  // In light mode, show everything immediately (no animation)
+  if (!themeStore.isDark) {
     heroRevealed.value = true
-  }, 100)
-
-  setTimeout(() => {
     taglineRevealed.value = true
-  }, 200)
-
-  setTimeout(() => {
     themingBadgeRevealed.value = true
-  }, 300)
-
-  // Phase 2: Defer non-critical colorization animations
-  // Use requestIdleCallback to avoid blocking main thread during initial load
-  const deferAnimations = () => {
-    setTimeout(() => {
-      heroColorized.value = true
-    }, 800)
-
-    setTimeout(() => {
-      taglineColorized.value = true
-    }, 1600)
+    heroColorized.value = true
+    taglineColorized.value = true
+    analyticsEvents.viewPricing()
+    return
   }
 
-  if ('requestIdleCallback' in window) {
-    (window as Window & { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(deferAnimations)
-  } else {
-    // Fallback for Safari (doesn't support requestIdleCallback)
-    setTimeout(deferAnimations, 500)
-  }
+  // Dark mode: Smooth staggered word-by-word animation
+  setTimeout(() => { heroRevealed.value = true }, 150)
+  setTimeout(() => { taglineRevealed.value = true }, 600)
+  setTimeout(() => { themingBadgeRevealed.value = true }, 900)
+  setTimeout(() => { heroColorized.value = true }, 1800)
+  setTimeout(() => { taglineColorized.value = true }, 2400)
 
   // Track hero/pricing view
   analyticsEvents.viewPricing()
@@ -463,10 +430,14 @@ onMounted(async () => {
   // These must be at root level to use :global() properly
   :global(.body--dark) .title-line-1 .word {
     opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    transition-delay: var(--delay, 0ms);
   }
-  
+
   :global(.body--dark) .title-line-1.revealed .word {
     opacity: 1;
+    transform: translateY(0);
   }
 
   .title-line-2 {
@@ -692,6 +663,7 @@ onMounted(async () => {
 // CRITICAL: Disable ALL animations in light mode to prevent flashing
 :global(.body--light) .hero-title .title-line-1 .word {
   opacity: 1 !important;
+  transform: translateY(0) !important;
   transition: none !important;
   transition-delay: 0ms !important;
   animation: none !important;
@@ -801,7 +773,8 @@ onMounted(async () => {
 .word.light-mode-visible {
   opacity: 1 !important;
   visibility: visible !important;
-  
+  transform: translateY(0) !important;
+
   // Inner span text color (not gradient words)
   > span:not(.gradient-word) {
     color: #18181b !important;

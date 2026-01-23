@@ -113,9 +113,11 @@ export default async function clientPortalRoutes(fastify: FastifyInstance) {
 
     // Get pending invoices
     const invoicesResult = await fastify.pg.query(
-      `SELECT COUNT(*) as count, COALESCE(SUM(total_amount), 0) as total
+      `SELECT COUNT(*) as count, COALESCE(SUM(amount_due), 0) as total
        FROM invoices
-       WHERE organization_id = $1 AND status = 'pending'`,
+       WHERE organization_id = $1
+         AND status IN ('sent', 'overdue', 'partial')
+         AND amount_due > 0`,
       [organizationId]
     );
 
@@ -372,27 +374,49 @@ export default async function clientPortalRoutes(fastify: FastifyInstance) {
     const { status, page = 1, limit = 20 } = request.query;
     const offset = (page - 1) * limit;
 
-    let query = `
-      SELECT i.id, i.invoice_number, i.status, i.issue_date, i.due_date,
-             i.subtotal, i.tax_amount, i.total_amount, i.currency,
-             i.created_at
-      FROM invoices i
-      WHERE i.organization_id = $1
-    `;
-    const countQuery = `SELECT COUNT(*) FROM invoices WHERE organization_id = $1`;
-    const params: any[] = [organizationId];
+    const baseParams: any[] = [organizationId];
+    const whereClauses: string[] = ['i.organization_id = $1'];
 
     if (status) {
-      query += ` AND i.status = $2`;
-      params.push(status);
+      whereClauses.push(`i.status = $2`);
+      baseParams.push(status);
     }
 
-    query += ` ORDER BY i.issue_date DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
-    params.push(limit, offset);
+    const whereSql = whereClauses.join(' AND ');
+
+    const query = `
+      SELECT
+        i.id,
+        i.invoice_number,
+        i.status,
+        i.invoice_date as issue_date,
+        i.due_date,
+        i.paid_date as paid_at,
+        i.subtotal,
+        i.total_tax as tax_amount,
+        i.total,
+        i.total as total_amount,
+        i.amount_paid,
+        i.amount_due,
+        'usd'::text as currency,
+        i.date_created as created_at,
+        CASE
+          WHEN p.id IS NULL THEN NULL
+          ELSE json_build_object('id', p.id, 'name', p.name)
+        END as project
+      FROM invoices i
+      LEFT JOIN projects p ON p.id = i.project_id
+      WHERE ${whereSql}
+      ORDER BY i.invoice_date DESC
+      LIMIT $${baseParams.length + 1} OFFSET $${baseParams.length + 2}
+    `;
+
+    const countQuery = `SELECT COUNT(*) FROM invoices i WHERE ${whereSql}`;
+    const queryParams = [...baseParams, limit, offset];
 
     const [result, countResult] = await Promise.all([
-      fastify.pg.query(query, params),
-      fastify.pg.query(countQuery, [organizationId])
+      fastify.pg.query(query, queryParams),
+      fastify.pg.query(countQuery, baseParams)
     ]);
 
     return {
@@ -434,11 +458,17 @@ export default async function clientPortalRoutes(fastify: FastifyInstance) {
 
     // Get line items
     const itemsResult = await fastify.pg.query(
-      `SELECT ii.*, i.name as item_name
+      `SELECT
+         ii.id,
+         ii.description,
+         ii.quantity,
+         ii.unit_price,
+         ii.line_amount as amount,
+         ii.line_amount as total,
+         ii.tax_amount
        FROM invoice_items ii
-       LEFT JOIN items i ON i.id = ii.item_id
        WHERE ii.invoice_id = $1
-       ORDER BY ii.sort_order`,
+       ORDER BY ii.sort ASC NULLS LAST, ii.date_created ASC`,
       [invoiceId]
     );
 
@@ -480,10 +510,21 @@ export default async function clientPortalRoutes(fastify: FastifyInstance) {
     const invoice = invoiceResult.rows[0];
 
     // Check if invoice is payable
-    if (invoice.status === 'paid' || invoice.status === 'cancelled') {
+    if (!['sent', 'overdue', 'partial'].includes(invoice.status)) {
       return reply.status(400).send({
         success: false,
         error: { code: 'INVALID_STATUS', message: `Invoice is ${invoice.status}` }
+      });
+    }
+
+    const amountDue = typeof invoice.amount_due === 'string'
+      ? parseFloat(invoice.amount_due)
+      : Number(invoice.amount_due ?? 0);
+
+    if (!Number.isFinite(amountDue) || amountDue <= 0) {
+      return reply.status(400).send({
+        success: false,
+        error: { code: 'INVALID_AMOUNT', message: 'Invoice has no amount due' }
       });
     }
 
@@ -493,16 +534,20 @@ export default async function clientPortalRoutes(fastify: FastifyInstance) {
         apiVersion: '2025-02-24.acacia',
       });
 
+      const appUrl = (config.frontendUrl || 'http://localhost:3050').replace(/\/$/, '');
+      const successUrl = `${appUrl}/portal/invoices?payment=success&invoice=${invoiceId}`;
+      const cancelUrl = `${appUrl}/portal/invoices?payment=cancelled&invoice=${invoiceId}`;
+
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [{
           price_data: {
-            currency: invoice.currency || 'usd',
+            currency: 'usd',
             product_data: {
               name: `Invoice ${invoice.invoice_number}`,
               description: invoice.organization_name
             },
-            unit_amount: Math.round(invoice.total_amount * 100) // Convert to cents
+            unit_amount: Math.round(amountDue * 100) // Convert to cents
           },
           quantity: 1
         }],
@@ -514,16 +559,58 @@ export default async function clientPortalRoutes(fastify: FastifyInstance) {
           organization_id: organizationId,
           contact_id: contactId
         },
-        success_url: `${config.frontendUrl}/portal/invoices?payment=success&invoice=${invoiceId}`,
-        cancel_url: `${config.frontendUrl}/portal/invoices?payment=cancelled&invoice=${invoiceId}`
+        success_url: successUrl,
+        cancel_url: cancelUrl
       });
+
+      const expiresAt = (session.expires_at ? new Date(session.expires_at * 1000) : null);
 
       // Log payment session creation
       await fastify.pg.query(
-        `INSERT INTO payment_sessions (invoice_id, session_id, provider, status, created_at)
-         VALUES ($1, $2, 'stripe', 'pending', NOW())`,
-        [invoiceId, session.id]
+        `INSERT INTO payment_sessions (
+           invoice_id,
+           session_id,
+           provider,
+           status,
+           amount,
+           currency,
+           customer_email,
+           contact_id,
+           organization_id,
+           success_url,
+           cancel_url,
+           expires_at,
+           metadata
+         ) VALUES ($1, $2, 'stripe', 'pending', $3, 'usd', $4, $5, $6, $7, $8, $9, $10::jsonb)
+         ON CONFLICT (session_id) DO NOTHING`,
+        [
+          invoiceId,
+          session.id,
+          amountDue,
+          email,
+          contactId,
+          organizationId,
+          successUrl,
+          cancelUrl,
+          expiresAt,
+          JSON.stringify({
+            invoice_id: invoiceId,
+            organization_id: organizationId,
+            contact_id: contactId,
+          }),
+        ]
       );
+
+      if (session.url) {
+        await fastify.pg.query(
+          `UPDATE invoices
+           SET stripe_checkout_url = $1,
+               user_updated = NULL,
+               date_updated = NOW()
+           WHERE id = $2`,
+          [session.url, invoiceId]
+        );
+      }
 
       return {
         success: true,
@@ -572,11 +659,15 @@ export default async function clientPortalRoutes(fastify: FastifyInstance) {
 
     // Get line items
     const itemsResult = await fastify.pg.query(
-      `SELECT ii.*, i.name as item_name
+      `SELECT
+         ii.description,
+         ii.quantity,
+         ii.unit_price,
+         ii.line_amount,
+         ii.tax_amount
        FROM invoice_items ii
-       LEFT JOIN items i ON i.id = ii.item_id
        WHERE ii.invoice_id = $1
-       ORDER BY ii.sort_order`,
+       ORDER BY ii.sort ASC NULLS LAST, ii.date_created ASC`,
       [invoiceId]
     );
 
@@ -609,7 +700,7 @@ export default async function clientPortalRoutes(fastify: FastifyInstance) {
 
       doc.fontSize(10)
         .text(`Invoice #${invoice.invoice_number}`, 400, 80)
-        .text(`Date: ${new Date(invoice.issue_date).toLocaleDateString()}`, 400, 95)
+        .text(`Date: ${new Date(invoice.invoice_date).toLocaleDateString()}`, 400, 95)
         .text(`Due: ${invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : 'Upon receipt'}`, 400, 110);
 
       // Status badge
@@ -639,7 +730,7 @@ export default async function clientPortalRoutes(fastify: FastifyInstance) {
           .text(item.description || item.item_name, 50, y, { width: 240 })
           .text(item.quantity, 300, y)
           .text(`$${parseFloat(item.unit_price).toFixed(2)}`, 370, y)
-          .text(`$${parseFloat(item.amount).toFixed(2)}`, 470, y);
+          .text(`$${parseFloat(item.line_amount).toFixed(2)}`, 470, y);
 
         y += 20;
       });
@@ -657,13 +748,13 @@ export default async function clientPortalRoutes(fastify: FastifyInstance) {
 
       y += 20;
       doc.text('Tax:', 370, y)
-        .text(`$${parseFloat(invoice.tax_amount || 0).toFixed(2)}`, 470, y);
+        .text(`$${parseFloat(invoice.total_tax || 0).toFixed(2)}`, 470, y);
 
       y += 20;
       doc.fontSize(12)
         .font('Helvetica-Bold')
         .text('Total:', 370, y)
-        .text(`$${parseFloat(invoice.total_amount).toFixed(2)}`, 470, y);
+        .text(`$${parseFloat(invoice.total).toFixed(2)}`, 470, y);
 
       // Payment instructions
       if (invoice.status !== 'paid') {

@@ -4,10 +4,10 @@
 
 ## What This Is
 
-Source-available SaaS boilerplate built with Vue 3 + Quasar. Ships for web, iOS, Android, desktop (Electron), and PWA from a single codebase. Includes Directus CMS, Stripe billing, authentication, analytics, and AI copilot capabilities.
+Open-source SaaS boilerplate built with Vue 3 + Quasar. Ships for web, iOS, Android, desktop (Electron), and PWA from a single codebase. Includes Directus CMS, Stripe billing, authentication, analytics, and AI copilot capabilities.
 
 **Repository:** https://github.com/manicinc/synthstack
-**License:** Community License (modified MIT, non-commercial) - see LICENSE
+**License:** MIT License - see LICENSE
 
 ## Tech Stack
 

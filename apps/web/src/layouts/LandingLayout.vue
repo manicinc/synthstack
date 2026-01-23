@@ -1,4 +1,7 @@
 <template>
+  <!-- Fixed Header - MUST be outside q-layout for position:fixed to work -->
+  <SiteHeader />
+
   <q-layout
     view="hHh lpr fFf"
     class="landing-layout"
@@ -6,7 +9,7 @@
   >
     <!-- Electron Title Bar (macOS only) -->
     <ElectronTitleBar />
-    <SiteHeader />
+
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -40,36 +43,16 @@ const isElectronMac = computed(() => {
   background: var(--bg-base);
 
   &.has-electron-titlebar {
-    padding-top: 38px;
-
     .site-header {
       top: 38px !important;
+    }
+
+    .q-page-container {
+      padding-top: 102px !important; // 64px header + 38px electron titlebar
     }
   }
 }
 
-// Fix scrolling on all pages
-html, body {
-  height: auto !important;
-  min-height: 100% !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-}
-
-.q-layout {
-  height: auto !important;
-  min-height: 100vh !important;
-}
-
-.q-page-container {
-  height: auto !important;
-  min-height: auto !important;
-  background: var(--bg-base);
-}
-
-.q-page {
-  height: auto !important;
-  min-height: auto !important;
-  background: var(--bg-base);
-}
+// NOTE: Scroll behavior and .site-header positioning handled by scroll-fix.scss
+// Do not add duplicate html/body/q-layout rules here
 </style>

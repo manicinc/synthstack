@@ -4,7 +4,7 @@
 
 **Your Agency in a Box**
 
-Source-available, cross-platform SaaS boilerplate built with Vue Quasar. Ships for web, iOS, Android, desktop, and PWA from a single codebase. Includes Directus CMS (models your Postgres DB), analytics, email, newsletter, blog, and product management. Pro Edition adds AI Copilot, workflows, and referrals.
+Open-source, cross-platform SaaS boilerplate built with Vue Quasar. Ships for web, iOS, Android, desktop, and PWA from a single codebase. Includes Directus CMS (models your Postgres DB), analytics, email, newsletter, blog, and product management. Pro Edition adds AI Copilot, workflows, and referrals.
 
 ![SynthStack](apps/web/public/og-image.svg)
 
@@ -73,7 +73,7 @@ docker compose -f docker-compose.django.yml up -d
 
 | License | Use Case | Restrictions |
 |---------|----------|--------------|
-| **Community License (modified MIT)** | Learning, personal projects, evaluation | Non-commercial only, cannot build competing boilerplates |
+| **MIT License** | Open-source use (personal or commercial) | MIT terms |
 | **Commercial License** | Production SaaS, commercial use, client work | Cannot resell as boilerplate, cannot redistribute source |
 
 **What You Can Build:**
@@ -628,7 +628,7 @@ docker compose -f deploy/docker-compose.yml up -d
 
 ## 📄 License
 
-Community License (modified MIT, non-commercial) - see [LICENSE](LICENSE) for details.
+This project is licensed under the **MIT License** - see [LICENSE](LICENSE) for details.
 
 ---
 

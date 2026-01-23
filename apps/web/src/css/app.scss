@@ -112,10 +112,7 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  height: auto !important;
-  min-height: 100% !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
+  // NOTE: Scroll behavior controlled by scroll-fix.scss (loaded first)
 }
 
 body {
@@ -126,21 +123,11 @@ body {
   background-color: var(--color-bg-primary);
   margin: 0;
   padding: 0;
-  height: auto !important;
-  min-height: 100% !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
+  // NOTE: Scroll behavior controlled by scroll-fix.scss (loaded first)
 }
 
-// CRITICAL: Fix Quasar layouts blocking scroll
-.q-layout,
-.q-page-container,
-.q-page,
-.q-drawer-container {
-  height: auto !important;
-  min-height: auto !important;
-  overflow: visible !important;
-}
+// NOTE: Quasar layout fixes and .site-header positioning are handled by scroll-fix.scss
+// Do not add duplicate rules here as they may conflict
 
 // ============================================
 // Typography

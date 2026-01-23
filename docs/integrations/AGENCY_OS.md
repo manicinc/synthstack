@@ -85,11 +85,10 @@ All migrations located in: `services/directus/migrations/`
 - JSONB billing configuration
 
 #### 074_agencyos_invoicing.sql
-- Invoices (`os_invoices`) with auto-calculated fields
-- Invoice line items (`os_invoice_items`)
-- Payments (`os_payments`) with Stripe integration
-- Expenses (`os_expenses`) with billable flag
-- Reusable items catalog (`os_items`)
+- **DEPRECATED/REMOVED** legacy billing tables (`os_*`)
+- Canonical billing is handled by:
+  - `invoices`, `invoice_items`, `payments`, `payment_sessions`, `items`, `tax_rates`, `expenses`
+- Legacy `os_*` invoicing tables are dropped by `services/directus/migrations/132_drop_agencyos_invoicing.sql`
 
 #### 075_agencyos_proposals.sql
 - Deals (`os_deals`) with pipeline stages
@@ -112,11 +111,10 @@ All migrations located in: `services/directus/migrations/`
 - JSONB configuration fields
 
 #### 078_agencyos_flows.sql
-- **PostgreSQL Triggers** for invoice automation:
-  - `trigger_calculate_invoice_item`: Auto-calculates line amounts and tax
-  - `trigger_update_invoice_totals`: Recalculates invoice totals
-- Eliminates need for Directus Flows
-- Native database-level automation
+- **DEPRECATED/REMOVED** automation for legacy `os_*` invoicing tables
+- Canonical invoice automation is provided by:
+  - `services/directus/migrations/135_invoice_automation_triggers.sql`
+  - (Optional) Directus flow scripts in `services/directus/extensions/flows/`
 
 #### 079_agencyos_metadata.sql
 - Collection icons, colors, and notes
@@ -681,4 +679,4 @@ For issues or questions:
 
 ## License
 
-See [LICENSE](../../LICENSE) (Community License, non-commercial) and [COMMERCIAL-LICENSE.md](../../COMMERCIAL-LICENSE.md) (commercial use) for terms.
+See [LICENSE](../../LICENSE) (MIT) and [COMMERCIAL-LICENSE.md](../../COMMERCIAL-LICENSE.md) (Pro terms) for details.

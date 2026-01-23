@@ -1,64 +1,88 @@
 /**
  * CRITICAL FIX: Force scrolling on all pages
  * This file is loaded FIRST to override Quasar's fixed height layouts
+ *
+ * KEY PRINCIPLE: Don't fight the browser's natural scrolling.
+ * Only override Quasar's prevent-scroll class when needed.
  */
 
-/* NUCLEAR FIX: Override Quasar's prevent-scroll class */
+/* Override Quasar's prevent-scroll class (used for dialogs/drawers) */
 body.q-body--prevent-scroll {
-  overflow-y: scroll !important;
-  position: static !important;
+  overflow-y: auto !important;
 }
 
-/* Force scroll on root elements */
-html,
-body,
+/* Let html be the scroll container - DO NOT force overflow on body too */
+html {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* CRITICAL: Prevent transforms from breaking fixed positioning */
+  transform: none !important;
+}
+
+body {
+  min-height: 100%;
+  /* CRITICAL: Prevent transforms from breaking fixed positioning */
+  transform: none !important;
+}
+
 #q-app {
+  min-height: 100vh;
+  /* CRITICAL: Prevent transforms from breaking fixed positioning */
+  transform: none !important;
+}
+
+/* Fix Quasar layout components to allow content to flow naturally */
+.q-layout {
   height: auto !important;
   min-height: 100vh !important;
-  max-height: none !important;
-  overflow-y: scroll !important;
-  overflow-x: hidden !important;
-  position: static !important;
+  /* CRITICAL: Prevent transforms from breaking fixed positioning */
+  transform: none !important;
 }
 
-/* Fix all Quasar layout components */
-.q-layout,
-.q-layout__section,
-.q-header,
-.q-drawer-container,
-.q-page-container,
-.q-page,
-.q-footer {
+.q-page-container {
   height: auto !important;
   min-height: auto !important;
-  max-height: none !important;
-  overflow: visible !important;
-  position: static !important;
+  padding-top: 64px !important; /* Match header height (32px logo + 24px padding + border) */
 }
 
-/* Override any fixed/absolute positioning on layouts */
-.q-layout {
-  position: relative !important;
+.q-page {
+  height: auto !important;
+  min-height: auto !important;
 }
 
-/* Ensure page container allows content to flow */
-.q-page-container {
-  min-height: calc(100vh - 200px) !important;
-  padding-top: 64px !important;
+/* ============================================
+ * CRITICAL: Force SiteHeader to stay fixed at top
+ * This is the key fix for the navigation menu
+ * Using multiple high-specificity selectors to override Vue scoped styles
+ * ============================================ */
+.site-header,
+html .site-header,
+body .site-header,
+#q-app .site-header,
+.site-header.site-header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 9999 !important; /* Very high to ensure above all Quasar elements */
+  /* Ensure no transforms break the fixed positioning */
+  transform: none !important;
+  will-change: auto !important;
+  /* Prevent any containment issues */
+  contain: none !important;
+  /* Force hardware acceleration for smooth scrolling */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  /* Additional safeguards */
+  isolation: isolate;
 }
 
 /* Mobile fixes */
 @media (max-width: 1024px) {
-  html, body {
-    -webkit-overflow-scrolling: touch !important;
-    overflow-y: scroll !important;
-  }
-
-  .q-layout,
-  .q-page-container,
-  .q-page {
-    min-height: auto !important;
-    height: auto !important;
+  html {
+    -webkit-overflow-scrolling: touch;
   }
 }
 

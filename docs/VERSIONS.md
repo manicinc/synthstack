@@ -312,22 +312,18 @@ If UI components don't appear:
 - Check `VITE_ENABLE_AI_AGENTS` / `VITE_ENABLE_COPILOT_RAG` / `VITE_ENABLE_REFERRALS` in the root `.env`
 - Rebuild the frontend: `pnpm --filter @synthstack/web build`
 
-## License Implications
+## License
 
 ### LITE (Community Edition)
-- Community License (modified MIT, non-commercial)
-- Free for learning, personal projects, and evaluation
-- Basic chat + generation included
-- No agentic AI, RAG, workflows, or referrals
-- Source available under the Community License terms
+- MIT License (open source)
+- Commercial use allowed under MIT
+- Pro-only modules are controlled by feature flags and/or separate Pro packages
 
 ### PRO (Commercial Edition)
-- Commercial License required
-- Includes all features
-- Proprietary AI Copilot and Referral system
-- Support and updates
+- Pro code/features are distributed under commercial terms
+- Includes additional features/integrations plus support and updates
 
-See [LICENSE](../LICENSE) and [COMMERCIAL-LICENSE.md](../COMMERCIAL-LICENSE.md) for full terms.
+See [LICENSE](../LICENSE) (MIT) and [COMMERCIAL-LICENSE.md](../COMMERCIAL-LICENSE.md) (Pro terms) for details.
 
 ## Support
 

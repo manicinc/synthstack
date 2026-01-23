@@ -459,10 +459,26 @@ export default defineComponent({
 
     // API calls
     const apiCall = async (endpoint: string, options: RequestInit = {}) => {
+      const authData = localStorage.getItem('auth');
+      const token = (() => {
+        if (!authData) return null;
+        try {
+          const parsed = JSON.parse(authData);
+          return parsed.access_token || null;
+        } catch {
+          return null;
+        }
+      })();
+
+      if (!token) {
+        throw new Error('Missing Directus auth token');
+      }
+
       const response = await fetch(`${props.apiUrl}/api/v1/seo${endpoint}`, {
         ...options,
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
           ...options.headers,
         },
       });

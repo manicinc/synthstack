@@ -54,7 +54,7 @@
     "opensource": {
       "badge": "Gratis Para Siempre",
       "title": "Edición Comunitaria",
-      "description": "El núcleo completo de SynthStack tiene código fuente disponible bajo la Licencia Comunitaria (MIT modificada, no comercial). Ideal para aprender, proyectos personales y evaluación.",
+      "description": "El núcleo completo de SynthStack es de código abierto bajo la licencia MIT. Ideal para aprender, proyectos personales y evaluación.",
       "features": {
         "themes": "Temas y Modo Oscuro",
         "payments": "Stripe / LemonSqueezy",
@@ -63,7 +63,7 @@
         "cms": "Directus CMS",
         "email": "Plantillas de Email",
         "crossPlatform": "Multiplataforma",
-        "license": "Licencia Comunitaria (MIT modificada)"
+        "license": "Licencia MIT"
       },
       "githubBtn": {
         "label": "Dar Estrella en GitHub"
@@ -72,14 +72,14 @@
     },
     "pricing": {
       "title": "Precios Simples y Transparentes",
-      "subtitle": "Núcleo con código fuente disponible, agentes de IA premium",
+      "subtitle": "Núcleo de código abierto, agentes de IA premium",
       "community": {
         "name": "Comunidad",
         "price": "Gratis",
         "period": "para siempre",
-        "description": "Starter kit con código fuente disponible (no comercial)",
+        "description": "Starter kit de código abierto (MIT)",
         "features": {
-          "source": "Código fuente completo (Licencia Comunitaria)",
+          "source": "Código fuente completo (Licencia MIT)",
           "cms": "Integración Directus CMS",
           "billing": "Facturación Stripe/LemonSqueezy",
           "blog": "Blog y newsletter",
@@ -132,7 +132,7 @@
       "items": {
         "free": {
           "question": "¿SynthStack es realmente gratis?",
-          "answer": "¡Sí! La Edición Comunitaria es gratuita para aprender, proyectos personales y evaluación bajo la Licencia Comunitaria (MIT modificada, no comercial). Para uso comercial en producción, compra una Licencia Comercial."
+          "answer": "¡Sí! La Edición Comunitaria es de código abierto bajo licencia MIT, incluyendo uso comercial. Pro agrega AI Co-Founders y módulos premium."
         },
         "included": {
           "question": "¿Qué incluye la Edición Comunitaria?",
@@ -165,7 +165,7 @@
       "subtitle": "Boilerplate SaaS full-stack con superpoderes de IA. Lanza 10x más rápido.",
       "primary": "Comenzar Gratis",
       "secondary": "Actualizar a Pro",
-      "note": "Núcleo bajo Licencia Comunitaria · Pro: $297 de por vida · Recompensas por referidos disponibles"
+      "note": "Núcleo bajo licencia MIT · Pro: $297 de por vida · Recompensas por referidos disponibles"
     },
     "features": {
       "title": "¿Por Qué SynthStack?",

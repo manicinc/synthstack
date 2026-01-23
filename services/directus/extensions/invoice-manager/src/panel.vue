@@ -145,7 +145,7 @@
               v-tooltip="'Pay with Stripe'"
             />
             <v-icon
-              v-else-if="['sent', 'overdue'].includes(item.status)"
+              v-else-if="['sent', 'overdue', 'partial'].includes(item.status)"
               name="add_card"
               small
               clickable
@@ -187,18 +187,45 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useApi } from '@directus/extensions-sdk';
 
 interface Props {
+  apiBaseUrl?: string;
   showQuickActions?: boolean;
   defaultFilter?: string;
   itemsPerPage?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  apiBaseUrl: 'http://localhost:3003',
   showQuickActions: true,
   defaultFilter: 'all',
   itemsPerPage: 10
 });
 
 const api = useApi();
+
+const normalizedApiBaseUrl = computed(() => {
+  const raw = props.apiBaseUrl?.trim();
+  if (raw) return raw.replace(/\/$/, '');
+  return window.location.hostname === 'localhost'
+    ? 'http://localhost:3003'
+    : `${window.location.protocol}//${window.location.hostname}:3003`;
+});
+
+function buildGatewayUrl(path: string): string {
+  if (!path) return normalizedApiBaseUrl.value;
+  const prefix = path.startsWith('/') ? '' : '/';
+  return `${normalizedApiBaseUrl.value}${prefix}${path}`;
+}
+
+function getAuthToken(): string | null {
+  const authData = localStorage.getItem('auth');
+  if (!authData) return null;
+  try {
+    const parsed = JSON.parse(authData);
+    return parsed.access_token || null;
+  } catch {
+    return null;
+  }
+}
 
 // State
 const loading = ref(true);
@@ -241,7 +268,7 @@ const filter = computed(() => {
 
   if (activeFilter.value !== 'all') {
     if (activeFilter.value === 'overdue') {
-      conditions.status = { _eq: 'sent' };
+      conditions.status = { _in: ['sent', 'partial'] };
       conditions.due_date = { _lt: new Date().toISOString() };
     } else {
       conditions.status = { _eq: activeFilter.value };
@@ -317,7 +344,7 @@ async function loadSummary() {
       params: {
         aggregate: { sum: ['amount_due'] },
         filter: {
-          status: { _eq: 'sent' },
+          status: { _in: ['sent', 'partial'] },
           due_date: { _lt: new Date().toISOString() }
         }
       }
@@ -345,8 +372,7 @@ function viewInvoice(invoice: any) {
 async function sendInvoice(invoice: any) {
   try {
     await api.patch(`/items/invoices/${invoice.id}`, {
-      status: 'sent',
-      sent_date: new Date().toISOString()
+      status: 'sent'
     });
 
     // Refresh list
@@ -358,13 +384,28 @@ async function sendInvoice(invoice: any) {
 
 async function createStripeCheckout(invoice: any) {
   try {
-    // Call API gateway to create Stripe checkout
-    const response = await api.post('/stripe/create-checkout', {
-      invoice_id: invoice.id
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error('Missing Directus auth token');
+    }
+
+    const endpoint = buildGatewayUrl(`/api/v1/admin/invoices/${invoice.id}/checkout`);
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
     });
 
-    if (response.data.url) {
-      window.open(response.data.url, '_blank');
+    const payload = await response.json().catch(() => null) as any;
+    if (!response.ok) {
+      const message = payload?.error?.message || payload?.error || `Request failed (${response.status})`;
+      throw new Error(message);
+    }
+
+    const paymentUrl = payload?.data?.paymentUrl;
+    if (paymentUrl) {
+      window.open(paymentUrl, '_blank');
     }
 
     await loadInvoices();

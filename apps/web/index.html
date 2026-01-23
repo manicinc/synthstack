@@ -135,14 +135,62 @@
   <title>SynthStack - AI-Powered SaaS Boilerplate | Ship Your App in Days</title>
 
 
-  <!-- Prevent FOUC (Flash of Unstyled Content) for dark mode -->
+  <!-- Prevent FOUC (Flash of Unstyled Content) for theme -->
   <script>
     (function () {
-      var stored = localStorage.getItem('quasar-dark-mode');
+      var stored = null;
+      try {
+        stored = localStorage.getItem('synthstack-theme');
+      } catch (e) {
+        // localStorage might be blocked (privacy mode)
+      }
+
       var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      var isDark = stored === 'true' || (stored === null && prefersDark);
-      document.documentElement.style.backgroundColor = isDark ? '#09090B' : '#FFFFFF';
-      document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+      var isDark = prefersDark; // Default to system preference
+      var presetSlug = 'synthstack';
+
+      if (stored) {
+        // Handle legacy format (just 'light' or 'dark')
+        if (stored === 'light') {
+          isDark = false;
+        } else if (stored === 'dark') {
+          isDark = true;
+        } else {
+          // Parse JSON format
+          try {
+            var prefs = JSON.parse(stored);
+            if (prefs.colorMode === 'light') {
+              isDark = false;
+            } else if (prefs.colorMode === 'dark') {
+              isDark = true;
+            }
+            // 'system' mode uses prefersDark (already set above)
+            if (prefs.presetSlug) {
+              presetSlug = prefs.presetSlug;
+            } else if (prefs.themeSlug) {
+              presetSlug = prefs.themeSlug;
+            }
+          } catch (e) {
+            // Ignore parse errors, use system preference
+          }
+        }
+      }
+
+      // Apply styles and classes immediately to html element (exists in head)
+      var html = document.documentElement;
+      var bgColor = isDark ? '#09090B' : '#FFFFFF';
+      html.style.backgroundColor = bgColor;
+      html.style.colorScheme = isDark ? 'dark' : 'light';
+      html.setAttribute('data-preset', presetSlug);
+      html.setAttribute('data-theme', presetSlug);
+
+      // Disable ALL transitions during initial load to prevent flash
+      html.classList.add('no-transitions');
+      // Set html classes used by theme system
+      html.classList.add(isDark ? 'dark' : 'light');
+      html.classList.remove(isDark ? 'light' : 'dark');
+      // Store for body class application after body exists
+      window.__SYNTHSTACK_INITIAL_DARK__ = isDark;
     })();
   </script>
   <style>
@@ -153,19 +201,38 @@
       min-height: 100vh;
     }
 
-    html {
-      background-color: #09090B;
-    }
-
-    /* Dark mode default */
+    /* Background set by inline script based on saved preference */
     body {
       background-color: inherit;
+    }
+
+    /* Dark mode text color */
+    body.body--dark {
       color: #fafafa;
+    }
+
+    /* Light mode text color */
+    body.body--light {
+      color: #111111;
+    }
+
+    /* Disable ALL transitions during initial theme load */
+    html.no-transitions,
+    html.no-transitions *,
+    html.no-transitions *::before,
+    html.no-transitions *::after {
+      transition: none !important;
+      animation: none !important;
     }
   </style>
 </head>
 
-<body class="body--dark">
+<body>
+  <script>
+    // Apply body class immediately as body parses (before any content renders)
+    var isDark = window.__SYNTHSTACK_INITIAL_DARK__;
+    document.body.classList.add(isDark ? 'body--dark' : 'body--light');
+  </script>
   <!-- quasar:entry-point -->
 </body>
 

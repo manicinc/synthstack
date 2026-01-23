@@ -315,7 +315,7 @@ VALUES
 	    '015a1cf1-e3aa-42ea-a1f7-3872a9ba3db4',
 	    50,
 	    CURRENT_DATE + INTERVAL '30 days',
-	    (SELECT id FROM directus_users WHERE email = 'admin@synthstack.app' LIMIT 1),
+	    (SELECT id FROM directus_users ORDER BY date_created ASC LIMIT 1),
     'referral',
     'Strong interest in AI features',
     ARRAY['enterprise', 'priority']
@@ -330,7 +330,7 @@ VALUES
 	    '5478c2cc-9dcb-445e-aabe-2780444eecaf',
 	    75,
 	    CURRENT_DATE + INTERVAL '14 days',
-	    (SELECT id FROM directus_users WHERE email = 'admin@synthstack.app' LIMIT 1),
+	    (SELECT id FROM directus_users ORDER BY date_created ASC LIMIT 1),
     'website',
     'Final pricing discussions underway',
     ARRAY['consulting', 'high-value']
@@ -345,7 +345,7 @@ VALUES
 	    '04338f44-0ffd-4cb5-b835-f94859653f54',
 	    25,
 	    CURRENT_DATE + INTERVAL '60 days',
-	    (SELECT id FROM directus_users WHERE email = 'admin@synthstack.app' LIMIT 1),
+	    (SELECT id FROM directus_users ORDER BY date_created ASC LIMIT 1),
     'website',
     'Inbound demo request',
     ARRAY['startup', 'tech']

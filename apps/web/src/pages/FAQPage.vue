@@ -145,9 +145,9 @@ const faqs = ref<FaqItem[]>([
   {
     category: 'general',
     question: 'Is SynthStack open source?',
-    answer: `<p>SynthStack uses a dual-license model:</p>
+    answer: `<p>SynthStack has two editions:</p>
     <ul>
-      <li><strong>Community Edition</strong> (source-available): <a href="${communityRepoUrl}" target="_blank" rel="noopener">${communityRepoUrl}</a></li>
+      <li><strong>Community Edition</strong> (MIT, open source): <a href="${communityRepoUrl}" target="_blank" rel="noopener">${communityRepoUrl}</a></li>
       <li><strong>Pro</strong> (commercial): private repo access via lifetime license or commercial terms</li>
     </ul>`
   },
@@ -156,8 +156,8 @@ const faqs = ref<FaqItem[]>([
   {
     category: 'editions',
     question: 'What’s the difference between Community (Lite) and Pro?',
-    answer: `<p><strong>Community (Lite)</strong> is designed for learning and evaluation.</p>
-    <p><strong>Pro</strong> unlocks commercial usage and advanced features (agents, automations, and premium integrations).</p>
+    answer: `<p><strong>Community (Lite)</strong> is the open-source core (MIT).</p>
+    <p><strong>Pro</strong> adds advanced features/modules (agents, automations, premium integrations) plus support.</p>
     <p class="citation">📚 Feature access is controlled by flags, so you can start Lite and upgrade when you’re ready.</p>`
   },
   {

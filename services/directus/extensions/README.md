@@ -16,6 +16,7 @@ Professional invoice management panel with Stripe integration.
 - Status management (draft → sent → paid)
 
 **Configuration Options**:
+- `apiBaseUrl`: SynthStack API Gateway base URL (default: `http://localhost:3003`)
 - `showQuickActions`: Display quick action buttons (default: true)
 - `defaultFilter`: Default invoice filter (default: 'all')
 - `itemsPerPage`: Number of invoices per page (default: 10)
@@ -41,21 +42,9 @@ Visual sales pipeline with drag-and-drop Kanban board.
 
 **Minimum Size**: 24 wide × 16 tall
 
-### 3. Copilot Widget (`copilot-widget/`)
+### 3. SEO Keywords (`seo-keywords/`)
 
-Live AI assistant chat interface (existing).
-
-### 4. AI Co-Founders (`ai-cofounders/`)
-
-AI agent dashboard panels (existing).
-
-### 5. SEO Keywords (`seo-keywords/`)
-
-SEO keyword analysis (existing).
-
-### 6. AI Suggestions (`ai-suggestions/`)
-
-AI-powered content suggestions (existing).
+SEO keyword analysis panel (existing).
 
 ## Building Extensions
 
@@ -146,8 +135,7 @@ The Invoice Manager panel expects these API routes:
 - `GET /items/invoices` - List invoices with filters
 - `GET /items/invoices/:id` - Get single invoice
 - `PATCH /items/invoices/:id` - Update invoice
-- `POST /stripe/create-checkout` - Create Stripe checkout session
-- `GET /stripe/payment-status/:invoiceId` - Check payment status
+- `POST {API_BASE_URL}/api/v1/admin/invoices/:invoiceId/checkout` - Create Stripe checkout session (API Gateway, admin auth)
 
 ### CRM Pipeline API Endpoints
 

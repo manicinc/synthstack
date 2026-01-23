@@ -14,7 +14,7 @@ services:
   # PostgreSQL Database
   # ============================================
   postgres:
-    image: postgres:15-alpine
+    image: pgvector/pgvector:pg15
     container_name: synthstack-postgres
     env_file:
       - .env
@@ -26,7 +26,6 @@ services:
       - "5499:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./services/directus/migrations:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-synthstack} -d ${DB_DATABASE:-synthstack}"]
       interval: 10s
@@ -125,6 +124,67 @@ services:
       retries: 5
       start_period: 60s
     restart: unless-stopped
+    networks:
+      - synthstack
+
+  # ============================================
+  # Database Migrations (Runs after Directus creates its schema)
+  # ============================================
+  directus-migrate:
+    image: postgres:15-alpine
+    container_name: synthstack-migrate
+    env_file:
+      - .env
+    environment:
+      PGHOST: postgres
+      PGPORT: 5432
+      PGDATABASE: ${DB_DATABASE:-synthstack}
+      PGUSER: ${DB_USER:-synthstack}
+      PGPASSWORD: ${DB_PASSWORD:-change-this-password}
+    depends_on:
+      directus:
+        condition: service_healthy
+    volumes:
+      - ./services/directus/migrations:/migrations:ro
+    entrypoint: [ "/bin/sh", "-c" ]
+    command:
+      - |
+        echo "Running SynthStack database migrations..."
+        echo "Waiting for Directus to initialize its schema..."
+
+        # Wait for Directus to create its tables (max 60 seconds)
+        for i in $$(seq 1 60); do
+          if psql -At -c "SELECT 1 FROM information_schema.tables WHERE table_name = 'directus_users' LIMIT 1;" | grep -q 1; then
+            echo "Directus schema ready!"
+            break
+          fi
+          echo "Waiting for Directus schema... ($$i/60)"
+          sleep 1
+        done
+
+        # Ensure migration tracking table exists
+        psql -v ON_ERROR_STOP=1 -c "CREATE TABLE IF NOT EXISTS synthstack_migrations (filename TEXT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW());"
+
+        # Run each migration file once (in lexicographic order)
+        for f in /migrations/*.sql; do
+          if [ -f "$$f" ]; then
+            NAME=$$(basename "$$f")
+            APPLIED=$$(psql -At -c "SELECT 1 FROM synthstack_migrations WHERE filename = '$$NAME' LIMIT 1;")
+
+            if [ "$$APPLIED" = "1" ]; then
+              echo "Skipping already applied: $$NAME"
+              continue
+            fi
+
+            echo "Running migration: $$NAME"
+            psql -v ON_ERROR_STOP=1 -f "$$f"
+            psql -v ON_ERROR_STOP=1 -c "INSERT INTO synthstack_migrations (filename) VALUES ('$$NAME');"
+          fi
+        done
+
+        echo ""
+        echo "Migrations complete!"
+    restart: "no"
     networks:
       - synthstack
 

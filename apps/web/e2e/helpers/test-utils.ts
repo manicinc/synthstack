@@ -881,3 +881,70 @@ export async function mockLandingAPIs(page: Page) {
     })
   })
 }
+
+/**
+ * Mock AI Settings API endpoints
+ */
+export async function mockAISettingsAPIs(page: Page) {
+  await page.route('**/api/v1/users/me/ai-settings', async (route) => {
+    const method = route.request().method()
+
+    if (method === 'GET') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          data: {
+            globalModel: null,
+            globalModelTier: 'standard',
+            agentModelOverrides: {},
+            defaultTemperature: 0.7,
+            maxContextTokens: 8000,
+            includeProjectContext: true,
+            streamResponses: true,
+            showReasoning: false,
+          },
+        }),
+      })
+      return
+    }
+
+    if (method === 'PATCH') {
+      const body = route.request().postDataJSON()
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          data: {
+            globalModel: body?.globalModel ?? null,
+            globalModelTier: body?.globalModelTier ?? 'standard',
+            agentModelOverrides: body?.agentModelOverrides ?? {},
+            defaultTemperature: body?.defaultTemperature ?? 0.7,
+            maxContextTokens: body?.maxContextTokens ?? 8000,
+            includeProjectContext: body?.includeProjectContext ?? true,
+            streamResponses: body?.streamResponses ?? true,
+            showReasoning: body?.showReasoning ?? false,
+          },
+        }),
+      })
+      return
+    }
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: true }),
+    })
+  })
+}
+
+/**
+ * Mock all Copilot-related APIs (minimal set for Community Edition tests)
+ */
+export async function mockAllCopilotAPIs(page: Page) {
+  await mockAuth(page)
+  await mockAppAPIs(page)
+  await mockAISettingsAPIs(page)
+}

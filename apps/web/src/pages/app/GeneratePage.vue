@@ -191,17 +191,17 @@
               </template>
             </q-input>
 
-	            <div class="generation-options">
-	              <q-select
-	                v-model="imageQuality"
-	                :options="imageQualities"
-	                label="Quality"
-	                outlined
-	                dense
-	                emit-value
-	                map-options
-	                class="option-field"
-	              />
+            <div class="generation-options">
+              <q-select
+                v-model="imageQuality"
+                :options="imageQualities"
+                label="Quality"
+                outlined
+                dense
+                emit-value
+                map-options
+                class="option-field"
+              />
 
               <q-select
                 v-model="imageSize"
@@ -214,17 +214,17 @@
                 class="option-field"
               />
 
-	              <q-select
-	                v-model="imageStyle"
-	                :options="imageStyles"
-	                label="Style"
-	                outlined
-	                dense
-	                emit-value
-	                map-options
-	                class="option-field"
-	              />
-	            </div>
+              <q-select
+                v-model="imageStyle"
+                :options="imageStyles"
+                label="Style"
+                outlined
+                dense
+                emit-value
+                map-options
+                class="option-field"
+              />
+            </div>
           </q-card-section>
 
           <q-card-actions align="right">
@@ -499,32 +499,32 @@
                   <q-tooltip>Download {{ documentFormat.toUpperCase() }}</q-tooltip>
                 </q-btn>
               </div>
-	            </div>
-	            <div class="document-preview">
-	              <div
-	                v-if="documentFormat === 'html'"
-	                v-html="generatedDocument"
-	              />
-	              <pre
-	                v-else
-	                class="document-text"
-	              ><code>{{ generatedDocument }}</code></pre>
-	            </div>
-	          </q-card-section>
-	        </q-card>
-	      </div>
+            </div>
+            <div class="document-preview">
+              <div
+                v-if="documentFormat === 'html'"
+                v-html="generatedDocument"
+              />
+              <pre
+                v-else
+                class="document-text"
+              ><code>{{ generatedDocument }}</code></pre>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
     </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-	import { ref } from 'vue'
-	import { useQuasar } from 'quasar'
-	import DOMPurify from 'dompurify'
-	import { api } from '@/services/api'
-	import { logError } from '@/utils/devLogger'
-  import { useAuthStore } from '@/stores/auth'
-  import { useCreditsStore } from '@/stores/credits'
+import { ref } from 'vue'
+import { useQuasar } from 'quasar'
+import DOMPurify from 'dompurify'
+import { api } from '@/services/api'
+import { logError } from '@/utils/devLogger'
+import { useAuthStore } from '@/stores/auth'
+import { useCreditsStore } from '@/stores/credits'
 
 const $q = useQuasar()
 const authStore = useAuthStore()

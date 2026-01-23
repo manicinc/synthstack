@@ -9,12 +9,10 @@
  *
  * Copyright (c) 2025 Manic Inc.
  *
- * This source code is licensed under:
- * - Community License (modified MIT) - for non-commercial use
- * - Commercial License - for commercial production use
+ * This source code is licensed under the MIT License.
  *
- * See LICENSE and COMMERCIAL-LICENSE.md in the repository root for full terms.
- * Commercial licenses: https://synthstack.app/pricing
+ * See LICENSE in the repository root for full terms.
+ * Pro edition: https://synthstack.app/pricing
  */
 import { onMounted } from 'vue';
 import { useAuthStore } from './stores/auth';

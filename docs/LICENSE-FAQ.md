@@ -1,37 +1,23 @@
-# SynthStack Licensing FAQ (Community Edition)
+# SynthStack Licensing FAQ
 
-SynthStack uses a dual-license model:
+SynthStack has two editions:
 
-- **Community Edition (this repo)**: non-commercial (see `../LICENSE`)
-- **SynthStack Pro**: commercial use (see `../COMMERCIAL-LICENSE.md` and https://synthstack.app/pricing)
+- **Community Edition (this repo)**: MIT License (see `../LICENSE`)
+- **SynthStack Pro (separate repo)**: Commercial license (see `../COMMERCIAL-LICENSE.md` and https://synthstack.app/pricing)
 
-## What “Non-Commercial” Means
+## Can I Use Community Edition Commercially?
 
-Community Edition is intended for:
-- Learning and evaluation
-- Personal projects
-- Internal prototypes that are not monetized
+Yes. The Community Edition is MIT licensed, so commercial use is allowed.
 
-Community Edition is **not** allowed for:
-- Selling subscriptions or charging end-users
-- Client work where you’re paid to deliver the software
-- Building a competing boilerplate/starter kit
+## Can I Modify and Redistribute It?
 
-If you need commercial usage rights, use SynthStack Pro:
-- https://synthstack.app/pricing
+Yes, as long as you comply with the MIT License terms (keep the copyright + license notice).
 
-## Can I Modify the Code?
+## When Do I Need Pro?
 
-Yes. You can fork and modify the code, but you must comply with the Community License restrictions.
-
-## Can I Deploy It?
-
-Yes, for non-commercial use cases.
-
-If you plan to run a revenue-generating production app, you need Pro.
+Only if you want Pro-only features and/or access to the Pro codebase and support.
 
 ## Where Are The Full Terms?
 
-- Community License: `../LICENSE`
-- Commercial License: `../COMMERCIAL-LICENSE.md`
-
+- MIT License: `../LICENSE`
+- Pro terms: `../COMMERCIAL-LICENSE.md` (Pro repo) and https://synthstack.app/pricing

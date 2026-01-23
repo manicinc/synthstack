@@ -5,7 +5,7 @@
  * This is separate from workflow cost calculation.
  */
 
-import { SubscriptionTier } from '@synthstack/referrals-credits';
+import type { SubscriptionTier } from '../stripe.js';
 
 // ============================================
 // ML Endpoint Cost Configuration

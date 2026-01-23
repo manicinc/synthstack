@@ -175,4 +175,44 @@ const sidebarItems = [
 }
 </style>
 
+<style lang="scss">
+// Light mode overrides
+.body--light {
+  .interface-sidebar {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+    border-right-color: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .sidebar-logo span {
+    color: #1e293b !important;
+  }
+
+  .nav-item {
+    color: #64748b !important;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.04) !important;
+      color: #334155 !important;
+    }
+
+    &.active {
+      background: rgba(234, 88, 12, 0.1) !important;
+      color: #ea580c !important;
+    }
+  }
+
+  .sidebar-user {
+    border-top-color: rgba(0, 0, 0, 0.08) !important;
+
+    .user-name {
+      color: #1e293b !important;
+    }
+
+    .user-role {
+      color: #64748b !important;
+    }
+  }
+}
+</style>
+
 

@@ -1,11 +1,11 @@
 # SynthStack Onboarding Guide (Community Edition)
 
-Welcome to SynthStack Community — a source-available, cross-platform SaaS boilerplate built with Vue + Quasar and a Fastify API.
+Welcome to SynthStack Community — an open-source, cross-platform SaaS boilerplate built with Vue + Quasar and a Fastify API.
 
-## ⚖️ License & Usage Rights
+## ⚖️ License & Editions
 
-- **Community Edition (this repo)** is non-commercial. See: `../LICENSE`
-- **Commercial use** (production SaaS, client work, monetization) requires SynthStack Pro. See: https://synthstack.app/pricing
+- **Community Edition (this repo)** is MIT licensed. See: `../LICENSE`
+- **SynthStack Pro** is a separate codebase with additional features/support under commercial terms: https://synthstack.app/pricing
 
 For a breakdown of features by edition, see:
 - [Versions (Lite vs Pro)](./VERSIONS.md)
@@ -42,4 +42,3 @@ docker compose -f docker-compose.community.yml up -d
 - Auth provider choice (Supabase vs Local): [Auth Provider Wizard](./guides/AUTH_PROVIDER_WIZARD.md)
 - Production deployment: [Deployment Quick Start](./DEPLOYMENT_QUICK_START.md)
 - Branding & configuration: [Branding & Theming](./customization/BRANDING.md)
-

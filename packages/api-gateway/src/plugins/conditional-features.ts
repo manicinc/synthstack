@@ -1,10 +1,7 @@
 /**
  * @file plugins/conditional-features.ts
- * @description Conditional feature loading plugin - COMMUNITY EDITION
+ * @description Conditional feature loading plugin
  * @module @synthstack/api-gateway/plugins
- *
- * COMMUNITY EDITION: Copilot and Referrals are NOT available.
- * This plugin is simplified to only log that these features are disabled.
  */
 
 import type { FastifyInstance } from 'fastify';
@@ -18,6 +15,8 @@ declare module 'fastify' {
   interface FastifyInstance {
     features: {
       copilot: boolean;
+      aiAgents: boolean;
+      copilotRag: boolean;
       referrals: boolean;
     };
   }
@@ -28,19 +27,41 @@ declare module 'fastify' {
 // ============================================
 
 async function conditionalFeaturesPlugin(fastify: FastifyInstance): Promise<void> {
-  // COMMUNITY: Features are always disabled
+  // NOTE: strict parsing: only the exact string "true" enables a flag.
+  // This avoids accidental enablement from values like "TRUE", "1", "yes", etc.
+  const isTrue = (value: string | undefined): boolean => value === 'true';
+
+  const enabledCopilot = isTrue(process.env.ENABLE_COPILOT);
+  const enabledReferrals = isTrue(process.env.ENABLE_REFERRALS);
+
+  // Defaults:
+  // - If ENABLE_AI_AGENTS is unset, default to ENABLE_COPILOT (legacy behavior).
+  // - If ENABLE_COPILOT_RAG is unset, default to ENABLE_AI_AGENTS.
+  const enabledAiAgents =
+    process.env.ENABLE_AI_AGENTS === undefined
+      ? enabledCopilot
+      : isTrue(process.env.ENABLE_AI_AGENTS);
+
+  const enabledCopilotRag =
+    process.env.ENABLE_COPILOT_RAG === undefined
+      ? enabledAiAgents
+      : isTrue(process.env.ENABLE_COPILOT_RAG);
+
   const features = {
-    copilot: false,
-    referrals: false,
+    copilot: enabledCopilot,
+    aiAgents: enabledAiAgents,
+    copilotRag: enabledCopilotRag,
+    referrals: enabledReferrals,
   };
 
   // Decorate Fastify instance with feature flags
   fastify.decorate('features', features);
 
-  fastify.log.info('📦 SynthStack Community Edition');
-  fastify.log.info('   - Copilot/Agentic AI: ❌ Not available (PRO feature)');
-  fastify.log.info('   - Referrals & Rewards: ❌ Not available (PRO feature)');
-  fastify.log.info('   Upgrade to PRO at: https://synthstack.app/pricing');
+  fastify.log.info('🎛️  Feature flags');
+  fastify.log.info(`   - Copilot: ${features.copilot ? '✅ Enabled' : '❌ Disabled'}`);
+  fastify.log.info(`   - AI Agents: ${features.aiAgents ? '✅ Enabled' : '❌ Disabled'}`);
+  fastify.log.info(`   - Copilot RAG: ${features.copilotRag ? '✅ Enabled' : '❌ Disabled'}`);
+  fastify.log.info(`   - Referrals & Rewards: ${features.referrals ? '✅ Enabled' : '❌ Disabled'}`);
 }
 
 export default fp(conditionalFeaturesPlugin, {

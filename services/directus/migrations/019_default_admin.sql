@@ -2,7 +2,7 @@
 -- Migration 019: Create default admin + demo accounts (Community-safe)
 --
 -- Credentials:
---   Admin: admin@synthstack.app / synthstack123
+--   Admin: team@manic.agency / synthstack123
 --   Demo:  demo@synthstack.app / synthstack123
 --
 -- IMPORTANT: Change these passwords in production!
@@ -22,23 +22,23 @@ INSERT INTO app_users (
   updated_at
 ) VALUES (
   gen_random_uuid(),
-  'admin@synthstack.app',
-  'SynthStack Admin',
+  'team@manic.agency',
+  'Manic Team',
   true,
   true,
-  'community',
+  'free',
   'active',
   NOW(),
   NOW()
 ) ON CONFLICT (email) DO UPDATE SET
   is_admin = true,
   is_moderator = true,
-  subscription_tier = 'community',
+  subscription_tier = 'free',
   subscription_status = 'active',
   updated_at = NOW();
 
 -- ============================================
--- Demo User (Premium Access for Testing)
+-- Demo User (for Testing)
 -- ============================================
 INSERT INTO app_users (
   id,
@@ -56,12 +56,12 @@ INSERT INTO app_users (
   'Demo User',
   false,
   false,
-  'community',
+  'free',
   'active',
   NOW(),
   NOW()
 ) ON CONFLICT (email) DO UPDATE SET
-  subscription_tier = 'community',
+  subscription_tier = 'free',
   subscription_status = 'active',
   updated_at = NOW();
 

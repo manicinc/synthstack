@@ -631,9 +631,11 @@ onBeforeUnmount(() => {
 
 <style scoped lang="scss">
 .site-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 1000 !important; // Higher z-index to ensure it's above Quasar elements
   background: var(--lp-bg, var(--bg-base, #09090b));
   border-bottom: 1px solid var(--lp-border, var(--border-default));
   transition: all 0.3s ease;
@@ -662,7 +664,7 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 16px 24px;
+  padding: 12px 24px;
 }
 
 .logo {

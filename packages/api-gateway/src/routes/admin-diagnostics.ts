@@ -139,7 +139,7 @@ export default async function adminDiagnosticsRoutes(fastify: FastifyInstance) {
             ...result.data.services.stripe,
             apiOk: true,
             accountId: account.id,
-            livemode: account.livemode,
+            livemode: Boolean((account as any).livemode),
           };
         } catch (error: any) {
           result.data.services.stripe = {
@@ -154,4 +154,3 @@ export default async function adminDiagnosticsRoutes(fastify: FastifyInstance) {
     }
   );
 }
-

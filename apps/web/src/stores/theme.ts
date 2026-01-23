@@ -529,8 +529,9 @@ export const useThemeStore = defineStore('theme', () => {
         root.classList.contains('light') === !isDarkMode &&
         root.getAttribute('data-preset') === expectedPreset &&
         root.getAttribute('data-theme') === expectedPreset
+      const cssVarsOk = root.style.getPropertyValue('--bg-base') !== ''
 
-      if (bodyOk && rootOk) {
+      if (bodyOk && rootOk && cssVarsOk) {
         if (isDebugEnabled('theme')) {
           debugLog('theme', 'applyTheme skipped (already applied)', {
             reason,

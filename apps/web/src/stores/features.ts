@@ -6,7 +6,7 @@
  * Fetches user's feature access from API and caches locally.
  *
  * Tiers:
- * - community: Community License (non-commercial)
+ * - community: Free tier (Community edition)
  * - subscriber: $2-4/mo cheap tier with limited credits
  * - premium: $297 lifetime - all AI Cofounders
  *

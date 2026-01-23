@@ -4,7 +4,7 @@
  * Provides runtime feature flag checking for premium vs community edition.
  *
  * Tier Hierarchy:
- * - community: Community License (separate repo, non-commercial) - no AI features
+ * - community: Free tier (Community edition)
  * - subscriber: $2-4/mo cheap tier with limited credits, doc upload, basic chat
  * - premium: $297 lifetime - all AI Cofounders, GitHub integration, suggestions
  *

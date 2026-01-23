@@ -1,4 +1,7 @@
 <template>
+  <!-- Fixed Header - MUST be outside q-layout for position:fixed to work -->
+  <SiteHeader />
+
   <q-layout
     view="hHh Lpr fFf"
     class="auth-layout"
@@ -6,9 +9,6 @@
   >
     <!-- Electron Title Bar (macOS only) -->
     <ElectronTitleBar />
-
-    <!-- Site Header -->
-    <SiteHeader />
 
     <!-- Main Content -->
     <q-page-container>
@@ -81,7 +81,6 @@ const isElectronMac = computed(() => {
   align-items: center;
   min-height: calc(100vh - 64px); // Account for header
   padding: var(--space-8);
-  padding-top: calc(var(--space-8) + 64px); // Extra top padding for fixed header
   position: relative;
 }
 
@@ -157,4 +156,3 @@ const isElectronMac = computed(() => {
   opacity: 0;
 }
 </style>
-

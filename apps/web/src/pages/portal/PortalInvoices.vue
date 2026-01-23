@@ -139,7 +139,7 @@
                   @click="downloadInvoice(invoice.id)"
                 />
                 <q-btn
-                  v-if="invoice.status === 'sent' || invoice.status === 'overdue'"
+                  v-if="invoice.status === 'sent' || invoice.status === 'overdue' || invoice.status === 'partial'"
                   unelevated
                   color="positive"
                   label="Pay Now"
@@ -269,6 +269,7 @@ const currentInvoice = ref<any>(null);
 const statusOptions = [
   'draft',
   'sent',
+  'partial',
   'paid',
   'overdue',
   'cancelled'
@@ -332,7 +333,7 @@ const invoiceActions = computed<Action[]>(() => {
   ];
 
   // Add Pay Now action if invoice can be paid
-  if (currentInvoice.value.status === 'sent' || currentInvoice.value.status === 'overdue') {
+  if (['sent', 'overdue', 'partial'].includes(currentInvoice.value.status)) {
     actions.push({
       label: 'Pay Now',
       icon: 'payment',
@@ -358,6 +359,7 @@ const getStatusColor = (status: string) => {
   const colors: Record<string, string> = {
     draft: 'grey',
     sent: 'blue',
+    partial: 'warning',
     paid: 'positive',
     overdue: 'negative',
     cancelled: 'grey-7'

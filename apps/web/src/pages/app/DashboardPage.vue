@@ -227,9 +227,13 @@ onUnmounted(() => {
 
 .charts-row {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   gap: 24px;
   margin-bottom: 24px;
+
+  > :only-child {
+    grid-column: 1 / -1;
+  }
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
@@ -238,9 +242,13 @@ onUnmounted(() => {
 
 .tables-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
   margin-bottom: 24px;
+
+  > :only-child {
+    grid-column: 1 / -1;
+  }
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
@@ -259,6 +267,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
   gap: 8px;
   font-size: 0.75rem;
   color: var(--text-tertiary);

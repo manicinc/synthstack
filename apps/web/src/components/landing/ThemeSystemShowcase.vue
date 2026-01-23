@@ -7,11 +7,14 @@
  */
 
 import { ref, computed } from 'vue'
+import { useQuasar } from 'quasar'
 import { themePresetsList } from '@/config/themePresets'
 import type { ThemePreset } from '@/types/theme'
 
+const $q = useQuasar()
 const activePreset = ref<ThemePreset>(themePresetsList[0])
-const isDarkMode = ref(true)
+// Preview mode is independent from site theme - starts matching site but can toggle independently
+const isDarkMode = ref($q.dark.isActive)
 
 const previewStyles = computed(() => {
   const preset = activePreset.value
@@ -651,14 +654,15 @@ function getCategoryLabel(category: string) {
   display: block;
   font-size: 1.25rem;
   font-weight: 800;
-  color: var(--preview-text);
+  color: var(--preview-text, #F8FAFC);
   font-family: 'JetBrains Mono', monospace;
 }
 
 .stat-label {
   font-size: 0.7rem;
-  color: var(--preview-text-secondary);
+  color: var(--preview-text-secondary, #94A3B8);
   text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .mock-input-group {
@@ -776,6 +780,7 @@ function getCategoryLabel(category: string) {
 <style lang="scss">
 .body--light {
   .theme-showcase {
+    // Header
     .showcase-header h2 {
       color: #1e293b !important;
     }
@@ -784,33 +789,40 @@ function getCategoryLabel(category: string) {
       color: #475569 !important;
     }
 
+    // Background elements - much lighter for light mode
     .bg-gradient {
-      background: radial-gradient(ellipse 70% 50% at 50% 100%, rgba(139, 92, 246, 0.06) 0%, transparent 60%) !important;
+      background: radial-gradient(ellipse 70% 50% at 50% 100%, rgba(139, 92, 246, 0.08) 0%, transparent 60%) !important;
     }
 
     .bg-pattern {
       background-image:
-        linear-gradient(to right, rgba(139, 92, 246, 0.05) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(139, 92, 246, 0.05) 1px, transparent 1px) !important;
+        linear-gradient(to right, rgba(139, 92, 246, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(139, 92, 246, 0.04) 1px, transparent 1px) !important;
     }
 
-    .theme-card {
-      background: rgba(255, 255, 255, 0.9) !important;
-      border-color: rgba(0, 0, 0, 0.1) !important;
+    // Theme Grid Cards - light backgrounds
+    .theme-grid {
+      .theme-card {
+        background: rgba(255, 255, 255, 0.95) !important;
+        border-color: rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 
-      &:hover {
-        background: #ffffff !important;
-        border-color: rgba(0, 0, 0, 0.15) !important;
-      }
+        &:hover {
+          background: #ffffff !important;
+          border-color: rgba(0, 0, 0, 0.15) !important;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
 
-      &.is-active {
-        background: rgba(139, 92, 246, 0.1) !important;
-        border-color: rgba(139, 92, 246, 0.4) !important;
+        &.is-active {
+          background: rgba(139, 92, 246, 0.08) !important;
+          border-color: rgba(139, 92, 246, 0.4) !important;
+          box-shadow: 0 4px 20px rgba(139, 92, 246, 0.15);
+        }
       }
     }
 
     .swatch {
-      border-color: rgba(0, 0, 0, 0.1) !important;
+      border-color: rgba(0, 0, 0, 0.15) !important;
     }
 
     .theme-name {
@@ -821,13 +833,34 @@ function getCategoryLabel(category: string) {
       color: #64748b !important;
     }
 
+    // Features Row - light background
     .features-row {
-      background: rgba(0, 0, 0, 0.03) !important;
-      border-color: rgba(0, 0, 0, 0.1) !important;
+      background: rgba(255, 255, 255, 0.7) !important;
+      border-color: rgba(0, 0, 0, 0.08) !important;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
     }
 
     .feature-item {
       color: #334155 !important;
+    }
+
+    // CTA Buttons
+    .cta-secondary {
+      color: #475569 !important;
+
+      &:hover {
+        color: #1e293b !important;
+      }
+    }
+
+    // Premium badge - keep visible in light mode
+    .premium-badge {
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
+    }
+
+    // Active indicator
+    .active-indicator {
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
     }
   }
 }

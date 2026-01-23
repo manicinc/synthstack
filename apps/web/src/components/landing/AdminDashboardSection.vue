@@ -592,7 +592,7 @@ function particleStyle(index: number) {
 <style lang="scss">
 .body--light {
   .admin-section {
-    background: linear-gradient(180deg, var(--bg-base) 0%, rgba(13, 148, 136, 0.05) 50%, var(--bg-base) 100%) !important;
+    background: linear-gradient(180deg, var(--bg-base) 0%, rgba(99, 102, 241, 0.04) 50%, var(--bg-base) 100%) !important;
 
     .section-header {
       h2 {
@@ -602,6 +602,82 @@ function particleStyle(index: number) {
       p {
         color: var(--text-secondary) !important;
       }
+    }
+
+    // Particles - lighter for light mode
+    .admin-particles .particle {
+      background: rgba(99, 102, 241, 0.4) !important;
+    }
+
+    // Glow orbs - more subtle in light mode
+    .admin-glow-orb {
+      opacity: 0.3;
+
+      &.orb-1 {
+        background: rgba(99, 102, 241, 0.2) !important;
+      }
+
+      &.orb-2 {
+        background: rgba(139, 92, 246, 0.15) !important;
+      }
+    }
+
+    // Main interface - light mode styling
+    .admin-interface {
+      background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%) !important;
+      border-color: rgba(0, 0, 0, 0.1) !important;
+      box-shadow:
+        0 50px 100px -20px rgba(0, 0, 0, 0.15),
+        0 30px 60px -30px rgba(99, 102, 241, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+    }
+
+    // Browser chrome - light mode
+    .interface-chrome {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+      border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .chrome-url {
+      background: rgba(0, 0, 0, 0.05) !important;
+      color: #475569 !important;
+    }
+
+    .chrome-actions {
+      color: #64748b !important;
+    }
+
+    // Tab navigation - light mode
+    .interface-tabs {
+      background: rgba(0, 0, 0, 0.02) !important;
+      border-bottom-color: rgba(0, 0, 0, 0.06) !important;
+    }
+
+    .tab-btn {
+      color: #64748b !important;
+
+      &:hover {
+        color: #475569 !important;
+        background: rgba(0, 0, 0, 0.03) !important;
+      }
+
+      &.active {
+        color: #ea580c !important;
+        background: rgba(234, 88, 12, 0.06) !important;
+      }
+    }
+
+    // Main content area - light mode
+    .interface-main {
+      background: #f1f5f9 !important;
+    }
+
+    // Feature labels - light mode
+    .feature-label {
+      background: rgba(255, 255, 255, 0.98) !important;
+      border-color: rgba(234, 88, 12, 0.25) !important;
+      color: #1e293b !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
     }
   }
 

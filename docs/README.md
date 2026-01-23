@@ -105,7 +105,7 @@ Welcome to the SynthStack documentation hub. Find everything you need to build, 
 
 - [License FAQ](./LICENSE-FAQ.md) - Common licensing questions
 - [Commercial License](../COMMERCIAL-LICENSE.md) - Commercial use terms
-- [Community License](../LICENSE) - Modified MIT (non-commercial) terms
+- [MIT License](../LICENSE) - Open-source MIT terms
 
 ## Historical Documents
 

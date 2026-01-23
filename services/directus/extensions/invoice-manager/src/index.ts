@@ -9,6 +9,21 @@ export default definePanel({
   component: PanelComponent,
   options: [
     {
+      field: 'apiBaseUrl',
+      name: 'API Base URL',
+      type: 'string',
+      meta: {
+        interface: 'input',
+        width: 'full',
+        options: {
+          placeholder: 'http://localhost:3003'
+        }
+      },
+      schema: {
+        default_value: 'http://localhost:3003'
+      }
+    },
+    {
       field: 'showQuickActions',
       name: 'Show Quick Actions',
       type: 'boolean',

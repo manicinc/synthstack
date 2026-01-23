@@ -323,19 +323,22 @@ const features = computed<Feature[]>(() => [
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 32px;
+  gap: 16px;
   margin-top: 60px;
-  padding: 28px 40px;
-  background: rgba(15, 15, 35, 0.6);
+  padding: 32px 24px;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.08) 0%,
+    rgba(13, 148, 136, 0.06) 50%,
+    rgba(139, 92, 246, 0.08) 100%
+  );
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
 
   @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 16px;
-    align-items: center;
-    padding: 24px;
+    gap: 12px;
+    padding: 20px 16px;
   }
 }
 
@@ -343,21 +346,111 @@ const features = computed<Feature[]>(() => [
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 14px 24px;
   font-size: 0.9375rem;
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 500;
-  transition: color 0.3s ease;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #fff;
+  border-radius: 50px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+
+  // Gradient backgrounds for each badge
+  &:nth-child(1) {
+    // Cross-Platform - Teal/Cyan gradient
+    background: linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%);
+    box-shadow:
+      0 4px 16px rgba(13, 148, 136, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  }
+
+  &:nth-child(2) {
+    // TypeScript - Indigo/Purple gradient
+    background: linear-gradient(135deg, #6366f1 0%, #818cf8 50%, #a78bfa 100%);
+    box-shadow:
+      0 4px 16px rgba(99, 102, 241, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  }
+
+  &:nth-child(3) {
+    // Docker - Blue gradient
+    background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 50%, #7dd3fc 100%);
+    box-shadow:
+      0 4px 16px rgba(14, 165, 233, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  }
+
+  &:nth-child(4) {
+    // Docs - Emerald gradient
+    background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #6ee7b7 100%);
+    box-shadow:
+      0 4px 16px rgba(16, 185, 129, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  }
+
+  // Subtle shine effect
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.2) 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    border-radius: 50px 50px 0 0;
+    pointer-events: none;
+  }
 
   &:hover {
-    color: #fff;
+    transform: translateY(-3px) scale(1.03);
 
-    .q-icon {
-      transform: scale(1.1);
+    &:nth-child(1) {
+      box-shadow:
+        0 8px 24px rgba(13, 148, 136, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+    }
+    &:nth-child(2) {
+      box-shadow:
+        0 8px 24px rgba(99, 102, 241, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+    }
+    &:nth-child(3) {
+      box-shadow:
+        0 8px 24px rgba(14, 165, 233, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+    }
+    &:nth-child(4) {
+      box-shadow:
+        0 8px 24px rgba(16, 185, 129, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.15) inset;
     }
   }
 
   .q-icon {
+    color: rgba(255, 255, 255, 0.95) !important;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
     transition: transform 0.3s ease;
+  }
+
+  &:hover .q-icon {
+    transform: scale(1.1);
+  }
+
+  span {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (max-width: 768px) {
+    padding: 12px 20px;
+    font-size: 0.875rem;
   }
 }
 
@@ -390,15 +483,70 @@ const features = computed<Feature[]>(() => [
   }
 
   .more-features {
-    background: rgba(255, 255, 255, 0.9);
-    border-color: rgba(0, 0, 0, 0.08);
+    background: linear-gradient(
+      135deg,
+      rgba(99, 102, 241, 0.06) 0%,
+      rgba(13, 148, 136, 0.04) 50%,
+      rgba(139, 92, 246, 0.06) 100%
+    );
+    border-color: rgba(0, 0, 0, 0.06);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
   }
 
   .more-feature {
-    color: #475569;
+    color: #fff;
+
+    // Light mode gradients - slightly deeper/richer colors for contrast
+    &:nth-child(1) {
+      background: linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #06b6d4 100%);
+      box-shadow:
+        0 4px 16px rgba(13, 148, 136, 0.35),
+        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+    }
+
+    &:nth-child(2) {
+      background: linear-gradient(135deg, #5b5bd6 0%, #7c7cf8 50%, #9b8afb 100%);
+      box-shadow:
+        0 4px 16px rgba(91, 91, 214, 0.35),
+        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+    }
+
+    &:nth-child(3) {
+      background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 50%, #38bdf8 100%);
+      box-shadow:
+        0 4px 16px rgba(2, 132, 199, 0.35),
+        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+    }
+
+    &:nth-child(4) {
+      background: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
+      box-shadow:
+        0 4px 16px rgba(5, 150, 105, 0.35),
+        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+    }
 
     &:hover {
-      color: #1e293b;
+      &:nth-child(1) {
+        box-shadow:
+          0 8px 28px rgba(13, 148, 136, 0.45),
+          0 0 0 1px rgba(255, 255, 255, 0.25) inset;
+      }
+      &:nth-child(2) {
+        box-shadow:
+          0 8px 28px rgba(91, 91, 214, 0.45),
+          0 0 0 1px rgba(255, 255, 255, 0.25) inset;
+      }
+      &:nth-child(3) {
+        box-shadow:
+          0 8px 28px rgba(2, 132, 199, 0.45),
+          0 0 0 1px rgba(255, 255, 255, 0.25) inset;
+      }
+      &:nth-child(4) {
+        box-shadow:
+          0 8px 28px rgba(5, 150, 105, 0.45),
+          0 0 0 1px rgba(255, 255, 255, 0.25) inset;
+      }
     }
   }
 }

@@ -74,8 +74,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useQuasar } from 'quasar'
+import { useAuthStore } from '@/stores/auth'
 
 const $q = useQuasar()
+const authStore = useAuthStore()
 const email = ref('')
 const loading = ref(false)
 const showSuccess = ref(false)
@@ -83,13 +85,12 @@ const showSuccess = ref(false)
 async function onSubmit() {
   loading.value = true
   try {
-    // TODO: Implement password reset with Supabase
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    await authStore.resetPassword(email.value)
     showSuccess.value = true
   } catch (error) {
     $q.notify({
       type: 'negative',
-      message: 'Failed to send reset email'
+      message: authStore.error || 'Failed to send reset email'
     })
   } finally {
     loading.value = false
@@ -136,7 +137,6 @@ async function onSubmit() {
   margin-top: 24px;
 }
 </style>
-
 
 
 

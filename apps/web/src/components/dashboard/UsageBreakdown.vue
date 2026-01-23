@@ -257,7 +257,7 @@ const formatChange = (change: number) => {
   gap: 16px;
   align-items: center;
   
-  @media (max-width: 400px) {
+  @media (max-width: 600px) {
     grid-template-columns: 1fr;
   }
 }
@@ -355,4 +355,3 @@ const formatChange = (change: number) => {
   color: var(--text-tertiary);
 }
 </style>
-

@@ -19,6 +19,12 @@ export interface WorkflowStats {
   }
 }
 
+export interface ProjectsStats {
+  total: number
+  active: number
+  changePercent: number
+}
+
 export interface AIUsageStats {
   tokensToday: number
   tokensThisWeek: number
@@ -42,6 +48,7 @@ export interface CreditsStats {
 }
 
 export interface DashboardOverview {
+  projects: ProjectsStats
   workflows: WorkflowStats
   aiUsage: AIUsageStats
   credits: CreditsStats
@@ -67,7 +74,7 @@ export interface TopWorkflow {
 
 export interface ActivityItem {
   id: string
-  type: 'workflow_execution' | 'copilot_message' | 'approval' | 'credit_usage' | 'sync'
+  type: 'workflow_execution' | 'copilot_message' | 'approval' | 'credit_usage' | 'sync' | 'memory'
   title: string
   description?: string
   timestamp: string
@@ -268,6 +275,11 @@ class DashboardService {
   // Mock data for development
   private getMockOverview(): DashboardOverview {
     return {
+      projects: {
+        total: 12,
+        active: 8,
+        changePercent: 15,
+      },
       workflows: {
         total: 12,
         active: 8,
@@ -428,4 +440,3 @@ class DashboardService {
 
 export const dashboardService = new DashboardService()
 export default dashboardService
-

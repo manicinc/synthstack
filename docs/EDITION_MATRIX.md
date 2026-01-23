@@ -7,8 +7,8 @@ This is a practical “what do I actually get” comparison between the **Commun
 | Item | Community | PRO |
 |------|-----------|-----|
 | Source access | Public repo | Private repo (license holders) |
-| License | Community License (modified MIT, non‑commercial) | Commercial license |
-| Best for | Learning, evaluation, prototypes | Commercial use + advanced AI modules |
+| License | MIT License | Commercial license |
+| Best for | Open-source use (personal or commercial) | Advanced modules + support |
 
 ## Feature Matrix (Build-Time / Self-Hosted)
 

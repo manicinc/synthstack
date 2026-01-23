@@ -320,21 +320,15 @@ const currentPanel = computed(() => panels.find(p => p.id === activePanel.value)
 
 // Panel Navigation
 .panel-nav {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 12px;
   margin-bottom: 32px;
-
-  @media (max-width: 1100px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  padding: 0 16px;
 
   @media (max-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
+    gap: 8px;
   }
 }
 
@@ -665,13 +659,17 @@ const currentPanel = computed(() => panels.find(p => p.id === activePanel.value)
     }
 
     .feature-tag {
-      background: rgba(255, 255, 255, 0.85) !important;
-      border-color: rgba(0, 0, 0, 0.1) !important;
-      color: #475569 !important;
+      background: #ffffff !important;
+      border-color: var(--tag-color) !important;
+      border-width: 2px !important;
+      color: var(--tag-color) !important;
+      font-weight: 700 !important;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
 
       &:hover {
-        background: #ffffff !important;
-        color: #1e293b !important;
+        background: var(--tag-color) !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
       }
     }
   }

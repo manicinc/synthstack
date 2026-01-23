@@ -105,7 +105,7 @@ const userInitials = computed(() => {
       </div>
 
       <!-- Quick actions -->
-      <div class="quick-actions">
+      <div class="quick-actions" data-testid="welcome-quick-actions">
         <q-btn
           v-for="action in quickActions"
           :key="action.to"
@@ -248,10 +248,8 @@ const userInitials = computed(() => {
   display: flex;
   gap: 12px;
   z-index: 1;
-  
-  @media (max-width: 900px) {
-    display: none;
-  }
+  flex-wrap: wrap;
+  justify-content: flex-end;
   
   .action-btn {
     min-width: 120px;
@@ -273,5 +271,3 @@ const userInitials = computed(() => {
   }
 }
 </style>
-
-

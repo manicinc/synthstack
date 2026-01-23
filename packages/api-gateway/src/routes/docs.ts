@@ -123,13 +123,13 @@ export default async function docsRoutes(fastify: FastifyInstance) {
         },
       },
     },
-	  }, async (request: FastifyRequest, reply: FastifyReply) => {
-	    try {
-	      const mdFiles = await listMarkdownFiles(DOCS_DIR, { excludeDirs: DEFAULT_EXCLUDED_DIRS });
+  }, async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const mdFiles = await listMarkdownFiles(DOCS_DIR, { excludeDirs: DEFAULT_EXCLUDED_DIRS });
 
-	      const docs: DocFile[] = await Promise.all(
-	        mdFiles.map(async (filename) => {
-	          const filePath = path.join(DOCS_DIR, filename);
+      const docs: DocFile[] = await Promise.all(
+        mdFiles.map(async (filename) => {
+          const filePath = path.join(DOCS_DIR, filename);
           const stats = await fs.stat(filePath);
           const content = await fs.readFile(filePath, 'utf-8');
 
@@ -191,24 +191,24 @@ export default async function docsRoutes(fastify: FastifyInstance) {
         },
       },
     },
-	  }, async (request, reply) => {
-	    const { identifier: rawIdentifier } = request.params;
-	    const identifier = normalizeRequestedPath(rawIdentifier);
+  }, async (request, reply) => {
+    const { identifier: rawIdentifier } = request.params;
+    const identifier = normalizeRequestedPath(rawIdentifier);
 
-	    if (!identifier) {
-	      return reply.status(400).send({ error: 'Invalid filename' });
-	    }
+    if (!identifier) {
+      return reply.status(400).send({ error: 'Invalid filename' });
+    }
 
-	    try {
-	      // Try direct filename first
-	      let filename = identifier;
+    try {
+      // Try direct filename first
+      let filename = identifier;
 
-	      // If not ending in .md, treat as slug and find matching file
-	      if (!identifier.endsWith('.md')) {
-	        const mdFiles = await listMarkdownFiles(DOCS_DIR, { excludeDirs: DEFAULT_EXCLUDED_DIRS });
+      // If not ending in .md, treat as slug and find matching file
+      if (!identifier.endsWith('.md')) {
+        const mdFiles = await listMarkdownFiles(DOCS_DIR, { excludeDirs: DEFAULT_EXCLUDED_DIRS });
 
-	        // Find file matching the slug
-	        filename = mdFiles.find(f => fileToSlug(f) === identifier.toLowerCase()) || '';
+        // Find file matching the slug
+        filename = mdFiles.find((f) => fileToSlug(f) === identifier.toLowerCase()) || '';
 
         if (!filename) {
           return reply.status(404).send({ error: 'Document not found' });
@@ -286,14 +286,14 @@ export default async function docsRoutes(fastify: FastifyInstance) {
     },
   }, async (request, reply) => {
     const { q } = request.query;
-	    const query = q.toLowerCase();
+    const query = q.toLowerCase();
 
-	    try {
-	      const mdFiles = await listMarkdownFiles(DOCS_DIR, { excludeDirs: DEFAULT_EXCLUDED_DIRS });
+    try {
+      const mdFiles = await listMarkdownFiles(DOCS_DIR, { excludeDirs: DEFAULT_EXCLUDED_DIRS });
 
-	      const results = await Promise.all(
-	        mdFiles.map(async (filename) => {
-	          const filePath = path.join(DOCS_DIR, filename);
+      const results = await Promise.all(
+        mdFiles.map(async (filename) => {
+          const filePath = path.join(DOCS_DIR, filename);
           const content = await fs.readFile(filePath, 'utf-8');
           const lowerContent = content.toLowerCase();
 

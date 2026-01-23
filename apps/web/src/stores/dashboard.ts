@@ -33,7 +33,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
       {
         key: 'projects',
         title: 'Active Projects',
-        value: overview.value.workflows?.active || 0, // Reuse workflows data structure for projects
+        value: overview.value.projects?.active || 0,
         icon: 'folder',
         color: 'primary' as const,
         route: '/app/projects',
@@ -270,4 +270,3 @@ function formatNumber(num: number): string {
   if (num >= 1000) return (num / 1000).toFixed(1) + 'K'
   return num.toString()
 }
-

@@ -570,75 +570,75 @@ onMounted(async () => {
     }
   }
 
-	  :deep(hr) {
-	    border: none;
-	    height: 1px;
-	    background: var(--border-default);
-	    margin: 32px 0;
-	  }
+  :deep(hr) {
+    border: none;
+    height: 1px;
+    background: var(--border-default);
+    margin: 32px 0;
+  }
 
-	  :deep(details) {
-	    margin: 16px 0;
-	    padding: 12px 16px;
-	    background: var(--bg-elevated);
-	    border: 1px solid var(--border-default);
-	    border-radius: 10px;
-	  }
+  :deep(details) {
+    margin: 16px 0;
+    padding: 12px 16px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: 10px;
+  }
 
-	  :deep(summary) {
-	    cursor: pointer;
-	    font-weight: 700;
-	    color: var(--text-primary);
-	    list-style: none;
-	  }
+  :deep(summary) {
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--text-primary);
+    list-style: none;
+  }
 
-	  :deep(details > summary::-webkit-details-marker) {
-	    display: none;
-	  }
+  :deep(details > summary::-webkit-details-marker) {
+    display: none;
+  }
 
-	  :deep(details > summary::before) {
-	    content: '▸';
-	    display: inline-block;
-	    margin-right: 8px;
-	    color: var(--text-tertiary);
-	    transition: transform 0.15s ease;
-	  }
+  :deep(details > summary::before) {
+    content: '▸';
+    display: inline-block;
+    margin-right: 8px;
+    color: var(--text-tertiary);
+    transition: transform 0.15s ease;
+  }
 
-	  :deep(details[open] > summary::before) {
-	    transform: rotate(90deg);
-	  }
+  :deep(details[open] > summary::before) {
+    transform: rotate(90deg);
+  }
 
-	  :deep(kbd) {
-	    font-family: 'JetBrains Mono', monospace;
-	    font-size: 0.85em;
-	    padding: 2px 6px;
-	    border-radius: 6px;
-	    background: var(--bg-elevated);
-	    border: 1px solid var(--border-default);
-	  }
+  :deep(kbd) {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+  }
 
-	  :deep(iframe) {
-	    width: 100%;
-	    aspect-ratio: 16 / 9;
-	    border: 1px solid var(--border-default);
-	    border-radius: 12px;
-	    background: #000;
-	    margin: 16px 0;
-	  }
+  :deep(iframe) {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    background: #000;
+    margin: 16px 0;
+  }
 
-	  :deep(video) {
-	    width: 100%;
-	    max-width: 100%;
-	    border: 1px solid var(--border-default);
-	    border-radius: 12px;
-	    background: #000;
-	    margin: 16px 0;
-	  }
+  :deep(video) {
+    width: 100%;
+    max-width: 100%;
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    background: #000;
+    margin: 16px 0;
+  }
 
-	  :deep(img) {
-	    max-width: 100%;
-	    height: auto;
-	    border-radius: 8px;
+  :deep(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
     margin: 16px 0;
   }
 }

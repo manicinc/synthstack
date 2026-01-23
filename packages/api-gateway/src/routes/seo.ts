@@ -102,6 +102,8 @@ interface KeywordQueryParams {
 // ============================================
 
 export default async function seoRoutes(server: FastifyInstance) {
+  // All SEO routes require an authenticated user.
+  server.addHook('preHandler', server.authenticate);
   // ============================================
   // Keywords CRUD
   // ============================================
@@ -509,14 +511,11 @@ export default async function seoRoutes(server: FastifyInstance) {
 
 /**
  * Get user ID from request
- * Falls back to demo user if not authenticated
  */
 function getUserId(request: FastifyRequest): string {
   const userId = (request as any).user?.id;
   if (!userId) {
-    // For development/demo, use a default user ID
-    // In production, this should throw an error
-    return 'demo-user-id';
+    throw new Error('Unauthorized');
   }
   return userId;
 }

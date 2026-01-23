@@ -214,7 +214,18 @@ async function handleCheckoutCompleted(fastify: FastifyInstance, session: Stripe
       const invoice = invoiceResult.rows[0];
 
       // Create payment record
-      const paymentAmount = session.amount_total ? session.amount_total / 100 : 0;
+      const fallbackAmountDue = typeof invoice.amount_due === 'string'
+        ? parseFloat(invoice.amount_due)
+        : Number(invoice.amount_due ?? 0);
+
+      const paymentAmount = typeof session.amount_total === 'number'
+        ? session.amount_total / 100
+        : fallbackAmountDue;
+
+      if (!Number.isFinite(paymentAmount) || paymentAmount <= 0) {
+        throw new Error(`Invalid payment amount for invoice ${invoice_id}`);
+      }
+
       const transactionFee = 0; // Calculate Stripe fee if needed
 
       const paymentResult = await client.query(
@@ -223,43 +234,60 @@ async function handleCheckoutCompleted(fastify: FastifyInstance, session: Stripe
           amount,
           transaction_fee,
           payment_method,
-          reference,
-          status,
+          reference_number,
           payment_date,
           stripe_payment_intent_id,
           receipt_url,
-          metadata,
-          created_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+          notes,
+          user_created,
+          user_updated
+        ) VALUES ($1, $2, $3, 'stripe', $4, NOW(), $5, $6, $7, NULL, NULL)
         RETURNING id`,
         [
           invoice_id,
           paymentAmount,
           transactionFee,
-          'stripe',
           session.id,
-          'completed',
-          new Date(),
           session.payment_intent,
-          (session as any).receipt_url || null,
+          null,
           JSON.stringify({
+            provider: 'stripe',
             session_id: session.id,
             customer_email: session.customer_email,
-            payment_status: session.payment_status
-          })
+            payment_status: session.payment_status,
+            invoice_id,
+            organization_id,
+            contact_id,
+          }),
         ]
       );
 
-      // Update invoice status to paid
+      const totalPaidResult = await client.query(
+        `SELECT COALESCE(SUM(amount), 0) as total_paid
+         FROM payments
+         WHERE invoice_id = $1`,
+        [invoice_id]
+      );
+
+      const totalPaid = parseFloat(totalPaidResult.rows[0]?.total_paid) || 0;
+      const invoiceTotal = parseFloat(invoice.total) || 0;
+
+      const nextStatus = totalPaid >= invoiceTotal
+        ? 'paid'
+        : totalPaid > 0
+          ? 'partial'
+          : invoice.status;
+
       await client.query(
         `UPDATE invoices
-         SET status = 'paid',
-             paid_at = NOW(),
-             amount_paid = total_amount,
+         SET status = $2,
+             paid_date = CASE WHEN $2 = 'paid' THEN CURRENT_DATE ELSE paid_date END,
+             amount_paid = $3,
+             stripe_payment_intent_id = COALESCE(stripe_payment_intent_id, $4),
              user_updated = NULL,
              date_updated = NOW()
          WHERE id = $1`,
-        [invoice_id]
+        [invoice_id, nextStatus, totalPaid, session.payment_intent]
       );
 
       await client.query('COMMIT');
@@ -509,8 +537,17 @@ async function handleCheckoutCompleted(fastify: FastifyInstance, session: Stripe
 }
 
 async function handleCheckoutExpired(fastify: FastifyInstance, session: Stripe.Checkout.Session) {
-  const { type } = session.metadata || {};
+  const { type, invoice_id } = session.metadata || {};
   
+  if (invoice_id) {
+    await fastify.pg.query(
+      `UPDATE payment_sessions
+       SET status = 'expired', user_updated = NULL, date_updated = NOW()
+       WHERE session_id = $1`,
+      [session.id]
+    );
+  }
+
   if (type === 'credit_purchase') {
     await fastify.pg.query(`
       UPDATE credit_purchases SET status = 'failed' WHERE stripe_session_id = $1

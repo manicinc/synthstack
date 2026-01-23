@@ -11,8 +11,7 @@
 // These serve as fallbacks when no preset is loaded
 // ============================================
 
-:root,
-.body--dark {
+:root {
   // Landing Page Variables (mapped to theme system)
   --lp-bg: #09090b;
   --lp-border: rgba(255, 255, 255, 0.1);
@@ -128,38 +127,40 @@
 
 // ============================================
 // Theme Variables - Light Mode
+// Applied via `html.light` so they take effect
+// before `body` exists (prevents theme flash).
 // ============================================
 
-.body--light {
+html.light {
   // Landing Page Variables (mapped to theme system)
   --lp-bg: #ffffff;
-  --lp-border: rgba(0, 0, 0, 0.08);
+  --lp-border: rgba(0, 0, 0, 0.1);
   --lp-text: #18181b;
-  --lp-text-secondary: #52525b;
+  --lp-text-secondary: #3f3f46;
   --lp-primary: #0d9488;
-  --lp-primary-muted: rgba(13, 148, 136, 0.06);
-  --lp-bg-alt: #f4f4f5;
-  --lp-bg-alt-hover: #e4e4e7;
-  
-  // Background Hierarchy
-  --bg-base: #ffffff;
-  --bg-subtle: #fafafa;
-  --bg-muted: #f4f4f5;
-  --bg-elevated: #e4e4e7;
-  --bg-overlay: rgba(255, 255, 255, 0.9);
-  
-  // Surface Colors
+  --lp-primary-muted: rgba(13, 148, 136, 0.08);
+  --lp-bg-alt: #ffffff;
+  --lp-bg-alt-hover: #f8fafc;
+
+  // Background Hierarchy - Clean whites with better contrast
+  --bg-base: #f8fafc;
+  --bg-subtle: #ffffff;
+  --bg-muted: #f1f5f9;
+  --bg-elevated: #ffffff;
+  --bg-overlay: rgba(255, 255, 255, 0.95);
+
+  // Surface Colors - Cleaner whites
   --surface-1: #ffffff;
-  --surface-2: #fafafa;
-  --surface-3: #f4f4f5;
-  --surface-4: #e4e4e7;
-  --surface-hover: rgba(0, 0, 0, 0.03);
-  --surface-active: rgba(0, 0, 0, 0.06);
-  
-  // Border Colors
-  --border-subtle: rgba(0, 0, 0, 0.04);
-  --border-default: rgba(0, 0, 0, 0.08);
-  --border-strong: rgba(0, 0, 0, 0.12);
+  --surface-2: #ffffff;
+  --surface-3: #f8fafc;
+  --surface-4: #f1f5f9;
+  --surface-hover: rgba(13, 148, 136, 0.04);
+  --surface-active: rgba(13, 148, 136, 0.08);
+
+  // Border Colors - More visible borders for definition
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --border-default: rgba(0, 0, 0, 0.1);
+  --border-strong: rgba(0, 0, 0, 0.15);
   --border-focus: var(--accent-primary);
   
   // Text Colors - improved contrast for WCAG AA compliance
@@ -183,15 +184,15 @@
   --accent-secondary-active: #1d4ed8;
   --accent-secondary-subtle: rgba(37, 99, 235, 0.12);
   
-  // Shadows - lighter for light mode
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 16px 32px rgba(0, 0, 0, 0.12);
-  --shadow-2xl: 0 24px 48px rgba(0, 0, 0, 0.15);
+  // Shadows - enhanced for better card definition on white backgrounds
+  --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+  --shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.14), 0 6px 12px rgba(0, 0, 0, 0.06);
+  --shadow-2xl: 0 24px 56px rgba(0, 0, 0, 0.16), 0 8px 16px rgba(0, 0, 0, 0.06);
   --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
-  --shadow-glow: 0 0 20px var(--accent-primary-subtle);
+  --shadow-glow: 0 0 24px rgba(13, 148, 136, 0.15);
   
   // Glass Effect
   --glass-bg: rgba(255, 255, 255, 0.8);
@@ -572,4 +573,3 @@ html.no-transitions *::before,
 html.no-transitions *::after {
   transition: none !important;
 }
-
