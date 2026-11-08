@@ -21,13 +21,15 @@ import { initResendService } from '../resend.js';
 import * as helpers from '../helpers.js';
 import { AuthEmailService } from '../../auth/auth-email.service.js';
 import { sendContactNotification } from '../../email.js';
-import { initNewsletterService } from '../../newsletter/index.js';
+import { initNewsletterService, getNewsletterService } from '../../newsletter/index.js';
+import { parse as parseYaml } from 'yaml';
 import { canonicalAddress } from '../unsubscribe.js';
 import emailUnsubscribeRoutes from '../../../routes/email-unsubscribe.js';
 import newsletterRoutes from '../../../routes/newsletter.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const MIGRATIONS = resolve(__dirname, '../../../../../../services/directus/migrations');
+const REPO_ROOT = resolve(__dirname, '../../../../../..');
+const MIGRATIONS = resolve(REPO_ROOT, 'services/directus/migrations');
 const DATABASE_URL = process.env.TEST_DATABASE_URL;
 
 const PUBLIC_URL = 'https://api.example.test';
@@ -203,6 +205,17 @@ async function resetSchema() {
       utm_campaign VARCHAR(100),
       status VARCHAR(50),
       updated_at TIMESTAMPTZ DEFAULT NOW()
+    )`);
+  await pool.query(`
+    CREATE TABLE newsletter_sync_log (
+      id SERIAL PRIMARY KEY,
+      provider VARCHAR(50),
+      direction VARCHAR(20),
+      sync_type VARCHAR(20),
+      status VARCHAR(20),
+      records_processed INT,
+      records_failed INT,
+      completed_at TIMESTAMPTZ
     )`);
   for (const file of [
     '005_email_system.sql',
@@ -638,5 +651,73 @@ describe('the contact relay and the newsletter', () => {
 
     const rows = await pool.query('SELECT lower(email) AS email FROM newsletter_subscribers ORDER BY email');
     expect(rows.rows.map((r: { email: string }) => r.email)).toEqual(['reader@example.test']);
+  });
+});
+
+describe('newsletter providers never get a do-not-contact address', () => {
+  const pushed: string[] = [];
+  const fakeProvider = {
+    subscribe: async () => ({ success: true }),
+    unsubscribe: async () => ({ success: true }),
+    pushSubscribers: async (subscribers: Array<{ email: string }>) => {
+      pushed.push(...subscribers.map((s) => s.email.toLowerCase()));
+      return { success: true, processed: subscribers.length, failed: 0 };
+    },
+  };
+
+  beforeAll(() => {
+    (getNewsletterService() as unknown as { providers: Map<string, unknown> }).providers.set('fake', fakeProvider);
+  });
+
+  it('a signup answers the same whether or not the address is on the list', async () => {
+    const ok = await app.inject({ method: 'POST', url: '/api/v1/newsletter/subscribe', payload: { email: 'second-reader@example.test' } });
+    const blocked = await app.inject({ method: 'POST', url: '/api/v1/newsletter/subscribe', payload: { email: 'blockedperson+x@gmail.com' } });
+    expect(ok.statusCode).toBe(200);
+    expect(blocked.statusCode).toBe(200);
+    expect(blocked.json()).toEqual(ok.json());
+  });
+
+  it('a bulk sync leaves out an address added to the list after it signed up', async () => {
+    await pool.query(
+      "INSERT INTO newsletter_subscribers (email, status) VALUES ('late-blocked@example.test', 'active') ON CONFLICT (email) DO NOTHING"
+    );
+    const previous = process.env.MAIL_DO_NOT_CONTACT;
+    process.env.MAIL_DO_NOT_CONTACT = `${previous}, late-blocked@example.test`;
+    try {
+      pushed.length = 0;
+      await getNewsletterService().syncToProviders();
+    } finally {
+      process.env.MAIL_DO_NOT_CONTACT = previous;
+    }
+    expect(pushed).toContain('reader@example.test');
+    expect(pushed).not.toContain('late-blocked@example.test');
+  });
+});
+
+describe('the production compose file passes the mail settings to the API', () => {
+  it('forwards every setting the footer and the unsubscribe link read', () => {
+    const compose = parseYaml(readFileSync(resolve(REPO_ROOT, 'deploy/docker-compose.yml'), 'utf8'));
+    const env: string[] = compose.services.api.environment;
+    const names = env.map((entry) => entry.split('=')[0]);
+    for (const name of ['FRONTEND_URL', 'MAIL_PUBLIC_URL', 'MAIL_OPERATOR_NAME', 'MAIL_POSTAL_ADDRESS', 'MAIL_PRODUCT_NAME', 'SUPPORT_EMAIL', 'MAIL_DO_NOT_CONTACT']) {
+      expect(names, name).toContain(name);
+    }
+  });
+
+  it('an empty operator or postal setting falls back to the stated address', async () => {
+    const env = { MAIL_OPERATOR_NAME: process.env.MAIL_OPERATOR_NAME, MAIL_POSTAL_ADDRESS: process.env.MAIL_POSTAL_ADDRESS };
+    process.env.MAIL_OPERATOR_NAME = '';
+    process.env.MAIL_POSTAL_ADDRESS = '';
+    const to = 'empty-postal@example.test';
+    try {
+      await helpers.sendTrialEndingEmail(app, userId, to, 'Ada', 3, new Date(), 5);
+      const mail = await waitForMail(to);
+      expect(mail.html).toContain(POSTAL_LINE);
+    } finally {
+      for (const [key, value] of Object.entries(env)) {
+        if (value === undefined) delete process.env[key];
+        else process.env[key] = value;
+      }
+    }
   });
 });
