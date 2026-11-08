@@ -647,7 +647,7 @@ describe('the contact relay and the newsletter', () => {
     expect(ok.statusCode).toBe(200);
     const blocked = await app.inject({ method: 'POST', url: '/api/v1/newsletter/subscribe', payload: { email: 'Blocked.Person@gmail.com' } });
     expect(blocked.statusCode).toBe(200);
-    expect(blocked.json()).toMatchObject({ success: true });
+    expect(blocked.json()).toEqual(ok.json());
 
     const rows = await pool.query('SELECT lower(email) AS email FROM newsletter_subscribers ORDER BY email');
     expect(rows.rows.map((r: { email: string }) => r.email)).toEqual(['reader@example.test']);
