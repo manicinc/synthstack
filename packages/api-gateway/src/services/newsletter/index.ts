@@ -102,8 +102,9 @@ export class NewsletterService {
     const held = localResult.rows.filter(r => isDoNotContact(r.email));
     if (held.length > 0) {
       // Never pushed. Removing them at a provider is left to the operator in the
-      // provider's dashboard: an unsubscribe through the API can make some
-      // providers send their own goodbye mail, and these addresses get none.
+      // provider's dashboard: depending on its list settings, a provider may
+      // send its own goodbye mail on an API unsubscribe, and these addresses
+      // get no mail at all.
       this.fastify.log.warn({ count: held.length }, 'Newsletter sync held back do-not-contact addresses; remove them at each provider');
     }
     const subscribers: SubscriberData[] = localResult.rows

@@ -397,8 +397,14 @@ export function fillUnsubscribeUrl<T extends string | null | undefined>(body: T,
 // STORE
 // ============================================
 
+/** The part of a pg pool the store uses; each query names its row shape where it reads one. */
 export interface Queryable {
-  query<R = Record<string, unknown>>(text: string, values?: unknown[]): Promise<{ rows: R[]; rowCount?: number | null }>;
+  query(text: string, values?: unknown[]): Promise<{ rows: unknown[]; rowCount?: number | null }>;
+}
+
+interface TokenRow {
+  address_hash: string;
+  category: string;
 }
 
 export type SuppressionScope = MailCategory | 'optional' | 'all';
@@ -409,7 +415,7 @@ export class UnsubscribeStore {
   constructor(private readonly db: Queryable) {}
 
   async isSuppressed(address: string, category: MailCategory): Promise<boolean> {
-    const result = await this.db.query<{ one: number }>(
+    const result = await this.db.query(
       'SELECT 1 AS one FROM email_suppressions WHERE address_hash = $1 AND scope = ANY($2::text[]) LIMIT 1',
       [addressHash(address), suppressionScopes(category)]
     );
@@ -428,11 +434,11 @@ export class UnsubscribeStore {
 
   async findToken(token: string): Promise<{ addressHash: string; category: MailCategory } | null> {
     if (!TOKEN_PATTERN.test(token)) return null;
-    const result = await this.db.query<{ address_hash: string; category: string }>(
+    const result = await this.db.query(
       'SELECT address_hash, category FROM email_unsubscribe_tokens WHERE token_hash = $1',
       [sha256Hex(token)]
     );
-    const row = result.rows[0];
+    const row = result.rows[0] as TokenRow | undefined;
     if (!row || !isMailCategory(row.category)) return null;
     return { addressHash: row.address_hash, category: row.category };
   }
