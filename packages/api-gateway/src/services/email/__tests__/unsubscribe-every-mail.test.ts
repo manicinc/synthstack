@@ -423,6 +423,20 @@ describe('the unsubscribe page', () => {
     expect(mailsTo(to).filter((m) => /credits remaining/i.test(m.subject))).toHaveLength(1);
   });
 
+  it('a multipart one-click with an unquoted field name works', async () => {
+    const to = 'multipart-unquoted@example.test';
+    await helpers.sendCreditLowEmail(app, userId, to, 'Ada', 2, 30, 'maker');
+    const token = tokenOf(await waitForMail(to));
+    const res = await app.inject({
+      method: 'POST',
+      url: unsubscribePath(token),
+      headers: { 'content-type': 'multipart/form-data; boundary=x2' },
+      payload: '--x2\r\nContent-Disposition: form-data; name=List-Unsubscribe\r\n\r\nOne-Click\r\n--x2--\r\n',
+    });
+    expect(res.statusCode).toBe(200);
+    expect(await suppressionScopes(to)).toEqual(['usage_alerts']);
+  });
+
   it('a one-click POST sent as multipart form data works too', async () => {
     const to = 'multipart@example.test';
     await helpers.sendCreditLowEmail(app, userId, to, 'Ada', 2, 30, 'maker');
@@ -703,6 +717,16 @@ describe('newsletter providers never get a do-not-contact address', () => {
     expect(subscribed).not.toContain(canonicalAddress(DNC_GMAIL));
   });
 
+  it('a signup the database refuses answers the same for a blocked address', async () => {
+    const longName = 'x'.repeat(101);
+    const ordinary = await app.inject({ method: 'POST', url: '/api/v1/newsletter/subscribe', payload: { email: 'long-name@example.test', firstName: longName } });
+    const blocked = await app.inject({ method: 'POST', url: '/api/v1/newsletter/subscribe', payload: { email: DNC_GMAIL, firstName: longName } });
+    expect(ordinary.json()).toEqual({ success: false, message: 'Failed' });
+    expect(blocked.json()).toEqual(ordinary.json());
+    const stored = await pool.query("SELECT count(*)::int AS n FROM newsletter_subscribers WHERE lower(email) LIKE '%blocked%'");
+    expect(stored.rows[0].n).toBe(0);
+  });
+
   it('a signup the provider rejects answers the same as a blocked one', async () => {
     const rejected = await app.inject({ method: 'POST', url: '/api/v1/newsletter/subscribe', payload: { email: 'rejected@example.test' } });
     const blocked = await app.inject({ method: 'POST', url: '/api/v1/newsletter/subscribe', payload: { email: 'Blocked.Person@gmail.com' } });
@@ -836,6 +860,27 @@ describe('queue processing', () => {
     const to = 'custom-template@example.test';
     await sendTemplateEmail(app, { to, templateSlug: 'custom-note', templateData: { userName: 'Ada' }, category: 'onboarding' });
     await expectCompliant(await waitForMail(to), 'onboarding', { text: true });
+  });
+
+  it('a failed row an admin retries is sent again; a cancelled one is not', async () => {
+    const failedTo = 'admin-retry@example.test';
+    const cancelledTo = 'admin-retry-cancelled@example.test';
+    const insert = async (to: string, status: string, code: string) =>
+      (await pool.query(
+        `INSERT INTO email_queue (to_email, from_email, subject, html_body, status, category, attempts, max_attempts, error_code)
+         VALUES ($1, 'team@example.test', 'Receipt', '<p>r</p>', $2, 'receipts', 3, 3, $3) RETURNING id`,
+        [to, status, code]
+      )).rows[0].id as string;
+    const failedId = await insert(failedTo, 'failed', 'SMTP_ERROR');
+    const cancelledId = await insert(cancelledTo, 'cancelled', 'SUPPRESSED');
+    const service = getEmailService() as unknown as { processQueueItem(queueId: string): Promise<unknown> };
+
+    expect(await getEmailService().requeueFailed(failedId)).toBe(true);
+    expect(await getEmailService().requeueFailed(cancelledId)).toBe(false);
+    await service.processQueueItem(failedId);
+    await service.processQueueItem(cancelledId);
+    await expectCompliant(await waitForMail(failedTo), 'receipts', { text: true });
+    expect(mailsTo(cancelledTo)).toHaveLength(0);
   });
 
   it('old token rows are pruned and recent ones kept', async () => {
