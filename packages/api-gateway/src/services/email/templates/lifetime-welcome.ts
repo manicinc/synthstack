@@ -46,7 +46,7 @@ export const lifetimeWelcomeTemplate = (data: {
           <br/>
           Join our Discord: <a href="https://discord.gg/synthstack" style="color: #6366F1;">discord.gg/synthstack</a>
         </p>
-        <p style="color: #999; font-size: 12px; margin-top: 20px;">
+        <p style="color: #999; font-size: 13px; margin-top: 20px;">
           - The SynthStack Team<br/>
           Manic Agency LLC
         </p>

@@ -1,8 +1,10 @@
 import type { FastifyInstance } from 'fastify';
+import type { PoolClient } from 'pg';
 import { NewsletterProvider, SubscriberData, WebhookEvent } from './base.js';
 import { MailerLiteProvider } from './mailerlite.js';
 import { MailchimpProvider } from './mailchimp.js';
 import { BrevoProvider } from './brevo.js';
+import { isDoNotContact } from '../email/unsubscribe.js';
 
 export * from './base.js';
 export { MailerLiteProvider, MailchimpProvider, BrevoProvider };
@@ -43,18 +45,40 @@ export class NewsletterService {
     return this.primaryProvider.getSubscriberStatus(email);
   }
 
-  async subscribe(data: SubscriberData) {
+  /**
+   * `stored` says whether the signup is held locally (the admin sync pushes
+   * stored signups to the providers); `success` whether a provider took it.
+   */
+  async subscribe(data: SubscriberData): Promise<{ success: boolean; stored: boolean; results: Record<string, any> }> {
     const results: Record<string, any> = {};
     let anySuccess = false;
-    try { await this.saveSubscriberToDb(data); } catch (error: any) { this.fastify.log.error({ error }, 'DB save failed'); }
+    // A do-not-contact address is never stored or sent to a provider. It is
+    // answered as its signup would be: the same insert runs in a transaction
+    // that is rolled back, so every refusal the database would give an
+    // ordinary signup it gives here too, and the form reveals nothing.
+    if (isDoNotContact(data.email)) {
+      this.fastify.log.info('Newsletter signup skipped: address is on the do-not-contact list');
+      return { success: false, stored: await this.wouldStore(data), results };
+    }
+    let stored = false;
+    try {
+      await this.saveSubscriberToDb(data);
+      stored = true;
+    } catch (error: any) {
+      this.fastify.log.error({ error }, 'Newsletter signup not stored');
+    }
     for (const [name, provider] of this.providers) {
       try {
         const result = await provider.subscribe(data);
         results[name] = result;
         if (result.success) { anySuccess = true; await this.updateProviderIds(data.email, name, result.providerId); }
-      } catch (error: any) { results[name] = { success: false, error: error.message }; }
+        else this.fastify.log.warn({ provider: name, error: result.error }, 'Newsletter provider did not accept a signup');
+      } catch (error: any) {
+        results[name] = { success: false, error: error.message };
+        this.fastify.log.warn({ provider: name, error: error.message }, 'Newsletter provider call failed');
+      }
     }
-    return { success: anySuccess, results };
+    return { success: anySuccess, stored, results };
   }
 
   async unsubscribe(email: string) {
@@ -74,7 +98,17 @@ export class NewsletterService {
   async syncToProviders() {
     const results: Record<string, any> = {};
     const localResult = await this.fastify.pg.query('SELECT email, first_name, last_name, subscription_tier, source FROM newsletter_subscribers WHERE status = $1', ['active']);
-    const subscribers: SubscriberData[] = localResult.rows.map(r => ({ email: r.email, firstName: r.first_name, lastName: r.last_name, subscriptionTier: r.subscription_tier, source: r.source }));
+    const held = localResult.rows.filter(r => isDoNotContact(r.email));
+    if (held.length > 0) {
+      // Never pushed. Removing them at a provider is left to the operator in the
+      // provider's dashboard: depending on its list settings, a provider may
+      // send its own goodbye mail on an API unsubscribe, and these addresses
+      // get no mail at all.
+      this.fastify.log.warn({ count: held.length }, 'Newsletter sync held back do-not-contact addresses; remove them at each provider');
+    }
+    const subscribers: SubscriberData[] = localResult.rows
+      .filter(r => !isDoNotContact(r.email))
+      .map(r => ({ email: r.email, firstName: r.first_name, lastName: r.last_name, subscriptionTier: r.subscription_tier, source: r.source }));
     for (const [name, provider] of this.providers) {
       try { results[name] = await provider.pushSubscribers(subscribers); } catch (error: any) { results[name] = { success: false, error: error.message }; }
     }
@@ -90,8 +124,29 @@ export class NewsletterService {
     return event;
   }
 
-  private async saveSubscriberToDb(data: SubscriberData) {
-    await this.fastify.pg.query('INSERT INTO newsletter_subscribers (email, first_name, last_name, subscription_tier, interests, source, utm_source, utm_medium, utm_campaign, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (email) DO UPDATE SET first_name = COALESCE(EXCLUDED.first_name, newsletter_subscribers.first_name), last_name = COALESCE(EXCLUDED.last_name, newsletter_subscribers.last_name), subscription_tier = COALESCE(EXCLUDED.subscription_tier, newsletter_subscribers.subscription_tier), updated_at = NOW()',
+  /** Whether the signup's insert would succeed, without keeping it. */
+  private async wouldStore(data: SubscriberData): Promise<boolean> {
+    let client: PoolClient | undefined;
+    try {
+      client = await this.fastify.pg.connect();
+      await client.query('BEGIN');
+      await this.saveSubscriberToDb(data, client);
+      return true;
+    } catch {
+      return false;
+    } finally {
+      if (client) {
+        await client.query('ROLLBACK').catch(() => undefined);
+        client.release();
+      }
+    }
+  }
+
+  private async saveSubscriberToDb(
+    data: SubscriberData,
+    db: { query: (text: string, values?: any[]) => Promise<unknown> } = this.fastify.pg
+  ) {
+    await db.query('INSERT INTO newsletter_subscribers (email, first_name, last_name, subscription_tier, interests, source, utm_source, utm_medium, utm_campaign, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (email) DO UPDATE SET first_name = COALESCE(EXCLUDED.first_name, newsletter_subscribers.first_name), last_name = COALESCE(EXCLUDED.last_name, newsletter_subscribers.last_name), subscription_tier = COALESCE(EXCLUDED.subscription_tier, newsletter_subscribers.subscription_tier), updated_at = NOW()',
       [data.email, data.firstName, data.lastName, data.subscriptionTier, data.interests || [], data.source, data.utmSource, data.utmMedium, data.utmCampaign, 'active']);
   }
 

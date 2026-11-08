@@ -43,6 +43,7 @@ import subscriptionRoutes from './routes/subscriptions.js';
 import communityRoutes from './routes/community.js';
 import usersRoutes from './routes/users.js';
 import emailRoutes from './routes/email.js';
+import emailUnsubscribeRoutes from './routes/email-unsubscribe.js';
 import adminDiagnosticsRoutes from './routes/admin-diagnostics.js';
 import adminSyncRoutes from './routes/admin-sync.js';
 import adminInvoicesRoutes from './routes/admin-invoices.js';
@@ -367,6 +368,7 @@ async function registerRoutes(app: FastifyInstance, options: AppOptions): Promis
   await app.register(communityRoutes, { prefix: '/api/v1' });
   await app.register(usersRoutes, { prefix: '/api/v1/users' });
   await app.register(emailRoutes, { prefix: '/api/v1' });
+  await app.register(emailUnsubscribeRoutes, { prefix: '/api/v1' });
 
   // Billing routes require Stripe (skip in test mode when skipServices is true)
   if (!options.skipServices) {

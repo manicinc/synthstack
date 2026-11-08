@@ -7,7 +7,7 @@
 import { Queue, Worker, Job } from 'bullmq';
 import type { FastifyInstance } from 'fastify';
 import type { EmailJobData, EmailJobResult } from '@synthstack/types';
-import { getEmailService } from './mailer.js';
+import { getEmailService, FINAL_STOP_CODES } from './mailer.js';
 import { config } from '../../config/index.js';
 
 // ============================================
@@ -207,6 +207,11 @@ export class EmailQueueService {
       const emailService = getEmailService();
       const result = await (emailService as any).processQueueItem(queueId);
 
+      // A deliberate stop (unsubscribed, do-not-contact, already claimed) is
+      // final; only a failed send goes back for a retry.
+      if (!result.success && FINAL_STOP_CODES.has(result.errorCode)) {
+        return { success: false, error: result.error };
+      }
       if (!result.success) {
         throw new Error(result.error || 'Email sending failed');
       }
@@ -278,6 +283,8 @@ export class EmailQueueService {
     try {
       const job = await this.queue.getJob(jobId);
       if (job && await job.isFailed()) {
+        // The row ran out of attempts too; make it claimable before the job runs.
+        await getEmailService().requeueFailed(job.data.queueId);
         await job.retry();
         return true;
       }

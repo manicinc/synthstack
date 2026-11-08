@@ -7,6 +7,7 @@
  */
 
 import type { FastifyInstance } from 'fastify';
+import type { MailCategory } from './unsubscribe.js';
 import { sendWelcomeEmail, sendSubscriptionConfirmedEmail, sendPaymentReceiptEmail,
          sendPaymentFailedEmail, sendCreditsPurchasedEmail, sendSubscriptionCanceledEmail,
          sendTrialEndingEmail } from './helpers.js';
@@ -178,19 +179,25 @@ export async function sendTemplateEmail(
     templateData: Record<string, any>;
     userId?: string;
     priority?: number;
+    /** Needed for a template outside the built-in set, which has no category of its own. */
+    category?: MailCategory;
   }
 ): Promise<void> {
   try {
     const { getEmailService } = await import('./index.js');
     const emailService = getEmailService();
     
-    await emailService.sendEmail({
+    const result = await emailService.sendEmail({
       to: options.to,
       templateSlug: options.templateSlug,
       templateData: options.templateData,
       userId: options.userId,
       priority: options.priority || 5,
+      category: options.category,
     });
+    if (!result.success) {
+      fastify.log.warn({ templateSlug: options.templateSlug, errorCode: result.errorCode }, 'Template email not queued');
+    }
   } catch (error) {
     fastify.log.error({ error }, 'Failed to send template email');
   }

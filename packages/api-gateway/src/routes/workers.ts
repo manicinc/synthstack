@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { TIER_CONFIG } from '../services/stripe.js';
+import { UnsubscribeStore } from '../services/email/unsubscribe.js';
 
 export default async function workerRoutes(fastify: FastifyInstance) {
   const verifyWorkerAuth = async (request: any, reply: any) => {
@@ -122,6 +123,12 @@ export default async function workerRoutes(fastify: FastifyInstance) {
       "DELETE FROM email_queue WHERE status IN ('sent','failed','cancelled') AND updated_at < $1",
       [cutoff]
     );
+    // Unsubscribe links keep working well past the legal minimum; old token
+    // rows (hashes only) then go.
+    const tokenRetentionDays = parseInt(process.env.MAIL_TOKEN_RETENTION_DAYS || '400', 10) || 400;
+    const tokensDeleted = await new UnsubscribeStore({
+      query: (text: string, values?: unknown[]) => fastify.pg.query(text, values as any[]),
+    }).pruneTokens(tokenRetentionDays);
 
     return {
       success: true,
@@ -131,6 +138,7 @@ export default async function workerRoutes(fastify: FastifyInstance) {
         trackingEventsDeleted: tracking.rowCount,
         logsDeleted: logs.rowCount,
         queueDeleted: queue.rowCount,
+        unsubscribeTokensDeleted: tokensDeleted,
       },
     };
   });
