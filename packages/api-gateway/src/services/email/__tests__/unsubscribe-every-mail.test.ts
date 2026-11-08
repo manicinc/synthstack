@@ -19,11 +19,12 @@ import { fileURLToPath } from 'url';
 import { initEmailService, getEmailService } from '../mailer.js';
 import { initResendService } from '../resend.js';
 import * as helpers from '../helpers.js';
+import { sendTemplateEmail } from '../integrations.js';
 import { AuthEmailService } from '../../auth/auth-email.service.js';
 import { sendContactNotification } from '../../email.js';
 import { initNewsletterService, getNewsletterService } from '../../newsletter/index.js';
 import { parse as parseYaml } from 'yaml';
-import { canonicalAddress } from '../unsubscribe.js';
+import { canonicalAddress, UnsubscribeStore } from '../unsubscribe.js';
 import emailUnsubscribeRoutes from '../../../routes/email-unsubscribe.js';
 import newsletterRoutes from '../../../routes/newsletter.js';
 
@@ -231,6 +232,10 @@ beforeAll(async () => {
   if (!DATABASE_URL) {
     throw new Error('TEST_DATABASE_URL is not set: these tests need a Postgres they may wipe');
   }
+  const databaseName = new URL(DATABASE_URL).pathname.replace(/^\//, '');
+  if (!/test/i.test(databaseName)) {
+    throw new Error(`Refusing to wipe database "${databaseName}": its name must contain "test"`);
+  }
   process.env.MAIL_DO_NOT_CONTACT = `${DNC_GMAIL}, sha256:${sha256(DNC_HASHED)}`;
 
   pool = new Pool({ connectionString: DATABASE_URL });
@@ -314,9 +319,9 @@ describe('every mail carries the unsubscribe link and the one-click headers', ()
       send: (to) => helpers.sendTeamInvitationEmail(app, to, userId, 'Ada', 'ada@example.test', randomUUID(), 'Rocket', undefined, 'member', 'invite-token', new Date()) },
     { name: 'lifetime licence welcome', category: 'receipts', text: true,
       send: (to) => getEmailService().sendLifetimeWelcomeEmail({ to, sessionId: 'cs_test_lifetime', licenseAccessUrl: 'https://app.example.test/license-access?session=cs_test_lifetime' }) },
-    { name: 'lifetime invitation sent', category: 'receipts', text: false,
+    { name: 'lifetime invitation sent', category: 'receipts', text: true,
       send: (to) => getEmailService().sendLifetimeInvitationSentEmail({ to, githubUsername: 'octo-cat' }) },
-    { name: 'lifetime access granted', category: 'receipts', text: false,
+    { name: 'lifetime access granted', category: 'receipts', text: true,
       send: (to) => getEmailService().sendLifetimeAccessGrantedEmail({ to, githubUsername: 'octo-cat' }) },
   ];
 
@@ -401,6 +406,7 @@ describe('the unsubscribe page', () => {
 
     const res = await oneClick(token);
     expect(res.statusCode).toBe(200);
+    expect(res.body).toBe('');
     await sleep(300);
     expect(sent.length).toBe(before);
     expect(await suppressionScopes(to)).toEqual(['usage_alerts']);
@@ -467,6 +473,7 @@ describe('the unsubscribe page', () => {
 
     const res = await oneClick(token);
     expect(res.statusCode).toBe(200);
+    expect(res.body).toBe('');
     expect(await suppressionScopes(to)).toEqual(['optional']);
 
     const welcome = await getEmailService().sendEmail({ to, category: 'onboarding', subject: 'Hi', html: '<p>hi</p>' });
@@ -656,8 +663,12 @@ describe('the contact relay and the newsletter', () => {
 
 describe('newsletter providers never get a do-not-contact address', () => {
   const pushed: string[] = [];
+  const subscribed: string[] = [];
   const fakeProvider = {
-    subscribe: async (data: { email: string }) => ({ success: data.email !== 'rejected@example.test' }),
+    subscribe: async (data: { email: string }) => {
+      subscribed.push(canonicalAddress(data.email));
+      return { success: data.email !== 'rejected@example.test' };
+    },
     unsubscribe: async () => ({ success: true }),
     pushSubscribers: async (subscribers: Array<{ email: string }>) => {
       pushed.push(...subscribers.map((s) => s.email.toLowerCase()));
@@ -675,6 +686,21 @@ describe('newsletter providers never get a do-not-contact address', () => {
     expect(ok.statusCode).toBe(200);
     expect(blocked.statusCode).toBe(200);
     expect(blocked.json()).toEqual(ok.json());
+    expect(subscribed).toContain('second-reader@example.test');
+    expect(subscribed).not.toContain(canonicalAddress(DNC_GMAIL));
+  });
+
+  it('a signup that cannot be stored fails, and a blocked one answers the same', async () => {
+    await pool.query('ALTER TABLE newsletter_subscribers RENAME TO newsletter_subscribers_away');
+    try {
+      const ordinary = await app.inject({ method: 'POST', url: '/api/v1/newsletter/subscribe', payload: { email: 'unstored@example.test' } });
+      const blocked = await app.inject({ method: 'POST', url: '/api/v1/newsletter/subscribe', payload: { email: DNC_GMAIL } });
+      expect(ordinary.json()).toEqual({ success: false, message: 'Failed' });
+      expect(blocked.json()).toEqual(ordinary.json());
+    } finally {
+      await pool.query('ALTER TABLE newsletter_subscribers_away RENAME TO newsletter_subscribers');
+    }
+    expect(subscribed).not.toContain(canonicalAddress(DNC_GMAIL));
   });
 
   it('a signup the provider rejects answers the same as a blocked one', async () => {
@@ -726,5 +752,138 @@ describe('the production compose file passes the mail settings to the API', () =
         else process.env[key] = value;
       }
     }
+  });
+});
+
+describe('queue processing', () => {
+  it('two processors never send the same row twice', async () => {
+    const to = 'one-claim@example.test';
+    const later = new Date(Date.now() + 60 * 60 * 1000);
+    await getEmailService().sendEmail({ to, category: 'receipts', subject: 'Receipt', html: '<p>r</p>', scheduledAt: later });
+    await pool.query("UPDATE email_queue SET scheduled_at = NOW() - INTERVAL '1 minute' WHERE to_email = $1", [to]);
+    await Promise.all([getEmailService().processQueue(), getEmailService().processQueue(), getEmailService().processQueue()]);
+    await sleep(300);
+    expect(mailsTo(to)).toHaveLength(1);
+  });
+
+  it('a row left in processing by a crashed worker is sent later', async () => {
+    const to = 'stale-processing@example.test';
+    await pool.query(
+      `INSERT INTO email_queue (to_email, from_email, subject, html_body, status, category, updated_at)
+       VALUES ($1, 'team@example.test', 'Receipt', '<p>r</p>', 'processing', 'receipts', NOW() - INTERVAL '1 hour')`,
+      [to]
+    );
+    await getEmailService().processQueue();
+    await expectCompliant(await waitForMail(to), 'receipts', { text: false });
+  });
+
+  it('a row queued without a category but with a known reference type is sent', async () => {
+    const to = 'old-writer@example.test';
+    await pool.query(
+      `INSERT INTO email_queue (to_email, from_email, subject, html_body, text_body, status, reference_type)
+       VALUES ($1, 'team@example.test', 'Reset your password', '<p>reset</p>', 'reset', 'pending', 'auth_password_reset')`,
+      [to]
+    );
+    await getEmailService().processQueue();
+    await expectCompliant(await waitForMail(to), 'security', { text: true });
+  });
+
+  it('a once-only mail is queued once', async () => {
+    const to = 'once@example.test';
+    const send = () => getEmailService().sendEmail({
+      to,
+      templateSlug: 'credit-purchased',
+      templateData: { userName: 'Ada', credits: 100, newBalance: 120 },
+      referenceType: 'purchase',
+      referenceId: 'cs_test_redelivered',
+      onceKey: 'credits-purchased:cs_test_redelivered',
+    });
+    const first = await send();
+    await waitForMail(to);
+    const second = await send();
+    expect(first).toMatchObject({ success: true });
+    expect(second).toMatchObject({ success: true, duplicate: true });
+    await sleep(300);
+    expect(mailsTo(to)).toHaveLength(1);
+    expect(await queueRows(to)).toHaveLength(1);
+  });
+
+  it('a text-only mail gets the footer in both parts', async () => {
+    const to = 'text-only@example.test';
+    const result = await getEmailService().sendEmail({ to, category: 'onboarding', subject: 'Hello', text: 'Hello <there>\nsecond line' });
+    expect(result.success).toBe(true);
+    const mail = await waitForMail(to);
+    await expectCompliant(mail, 'onboarding', { text: true });
+    expect(mail.html).toContain('Hello &lt;there&gt;');
+  });
+
+  it('the footer goes before </body> whatever the text before it', async () => {
+    const to = 'unicode-name@example.test';
+    await helpers.sendWelcomeEmail(app, userId, to, 'İİİİ Ölçer');
+    const mail = await waitForMail(to);
+    await expectCompliant(mail, 'onboarding', { text: true });
+    expect(mail.html).toMatch(/Unsubscribe<\/a><\/p>.*<\/div><\/body><\/html>$/s);
+  });
+
+  it('a custom template sent with a category is delivered', async () => {
+    await pool.query(
+      `INSERT INTO email_templates (slug, name, subject, html_template, text_template)
+       VALUES ('custom-note', 'Custom note', 'A note for <%= userName %>', '<!DOCTYPE html><html><body><p>Hi <%= userName %></p></body></html>', 'Hi <%= userName %>')`
+    );
+    const to = 'custom-template@example.test';
+    await sendTemplateEmail(app, { to, templateSlug: 'custom-note', templateData: { userName: 'Ada' }, category: 'onboarding' });
+    await expectCompliant(await waitForMail(to), 'onboarding', { text: true });
+  });
+
+  it('old token rows are pruned and recent ones kept', async () => {
+    const store = new UnsubscribeStore({ query: (text, values) => pool.query(text, values as any[]) });
+    await pool.query(
+      `INSERT INTO email_unsubscribe_tokens (token_hash, address_hash, category, created_at) VALUES
+       ($1, $2, 'receipts', NOW() - INTERVAL '500 days'),
+       ($3, $2, 'receipts', NOW() - INTERVAL '10 days')`,
+      [sha256('old-token'), sha256('someone@example.test'), sha256('recent-token')]
+    );
+    const removed = await store.pruneTokens(400);
+    expect(removed).toBeGreaterThanOrEqual(1);
+    const left = await pool.query(
+      'SELECT token_hash FROM email_unsubscribe_tokens WHERE token_hash = ANY($1::text[])',
+      [[sha256('old-token'), sha256('recent-token')]]
+    );
+    expect(left.rows.map((r: { token_hash: string }) => r.token_hash)).toEqual([sha256('recent-token')]);
+  });
+});
+
+describe('unsubscribe requests and the logs', () => {
+  it('a POST with no scope and no one-click field changes nothing', async () => {
+    const to = 'stray-post@example.test';
+    await helpers.sendCreditLowEmail(app, userId, to, 'Ada', 2, 30, 'maker');
+    const token = tokenOf(await waitForMail(to));
+    const stray = await app.inject({
+      method: 'POST',
+      url: unsubscribePath(token),
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      payload: 'foo=bar',
+    });
+    expect(stray.statusCode).toBe(400);
+    const empty = await app.inject({ method: 'POST', url: unsubscribePath(token) });
+    expect(empty.statusCode).toBe(400);
+    expect(await suppressionScopes(to)).toEqual([]);
+  });
+
+  it('request logs never carry the token', async () => {
+    const lines: string[] = [];
+    const logged = Fastify({ logger: { level: 'info', stream: { write: (line: string) => { lines.push(line); } } } });
+    logged.decorate('pg', { query: async () => ({ rows: [] }) } as never);
+    await logged.register(emailUnsubscribeRoutes, { prefix: '/api/v1' });
+    await logged.ready();
+    const token = 'C'.repeat(43);
+    await logged.inject({ method: 'GET', url: unsubscribePath(token) });
+    await logged.inject({
+      method: 'POST', url: unsubscribePath(token),
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      payload: 'List-Unsubscribe=One-Click',
+    });
+    await logged.close();
+    expect(lines.join('\n')).not.toContain(token);
   });
 });
