@@ -657,7 +657,7 @@ describe('the contact relay and the newsletter', () => {
 describe('newsletter providers never get a do-not-contact address', () => {
   const pushed: string[] = [];
   const fakeProvider = {
-    subscribe: async () => ({ success: true }),
+    subscribe: async (data: { email: string }) => ({ success: data.email !== 'rejected@example.test' }),
     unsubscribe: async () => ({ success: true }),
     pushSubscribers: async (subscribers: Array<{ email: string }>) => {
       pushed.push(...subscribers.map((s) => s.email.toLowerCase()));
@@ -675,6 +675,13 @@ describe('newsletter providers never get a do-not-contact address', () => {
     expect(ok.statusCode).toBe(200);
     expect(blocked.statusCode).toBe(200);
     expect(blocked.json()).toEqual(ok.json());
+  });
+
+  it('a signup the provider rejects answers the same as a blocked one', async () => {
+    const rejected = await app.inject({ method: 'POST', url: '/api/v1/newsletter/subscribe', payload: { email: 'rejected@example.test' } });
+    const blocked = await app.inject({ method: 'POST', url: '/api/v1/newsletter/subscribe', payload: { email: 'Blocked.Person@gmail.com' } });
+    expect(rejected.statusCode).toBe(200);
+    expect(blocked.json()).toEqual(rejected.json());
   });
 
   it('a bulk sync leaves out an address added to the list after it signed up', async () => {
