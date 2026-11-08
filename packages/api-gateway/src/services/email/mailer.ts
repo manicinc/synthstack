@@ -692,6 +692,23 @@ export class EmailService {
   }
 
   /**
+   * Make a failed row sendable again (an admin retry). The send reads the
+   * do-not-contact and suppression lists again; cancelled rows stay cancelled.
+   * @param queueId - Email queue ID
+   * @returns True when the row was failed and is pending again
+   */
+  async requeueFailed(queueId: string): Promise<boolean> {
+    const result = await this.fastify.pg.query(
+      `UPDATE email_queue SET status = 'pending', attempts = 0, next_retry_at = NULL,
+         error = NULL, error_code = NULL, updated_at = NOW()
+       WHERE id = $1 AND status = 'failed'
+       RETURNING id`,
+      [queueId]
+    );
+    return result.rows.length > 0;
+  }
+
+  /**
    * Leave a queued email unsent, with the reason. No retry follows.
    * @private
    */

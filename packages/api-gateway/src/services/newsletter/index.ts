@@ -1,4 +1,5 @@
 import type { FastifyInstance } from 'fastify';
+import type { PoolClient } from 'pg';
 import { NewsletterProvider, SubscriberData, WebhookEvent } from './base.js';
 import { MailerLiteProvider } from './mailerlite.js';
 import { MailchimpProvider } from './mailchimp.js';
@@ -52,14 +53,12 @@ export class NewsletterService {
     const results: Record<string, any> = {};
     let anySuccess = false;
     // A do-not-contact address is never stored or sent to a provider. It is
-    // answered as a stored signup would be (stored when the table can be
-    // written), so the form reveals nothing about the list.
+    // answered as its signup would be: the same insert runs in a transaction
+    // that is rolled back, so every refusal the database would give an
+    // ordinary signup it gives here too, and the form reveals nothing.
     if (isDoNotContact(data.email)) {
       this.fastify.log.info('Newsletter signup skipped: address is on the do-not-contact list');
-      const stored = await this.fastify.pg
-        .query('SELECT 1 FROM newsletter_subscribers LIMIT 0')
-        .then(() => true, () => false);
-      return { success: false, stored, results };
+      return { success: false, stored: await this.wouldStore(data), results };
     }
     let stored = false;
     try {
@@ -125,8 +124,29 @@ export class NewsletterService {
     return event;
   }
 
-  private async saveSubscriberToDb(data: SubscriberData) {
-    await this.fastify.pg.query('INSERT INTO newsletter_subscribers (email, first_name, last_name, subscription_tier, interests, source, utm_source, utm_medium, utm_campaign, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (email) DO UPDATE SET first_name = COALESCE(EXCLUDED.first_name, newsletter_subscribers.first_name), last_name = COALESCE(EXCLUDED.last_name, newsletter_subscribers.last_name), subscription_tier = COALESCE(EXCLUDED.subscription_tier, newsletter_subscribers.subscription_tier), updated_at = NOW()',
+  /** Whether the signup's insert would succeed, without keeping it. */
+  private async wouldStore(data: SubscriberData): Promise<boolean> {
+    let client: PoolClient | undefined;
+    try {
+      client = await this.fastify.pg.connect();
+      await client.query('BEGIN');
+      await this.saveSubscriberToDb(data, client);
+      return true;
+    } catch {
+      return false;
+    } finally {
+      if (client) {
+        await client.query('ROLLBACK').catch(() => undefined);
+        client.release();
+      }
+    }
+  }
+
+  private async saveSubscriberToDb(
+    data: SubscriberData,
+    db: { query: (text: string, values?: any[]) => Promise<unknown> } = this.fastify.pg
+  ) {
+    await db.query('INSERT INTO newsletter_subscribers (email, first_name, last_name, subscription_tier, interests, source, utm_source, utm_medium, utm_campaign, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (email) DO UPDATE SET first_name = COALESCE(EXCLUDED.first_name, newsletter_subscribers.first_name), last_name = COALESCE(EXCLUDED.last_name, newsletter_subscribers.last_name), subscription_tier = COALESCE(EXCLUDED.subscription_tier, newsletter_subscribers.subscription_tier), updated_at = NOW()',
       [data.email, data.firstName, data.lastName, data.subscriptionTier, data.interests || [], data.source, data.utmSource, data.utmMedium, data.utmCampaign, 'active']);
   }
 

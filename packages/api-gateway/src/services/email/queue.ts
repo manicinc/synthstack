@@ -283,6 +283,8 @@ export class EmailQueueService {
     try {
       const job = await this.queue.getJob(jobId);
       if (job && await job.isFailed()) {
+        // The row ran out of attempts too; make it claimable before the job runs.
+        await getEmailService().requeueFailed(job.data.queueId);
         await job.retry();
         return true;
       }

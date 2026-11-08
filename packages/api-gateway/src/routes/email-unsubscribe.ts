@@ -182,7 +182,8 @@ function multipartFields(raw: string, contentType: string): Record<string, strin
   const fields: Record<string, string> = {};
   if (!boundary) return fields;
   for (const part of raw.split(`--${boundary}`)) {
-    const name = /content-disposition:[^\r\n]*\bname="([^"]+)"/i.exec(part)?.[1];
+    const match = /content-disposition:[^\r\n]*\bname=(?:"([^"]*)"|([^;\s]+))/i.exec(part);
+    const name = match?.[1] ?? match?.[2];
     const split = part.indexOf('\r\n\r\n');
     if (name && split >= 0) fields[name] = part.slice(split + 4).replace(/\r\n$/, '');
   }
