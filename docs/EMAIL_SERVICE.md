@@ -153,7 +153,7 @@ How it behaves:
 - **Fails closed.** Nothing is sent when the suppression list cannot be read, the token cannot be stored, `MAIL_PUBLIC_URL` is not a URL (or not https with `NODE_ENV=production`), or a commercial mail has no postal address.
 - **Templates** that print their own unsubscribe link use `<%= unsubscribeUrl %>`; the sender fills in the mail's own link.
 - **Deploying.** `deploy/docker-compose.yml` passes these settings to the API. `MAIL_PUBLIC_URL` defaults to `https://api.<APP_DOMAIN>` and `FRONTEND_URL` to `https://<APP_DOMAIN>`, the hosts its Traefik rules serve. An empty `MAIL_OPERATOR_NAME` or `MAIL_POSTAL_ADDRESS` falls back to the defaults above.
-- **Newsletter.** `POST /api/v1/newsletter/subscribe` answers the same for a do-not-contact address, stores nothing and calls no provider; the admin bulk sync leaves those addresses out.
+- **Newsletter.** `POST /api/v1/newsletter/subscribe` gives one answer for every signup (`{ success: true, message: 'Subscribed' }`); provider outcomes go to the log and the admin sync retries them. A do-not-contact address is not stored and no provider is called, and the admin bulk sync leaves those addresses out.
 
 ### SMTP Providers
 

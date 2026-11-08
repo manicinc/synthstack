@@ -9,9 +9,11 @@ export default async function newsletterRoutes(fastify: FastifyInstance) {
   }, async (request, reply) => {
     try {
       const result = await newsletterService.subscribe(request.body);
-      // Provider details stay server side: they would tell a do-not-contact
-      // address (skipped quietly) from one that was added.
-      return { success: result.success, message: result.success ? 'Subscribed' : 'Failed' };
+      // One answer for every signup. Provider outcomes stay in the log and the
+      // admin sync retries them; a per-signup answer would tell a do-not-contact
+      // address (skipped quietly) from one that was added or refused.
+      if (!result.success) request.log.warn('Newsletter signup not confirmed by any provider');
+      return { success: true, message: 'Subscribed' };
     } catch (error: any) {
       return reply.status(500).send({ success: false, error: error.message });
     }
