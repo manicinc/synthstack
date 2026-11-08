@@ -233,6 +233,14 @@ beforeAll(async () => {
   initEmailService(app, { resendClient: capture });
   initResendService(app, { client: capture });
   initNewsletterService(app);
+  // The newsletter plugin also declares admin routes; these tests call only
+  // its public signup route, so the admin guards refuse everything.
+  app.decorate('authenticate', async (_request: any, reply: any) => {
+    reply.code(401).send();
+  });
+  app.decorate('requireAdmin', async (_request: any, reply: any) => {
+    reply.code(403).send();
+  });
   await app.register(emailUnsubscribeRoutes, { prefix: '/api/v1' });
   await app.register(newsletterRoutes, { prefix: '/api/v1/newsletter' });
   await app.ready();
