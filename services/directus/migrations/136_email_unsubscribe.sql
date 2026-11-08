@@ -27,8 +27,15 @@ CREATE TABLE IF NOT EXISTS email_suppressions (
 );
 
 -- The category decides whether a suppression applies and which footer a mail gets.
--- A row queued without one is not sent.
+-- A row queued without one takes its template's or reference type's at send
+-- time, and is not sent when neither gives one.
 ALTER TABLE email_queue ADD COLUMN IF NOT EXISTS category VARCHAR(50);
+
+-- Once-only mails (receipts for a Stripe checkout) carry a key, so a
+-- redelivered webhook does not queue the same mail twice.
+ALTER TABLE email_queue ADD COLUMN IF NOT EXISTS once_key VARCHAR(255);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_email_queue_once_key
+  ON email_queue(once_key) WHERE once_key IS NOT NULL;
 
 -- Callers reference Stripe sessions (cs_...), subscriptions (sub_...) and GitHub
 -- usernames, which a UUID column refused, so those mails were never queued.

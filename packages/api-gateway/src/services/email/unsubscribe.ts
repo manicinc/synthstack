@@ -168,6 +168,8 @@ export function resolveCategory(options: {
   if (options.category != null) {
     return isMailCategory(options.category) ? options.category : null;
   }
+  // Built-in templates have a fixed category; any other template needs an
+  // explicit one (a reference type alone does not say what a custom template is).
   if (options.templateSlug && TEMPLATE_CATEGORIES[options.templateSlug]) {
     return TEMPLATE_CATEGORIES[options.templateSlug];
   }
@@ -338,17 +340,52 @@ export function renderFooter(
   return { html, text };
 }
 
-/** Put the footer before </body> when the mail has one, else at the end. */
+/** An HTML body for a mail queued with text only. */
+export function htmlFromText(text: string): string {
+  return (
+    `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;` +
+    `font-size:16px;line-height:1.55;color:#111827;">${escapeHtml(text).replace(/\r?\n/g, '<br>')}</div>`
+  );
+}
+
+/** A plain-text part for a mail queued with HTML only. */
+export function textFromHtml(html: string): string {
+  return html
+    .replace(/<(style|script|head)[^>]*>[\s\S]*?<\/\1>/gi, '')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/(p|div|h[1-6]|li|tr|table|ul|ol)>/gi, '\n')
+    .replace(/<a\s[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi, '$2 ($1)')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&')
+    .split('\n')
+    .map((line) => line.replace(/[ \t]+/g, ' ').trim())
+    .filter((line, i, lines) => line !== '' || (i > 0 && lines[i - 1] !== ''))
+    .join('\n')
+    .trim();
+}
+
+/**
+ * Put the footer before the last </body> when the mail has one, else at the
+ * end. A text part is made from the HTML when the mail has none.
+ */
 export function appendFooter(
-  html: string,
+  html: string | null | undefined,
   text: string | null | undefined,
   footer: { html: string; text: string }
-): { html: string; text: string | undefined } {
-  const close = html.toLowerCase().lastIndexOf('</body>');
+): { html: string; text: string } {
+  const source = html ?? '';
+  // Search the original string: lower-casing can change its length.
+  let close = -1;
+  for (const match of source.matchAll(/<\/body\s*>/gi)) close = match.index ?? close;
   const withFooter =
-    close >= 0 ? `${html.slice(0, close)}${footer.html}${html.slice(close)}` : `${html}${footer.html}`;
-  const textWithFooter = text ? `${text.replace(/\s+$/, '')}\n\n${footer.text}\n` : undefined;
-  return { html: withFooter, text: textWithFooter };
+    close >= 0 ? `${source.slice(0, close)}${footer.html}${source.slice(close)}` : `${source}${footer.html}`;
+  const baseText = text && text.trim() ? text : textFromHtml(source);
+  return { html: withFooter, text: `${baseText.replace(/\s+$/, '')}\n\n${footer.text}\n` };
 }
 
 export function fillUnsubscribeUrl<T extends string | null | undefined>(body: T, url: string): T {
@@ -361,7 +398,7 @@ export function fillUnsubscribeUrl<T extends string | null | undefined>(body: T,
 // ============================================
 
 export interface Queryable {
-  query(text: string, values?: unknown[]): Promise<{ rows: any[] }>;
+  query<R = Record<string, unknown>>(text: string, values?: unknown[]): Promise<{ rows: R[]; rowCount?: number | null }>;
 }
 
 export type SuppressionScope = MailCategory | 'optional' | 'all';
@@ -372,8 +409,8 @@ export class UnsubscribeStore {
   constructor(private readonly db: Queryable) {}
 
   async isSuppressed(address: string, category: MailCategory): Promise<boolean> {
-    const result = await this.db.query(
-      'SELECT 1 FROM email_suppressions WHERE address_hash = $1 AND scope = ANY($2::text[]) LIMIT 1',
+    const result = await this.db.query<{ one: number }>(
+      'SELECT 1 AS one FROM email_suppressions WHERE address_hash = $1 AND scope = ANY($2::text[]) LIMIT 1',
       [addressHash(address), suppressionScopes(category)]
     );
     return result.rows.length > 0;
@@ -391,13 +428,25 @@ export class UnsubscribeStore {
 
   async findToken(token: string): Promise<{ addressHash: string; category: MailCategory } | null> {
     if (!TOKEN_PATTERN.test(token)) return null;
-    const result = await this.db.query(
+    const result = await this.db.query<{ address_hash: string; category: string }>(
       'SELECT address_hash, category FROM email_unsubscribe_tokens WHERE token_hash = $1',
       [sha256Hex(token)]
     );
     const row = result.rows[0];
     if (!row || !isMailCategory(row.category)) return null;
     return { addressHash: row.address_hash, category: row.category };
+  }
+
+  /**
+   * Remove token rows older than `days`. Their links stop working (404 page);
+   * the default retention keeps every link working for over a year.
+   */
+  async pruneTokens(days: number): Promise<number> {
+    const result = await this.db.query(
+      "DELETE FROM email_unsubscribe_tokens WHERE created_at < NOW() - ($1::int * INTERVAL '1 day')",
+      [Math.max(30, Math.floor(days))]
+    );
+    return result.rowCount ?? 0;
   }
 
   async suppress(addressHashValue: string, scope: SuppressionScope, source: string): Promise<void> {

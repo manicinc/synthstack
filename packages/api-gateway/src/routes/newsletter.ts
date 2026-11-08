@@ -9,11 +9,10 @@ export default async function newsletterRoutes(fastify: FastifyInstance) {
   }, async (request, reply) => {
     try {
       const result = await newsletterService.subscribe(request.body);
-      // One answer for every signup. Provider outcomes stay in the log and the
-      // admin sync retries them; a per-signup answer would tell a do-not-contact
-      // address (skipped quietly) from one that was added or refused.
-      if (!result.success) request.log.warn('Newsletter signup not confirmed by any provider');
-      return { success: true, message: 'Subscribed' };
+      // The answer says whether the signup is held locally; the admin sync
+      // pushes it to the providers. Provider outcomes stay in the log, so the
+      // answer reveals nothing about the do-not-contact list.
+      return { success: result.stored, message: result.stored ? 'Subscribed' : 'Failed' };
     } catch (error: any) {
       return reply.status(500).send({ success: false, error: error.message });
     }

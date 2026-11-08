@@ -18,6 +18,8 @@ on:
       - "packages/api-gateway/src/routes/newsletter.ts"
       - "packages/api-gateway/src/routes/stripe-webhooks.ts"
       - "packages/api-gateway/src/app.ts"
+      - "packages/api-gateway/src/routes/workers.ts"
+      - "packages/api-gateway/vitest.config.ts"
       - "services/directus/migrations/**"
       - "deploy/docker-compose.yml"
       - "pnpm-lock.yaml"
@@ -35,6 +37,8 @@ on:
       - "packages/api-gateway/src/routes/newsletter.ts"
       - "packages/api-gateway/src/routes/stripe-webhooks.ts"
       - "packages/api-gateway/src/app.ts"
+      - "packages/api-gateway/src/routes/workers.ts"
+      - "packages/api-gateway/vitest.config.ts"
       - "services/directus/migrations/**"
       - "deploy/docker-compose.yml"
       - "pnpm-lock.yaml"
@@ -98,7 +102,7 @@ jobs:
           pnpm --filter @synthstack/types build > /dev/null
           pnpm exec tsc --noEmit -p tsconfig.json > tsc.txt 2>&1 || true
           echo "tsc reported $(grep -c 'error TS' tsc.txt || true) errors across the package"
-          if grep -E '^src/(services/email/|services/email\.ts|services/auth/auth-email\.service\.ts|services/newsletter/index\.ts|routes/email-unsubscribe\.ts|routes/newsletter\.ts|routes/stripe-webhooks\.ts|app\.ts)' tsc.txt; then
+          if grep -E '^src/(services/email/|services/email\.ts|services/auth/auth-email\.service\.ts|services/newsletter/index\.ts|routes/email-unsubscribe\.ts|routes/newsletter\.ts|routes/stripe-webhooks\.ts|routes/workers\.ts|app\.ts)' tsc.txt; then
             echo "Type errors in mail files (listed above)"
             exit 1
           fi

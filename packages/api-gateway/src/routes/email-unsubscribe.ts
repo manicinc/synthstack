@@ -4,14 +4,14 @@
  * header open: /api/v1/email/unsubscribe/:token.
  *
  * GET shows the choice and changes nothing, so a link scanner opening the
- * link stops nothing. POST suppresses at once. A mailbox provider's
- * one-click POST (List-Unsubscribe=One-Click, RFC 8058) carries no scope:
- * it stops the mail's own optional category, or every optional mail when
- * the link came in required mail, and gets a blank 200. No mail is sent
- * about an unsubscribe.
+ * link stops nothing. POST suppresses at once: the page's buttons send a
+ * scope; a mailbox provider's one-click POST sends List-Unsubscribe=One-Click
+ * (RFC 8058) and stops the mail's own optional category, or every optional
+ * mail when the link came in required mail, and gets a blank 200. A POST
+ * with neither changes nothing. No mail is sent about an unsubscribe.
  */
 
-import type { FastifyInstance, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import {
   MAIL_CATEGORIES,
   MAIL_CATEGORY_NAMES,
@@ -164,7 +164,7 @@ const STORE_DOWN_BODY =
   '<h1>Nothing was changed</h1>' +
   '<p>Your choice could not be saved just now. Please open the link again in a few minutes.</p>';
 
-/** The scope a form sent, or undefined for a one-click POST (no scope field). */
+/** The scope a form sent, or undefined when the body has no scope field. */
 function requestedScope(body: unknown): string | undefined {
   if (body && typeof body === 'object' && 'scope' in body) {
     const value = (body as Record<string, unknown>).scope;
@@ -173,13 +173,59 @@ function requestedScope(body: unknown): string | undefined {
   return undefined;
 }
 
+const ONE_CLICK_FIELD = 'List-Unsubscribe';
+const ONE_CLICK_VALUE = 'One-Click';
+
+/** The fields of a multipart body, read from its raw text (small bodies only). */
+function multipartFields(raw: string, contentType: string): Record<string, string> {
+  const boundary = /boundary="?([^";]+)"?/i.exec(contentType)?.[1];
+  const fields: Record<string, string> = {};
+  if (!boundary) return fields;
+  for (const part of raw.split(`--${boundary}`)) {
+    const name = /content-disposition:[^\r\n]*\bname="([^"]+)"/i.exec(part)?.[1];
+    const split = part.indexOf('\r\n\r\n');
+    if (name && split >= 0) fields[name] = part.slice(split + 4).replace(/\r\n$/, '');
+  }
+  return fields;
+}
+
+/**
+ * A one-click POST (RFC 8058) carries List-Unsubscribe=One-Click, form
+ * encoded or multipart. Where @fastify/multipart owns multipart bodies,
+ * its parts are read here.
+ */
+async function isOneClick(request: FastifyRequest): Promise<boolean> {
+  const body = request.body as Record<string, unknown> | null | undefined;
+  if (body && typeof body === 'object' && body[ONE_CLICK_FIELD] === ONE_CLICK_VALUE) return true;
+  const multipart = request as unknown as {
+    isMultipart?: () => boolean;
+    parts?: () => AsyncIterable<{ type: string; fieldname: string; value?: unknown }>;
+  };
+  if (typeof multipart.isMultipart === 'function' && multipart.isMultipart() && typeof multipart.parts === 'function') {
+    for await (const part of multipart.parts()) {
+      if (part.type === 'field' && part.fieldname === ONE_CLICK_FIELD && part.value === ONE_CLICK_VALUE) return true;
+    }
+  }
+  return false;
+}
+
+const tokenRouteSchema = (summary: string) => ({
+  tags: ['Email'],
+  summary,
+  params: {
+    type: 'object',
+    properties: { token: { type: 'string', maxLength: 128 } },
+    required: ['token'],
+  },
+});
+
 export default async function emailUnsubscribeRoutes(fastify: FastifyInstance) {
   const store = new UnsubscribeStore({
     query: (text: string, values?: unknown[]) => fastify.pg.query(text, values as any[]),
   });
 
-  // Form posts and one-click posts are form encoded. Any other body is read
-  // as a one-click POST, so a provider's multipart POST works too.
+  // Form posts and one-click posts are form encoded or multipart. A multipart
+  // body is read for its fields; any other body type carries no choice.
   if (!fastify.hasContentTypeParser('application/x-www-form-urlencoded')) {
     fastify.addContentTypeParser(
       'application/x-www-form-urlencoded',
@@ -190,13 +236,17 @@ export default async function emailUnsubscribeRoutes(fastify: FastifyInstance) {
     );
   }
   if (!fastify.hasContentTypeParser('*')) {
-    fastify.addContentTypeParser('*', { parseAs: 'string', bodyLimit: 65536 }, (_request, _body, done) => {
-      done(null, null);
+    fastify.addContentTypeParser('*', { parseAs: 'string', bodyLimit: 65536 }, (request, body, done) => {
+      const contentType = String(request.headers['content-type'] ?? '');
+      done(null, /^multipart\/form-data/i.test(contentType) ? multipartFields(String(body), contentType) : null);
     });
   }
 
+  // logLevel 'warn' keeps Fastify's request lines, which print the URL and so
+  // the token, out of the logs. The handlers log no token.
   fastify.get<{ Params: TokenParams }>('/email/unsubscribe/:token', {
-    schema: { tags: ['Email'], summary: 'Unsubscribe page (asks; changes nothing)' },
+    logLevel: 'warn',
+    schema: tokenRouteSchema('Unsubscribe page (asks; changes nothing)'),
   }, async (request, reply) => {
     let found;
     try {
@@ -212,7 +262,8 @@ export default async function emailUnsubscribeRoutes(fastify: FastifyInstance) {
   });
 
   fastify.post<{ Params: TokenParams }>('/email/unsubscribe/:token', {
-    schema: { tags: ['Email'], summary: 'Unsubscribe (one-click or form); suppresses at once' },
+    logLevel: 'warn',
+    schema: tokenRouteSchema('Unsubscribe (one-click or form); suppresses at once'),
   }, async (request, reply) => {
     let found;
     try {
@@ -227,6 +278,15 @@ export default async function emailUnsubscribeRoutes(fastify: FastifyInstance) {
     const requested = requestedScope(request.body);
     let scope: SuppressionScope;
     if (requested === undefined) {
+      if (!(await isOneClick(request))) {
+        request.log.warn({ category: found.category }, 'Unsubscribe refused: no scope and no one-click field');
+        return sendPage(
+          reply,
+          400,
+          'Nothing was changed',
+          '<h1>Nothing was changed</h1><p>Use the buttons on the unsubscribe page.</p>'
+        );
+      }
       scope = info.required ? 'optional' : found.category;
     } else if (requested === 'optional') {
       scope = 'optional';

@@ -44,24 +44,42 @@ export class NewsletterService {
     return this.primaryProvider.getSubscriberStatus(email);
   }
 
-  async subscribe(data: SubscriberData) {
+  /**
+   * `stored` says whether the signup is held locally (the admin sync pushes
+   * stored signups to the providers); `success` whether a provider took it.
+   */
+  async subscribe(data: SubscriberData): Promise<{ success: boolean; stored: boolean; results: Record<string, any> }> {
     const results: Record<string, any> = {};
     let anySuccess = false;
-    // A do-not-contact address is never stored or sent to a provider. The
-    // answer looks the same as a signup, so the form reveals nothing.
+    // A do-not-contact address is never stored or sent to a provider. It is
+    // answered as a stored signup would be (stored when the table can be
+    // written), so the form reveals nothing about the list.
     if (isDoNotContact(data.email)) {
       this.fastify.log.info('Newsletter signup skipped: address is on the do-not-contact list');
-      return { success: this.providers.size > 0, results };
+      const stored = await this.fastify.pg
+        .query('SELECT 1 FROM newsletter_subscribers LIMIT 0')
+        .then(() => true, () => false);
+      return { success: false, stored, results };
     }
-    try { await this.saveSubscriberToDb(data); } catch (error: any) { this.fastify.log.error({ error }, 'DB save failed'); }
+    let stored = false;
+    try {
+      await this.saveSubscriberToDb(data);
+      stored = true;
+    } catch (error: any) {
+      this.fastify.log.error({ error }, 'Newsletter signup not stored');
+    }
     for (const [name, provider] of this.providers) {
       try {
         const result = await provider.subscribe(data);
         results[name] = result;
         if (result.success) { anySuccess = true; await this.updateProviderIds(data.email, name, result.providerId); }
-      } catch (error: any) { results[name] = { success: false, error: error.message }; }
+        else this.fastify.log.warn({ provider: name, error: result.error }, 'Newsletter provider did not accept a signup');
+      } catch (error: any) {
+        results[name] = { success: false, error: error.message };
+        this.fastify.log.warn({ provider: name, error: error.message }, 'Newsletter provider call failed');
+      }
     }
-    return { success: anySuccess, results };
+    return { success: anySuccess, stored, results };
   }
 
   async unsubscribe(email: string) {
@@ -81,6 +99,13 @@ export class NewsletterService {
   async syncToProviders() {
     const results: Record<string, any> = {};
     const localResult = await this.fastify.pg.query('SELECT email, first_name, last_name, subscription_tier, source FROM newsletter_subscribers WHERE status = $1', ['active']);
+    const held = localResult.rows.filter(r => isDoNotContact(r.email));
+    if (held.length > 0) {
+      // Never pushed. Removing them at a provider is left to the operator in the
+      // provider's dashboard: an unsubscribe through the API can make some
+      // providers send their own goodbye mail, and these addresses get none.
+      this.fastify.log.warn({ count: held.length }, 'Newsletter sync held back do-not-contact addresses; remove them at each provider');
+    }
     const subscribers: SubscriberData[] = localResult.rows
       .filter(r => !isDoNotContact(r.email))
       .map(r => ({ email: r.email, firstName: r.first_name, lastName: r.last_name, subscriptionTier: r.subscription_tier, source: r.source }));

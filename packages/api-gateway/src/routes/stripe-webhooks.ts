@@ -373,6 +373,7 @@ async function handleCheckoutCompleted(fastify: FastifyInstance, session: Stripe
             referenceId: session.id,
             priority: 8,
             category: 'receipts',
+            onceKey: `credits-purchased:${session.id}`,
           });
 
           if (!result.success) {
@@ -526,6 +527,7 @@ async function handleCheckoutCompleted(fastify: FastifyInstance, session: Stripe
         referenceId: String(session.subscription || session.id),
         priority: 9,
         category: 'receipts',
+        onceKey: `subscription-confirmed:${session.id}`,
       });
 
       if (!result.success) {
