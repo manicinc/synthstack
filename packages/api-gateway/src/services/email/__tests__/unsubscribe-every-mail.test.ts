@@ -761,7 +761,10 @@ describe('queue processing', () => {
     const later = new Date(Date.now() + 60 * 60 * 1000);
     await getEmailService().sendEmail({ to, category: 'receipts', subject: 'Receipt', html: '<p>r</p>', scheduledAt: later });
     await pool.query("UPDATE email_queue SET scheduled_at = NOW() - INTERVAL '1 minute' WHERE to_email = $1", [to]);
-    await Promise.all([getEmailService().processQueue(), getEmailService().processQueue(), getEmailService().processQueue()]);
+    const [{ id }] = (await pool.query('SELECT id FROM email_queue WHERE to_email = $1', [to])).rows;
+    // The worker, the cron route and the in-process fallback can all reach the same row.
+    const service = getEmailService() as unknown as { processQueueItem(queueId: string): Promise<unknown> };
+    await Promise.all([service.processQueueItem(id), service.processQueueItem(id), service.processQueueItem(id)]);
     await sleep(300);
     expect(mailsTo(to)).toHaveLength(1);
   });
