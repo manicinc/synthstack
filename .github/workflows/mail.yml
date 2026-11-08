@@ -1,0 +1,100 @@
+# Mail: every mail the API sends, through the real sender into a capturing
+# client, against a throwaway Postgres. Runs only when mail code changes.
+
+name: Mail
+
+on:
+  pull_request:
+    branches: ["master"]
+    paths:
+      - ".github/workflows/mail.yml"
+      - "packages/api-gateway/vitest.mail.config.ts"
+      - "packages/api-gateway/package.json"
+      - "packages/api-gateway/src/services/email/**"
+      - "packages/api-gateway/src/services/email.ts"
+      - "packages/api-gateway/src/services/auth/**"
+      - "packages/api-gateway/src/services/newsletter/**"
+      - "packages/api-gateway/src/routes/email*.ts"
+      - "packages/api-gateway/src/routes/newsletter.ts"
+      - "packages/api-gateway/src/routes/stripe-webhooks.ts"
+      - "services/directus/migrations/**"
+      - "pnpm-lock.yaml"
+  push:
+    branches: ["master"]
+    paths:
+      - ".github/workflows/mail.yml"
+      - "packages/api-gateway/vitest.mail.config.ts"
+      - "packages/api-gateway/package.json"
+      - "packages/api-gateway/src/services/email/**"
+      - "packages/api-gateway/src/services/email.ts"
+      - "packages/api-gateway/src/services/auth/**"
+      - "packages/api-gateway/src/services/newsletter/**"
+      - "packages/api-gateway/src/routes/email*.ts"
+      - "packages/api-gateway/src/routes/newsletter.ts"
+      - "packages/api-gateway/src/routes/stripe-webhooks.ts"
+      - "services/directus/migrations/**"
+      - "pnpm-lock.yaml"
+
+concurrency:
+  group: mail-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  mail:
+    name: Mail tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: mail
+          POSTGRES_PASSWORD: mail
+          POSTGRES_DB: mail_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U mail -d mail_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Mail tests
+        working-directory: packages/api-gateway
+        env:
+          TEST_DATABASE_URL: postgres://mail:mail@localhost:5432/mail_test
+        run: pnpm exec vitest run --config vitest.mail.config.ts
+
+      - name: Type errors in the mail files
+        if: always()
+        working-directory: packages/api-gateway
+        run: |
+          pnpm --filter @synthstack/types build > /dev/null
+          pnpm exec tsc --noEmit -p tsconfig.json > tsc.txt 2>&1 || true
+          echo "tsc reported $(grep -c 'error TS' tsc.txt || true) errors across the package"
+          if grep -E '^src/(services/email/|services/email\.ts|services/auth/auth-email\.service\.ts|services/newsletter/index\.ts|routes/email-unsubscribe\.ts|routes/newsletter\.ts)' tsc.txt; then
+            echo "Type errors in mail files (listed above)"
+            exit 1
+          fi
