@@ -3,6 +3,7 @@ import { NewsletterProvider, SubscriberData, WebhookEvent } from './base.js';
 import { MailerLiteProvider } from './mailerlite.js';
 import { MailchimpProvider } from './mailchimp.js';
 import { BrevoProvider } from './brevo.js';
+import { isDoNotContact } from '../email/unsubscribe.js';
 
 export * from './base.js';
 export { MailerLiteProvider, MailchimpProvider, BrevoProvider };
@@ -46,6 +47,12 @@ export class NewsletterService {
   async subscribe(data: SubscriberData) {
     const results: Record<string, any> = {};
     let anySuccess = false;
+    // A do-not-contact address is never stored or sent to a provider. The
+    // answer looks the same as a signup, so the form reveals nothing.
+    if (isDoNotContact(data.email)) {
+      this.fastify.log.info('Newsletter signup skipped: address is on the do-not-contact list');
+      return { success: true, results };
+    }
     try { await this.saveSubscriberToDb(data); } catch (error: any) { this.fastify.log.error({ error }, 'DB save failed'); }
     for (const [name, provider] of this.providers) {
       try {

@@ -9,7 +9,23 @@ import type { Transporter, SendMailOptions } from 'nodemailer';
 import type { FastifyInstance } from 'fastify';
 import ejs from 'ejs';
 import { config } from '../../config/index.js';
-import { ResendService } from './resend.js';
+import { ResendService, type ResendClientLike } from './resend.js';
+import {
+  MAIL_CATEGORIES,
+  UNSUBSCRIBE_URL_PLACEHOLDER,
+  UnsubscribeStore,
+  appendFooter,
+  fillUnsubscribeUrl,
+  isDoNotContact,
+  isMailCategory,
+  listUnsubscribeHeaders,
+  mailSettings,
+  renderFooter,
+  resolveCategory,
+  unsubscribeUrl,
+  unsubscribeUrlProblem,
+  type MailCategory,
+} from './unsubscribe.js';
 
 // ============================================
 // TYPES & INTERFACES
@@ -55,6 +71,17 @@ export interface SendEmailOptions {
   from?: { email: string; name: string };
   /** Reply-to override */
   replyTo?: string;
+  /**
+   * What kind of mail this is. Decides whether an unsubscribe stops it and
+   * what its footer says. When left out, it comes from the template slug or
+   * the reference type; a mail with no known category is not sent.
+   */
+  category?: MailCategory;
+}
+
+export interface EmailServiceOptions {
+  /** Send through this Resend client (tests pass a capturing one). */
+  resendClient?: ResendClientLike;
 }
 
 /**
@@ -105,6 +132,15 @@ interface EmailTemplate {
   variables: any;
 }
 
+/**
+ * Attachments as stored in email_queue (JSONB comes back parsed; a string
+ * is parsed). Empty or missing means none.
+ */
+function queuedAttachments(value: unknown): any[] | undefined {
+  const parsed = typeof value === 'string' ? JSON.parse(value) : value;
+  return Array.isArray(parsed) && parsed.length > 0 ? parsed : undefined;
+}
+
 // ============================================
 // EMAIL SERVICE CLASS
 // ============================================
@@ -139,14 +175,19 @@ export class EmailService {
   private resendService: ResendService;
   private fastify: FastifyInstance;
   private templateCache: Map<string, EmailTemplate> = new Map();
+  private unsubscribes: UnsubscribeStore;
 
   /**
    * Creates an instance of EmailService
    * @param fastify - Fastify instance for database access and logging
+   * @param options - Optional Resend client override
    */
-  constructor(fastify: FastifyInstance) {
+  constructor(fastify: FastifyInstance, options: EmailServiceOptions = {}) {
     this.fastify = fastify;
-    this.resendService = new ResendService(fastify);
+    this.resendService = new ResendService(fastify, { client: options.resendClient });
+    this.unsubscribes = new UnsubscribeStore({
+      query: (text: string, values?: unknown[]) => this.fastify.pg.query(text, values as any[]),
+    });
     this.initializeTransporter();
   }
 
@@ -231,6 +272,30 @@ export class EmailService {
    * ```
    */
   async sendEmail(options: SendEmailOptions): Promise<EmailSendResult> {
+    const category = resolveCategory(options);
+    if (!category) {
+      this.fastify.log.warn(
+        { templateSlug: options.templateSlug, referenceType: options.referenceType },
+        'Email not queued: no mail category'
+      );
+      return { success: false, error: 'Mail has no known category', errorCode: 'UNKNOWN_CATEGORY' };
+    }
+
+    if (isDoNotContact(options.to)) {
+      this.fastify.log.warn({ category }, 'Email not queued: address is on the do-not-contact list');
+      return { success: false, error: 'Address is on the do-not-contact list', errorCode: 'DO_NOT_CONTACT' };
+    }
+
+    try {
+      if (await this.unsubscribes.isSuppressed(options.to, category)) {
+        this.fastify.log.info({ category }, 'Email not queued: address unsubscribed from this mail');
+        return { success: false, error: 'Address unsubscribed from this mail', errorCode: 'SUPPRESSED' };
+      }
+    } catch (error: any) {
+      this.fastify.log.error({ error, category }, 'Email not queued: suppression list unreadable');
+      return { success: false, error: 'Suppression list unreadable', errorCode: 'SUPPRESSION_UNAVAILABLE' };
+    }
+
     try {
       // Check bounce list
       const isBounced = await this.isEmailBounced(options.to);
@@ -268,8 +333,12 @@ export class EmailService {
           };
         }
 
-        // Render template
-        const rendered = await this.renderTemplate(template, options.templateData || {});
+        // Render template. A template's own unsubscribe link gets the
+        // placeholder, which the send replaces with this mail's link.
+        const rendered = await this.renderTemplate(template, {
+          ...(options.templateData || {}),
+          unsubscribeUrl: UNSUBSCRIBE_URL_PLACEHOLDER,
+        });
         html = rendered.html;
         text = rendered.text;
         // Allow explicit subject override when using templates (useful for A/B tests or context-specific subjects)
@@ -299,8 +368,8 @@ export class EmailService {
           template_id, template_data,
           attachments, user_id, reference_type, reference_id,
           priority, scheduled_at, tracking_enabled,
-          status
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+          status, category
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
         RETURNING id
       `, [
         options.to,
@@ -321,6 +390,7 @@ export class EmailService {
         options.scheduledAt,
         options.trackingEnabled !== false,
         options.scheduledAt ? 'scheduled' : 'pending',
+        category,
       ]);
 
       const queueId = result.rows[0].id;
@@ -410,6 +480,37 @@ export class EmailService {
 
       const email = result.rows[0];
 
+      // Read before every send: category, do-not-contact, suppression.
+      const category: MailCategory | null = isMailCategory(email.category) ? email.category : null;
+      if (!category) {
+        return this.stopQueueItem(queueId, 'cancelled', 'UNKNOWN_CATEGORY', 'Queued without a mail category');
+      }
+      if (isDoNotContact(email.to_email)) {
+        return this.stopQueueItem(queueId, 'cancelled', 'DO_NOT_CONTACT', 'Address is on the do-not-contact list');
+      }
+      if (await this.unsubscribes.isSuppressed(email.to_email, category)) {
+        return this.stopQueueItem(queueId, 'cancelled', 'SUPPRESSED', 'Address unsubscribed from this mail');
+      }
+
+      const settings = mailSettings();
+      const linkProblem = unsubscribeUrlProblem(settings);
+      if (linkProblem) {
+        return this.stopQueueItem(queueId, 'failed', 'UNSUBSCRIBE_URL_INVALID', linkProblem);
+      }
+      if (MAIL_CATEGORIES[category].commercial && !settings.postalAddress.trim()) {
+        return this.stopQueueItem(queueId, 'failed', 'POSTAL_ADDRESS_MISSING', 'Commercial mail needs MAIL_POSTAL_ADDRESS');
+      }
+
+      // A fresh token per send; only its hash is stored.
+      const token = await this.unsubscribes.issueToken(email.to_email, category);
+      const link = unsubscribeUrl(settings, token);
+      const body = appendFooter(
+        fillUnsubscribeUrl(email.html_body as string, link),
+        fillUnsubscribeUrl(email.text_body as string | null, link),
+        renderFooter(category, link, settings)
+      );
+      const headers = listUnsubscribeHeaders(link);
+
       let messageId: string | undefined;
 
       // Try Resend first (preferred)
@@ -418,10 +519,11 @@ export class EmailService {
           to: email.to_email,
           from: `${email.from_name} <${email.from_email}>`,
           subject: email.subject,
-          html: email.html_body,
-          text: email.text_body,
-          replyTo: email.reply_to,
-          attachments: email.attachments ? JSON.parse(email.attachments) : undefined
+          html: body.html,
+          text: body.text,
+          replyTo: email.reply_to ?? undefined,
+          attachments: queuedAttachments(email.attachments),
+          headers,
         });
 
         if (!resendResult.success) {
@@ -432,13 +534,15 @@ export class EmailService {
               from: `"${email.from_name}" <${email.from_email}>`,
               to: email.to_name ? `"${email.to_name}" <${email.to_email}>` : email.to_email,
               subject: email.subject,
-              html: email.html_body,
-              text: email.text_body,
+              html: body.html,
+              text: body.text,
               replyTo: email.reply_to,
+              headers,
             };
 
-            if (email.attachments) {
-              mailOptions.attachments = JSON.parse(email.attachments);
+            const smtpAttachments = queuedAttachments(email.attachments);
+            if (smtpAttachments) {
+              mailOptions.attachments = smtpAttachments;
             }
 
             const info = await this.transporter.sendMail(mailOptions);
@@ -455,13 +559,15 @@ export class EmailService {
           from: `"${email.from_name}" <${email.from_email}>`,
           to: email.to_name ? `"${email.to_name}" <${email.to_email}>` : email.to_email,
           subject: email.subject,
-          html: email.html_body,
-          text: email.text_body,
+          html: body.html,
+          text: body.text,
           replyTo: email.reply_to,
+          headers,
         };
 
-        if (email.attachments) {
-          mailOptions.attachments = JSON.parse(email.attachments);
+        const smtpAttachments = queuedAttachments(email.attachments);
+        if (smtpAttachments) {
+          mailOptions.attachments = smtpAttachments;
         }
 
         const info = await this.transporter.sendMail(mailOptions);
@@ -540,6 +646,32 @@ export class EmailService {
         errorCode: error.code,
       };
     }
+  }
+
+  /**
+   * Leave a queued email unsent, with the reason. No retry follows.
+   * @private
+   */
+  private async stopQueueItem(
+    queueId: string,
+    status: 'cancelled' | 'failed',
+    errorCode: string,
+    message: string
+  ): Promise<EmailSendResult> {
+    await this.fastify.pg.query(
+      `UPDATE email_queue SET
+         status = $1,
+         error = $2,
+         error_code = $3,
+         attempts = GREATEST(attempts, max_attempts),
+         next_retry_at = NULL,
+         last_attempt_at = NOW(),
+         updated_at = NOW()
+       WHERE id = $4`,
+      [status, message, errorCode, queueId]
+    );
+    this.fastify.log.warn({ queueId, errorCode }, `Email not sent: ${message}`);
+    return { success: false, queueId, error: message, errorCode };
   }
 
   /**
@@ -966,6 +1098,7 @@ export class EmailService {
       text: template.text,
       referenceType: 'lifetime_license_welcome',
       referenceId: data.sessionId,
+      category: 'receipts',
     });
   }
 
@@ -987,6 +1120,7 @@ export class EmailService {
       html: template.html,
       referenceType: 'lifetime_license_invitation',
       referenceId: data.githubUsername,
+      category: 'receipts',
     });
   }
 
@@ -1008,6 +1142,7 @@ export class EmailService {
       html: template.html,
       referenceType: 'lifetime_license_access_granted',
       referenceId: data.githubUsername,
+      category: 'receipts',
     });
   }
 }
@@ -1023,9 +1158,9 @@ let emailServiceInstance: EmailService | null = null;
  * @param fastify - Fastify instance
  * @returns EmailService instance
  */
-export function initEmailService(fastify: FastifyInstance): EmailService {
+export function initEmailService(fastify: FastifyInstance, options: EmailServiceOptions = {}): EmailService {
   if (!emailServiceInstance) {
-    emailServiceInstance = new EmailService(fastify);
+    emailServiceInstance = new EmailService(fastify, options);
   }
   return emailServiceInstance;
 }

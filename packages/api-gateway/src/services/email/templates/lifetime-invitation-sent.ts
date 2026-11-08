@@ -3,6 +3,8 @@
  * @description GitHub invitation sent email template for lifetime license buyers
  */
 
+import { escapeHtml } from '../escape.js';
+
 export const lifetimeInvitationSentTemplate = (data: {
   githubUsername: string;
 }) => ({
@@ -11,7 +13,7 @@ export const lifetimeInvitationSentTemplate = (data: {
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <h1 style="color: #6366F1;">✉️ GitHub Invitation Sent!</h1>
 
-      <p style="font-size: 16px; color: #333;">Great news! We've sent a GitHub organization invitation to <strong>@${data.githubUsername}</strong>.</p>
+      <p style="font-size: 16px; color: #333;">Great news! We've sent a GitHub organization invitation to <strong>@${escapeHtml(data.githubUsername)}</strong>.</p>
 
       <div style="background: #f7f7f7; padding: 20px; border-radius: 8px; margin: 30px 0;">
         <h3 style="margin-top: 0;">Next Steps:</h3>

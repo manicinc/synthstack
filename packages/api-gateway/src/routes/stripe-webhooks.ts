@@ -372,6 +372,7 @@ async function handleCheckoutCompleted(fastify: FastifyInstance, session: Stripe
             referenceType: 'purchase',
             referenceId: session.id,
             priority: 8,
+            category: 'receipts',
           });
 
           if (!result.success) {
@@ -515,6 +516,7 @@ async function handleCheckoutCompleted(fastify: FastifyInstance, session: Stripe
           amount: session.amount_total ? session.amount_total / 100 : 0,
           isYearly,
           creditsPerDay: tierConfig.creditsPerDay,
+          credits: tierConfig.creditsPerDay,
           nextBillingDate: nextBillingDate.toLocaleDateString(),
           dashboardUrl: `${config.frontendUrl}/app`,
           billingUrl: `${config.frontendUrl}/app/billing`,
@@ -523,6 +525,7 @@ async function handleCheckoutCompleted(fastify: FastifyInstance, session: Stripe
         referenceType: 'subscription',
         referenceId: String(session.subscription || session.id),
         priority: 9,
+        category: 'receipts',
       });
 
       if (!result.success) {

@@ -10,7 +10,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import Fastify, { type FastifyInstance } from 'fastify';
 import fastifyPostgres from '@fastify/postgres';
-import pg from 'pg';
+import { Pool } from 'pg';
 import { createHash, randomUUID } from 'crypto';
 import { readFileSync } from 'fs';
 import { resolve, dirname } from 'path';
@@ -56,7 +56,7 @@ const capture = {
   },
 };
 
-let pool: pg.Pool;
+let pool: Pool;
 let app: FastifyInstance;
 let userId: string;
 let auth: AuthEmailService;
@@ -220,7 +220,7 @@ beforeAll(async () => {
   }
   process.env.MAIL_DO_NOT_CONTACT = `${DNC_GMAIL}, sha256:${sha256(DNC_HASHED)}`;
 
-  pool = new pg.Pool({ connectionString: DATABASE_URL });
+  pool = new Pool({ connectionString: DATABASE_URL });
   await resetSchema();
   const user = await pool.query(
     "INSERT INTO app_users (email, display_name) VALUES ('owner@example.test', 'Ada') RETURNING id"
