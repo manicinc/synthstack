@@ -262,8 +262,9 @@ export function mailSettings(env: NodeJS.ProcessEnv = process.env): MailSettings
   return {
     publicBaseUrl: trimSlash(env.MAIL_PUBLIC_URL || env.API_URL || 'http://localhost:3003'),
     productName: env.MAIL_PRODUCT_NAME || config.smtp.fromName || 'SynthStack',
-    operatorName: env.MAIL_OPERATOR_NAME ?? 'Manic Agency LLC',
-    postalAddress: env.MAIL_POSTAL_ADDRESS ?? '2831 St Rose Parkway, Suite 200, Henderson, NV 89052',
+    // Empty counts as unset: a compose file passes unset variables as ''.
+    operatorName: env.MAIL_OPERATOR_NAME || 'Manic Agency LLC',
+    postalAddress: env.MAIL_POSTAL_ADDRESS || '2831 St Rose Parkway, Suite 200, Henderson, NV 89052',
     supportEmail: env.SUPPORT_EMAIL || 'team@manic.agency',
     frontendUrl: trimSlash(config.frontendUrl || 'http://localhost:3050'),
   };

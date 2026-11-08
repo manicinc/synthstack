@@ -146,12 +146,14 @@ Each mail has a category (`category` on `sendEmail`, or taken from the template 
 
 How it behaves:
 
-- **The link.** `GET /api/v1/email/unsubscribe/:token` only shows a page. On optional mail it offers "Unsubscribe from <category>" and "Turn off all optional email". On required mail it is the preferences page: it says when that mail still comes, offers turning off every optional mail, and says how to delete the account. `POST` to the same address saves the choice at once. A mailbox provider's one-click POST (no `scope` field) stops the mail's own optional category, or every optional mail when the link came in required mail. No mail is ever sent about an unsubscribe.
+- **The link.** `GET /api/v1/email/unsubscribe/:token` only shows a page. On optional mail it offers "Unsubscribe from <category>" and "Turn off all optional email". On required mail it is the preferences page: it says when that mail still comes, offers turning off every optional mail, and says how to delete the account. `POST` to the same address saves the choice at once. A mailbox provider's one-click POST (no `scope` field) stops the mail's own optional category, or every optional mail when the link came in required mail, and gets a blank 200. No mail is ever sent about an unsubscribe.
 - **Tokens.** Each send gets a fresh 256-bit token, made when the mail leaves the queue. Only its SHA-256 is stored (`email_unsubscribe_tokens`), with the SHA-256 of the recipient's canonical address (lower case, display name and `+tag` dropped, Gmail dots dropped) and the category. The raw token is only in the mail.
 - **Suppressions.** `email_suppressions` holds an address hash and a scope: a category, `optional` or `all` (an operator stop). It is read when a mail is queued and again when it is sent, so a scheduled mail to an address that unsubscribed in between is cancelled (`SUPPRESSED`). Required mail is stopped only by `all`.
 - **Do-not-contact.** `MAIL_DO_NOT_CONTACT` lists addresses (or `sha256:<hex>` of a canonical address), separated by commas, semicolons or spaces. They get no mail at all, required mail included (`DO_NOT_CONTACT`), are never added to the newsletter, and the contact form relay leaves out Reply-To for them. Keep the list in the deployment's environment, never in the repository.
 - **Fails closed.** Nothing is sent when the suppression list cannot be read, the token cannot be stored, `MAIL_PUBLIC_URL` is not a URL (or not https with `NODE_ENV=production`), or a commercial mail has no postal address.
 - **Templates** that print their own unsubscribe link use `<%= unsubscribeUrl %>`; the sender fills in the mail's own link.
+- **Deploying.** `deploy/docker-compose.yml` passes these settings to the API. `MAIL_PUBLIC_URL` defaults to `https://api.<APP_DOMAIN>` and `FRONTEND_URL` to `https://<APP_DOMAIN>`, the hosts its Traefik rules serve. An empty `MAIL_OPERATOR_NAME` or `MAIL_POSTAL_ADDRESS` falls back to the defaults above.
+- **Newsletter.** `POST /api/v1/newsletter/subscribe` answers the same for a do-not-contact address, stores nothing and calls no provider; the admin bulk sync leaves those addresses out.
 
 ### SMTP Providers
 

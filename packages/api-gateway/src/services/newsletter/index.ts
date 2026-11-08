@@ -51,7 +51,7 @@ export class NewsletterService {
     // answer looks the same as a signup, so the form reveals nothing.
     if (isDoNotContact(data.email)) {
       this.fastify.log.info('Newsletter signup skipped: address is on the do-not-contact list');
-      return { success: true, results };
+      return { success: this.providers.size > 0, results };
     }
     try { await this.saveSubscriberToDb(data); } catch (error: any) { this.fastify.log.error({ error }, 'DB save failed'); }
     for (const [name, provider] of this.providers) {
@@ -81,7 +81,9 @@ export class NewsletterService {
   async syncToProviders() {
     const results: Record<string, any> = {};
     const localResult = await this.fastify.pg.query('SELECT email, first_name, last_name, subscription_tier, source FROM newsletter_subscribers WHERE status = $1', ['active']);
-    const subscribers: SubscriberData[] = localResult.rows.map(r => ({ email: r.email, firstName: r.first_name, lastName: r.last_name, subscriptionTier: r.subscription_tier, source: r.source }));
+    const subscribers: SubscriberData[] = localResult.rows
+      .filter(r => !isDoNotContact(r.email))
+      .map(r => ({ email: r.email, firstName: r.first_name, lastName: r.last_name, subscriptionTier: r.subscription_tier, source: r.source }));
     for (const [name, provider] of this.providers) {
       try { results[name] = await provider.pushSubscribers(subscribers); } catch (error: any) { results[name] = { success: false, error: error.message }; }
     }

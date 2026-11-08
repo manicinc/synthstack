@@ -7,7 +7,8 @@
  * link stops nothing. POST suppresses at once. A mailbox provider's
  * one-click POST (List-Unsubscribe=One-Click, RFC 8058) carries no scope:
  * it stops the mail's own optional category, or every optional mail when
- * the link came in required mail. No mail is sent about an unsubscribe.
+ * the link came in required mail, and gets a blank 200. No mail is sent
+ * about an unsubscribe.
  */
 
 import type { FastifyInstance, FastifyReply } from 'fastify';
@@ -249,6 +250,10 @@ export default async function emailUnsubscribeRoutes(fastify: FastifyInstance) {
     }
 
     request.log.info({ scope, oneClick: requested === undefined }, 'Unsubscribe recorded');
+    if (requested === undefined) {
+      // A mailbox provider's one-click POST gets a blank 200.
+      return reply.code(200).header('cache-control', 'no-store').type('text/plain; charset=utf-8').send('');
+    }
     const page = donePage(scope, mailSettings());
     return sendPage(reply, 200, page.title, page.body);
   });

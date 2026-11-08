@@ -9,7 +9,9 @@ export default async function newsletterRoutes(fastify: FastifyInstance) {
   }, async (request, reply) => {
     try {
       const result = await newsletterService.subscribe(request.body);
-      return { success: result.success, message: result.success ? 'Subscribed' : 'Failed', details: result.results };
+      // Provider details stay server side: they would tell a do-not-contact
+      // address (skipped quietly) from one that was added.
+      return { success: result.success, message: result.success ? 'Subscribed' : 'Failed' };
     } catch (error: any) {
       return reply.status(500).send({ success: false, error: error.message });
     }

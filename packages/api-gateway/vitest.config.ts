@@ -6,7 +6,8 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts}'],
-    exclude: ['**/e2e/**', '**/node_modules/**'],
+    // The mail suite needs a Postgres it may wipe: run it with vitest.mail.config.ts.
+    exclude: ['**/e2e/**', '**/node_modules/**', 'src/services/email/__tests__/unsubscribe-every-mail.test.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

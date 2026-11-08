@@ -19,6 +19,7 @@ on:
       - "packages/api-gateway/src/routes/stripe-webhooks.ts"
       - "packages/api-gateway/src/app.ts"
       - "services/directus/migrations/**"
+      - "deploy/docker-compose.yml"
       - "pnpm-lock.yaml"
   push:
     branches: ["master"]
@@ -35,6 +36,7 @@ on:
       - "packages/api-gateway/src/routes/stripe-webhooks.ts"
       - "packages/api-gateway/src/app.ts"
       - "services/directus/migrations/**"
+      - "deploy/docker-compose.yml"
       - "pnpm-lock.yaml"
 
 concurrency:
