@@ -43,7 +43,7 @@ export const magicLinkTemplate = (data: MagicLinkTemplateData) => ({
         <p style="color: #999; font-size: 13px;">
           Need help? Contact us at <a href="mailto:${data.supportEmail}" style="color: #10B981;">${data.supportEmail}</a>
         </p>
-        <p style="color: #999; font-size: 12px; margin-top: 15px;">
+        <p style="color: #999; font-size: 13px; margin-top: 15px;">
           - The ${data.appName} Team
         </p>
       </div>

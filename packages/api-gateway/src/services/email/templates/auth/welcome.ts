@@ -3,6 +3,8 @@
  * @description Welcome email template sent after email verification
  */
 
+import { escapeHtml } from '../../escape.js';
+
 export interface WelcomeTemplateData {
   displayName: string;
   appName: string;
@@ -15,7 +17,7 @@ export const welcomeTemplate = (data: WelcomeTemplateData) => ({
   html: `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff;">
       <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="color: #6366F1; margin-bottom: 10px; font-size: 28px;">Welcome, ${data.displayName}!</h1>
+        <h1 style="color: #6366F1; margin-bottom: 10px; font-size: 28px;">Welcome, ${escapeHtml(data.displayName)}!</h1>
         <p style="color: #666; font-size: 16px;">Your email is verified and you're all set to go.</p>
       </div>
 
@@ -52,7 +54,7 @@ export const welcomeTemplate = (data: WelcomeTemplateData) => ({
         <p style="color: #999; font-size: 13px;">
           Questions? Contact us at <a href="mailto:${data.supportEmail}" style="color: #6366F1;">${data.supportEmail}</a>
         </p>
-        <p style="color: #999; font-size: 12px; margin-top: 15px;">
+        <p style="color: #999; font-size: 13px; margin-top: 15px;">
           - The ${data.appName} Team
         </p>
       </div>

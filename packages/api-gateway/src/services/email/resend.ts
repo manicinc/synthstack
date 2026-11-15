@@ -20,6 +20,20 @@ export interface ResendEmailOptions {
     filename: string;
     content: Buffer | string;
   }>;
+  /** Extra headers, e.g. List-Unsubscribe and List-Unsubscribe-Post. */
+  headers?: Record<string, string>;
+}
+
+/** The part of the Resend client this service uses; tests pass a capturing one. */
+export interface ResendClientLike {
+  emails: {
+    send(payload: any): Promise<{ data?: { id?: string } | null; error?: { message: string } | null }>;
+  };
+}
+
+export interface ResendServiceOptions {
+  /** Send through this client instead of one built from RESEND_API_KEY. */
+  client?: ResendClientLike;
 }
 
 export interface ResendSendResult {
@@ -32,17 +46,19 @@ export interface ResendSendResult {
  * Resend email service wrapper
  */
 export class ResendService {
-  private resend: Resend | null = null;
+  private resend: ResendClientLike | null = null;
   private fastify: FastifyInstance;
   private fromEmail: string;
   private fromName: string;
 
-  constructor(fastify: FastifyInstance) {
+  constructor(fastify: FastifyInstance, options: ResendServiceOptions = {}) {
     this.fastify = fastify;
     this.fromEmail = process.env.RESEND_FROM_EMAIL || 'team@manic.agency';
     this.fromName = process.env.RESEND_FROM_NAME || 'SynthStack';
 
-    if (process.env.RESEND_API_KEY) {
+    if (options.client) {
+      this.resend = options.client;
+    } else if (process.env.RESEND_API_KEY) {
       this.resend = new Resend(process.env.RESEND_API_KEY);
       this.fastify.log.info('✅ Resend email service initialized');
     } else {
@@ -82,7 +98,8 @@ export class ResendService {
         bcc: options.bcc,
         replyTo: options.replyTo,
         tags: options.tags,
-        attachments: options.attachments
+        attachments: options.attachments,
+        headers: options.headers,
       });
 
       if (error) {
@@ -93,7 +110,7 @@ export class ResendService {
         };
       }
 
-      this.fastify.log.info({ messageId: data?.id, to: options.to }, 'Email sent via Resend');
+      this.fastify.log.info({ messageId: data?.id }, 'Email sent via Resend');
 
       return {
         success: true,
@@ -134,9 +151,9 @@ let resendInstance: ResendService | null = null;
 /**
  * Initialize Resend service
  */
-export function initResendService(fastify: FastifyInstance): ResendService {
+export function initResendService(fastify: FastifyInstance, options: ResendServiceOptions = {}): ResendService {
   if (!resendInstance) {
-    resendInstance = new ResendService(fastify);
+    resendInstance = new ResendService(fastify, options);
   }
   return resendInstance;
 }

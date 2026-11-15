@@ -85,6 +85,15 @@ services:
       - RESEND_API_KEY=${RESEND_API_KEY}
       - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL}
       - RESEND_FROM_NAME=${RESEND_FROM_NAME}
+      # Links and footers in mail (docs/EMAIL_SERVICE.md). The site and the API
+      # answer at APP_DOMAIN and api.APP_DOMAIN (the Traefik rules in this file).
+      - FRONTEND_URL=${FRONTEND_URL:-https://${APP_DOMAIN:-synthstack.app}}
+      - MAIL_PUBLIC_URL=${MAIL_PUBLIC_URL:-https://api.${APP_DOMAIN:-synthstack.app}}
+      - MAIL_OPERATOR_NAME=${MAIL_OPERATOR_NAME}
+      - MAIL_POSTAL_ADDRESS=${MAIL_POSTAL_ADDRESS}
+      - MAIL_PRODUCT_NAME=${MAIL_PRODUCT_NAME}
+      - SUPPORT_EMAIL=${SUPPORT_EMAIL}
+      - MAIL_DO_NOT_CONTACT=${MAIL_DO_NOT_CONTACT}
       # Auth
       - JWT_SECRET=${JWT_SECRET}
       # Optional: Qdrant Vector DB

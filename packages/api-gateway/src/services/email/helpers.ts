@@ -39,6 +39,7 @@ export async function sendWelcomeEmail(
     referenceType: 'user',
     referenceId: userId,
     priority: 8,
+    category: 'onboarding',
   });
 }
 
@@ -69,6 +70,7 @@ export async function sendSubscriptionConfirmedEmail(
       amount,
       isYearly,
       creditsPerDay,
+      credits: creditsPerDay,
       nextBillingDate: nextBillingDate.toLocaleDateString(),
       dashboardUrl: `${config.frontendUrl}/app`,
       billingUrl: `${config.frontendUrl}/app/billing`,
@@ -76,6 +78,7 @@ export async function sendSubscriptionConfirmedEmail(
     userId,
     referenceType: 'subscription',
     priority: 9,
+    category: 'receipts',
   });
 }
 
@@ -110,6 +113,7 @@ export async function sendPaymentReceiptEmail(
     userId,
     referenceType: 'payment',
     priority: 9,
+    category: 'receipts',
   });
 }
 
@@ -144,6 +148,7 @@ export async function sendTrialEndingEmail(
     userId,
     referenceType: 'subscription',
     priority: 7,
+    category: 'trial_reminders',
   });
 }
 
@@ -173,6 +178,7 @@ export async function sendPaymentFailedEmail(
     userId,
     referenceType: 'payment',
     priority: 10,
+    category: 'billing',
   });
 }
 
@@ -209,6 +215,7 @@ export async function sendCreditLowEmail(
     userId,
     referenceType: 'credit',
     priority: 5,
+    category: 'usage_alerts',
   });
 }
 
@@ -245,13 +252,13 @@ export async function sendDemoCreditLowEmail(
       firstName,
       upgradeUrl: `${appUrl}/pricing?source=demo_credit_email&session=${sessionId}`,
       referralUrl: `${appUrl}/app?tab=referrals&session=${sessionId}`,
-      unsubscribeUrl: `${appUrl}/preferences/email?userId=${userId}&unsubscribe=demo_credits`,
     },
     userId,
     referenceType: 'demo_session',
     referenceId: sessionId,
     priority: 6,
     scheduledAt, // Schedule for 1 hour from now
+    category: 'usage_alerts',
   });
 }
 
@@ -289,6 +296,7 @@ export async function sendCreditsPurchasedEmail(
     userId,
     referenceType: 'purchase',
     priority: 8,
+    category: 'receipts',
   });
 }
 
@@ -319,6 +327,7 @@ export async function sendSubscriptionCanceledEmail(
     userId,
     referenceType: 'subscription',
     priority: 7,
+    category: 'billing',
   });
 }
 
@@ -353,6 +362,7 @@ export async function sendModerationWarningEmail(
     userId,
     referenceType: 'moderation',
     priority: 9,
+    category: 'account_notices',
   });
 }
 
@@ -386,6 +396,7 @@ export async function sendAdminReportEmail(
     },
     referenceType: 'moderation',
     priority: 10,
+    category: 'staff_alerts',
   });
 }
 
@@ -449,6 +460,7 @@ export async function sendTeamInvitationEmail(
     referenceType: 'invitation',
     referenceId: projectId,
     priority: 9, // High priority - transactional email
+    category: 'invitations',
   });
 }
 

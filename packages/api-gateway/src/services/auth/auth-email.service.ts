@@ -27,7 +27,8 @@ export class AuthEmailService {
   constructor(options: AuthEmailServiceOptions) {
     this.emailService = options.emailService;
     this.appName = options.appName || 'SynthStack';
-    this.supportEmail = options.supportEmail || 'support@synthstack.io';
+    // The address the product's privacy and GDPR pages give.
+    this.supportEmail = options.supportEmail || process.env.SUPPORT_EMAIL || 'team@manic.agency';
   }
 
   /**
@@ -57,6 +58,7 @@ export class AuthEmailService {
       text: template.text,
       referenceType: 'auth_password_reset',
       priority: 10, // High priority for auth emails
+      category: 'security',
     });
   }
 
@@ -87,6 +89,7 @@ export class AuthEmailService {
       text: template.text,
       referenceType: 'auth_email_verification',
       priority: 10,
+      category: 'security',
     });
   }
 
@@ -114,6 +117,7 @@ export class AuthEmailService {
       text: template.text,
       referenceType: 'auth_welcome',
       priority: 5,
+      category: 'onboarding',
     });
   }
 
@@ -144,6 +148,7 @@ export class AuthEmailService {
       text: template.text,
       referenceType: 'auth_magic_link',
       priority: 10, // High priority for auth emails
+      category: 'security',
     });
   }
 

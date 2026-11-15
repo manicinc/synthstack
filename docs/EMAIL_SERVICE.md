@@ -112,7 +112,51 @@ REDIS_URL=redis://localhost:6399
 
 # Frontend URLs (for links in emails)
 FRONTEND_URL=http://localhost:3050
+
+# Unsubscribe and suppression (see "Unsubscribe and suppression" below)
+MAIL_PUBLIC_URL=https://api.your-domain.com   # public base URL of this API; https in production
+MAIL_OPERATOR_NAME="Manic Agency LLC"         # sender named in every footer
+MAIL_POSTAL_ADDRESS="2831 St Rose Parkway, Suite 200, Henderson, NV 89052"
+MAIL_PRODUCT_NAME=SynthStack                  # defaults to SMTP_FROM_NAME
+SUPPORT_EMAIL=team@manic.agency               # named in auth mail and on the preferences page
+MAIL_DO_NOT_CONTACT=                          # addresses that get no mail at all
 ```
+
+## Unsubscribe and suppression
+
+Every mail the API sends goes through `EmailService.sendEmail`, and every one carries:
+
+- a visible **Unsubscribe** link in its footer (14px), a line saying why the person got it, and the operator's name and postal address (`MAIL_OPERATOR_NAME`, `MAIL_POSTAL_ADDRESS`);
+- `List-Unsubscribe: <MAIL_PUBLIC_URL/api/v1/email/unsubscribe/<token>>` and `List-Unsubscribe-Post: List-Unsubscribe=One-Click` (RFC 8058). With Resend the headers go on the send call; with SMTP they go through Nodemailer's `headers`.
+
+Each mail has a category (`category` on `sendEmail`, or taken from the template slug or the reference type). A mail with no known category is not queued (`UNKNOWN_CATEGORY`).
+
+| Category | Kind | Mails |
+|---|---|---|
+| `security` | required | email verification, password reset, magic link |
+| `receipts` | required | subscription confirmed, payment receipt, credits purchased, the three lifetime licence mails |
+| `billing` | required | payment failed, subscription canceled |
+| `account_notices` | required | moderation notice |
+| `onboarding` | optional | welcome mails |
+| `usage_alerts` | optional, commercial | credit low, demo credit low, generation complete |
+| `trial_reminders` | optional, commercial | trial ending |
+| `summaries` | optional | weekly summary |
+| `invitations` | optional | team invitation |
+| `staff_alerts` | optional | admin report |
+
+How it behaves:
+
+- **The link.** `GET /api/v1/email/unsubscribe/:token` only shows a page. On optional mail it offers "Unsubscribe from <category>" and "Turn off all optional email". On required mail it is the preferences page: it says when that mail still comes, offers turning off every optional mail, and says how to delete the account. `POST` to the same address saves the choice at once. A mailbox provider's one-click POST (`List-Unsubscribe=One-Click`, form encoded or multipart) stops the mail's own optional category, or every optional mail when the link came in required mail, and gets a blank 200. A POST with neither a scope nor that field changes nothing (400). Fastify's request lines are kept out of the logs for these routes, since the URL holds the token. No mail is ever sent about an unsubscribe.
+- **Tokens.** Each send gets a fresh 256-bit token, made when the mail leaves the queue. Only its SHA-256 is stored (`email_unsubscribe_tokens`), with the SHA-256 of the recipient's canonical address (lower case, display name and `+tag` dropped, Gmail dots dropped) and the category. The raw token is only in the mail.
+- **Suppressions.** `email_suppressions` holds an address hash and a scope: a category, `optional` or `all` (an operator stop). It is read when a mail is queued and again when it is sent, so a scheduled mail to an address that unsubscribed in between is cancelled (`SUPPRESSED`). Required mail is stopped only by `all`.
+- **Do-not-contact.** `MAIL_DO_NOT_CONTACT` lists addresses (or `sha256:<hex>` of a canonical address), separated by commas, semicolons or spaces. They get no mail at all, required mail included (`DO_NOT_CONTACT`), are never added to the newsletter, and the contact form relay leaves out Reply-To for them. Keep the list in the deployment's environment, never in the repository.
+- **Fails closed.** Nothing is sent when the suppression list cannot be read, the token cannot be stored, `MAIL_PUBLIC_URL` is not a URL (or not https with `NODE_ENV=production`), or a commercial mail has no postal address.
+- **Templates** that print their own unsubscribe link use `<%= unsubscribeUrl %>`; the sender fills in the mail's own link. A template outside the built-in set needs an explicit `category`. A mail queued with text only gets an HTML part, and one with HTML only gets a text part, both with the footer.
+- **Once-only mails.** `onceKey` on `sendEmail` queues a mail at most once per key (`email_queue.once_key`); the Stripe webhook uses it for the credits, subscription and lifetime receipts, so a redelivered event does not mail twice.
+- **Queue.** A processor claims a row before sending it, so two processors never send the same row. A row a crashed worker left in `processing` is claimable again after 15 minutes. A row queued without a category (by an older API) takes its template's or reference type's.
+- **Token retention.** `POST /api/v1/workers/cleanup-email-logs` also removes token rows older than `MAIL_TOKEN_RETENTION_DAYS` (default 400); links in older mail then open the "link does not work" page.
+- **Deploying.** `deploy/docker-compose.yml` passes these settings to the API. `MAIL_PUBLIC_URL` defaults to `https://api.<APP_DOMAIN>` and `FRONTEND_URL` to `https://<APP_DOMAIN>`, the hosts its Traefik rules serve. An empty `MAIL_OPERATOR_NAME` or `MAIL_POSTAL_ADDRESS` falls back to the defaults above.
+- **Newsletter.** `POST /api/v1/newsletter/subscribe` answers `{ success: true, message: 'Subscribed' }` when the signup is stored locally and `{ success: false, message: 'Failed' }` when it cannot be; the admin sync pushes stored signups to the providers, and provider outcomes go to the log. A do-not-contact address is not stored and no provider is called, but it gets the answer a stored signup would. The admin bulk sync leaves those addresses out and logs how many it held back, to be removed in each provider's dashboard (depending on its list settings, a provider may send its own goodbye mail on an API unsubscribe).
 
 ### SMTP Providers
 
@@ -249,6 +293,13 @@ GET /api/v1/email/track/open/:messageId.png
 GET /api/v1/email/track/click/:messageId?url=...
   - Track link clicks (redirect)
   - Parameters: messageId, url
+
+GET /api/v1/email/unsubscribe/:token
+  - The page every mail's Unsubscribe link opens; changes nothing
+
+POST /api/v1/email/unsubscribe/:token
+  - Saves the choice at once
+  - Body: scope=<category>|optional from the page, or List-Unsubscribe=One-Click (no scope)
 ```
 
 ### Admin Endpoints
@@ -364,6 +415,15 @@ curl -X POST "http://localhost:3003/api/v1/workers/cleanup-email-logs?days=180" 
 - Hard/soft bounce tracking
 - Auto-expiration for soft bounces
 
+**email_unsubscribe_tokens** (migration 136)
+- SHA-256 of each mail's unsubscribe token
+- SHA-256 of the recipient's canonical address
+- The mail's category
+
+**email_suppressions** (migration 136)
+- Address hash and scope (a category, `optional` or `all`)
+- Read before every queue and every send
+
 ### Views Created
 
 **email_dashboard**
@@ -470,7 +530,7 @@ curl http://localhost:3003/api/v1/admin/email/queue \
 ### Privacy
 - Email logs retention (90 days)
 - GDPR compliance ready
-- Unsubscribe link in all marketing emails
+- Unsubscribe link and one-click headers in every email (see "Unsubscribe and suppression")
 - IP address hashing (optional)
 
 ### Anti-Spam
@@ -498,6 +558,10 @@ curl http://localhost:3003/api/v1/admin/email/queue \
 
 - [ ] Configure production SMTP (SendGrid/SES/Postmark)
 - [ ] Set up SPF/DKIM/DMARC records
+- [ ] Set `MAIL_PUBLIC_URL` to the API's public https address
+- [ ] Set `MAIL_OPERATOR_NAME` and `MAIL_POSTAL_ADDRESS` to your company's
+- [ ] Set `MAIL_DO_NOT_CONTACT` before the first send
+- [ ] Run migration 136 (`email_unsubscribe_tokens`, `email_suppressions`, `email_queue.category`)
 - [ ] Configure Redis for queue
 - [ ] Set up email tracking domain
 - [ ] Test all email templates
