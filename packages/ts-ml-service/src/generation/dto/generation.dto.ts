@@ -32,12 +32,12 @@ export class TextGenerationRequestDto {
 
   @ApiPropertyOptional({
     description: 'Model to use',
-    enum: ['gpt-3.5-turbo', 'gpt-4-turbo', 'gpt-4'],
-    default: 'gpt-3.5-turbo'
+    enum: ['gpt-6-luna', 'gpt-6.2-sol', 'gpt-6.2-astra'],
+    default: 'gpt-6-luna'
   })
   @IsOptional()
   @IsString()
-  @IsIn(['gpt-3.5-turbo', 'gpt-4-turbo', 'gpt-4'])
+  @IsIn(['gpt-6-luna', 'gpt-6.2-sol', 'gpt-6.2-astra'])
   model?: string;
 }
 
@@ -145,8 +145,8 @@ export class ChatCompletionsRequestDto {
 
   @ApiPropertyOptional({
     description: 'Model to use',
-    enum: ['gpt-3.5-turbo', 'gpt-4-turbo', 'gpt-4'],
-    default: 'gpt-3.5-turbo'
+    enum: ['gpt-6-luna', 'gpt-6.2-sol', 'gpt-6.2-astra'],
+    default: 'gpt-6-luna'
   })
   @IsOptional()
   @IsString()

@@ -41,6 +41,24 @@ export interface ChatCompletionResult {
   model: string;
 }
 
+/**
+ * The sampling and length fields a chat request may send to `model`.
+ * GPT-5 and later and the o-series refuse `max_tokens` (the cap is
+ * `max_completion_tokens`, which also counts reasoning tokens); a model with a
+ * reasoning step refuses any temperature but 1. gpt-6-luna at reasoning effort
+ * `none` has no reasoning step and keeps the temperature.
+ * https://developers.openai.com/api/docs/guides/reasoning
+ */
+export function openaiSampling(model: string, cap: number, temperature: number): Record<string, unknown> {
+  if (model.startsWith('gpt-6-luna')) {
+    return { reasoning_effort: 'none', max_completion_tokens: cap, temperature };
+  }
+  if (/^(gpt-5|gpt-6|o\d)/.test(model)) {
+    return { reasoning_effort: 'low', max_completion_tokens: cap };
+  }
+  return { max_tokens: cap, temperature };
+}
+
 @Injectable()
 export class GenerationService {
   private readonly logger = new Logger(GenerationService.name);
@@ -61,7 +79,7 @@ export class GenerationService {
    */
   async generateText(dto: TextGenerationRequestDto): Promise<TextGenerationResult> {
     const startTime = Date.now();
-    const model = dto.model || 'gpt-3.5-turbo';
+    const model = dto.model || 'gpt-6-luna';
 
     this.logger.log(`Generating text with model: ${model}`);
 
@@ -76,8 +94,7 @@ export class GenerationService {
     const response = await this.openai.chat.completions.create({
       model,
       messages,
-      max_tokens: dto.max_tokens || 1000,
-      temperature: dto.temperature ?? 0.7,
+      ...(openaiSampling(model, dto.max_tokens || 1000, dto.temperature ?? 0.7) as object),
     });
 
     const processingTime = Date.now() - startTime;
@@ -124,7 +141,7 @@ export class GenerationService {
    */
   async chatCompletions(dto: ChatCompletionsRequestDto): Promise<ChatCompletionResult> {
     const startTime = Date.now();
-    const model = dto.model || 'gpt-3.5-turbo';
+    const model = dto.model || 'gpt-6-luna';
 
     this.logger.log(`Chat completion with model: ${model}, messages: ${dto.messages.length}`);
 
@@ -134,8 +151,7 @@ export class GenerationService {
         role: m.role,
         content: m.content,
       })),
-      max_tokens: dto.max_tokens || 500,
-      temperature: dto.temperature ?? 0.7,
+      ...(openaiSampling(model, dto.max_tokens || 500, dto.temperature ?? 0.7) as object),
     });
 
     const processingTime = Date.now() - startTime;
@@ -168,9 +184,9 @@ export class GenerationService {
   getAvailableModels() {
     return {
       text: [
-        { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', description: 'Fast and cost-effective' },
-        { id: 'gpt-4-turbo', name: 'GPT-4 Turbo', description: 'Latest GPT-4 with improved performance' },
-        { id: 'gpt-4', name: 'GPT-4', description: 'Most capable model' },
+        { id: 'gpt-6-luna', name: 'GPT-6 Luna', description: 'Fast and cost-effective' },
+        { id: 'gpt-6.2-sol', name: 'GPT-6.2 Sol', description: 'Strong everyday model for writing and code' },
+        { id: 'gpt-6.2-astra', name: 'GPT-6.2 Astra', description: 'Most capable model' },
       ],
       image: [
         { id: 'dall-e-3', name: 'DALL-E 3', description: 'Latest image generation model' },
