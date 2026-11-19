@@ -200,6 +200,15 @@ export class OpenAIAdapter extends BaseLLMAdapter {
 
         // Check for finish
         if (chunk.choices[0]?.finish_reason) {
+          if (
+            chunk.choices[0].finish_reason === 'length' &&
+            !totalContent &&
+            toolCallsInProgress.size === 0
+          ) {
+            // A reasoning model can spend the whole cap before writing text.
+            yield { type: 'error', error: `${model.id} reached its token cap before writing a reply` };
+            return;
+          }
           yield {
             type: 'done',
             usage: chunk.usage ? {
