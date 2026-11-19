@@ -31,21 +31,6 @@ export const OPENAI_MODELS: ModelConfig[] = [
     supportsJsonMode: true,
     priority: 1,
   },
-  {
-    id: 'gpt-3.5-turbo',
-    name: 'GPT-3.5 Turbo',
-    provider: 'openai',
-    tier: 'cheap',
-    inputCostPer1kTokens: 0.0005,
-    outputCostPer1kTokens: 0.0015,
-    maxContextTokens: 16385,
-    maxOutputTokens: 4096,
-    supportsStreaming: true,
-    supportsTools: true,
-    supportsVision: false,
-    supportsJsonMode: true,
-    priority: 2,
-  },
   // Standard tier
   {
     id: 'gpt-4o',
@@ -61,21 +46,6 @@ export const OPENAI_MODELS: ModelConfig[] = [
     supportsVision: true,
     supportsJsonMode: true,
     priority: 1,
-  },
-  {
-    id: 'gpt-4-turbo',
-    name: 'GPT-4 Turbo',
-    provider: 'openai',
-    tier: 'standard',
-    inputCostPer1kTokens: 0.01,
-    outputCostPer1kTokens: 0.03,
-    maxContextTokens: 128000,
-    maxOutputTokens: 4096,
-    supportsStreaming: true,
-    supportsTools: true,
-    supportsVision: true,
-    supportsJsonMode: true,
-    priority: 2,
   },
   // Premium tier
   {
@@ -93,36 +63,61 @@ export const OPENAI_MODELS: ModelConfig[] = [
     supportsJsonMode: true,
     priority: 0,
   },
-  // Premium tier (o1 models)
+];
+
+/**
+ * OpenAI GPT-6 models a caller may name explicitly. They are kept out of tier
+ * routing, fallbacks and the cheapest-model search, so routed traffic keeps the
+ * models above; a request that names one gets that model. Prices are per 1K
+ * tokens, uncached (https://developers.openai.com/api/docs/pricing). gpt-6.2
+ * models refuse function tools on Chat Completions; gpt-6-luna takes them at
+ * reasoning effort none, which the adapter sends.
+ */
+export const OPENAI_EXPLICIT_MODELS: ModelConfig[] = [
   {
-    id: 'o1',
-    name: 'O1',
+    id: 'gpt-6-luna',
+    name: 'GPT-6 Luna',
     provider: 'openai',
-    tier: 'premium',
-    inputCostPer1kTokens: 0.015,
-    outputCostPer1kTokens: 0.06,
-    maxContextTokens: 200000,
-    maxOutputTokens: 100000,
+    tier: 'cheap',
+    inputCostPer1kTokens: 0.0001,
+    outputCostPer1kTokens: 0.0005,
+    maxContextTokens: 400000,
+    maxOutputTokens: 128000,
     supportsStreaming: true,
     supportsTools: true,
     supportsVision: true,
-    supportsJsonMode: true,
-    priority: 1,
+    supportsJsonMode: false,
+    priority: 9,
   },
   {
-    id: 'o1-mini',
-    name: 'O1 Mini',
+    id: 'gpt-6.2-sol',
+    name: 'GPT-6.2 Sol',
     provider: 'openai',
-    tier: 'premium',
-    inputCostPer1kTokens: 0.003,
-    outputCostPer1kTokens: 0.012,
-    maxContextTokens: 128000,
-    maxOutputTokens: 65536,
+    tier: 'standard',
+    inputCostPer1kTokens: 0.002,
+    outputCostPer1kTokens: 0.01,
+    maxContextTokens: 400000,
+    maxOutputTokens: 128000,
     supportsStreaming: true,
-    supportsTools: true,
+    supportsTools: false,
     supportsVision: true,
     supportsJsonMode: true,
-    priority: 2,
+    priority: 9,
+  },
+  {
+    id: 'gpt-6.2-astra',
+    name: 'GPT-6.2 Astra',
+    provider: 'openai',
+    tier: 'premium',
+    inputCostPer1kTokens: 0.008,
+    outputCostPer1kTokens: 0.04,
+    maxContextTokens: 400000,
+    maxOutputTokens: 128000,
+    supportsStreaming: true,
+    supportsTools: false,
+    supportsVision: true,
+    supportsJsonMode: true,
+    priority: 9,
   },
 ];
 
@@ -313,9 +308,17 @@ export class ModelRegistry {
   private models: Map<string, ModelConfig> = new Map();
   private modelsByTier: Map<ModelTier, ModelConfig[]> = new Map();
   private modelsByProvider: Map<LLMProvider, ModelConfig[]> = new Map();
+  /** Models resolved only when a request names them (see OPENAI_EXPLICIT_MODELS). */
+  private explicitModels: Map<string, ModelConfig> = new Map();
 
-  constructor(models: ModelConfig[] = ALL_MODELS) {
+  constructor(
+    models: ModelConfig[] = ALL_MODELS,
+    explicitModels: ModelConfig[] = OPENAI_EXPLICIT_MODELS
+  ) {
     this.registerModels(models);
+    for (const model of explicitModels) {
+      if (!this.models.has(model.id)) this.explicitModels.set(model.id, model);
+    }
   }
 
   /**
@@ -349,7 +352,7 @@ export class ModelRegistry {
    * Get model by ID
    */
   getModel(id: string): ModelConfig | undefined {
-    return this.models.get(id);
+    return this.models.get(id) ?? this.explicitModels.get(id);
   }
 
   /**

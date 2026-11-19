@@ -16,6 +16,48 @@ import type {
   ToolCall,
 } from '../types.js';
 
+/**
+ * Sampling and length fields for a Chat Completions request to `modelId`.
+ * GPT-6 models refuse `max_tokens` and `stop`; gpt-6.2 models also refuse
+ * temperature, top_p and function tools, and their reasoning counts against
+ * `max_completion_tokens`. gpt-6-luna at reasoning effort none keeps
+ * temperature, top_p and tools. Other models keep the fields they had.
+ * https://developers.openai.com/api/docs/guides/reasoning
+ */
+export function openaiRequestFields(
+  modelId: string,
+  options: Pick<LLMRequestOptions, 'maxTokens' | 'temperature' | 'topP' | 'stop' | 'tools'>,
+  defaultMaxTokens: number
+): Record<string, unknown> {
+  const cap = options.maxTokens || defaultMaxTokens;
+  const tools = options.tools?.map((tool) => ({
+    type: 'function' as const,
+    function: tool.function,
+  }));
+  if (modelId.startsWith('gpt-6-luna')) {
+    return {
+      reasoning_effort: 'none',
+      max_completion_tokens: cap,
+      temperature: options.temperature ?? 0.7,
+      top_p: options.topP,
+      tools,
+    };
+  }
+  if (modelId.startsWith('gpt-6')) {
+    if (tools?.length) {
+      throw new Error(`${modelId} does not take function tools on Chat Completions`);
+    }
+    return { reasoning_effort: 'low', max_completion_tokens: cap };
+  }
+  return {
+    max_tokens: cap,
+    temperature: options.temperature ?? 0.7,
+    top_p: options.topP,
+    stop: options.stop,
+    tools,
+  };
+}
+
 export class OpenAIAdapter extends BaseLLMAdapter {
   readonly provider: LLMProvider = 'openai';
   private client: OpenAI | null = null;
@@ -50,24 +92,21 @@ export class OpenAIAdapter extends BaseLLMAdapter {
       throw this.createError('OpenAI not configured', model.id, 'invalid_api_key');
     }
 
+    if (options.jsonMode && !model.supportsJsonMode) {
+      throw this.createError(`${model.id} does not take JSON mode here`, model.id, 'provider_error');
+    }
+
     const startTime = Date.now();
 
     try {
       const response = await this.client.chat.completions.create({
         model: model.id,
         messages: this.formatMessages(options.messages),
-        max_tokens: options.maxTokens || model.maxOutputTokens,
-        temperature: options.temperature ?? 0.7,
-        top_p: options.topP,
-        stop: options.stop,
-        tools: options.tools?.map((tool) => ({
-          type: 'function' as const,
-          function: tool.function,
-        })),
+        ...openaiRequestFields(model.id, options, model.maxOutputTokens),
         response_format: options.jsonMode ? { type: 'json_object' } : undefined,
         stream: false,
         user: options.userId,
-      });
+      } as OpenAI.Chat.ChatCompletionCreateParamsNonStreaming);
 
       const choice = response.choices[0];
       if (!choice) {
@@ -90,6 +129,11 @@ export class OpenAIAdapter extends BaseLLMAdapter {
           arguments: (tc as any).function.arguments,
         },
       }));
+
+      if (choice.finish_reason === 'length' && !choice.message.content && !toolCalls?.length) {
+        // A reasoning model can spend the whole cap before writing text.
+        throw new Error(`${model.id} reached its token cap before writing a reply`);
+      }
 
       return {
         content: choice.message.content || '',
@@ -126,17 +170,10 @@ export class OpenAIAdapter extends BaseLLMAdapter {
       const stream = await this.client.chat.completions.create({
         model: model.id,
         messages: this.formatMessages(options.messages),
-        max_tokens: options.maxTokens || model.maxOutputTokens,
-        temperature: options.temperature ?? 0.7,
-        top_p: options.topP,
-        stop: options.stop,
-        tools: options.tools?.map((tool) => ({
-          type: 'function' as const,
-          function: tool.function,
-        })),
+        ...openaiRequestFields(model.id, options, model.maxOutputTokens),
         stream: true,
         user: options.userId,
-      });
+      } as OpenAI.Chat.ChatCompletionCreateParamsStreaming);
 
       let totalContent = '';
       const toolCallsInProgress: Map<number, Partial<ToolCall>> = new Map();
@@ -172,6 +209,15 @@ export class OpenAIAdapter extends BaseLLMAdapter {
 
         // Check for finish
         if (chunk.choices[0]?.finish_reason) {
+          if (
+            chunk.choices[0].finish_reason === 'length' &&
+            !totalContent &&
+            toolCallsInProgress.size === 0
+          ) {
+            // A reasoning model can spend the whole cap before writing text.
+            yield { type: 'error', error: `${model.id} reached its token cap before writing a reply` };
+            return;
+          }
           yield {
             type: 'done',
             usage: chunk.usage ? {

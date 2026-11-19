@@ -21,21 +21,19 @@ const ML_SERVICE_MODELS = new Set([
   'gpt-4o-mini',
   'gpt-4o',
   'gpt-5.2',
-  'gpt-4-turbo',
-  'gpt-4',
-  'gpt-3.5-turbo',
+  'gpt-6-luna',
+  'gpt-6.2-sol',
+  'gpt-6.2-astra',
 ]);
 
 // Legacy mapping for models not present in the router registry
 const LEGACY_MODEL_TIERS: Record<string, ModelTier> = {
-  'gpt-3.5-turbo': 'cheap',
+  'gpt-6-luna': 'cheap',
   'gpt-4o-mini': 'cheap',
-  'gpt-4-turbo': 'standard',
+  'gpt-6.2-sol': 'standard',
   'gpt-4o': 'standard',
-  'gpt-4': 'premium',
+  'gpt-6.2-astra': 'premium',
   'gpt-5.2': 'premium',
-  'o1-mini': 'premium',
-  'o1': 'premium',
 };
 
 interface ChatMessage {

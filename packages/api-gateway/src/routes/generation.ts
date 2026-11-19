@@ -11,9 +11,9 @@ import { config } from '../config/index.js';
 // Credit costs for different operations
 const CREDIT_COSTS = {
   text: {
-    'gpt-3.5-turbo': 1,
-    'gpt-4-turbo': 3,
-    'gpt-4': 5,
+    'gpt-6-luna': 1,
+    'gpt-6.2-sol': 3,
+    'gpt-6.2-astra': 5,
   },
   image: {
     'standard-1024x1024': 5,
@@ -24,9 +24,9 @@ const CREDIT_COSTS = {
     'hd-1024x1792': 15,
   },
   chat: {
-    'gpt-3.5-turbo': 1,
-    'gpt-4-turbo': 3,
-    'gpt-4': 5,
+    'gpt-6-luna': 1,
+    'gpt-6.2-sol': 3,
+    'gpt-6.2-astra': 5,
   },
 };
 
@@ -36,7 +36,7 @@ interface TextGenerationBody {
   systemPrompt?: string;
   maxTokens?: number;
   temperature?: number;
-  model?: 'gpt-3.5-turbo' | 'gpt-4-turbo' | 'gpt-4';
+  model?: 'gpt-6-luna' | 'gpt-6.2-sol' | 'gpt-6.2-astra';
 }
 
 interface ImageGenerationBody {
@@ -148,14 +148,14 @@ export default async function generationRoutes(fastify: FastifyInstance) {
           systemPrompt: { type: 'string' },
           maxTokens: { type: 'number', minimum: 100, maximum: 4000 },
           temperature: { type: 'number', minimum: 0, maximum: 2 },
-          model: { type: 'string', enum: ['gpt-3.5-turbo', 'gpt-4-turbo', 'gpt-4'] },
+          model: { type: 'string', enum: ['gpt-6-luna', 'gpt-6.2-sol', 'gpt-6.2-astra'] },
         },
       },
     },
   }, async (request: any, reply) => {
     try {
       const userId = request.user.id;
-      const { prompt, presetId, systemPrompt, maxTokens, temperature, model = 'gpt-3.5-turbo' } = request.body;
+      const { prompt, presetId, systemPrompt, maxTokens, temperature, model = 'gpt-6-luna' } = request.body;
 
       // Check credits
       const creditCost = CREDIT_COSTS.text[model as keyof typeof CREDIT_COSTS.text] || 1;

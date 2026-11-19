@@ -105,14 +105,16 @@ describe('GenerationService', () => {
       );
     });
 
-    it('should use default max_tokens of 1000', async () => {
+    it('should default to gpt-6-luna with no reasoning step and a 1000-token cap', async () => {
       await service.generateText({
         prompt: 'Write a poem',
       });
 
       expect(mockOpenAI.chat.completions.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          max_tokens: 1000,
+          model: 'gpt-6-luna',
+          reasoning_effort: 'none',
+          max_completion_tokens: 1000,
         }),
       );
     });
@@ -125,7 +127,7 @@ describe('GenerationService', () => {
 
       expect(mockOpenAI.chat.completions.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          max_tokens: 500,
+          max_completion_tokens: 500,
         }),
       );
     });
@@ -341,7 +343,7 @@ describe('GenerationService', () => {
 
       expect(mockOpenAI.chat.completions.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          max_tokens: 500,
+          max_completion_tokens: 500,
         }),
       );
     });
@@ -370,9 +372,9 @@ describe('GenerationService', () => {
       const result = service.getAvailableModels();
 
       expect(result.text.length).toBeGreaterThan(0);
-      expect(result.text.some(m => m.id === 'gpt-3.5-turbo')).toBe(true);
-      expect(result.text.some(m => m.id === 'gpt-4-turbo')).toBe(true);
-      expect(result.text.some(m => m.id === 'gpt-4')).toBe(true);
+      expect(result.text.some(m => m.id === 'gpt-6-luna')).toBe(true);
+      expect(result.text.some(m => m.id === 'gpt-6.2-sol')).toBe(true);
+      expect(result.text.some(m => m.id === 'gpt-6.2-astra')).toBe(true);
     });
 
     it('should include image models', () => {

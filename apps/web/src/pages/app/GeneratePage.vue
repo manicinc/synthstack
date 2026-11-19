@@ -545,11 +545,12 @@ const textTemplates = [
   { label: 'Custom', value: 'custom' }
 ]
 const textPrompt = ref('')
-const textModel = ref('gpt-4')
+// The ids the gateway's text generation route accepts.
+const textModel = ref('gpt-6-luna')
 const textModels = [
-  { label: 'GPT-4', value: 'gpt-4' },
-  { label: 'GPT-4 Turbo', value: 'gpt-4-turbo' },
-  { label: 'GPT-3.5 Turbo', value: 'gpt-3.5-turbo' }
+  { label: 'GPT-6 Luna', value: 'gpt-6-luna' },
+  { label: 'GPT-6.2 Sol', value: 'gpt-6.2-sol' },
+  { label: 'GPT-6.2 Astra', value: 'gpt-6.2-astra' }
 ]
 const textLength = ref(500)
 const textTone = ref('Professional')
@@ -588,11 +589,11 @@ const codeLanguages = [
   { label: 'PHP', value: 'php' }
 ]
 const codePrompt = ref('')
-const codeModel = ref('gpt-4')
+const codeModel = ref('gpt-6.2-sol')
 const codeModels = [
-  { label: 'GPT-4', value: 'gpt-4' },
-  { label: 'GPT-4 Turbo', value: 'gpt-4-turbo' },
-  { label: 'GPT-3.5 Turbo', value: 'gpt-3.5-turbo' }
+  { label: 'GPT-6.2 Sol', value: 'gpt-6.2-sol' },
+  { label: 'GPT-6.2 Astra', value: 'gpt-6.2-astra' },
+  { label: 'GPT-6 Luna', value: 'gpt-6-luna' }
 ]
 const includeComments = ref(true)
 const includeTests = ref(false)
@@ -631,8 +632,8 @@ function tokensForWords(words: number): number {
 }
 
 function estimateTextCreditCost(model: string): number {
-  if (model === 'gpt-4') return 5
-  if (model === 'gpt-4-turbo') return 3
+  if (model === 'gpt-6.2-astra') return 5
+  if (model === 'gpt-6.2-sol') return 3
   return 1
 }
 
