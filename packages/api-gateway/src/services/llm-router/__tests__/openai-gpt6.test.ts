@@ -6,7 +6,7 @@ import { describe, it, expect, vi } from 'vitest';
 
 vi.mock('../../../config/index.js', () => ({ config: { openaiApiKey: '' } }));
 
-import { openaiRequestFields } from '../adapters/openai.js';
+import { OpenAIAdapter, openaiRequestFields } from '../adapters/openai.js';
 import { ModelRegistry } from '../models.js';
 
 describe('openaiRequestFields', () => {
@@ -61,5 +61,28 @@ describe('ModelRegistry explicit GPT-6 models', () => {
     );
     expect(tierIds.some((id) => id.startsWith('gpt-6'))).toBe(false);
     expect(registry.findCheapestModel({ requiresTools: true }, ['openai'])?.id).not.toMatch(/^gpt-6/);
+  });
+});
+
+describe('OpenAIAdapter.chat with GPT-6 models', () => {
+  function adapterReturning(choice: Record<string, unknown>) {
+    const adapter = new OpenAIAdapter('test-key');
+    const create = vi.fn(async () => ({ choices: [choice], usage: {}, model: 'gpt-6.2-sol' }));
+    (adapter as any).client = { chat: { completions: { create } } };
+    return { adapter, create };
+  }
+  const messages = [{ role: 'user' as const, content: 'hi' }];
+
+  it('fails a reply cut at the cap before any text', async () => {
+    const { adapter } = adapterReturning({ finish_reason: 'length', message: { content: '' } });
+    const model = new ModelRegistry().getModel('gpt-6.2-sol')!;
+    await expect(adapter.chat({ messages } as any, model)).rejects.toThrow(/token cap/);
+  });
+
+  it('refuses JSON mode on a model that does not declare it, before calling OpenAI', async () => {
+    const { adapter, create } = adapterReturning({ finish_reason: 'stop', message: { content: '{}' } });
+    const model = new ModelRegistry().getModel('gpt-6-luna')!;
+    await expect(adapter.chat({ messages, jsonMode: true } as any, model)).rejects.toThrow(/JSON mode/);
+    expect(create).not.toHaveBeenCalled();
   });
 });

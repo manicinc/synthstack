@@ -92,6 +92,10 @@ export class OpenAIAdapter extends BaseLLMAdapter {
       throw this.createError('OpenAI not configured', model.id, 'invalid_api_key');
     }
 
+    if (options.jsonMode && !model.supportsJsonMode) {
+      throw this.createError(`${model.id} does not take JSON mode here`, model.id, 'provider_error');
+    }
+
     const startTime = Date.now();
 
     try {
@@ -125,6 +129,11 @@ export class OpenAIAdapter extends BaseLLMAdapter {
           arguments: (tc as any).function.arguments,
         },
       }));
+
+      if (choice.finish_reason === 'length' && !choice.message.content && !toolCalls?.length) {
+        // A reasoning model can spend the whole cap before writing text.
+        throw new Error(`${model.id} reached its token cap before writing a reply`);
+      }
 
       return {
         content: choice.message.content || '',
