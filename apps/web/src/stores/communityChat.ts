@@ -45,8 +45,9 @@ const MODEL_OPTIONS: Array<{ label: string; value: string; tier: ModelTier }> = 
   { label: 'GPT-4o Mini', value: 'gpt-4o-mini', tier: 'cheap' },
   { label: 'GPT-4o', value: 'gpt-4o', tier: 'standard' },
   { label: 'GPT-5.2', value: 'gpt-5.2', tier: 'premium' },
-  { label: 'GPT-4 Turbo', value: 'gpt-4-turbo', tier: 'standard' },
-  { label: 'GPT-3.5 Turbo', value: 'gpt-3.5-turbo', tier: 'cheap' },
+  { label: 'GPT-6 Luna', value: 'gpt-6-luna', tier: 'cheap' },
+  { label: 'GPT-6.2 Sol', value: 'gpt-6.2-sol', tier: 'standard' },
+  { label: 'GPT-6.2 Astra', value: 'gpt-6.2-astra', tier: 'premium' },
 ]
 
 function safeParseJson<T>(value: string): T | null {
@@ -153,6 +154,11 @@ export const useCommunityChatStore = defineStore('communityChat', () => {
       settings.value = {
         ...buildDefaultSettings(),
         ...storedSettings,
+      }
+      // A saved model that is no longer offered (a retired id such as
+      // gpt-3.5-turbo) would be refused by the gateway: fall back to the default.
+      if (!MODEL_OPTIONS.some((m) => m.value === settings.value.model)) {
+        settings.value.model = buildDefaultSettings().model
       }
       settings.value.modelTier = deriveTierFromModel(settings.value.model)
     }
