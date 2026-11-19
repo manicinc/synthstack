@@ -66,6 +66,62 @@ export const OPENAI_MODELS: ModelConfig[] = [
 ];
 
 /**
+ * OpenAI GPT-6 models a caller may name explicitly. They are kept out of tier
+ * routing, fallbacks and the cheapest-model search, so routed traffic keeps the
+ * models above; a request that names one gets that model. Prices are per 1K
+ * tokens, uncached (https://developers.openai.com/api/docs/pricing). gpt-6.2
+ * models refuse function tools on Chat Completions; gpt-6-luna takes them at
+ * reasoning effort none, which the adapter sends.
+ */
+export const OPENAI_EXPLICIT_MODELS: ModelConfig[] = [
+  {
+    id: 'gpt-6-luna',
+    name: 'GPT-6 Luna',
+    provider: 'openai',
+    tier: 'cheap',
+    inputCostPer1kTokens: 0.0001,
+    outputCostPer1kTokens: 0.0005,
+    maxContextTokens: 400000,
+    maxOutputTokens: 128000,
+    supportsStreaming: true,
+    supportsTools: true,
+    supportsVision: true,
+    supportsJsonMode: false,
+    priority: 9,
+  },
+  {
+    id: 'gpt-6.2-sol',
+    name: 'GPT-6.2 Sol',
+    provider: 'openai',
+    tier: 'standard',
+    inputCostPer1kTokens: 0.002,
+    outputCostPer1kTokens: 0.01,
+    maxContextTokens: 400000,
+    maxOutputTokens: 128000,
+    supportsStreaming: true,
+    supportsTools: false,
+    supportsVision: true,
+    supportsJsonMode: true,
+    priority: 9,
+  },
+  {
+    id: 'gpt-6.2-astra',
+    name: 'GPT-6.2 Astra',
+    provider: 'openai',
+    tier: 'premium',
+    inputCostPer1kTokens: 0.008,
+    outputCostPer1kTokens: 0.04,
+    maxContextTokens: 400000,
+    maxOutputTokens: 128000,
+    supportsStreaming: true,
+    supportsTools: false,
+    supportsVision: true,
+    supportsJsonMode: true,
+    priority: 9,
+  },
+];
+
+/**
  * Anthropic Models
  */
 export const ANTHROPIC_MODELS: ModelConfig[] = [
@@ -252,9 +308,17 @@ export class ModelRegistry {
   private models: Map<string, ModelConfig> = new Map();
   private modelsByTier: Map<ModelTier, ModelConfig[]> = new Map();
   private modelsByProvider: Map<LLMProvider, ModelConfig[]> = new Map();
+  /** Models resolved only when a request names them (see OPENAI_EXPLICIT_MODELS). */
+  private explicitModels: Map<string, ModelConfig> = new Map();
 
-  constructor(models: ModelConfig[] = ALL_MODELS) {
+  constructor(
+    models: ModelConfig[] = ALL_MODELS,
+    explicitModels: ModelConfig[] = OPENAI_EXPLICIT_MODELS
+  ) {
     this.registerModels(models);
+    for (const model of explicitModels) {
+      if (!this.models.has(model.id)) this.explicitModels.set(model.id, model);
+    }
   }
 
   /**
@@ -288,7 +352,7 @@ export class ModelRegistry {
    * Get model by ID
    */
   getModel(id: string): ModelConfig | undefined {
-    return this.models.get(id);
+    return this.models.get(id) ?? this.explicitModels.get(id);
   }
 
   /**
