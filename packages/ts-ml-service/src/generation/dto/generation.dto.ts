@@ -150,6 +150,7 @@ export class ChatCompletionsRequestDto {
   })
   @IsOptional()
   @IsString()
+  @IsIn(['gpt-6-luna', 'gpt-6.2-sol', 'gpt-6.2-astra'])
   model?: string;
 
   @ApiPropertyOptional({ description: 'Maximum tokens to generate', default: 500 })

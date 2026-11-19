@@ -54,9 +54,26 @@ export function openaiSampling(model: string, cap: number, temperature: number):
     return { reasoning_effort: 'none', max_completion_tokens: cap, temperature };
   }
   if (/^(gpt-5|gpt-6|o\d)/.test(model)) {
-    return { reasoning_effort: 'low', max_completion_tokens: cap };
+    // The cap counts reasoning tokens too: leave room for them beside the answer.
+    return { reasoning_effort: 'low', max_completion_tokens: cap + REASONING_HEADROOM };
   }
   return { max_tokens: cap, temperature };
+}
+
+/** Tokens added to a reasoning model's cap for its reasoning at effort low. */
+export const REASONING_HEADROOM = 4000;
+
+/**
+ * Throws when the model stopped at the token cap before writing any visible
+ * text, so an empty reply is never returned as a success.
+ */
+export function assertVisibleContent(
+  choice: { finish_reason?: string | null; message?: { content?: string | null } } | undefined,
+  model: string,
+): void {
+  if (choice?.finish_reason === 'length' && !choice.message?.content) {
+    throw new Error(`${model} reached its token cap before writing a reply`);
+  }
 }
 
 @Injectable()
@@ -97,6 +114,7 @@ export class GenerationService {
       ...(openaiSampling(model, dto.max_tokens || 1000, dto.temperature ?? 0.7) as object),
     });
 
+    assertVisibleContent(response.choices[0], model);
     const processingTime = Date.now() - startTime;
 
     return {
@@ -154,6 +172,7 @@ export class GenerationService {
       ...(openaiSampling(model, dto.max_tokens || 500, dto.temperature ?? 0.7) as object),
     });
 
+    assertVisibleContent(response.choices[0], model);
     const processingTime = Date.now() - startTime;
 
     const assistantMessage = response.choices[0]?.message;
