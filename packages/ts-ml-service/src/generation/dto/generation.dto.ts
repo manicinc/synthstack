@@ -136,6 +136,12 @@ export class ChatMessageDto {
   content: string;
 }
 
+/**
+ * The chat models the gateway forwards here (its chat route's ML_SERVICE_MODELS):
+ * the GPT-6 ids and the working gpt-4o-mini, gpt-4o and gpt-5.2.
+ */
+export const CHAT_MODELS = ['gpt-6-luna', 'gpt-6.2-sol', 'gpt-6.2-astra', 'gpt-4o-mini', 'gpt-4o', 'gpt-5.2'];
+
 export class ChatCompletionsRequestDto {
   @ApiProperty({ type: [ChatMessageDto], description: 'Array of chat messages' })
   @IsArray()
@@ -145,12 +151,12 @@ export class ChatCompletionsRequestDto {
 
   @ApiPropertyOptional({
     description: 'Model to use',
-    enum: ['gpt-6-luna', 'gpt-6.2-sol', 'gpt-6.2-astra'],
+    enum: CHAT_MODELS,
     default: 'gpt-6-luna'
   })
   @IsOptional()
   @IsString()
-  @IsIn(['gpt-6-luna', 'gpt-6.2-sol', 'gpt-6.2-astra'])
+  @IsIn(CHAT_MODELS)
   model?: string;
 
   @ApiPropertyOptional({ description: 'Maximum tokens to generate', default: 500 })
